@@ -1,0 +1,213 @@
+schema_version: '2'
+nodes:
+- node_id: sf:commerce.traffic.fact_search_event
+  descriptor:
+    qualified_name: commerce.traffic.fact_search_event
+    display_name: Search event
+    description: Search a buyer submitted on a channel.
+    synonyms: []
+    tags:
+    - fact
+    - traffic
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE
+      schema: TRAFFIC
+      object: FACT_SEARCH_EVENT
+      format: table
+  grain:
+    description: One row is one search event.
+    components:
+    - identity_id: search_event_identity
+      dataset_columns:
+      - search_event_id
+      description: Identifies one search event.
+  columns:
+  - name: search_event_id
+    description: Identifies one search event.
+  - name: buyer_user_id
+    description: Buyer user who submitted the search.
+  - name: channel_id
+    description: Channel where the search was submitted.
+  - name: device_id
+    description: Device used for the search.
+  - name: calendar_day_id
+    description: Calendar day of the search.
+  - name: search_text
+    description: Raw search text submitted by the buyer.
+  entity_definitions:
+  - identity_id: search_event_identity
+    dataset_columns:
+    - search_event_id
+    is_entity_universe: true
+    entity_expression:
+    - '[search_event_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
+  - identity_id: buyer_user_identity
+    dataset_columns:
+    - buyer_user_id
+    is_entity_universe: false
+    entity_expression:
+    - '[buyer_user_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A search event may have no buyer user, and a buyer user may have no search events.
+  - identity_id: channel_identity
+    dataset_columns:
+    - channel_id
+    is_entity_universe: false
+    entity_expression:
+    - '[channel_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each search event belongs to exactly one channel, and a channel may have no search
+        events.
+  - identity_id: device_identity
+    dataset_columns:
+    - device_id
+    is_entity_universe: false
+    entity_expression:
+    - '[device_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A search event may have no device, and a device may have no search events.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each search event belongs to exactly one calendar day, and a calendar day may have
+        no search events.
+- node_id: sf:commerce.traffic.fact_page_view
+  descriptor:
+    qualified_name: commerce.traffic.fact_page_view
+    display_name: Page view
+    description: Page view of a product or listing on a channel.
+    synonyms: []
+    tags:
+    - fact
+    - traffic
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE
+      schema: TRAFFIC
+      object: FACT_PAGE_VIEW
+      format: table
+  grain:
+    description: One row is one page view.
+    components:
+    - identity_id: page_view_identity
+      dataset_columns:
+      - page_view_id
+      description: Identifies one page view.
+  columns:
+  - name: page_view_id
+    description: Identifies one page view.
+  - name: product_id
+    description: Product shown in the page view.
+  - name: listing_id
+    description: Listing shown in the page view.
+  - name: channel_id
+    description: Channel of the page view.
+  - name: device_id
+    description: Device used for the page view.
+  - name: traffic_source_id
+    description: Traffic source that referred the page view.
+  - name: calendar_day_id
+    description: Calendar day of the page view.
+  entity_definitions:
+  - identity_id: page_view_identity
+    dataset_columns:
+    - page_view_id
+    is_entity_universe: true
+    entity_expression:
+    - '[page_view_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
+  - identity_id: product_identity
+    dataset_columns:
+    - product_id
+    is_entity_universe: false
+    entity_expression:
+    - '[product_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A page view may have no product, and a product may have no page views.
+  - identity_id: listing_identity
+    dataset_columns:
+    - listing_id
+    is_entity_universe: false
+    entity_expression:
+    - '[listing_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A page view may have no listing, and a listing may have no page views.
+  - identity_id: channel_identity
+    dataset_columns:
+    - channel_id
+    is_entity_universe: false
+    entity_expression:
+    - '[channel_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each page view belongs to exactly one channel, and a channel may have no page views.
+  - identity_id: device_identity
+    dataset_columns:
+    - device_id
+    is_entity_universe: false
+    entity_expression:
+    - '[device_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A page view may have no device, and a device may have no page views.
+  - identity_id: traffic_source_identity
+    dataset_columns:
+    - traffic_source_id
+    is_entity_universe: false
+    entity_expression:
+    - '[traffic_source_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A page view may have no traffic source, and a traffic source may have no page views.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each page view belongs to exactly one calendar day, and a calendar day may have no
+        page views.

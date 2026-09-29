@@ -1,0 +1,1030 @@
+schema_version: '2'
+nodes:
+- node_id: sf:manufacturing.execution.fact_demand_forecast
+  descriptor:
+    qualified_name: manufacturing.execution.fact_demand_forecast
+    display_name: Demand Forecast
+    description: Forecast quantity of an item at a plant on a day.
+    synonyms: []
+    tags:
+    - fact
+    - execution
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING
+      schema: EXECUTION
+      object: FACT_DEMAND_FORECAST
+      format: table
+  grain:
+    description: One row is one demand forecast.
+    components:
+    - identity_id: forecast_identity
+      dataset_columns:
+      - forecast_id
+      description: Identifier of one demand forecast.
+  columns:
+  - name: forecast_id
+    description: Identifier of one demand forecast.
+  - name: item_id
+    description: Item being forecast.
+  - name: plant_id
+    description: Plant the forecast covers.
+  - name: calendar_day_id
+    description: Day the forecast quantity applies to.
+  - name: forecast_quantity
+    description: Quantity forecast for the item, plant, and day.
+  entity_definitions:
+  - identity_id: forecast_identity
+    dataset_columns:
+    - forecast_id
+    is_entity_universe: true
+    entity_expression:
+    - '[forecast_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of demand forecast.
+  - identity_id: item_identity
+    dataset_columns:
+    - item_id
+    is_entity_universe: false
+    entity_expression:
+    - '[item_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many forecasts belong to one item, every forecast matches an item, and an item may
+        include no forecast.
+  - identity_id: plant_identity
+    dataset_columns:
+    - plant_id
+    is_entity_universe: false
+    entity_expression:
+    - '[plant_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many forecasts belong to one plant, every forecast matches a plant, and a plant may
+        include no forecast.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many forecasts belong to one calendar day, every forecast matches a calendar day,
+        and a calendar day may include no forecast.
+- node_id: sf:manufacturing.execution.fact_master_production_schedule
+  descriptor:
+    qualified_name: manufacturing.execution.fact_master_production_schedule
+    display_name: Master Production Schedule
+    description: Scheduled build quantity of an item at a plant on a day.
+    synonyms: []
+    tags:
+    - fact
+    - execution
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING
+      schema: EXECUTION
+      object: FACT_MASTER_PRODUCTION_SCHEDULE
+      format: table
+  grain:
+    description: One row is one master production schedule.
+    components:
+    - identity_id: mps_identity
+      dataset_columns:
+      - mps_id
+      description: Identifier of one master production schedule row.
+  columns:
+  - name: mps_id
+    description: Identifier of one master production schedule row.
+  - name: item_id
+    description: Item scheduled to be built.
+  - name: plant_id
+    description: Plant that will build the quantity.
+  - name: calendar_day_id
+    description: Day the quantity is scheduled.
+  - name: scheduled_quantity
+    description: Quantity scheduled for the item, plant, and day.
+  entity_definitions:
+  - identity_id: mps_identity
+    dataset_columns:
+    - mps_id
+    is_entity_universe: true
+    entity_expression:
+    - '[mps_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of master production schedule.
+  - identity_id: item_identity
+    dataset_columns:
+    - item_id
+    is_entity_universe: false
+    entity_expression:
+    - '[item_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many schedule rows belong to one item, every schedule row matches an item, and an
+        item may include no master schedule row.
+  - identity_id: plant_identity
+    dataset_columns:
+    - plant_id
+    is_entity_universe: false
+    entity_expression:
+    - '[plant_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many schedule rows belong to one plant, every schedule row matches a plant, and a
+        plant may include no master schedule row.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many schedule rows belong to one calendar day, every schedule row matches a calendar
+        day, and a calendar day may include no master schedule row.
+- node_id: sf:manufacturing.execution.fact_planned_order
+  descriptor:
+    qualified_name: manufacturing.execution.fact_planned_order
+    display_name: Planned Order
+    description: Planning suggestion to make an item revision at a plant.
+    synonyms: []
+    tags:
+    - fact
+    - execution
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING
+      schema: EXECUTION
+      object: FACT_PLANNED_ORDER
+      format: table
+  grain:
+    description: One row is one planned order.
+    components:
+    - identity_id: planned_order_identity
+      dataset_columns:
+      - planned_order_id
+      description: Identifier of one planned order.
+  columns:
+  - name: planned_order_id
+    description: Identifier of one planned order.
+  - name: item_revision_id
+    description: Item revision the planned order would make.
+  - name: plant_id
+    description: Plant that would execute the planned order.
+  - name: calendar_day_id
+    description: Day the planned order is due.
+  - name: firming_status
+    description: Whether the planned order is still a suggestion or has been firmed.
+    value_description: proposed, firmed, cancelled
+  entity_definitions:
+  - identity_id: planned_order_identity
+    dataset_columns:
+    - planned_order_id
+    is_entity_universe: true
+    entity_expression:
+    - '[planned_order_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of planned order.
+  - identity_id: item_revision_identity
+    dataset_columns:
+    - item_revision_id
+    is_entity_universe: false
+    entity_expression:
+    - '[item_revision_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many planned orders belong to one item revision, every planned order matches an item
+        revision, and an item revision may include no planned order.
+  - identity_id: plant_identity
+    dataset_columns:
+    - plant_id
+    is_entity_universe: false
+    entity_expression:
+    - '[plant_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many planned orders belong to one plant, every planned order matches a plant, and
+        a plant may include no planned order.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many planned orders belong to one calendar day, every planned order matches a calendar
+        day, and a calendar day may include no planned order.
+- node_id: sf:manufacturing.execution.fact_production_order
+  descriptor:
+    qualified_name: manufacturing.execution.fact_production_order
+    display_name: Production Order
+    description: Released or planned authority to make an item revision at a plant.
+    synonyms: []
+    tags:
+    - fact
+    - execution
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING
+      schema: EXECUTION
+      object: FACT_PRODUCTION_ORDER
+      format: table
+  grain:
+    description: One row is one production order.
+    components:
+    - identity_id: production_order_identity
+      dataset_columns:
+      - production_order_id
+      description: Identifier of one production order.
+  columns:
+  - name: production_order_id
+    description: Identifier of one production order.
+  - name: item_revision_id
+    description: Item revision the order makes.
+  - name: plant_id
+    description: Plant that executes the order.
+  - name: routing_id
+    description: Routing used by the order, when a routing is selected.
+  - name: bom_header_id
+    description: Bill of materials used by the order, when a bill is selected.
+  - name: planner_id
+    description: Planner responsible for the order, when one is assigned.
+  - name: order_status
+    description: Execution state of the production order.
+    value_description: planned, released, complete, closed, cancelled
+  entity_definitions:
+  - identity_id: production_order_identity
+    dataset_columns:
+    - production_order_id
+    is_entity_universe: true
+    entity_expression:
+    - '[production_order_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of production order.
+  - identity_id: item_revision_identity
+    dataset_columns:
+    - item_revision_id
+    is_entity_universe: false
+    entity_expression:
+    - '[item_revision_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many production orders belong to one item revision, every production order matches
+        an item revision, and an item revision may include no production order.
+  - identity_id: plant_identity
+    dataset_columns:
+    - plant_id
+    is_entity_universe: false
+    entity_expression:
+    - '[plant_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many production orders belong to one plant, every production order matches a plant,
+        and a plant may include no production order.
+  - identity_id: routing_identity
+    dataset_columns:
+    - routing_id
+    is_entity_universe: false
+    entity_expression:
+    - '[routing_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A production order may match one routing, and a routing may include no production
+        order.
+  - identity_id: bom_header_identity
+    dataset_columns:
+    - bom_header_id
+    is_entity_universe: false
+    entity_expression:
+    - '[bom_header_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A production order may match one bill of materials, and a bill of materials may include
+        no production order.
+  - identity_id: planner_identity
+    dataset_columns:
+    - planner_id
+    is_entity_universe: false
+    entity_expression:
+    - '[planner_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A production order may match one planner, and a planner may include no production
+        order.
+- node_id: sf:manufacturing.execution.fact_production_order_operation
+  descriptor:
+    qualified_name: manufacturing.execution.fact_production_order_operation
+    display_name: Production Order Operation
+    description: Operation step released on a production order.
+    synonyms: []
+    tags:
+    - fact
+    - execution
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING
+      schema: EXECUTION
+      object: FACT_PRODUCTION_ORDER_OPERATION
+      format: table
+  grain:
+    description: One row is one production order operation.
+    components:
+    - identity_id: production_order_operation_identity
+      dataset_columns:
+      - production_order_operation_id
+      description: Identifier of one production order operation.
+  columns:
+  - name: production_order_operation_id
+    description: Identifier of one production order operation.
+  - name: production_order_id
+    description: Production order that contains the operation.
+  - name: operation_id
+    description: Standard operation being performed.
+  - name: work_center_id
+    description: Work center scheduled to perform the operation.
+  - name: routing_operation_id
+    description: Routing step the order operation copies, when the order uses a routing.
+  - name: operation_status
+    description: Progress of the production order operation.
+    value_description: queued, running, complete, cancelled
+  entity_definitions:
+  - identity_id: production_order_operation_identity
+    dataset_columns:
+    - production_order_operation_id
+    is_entity_universe: true
+    entity_expression:
+    - '[production_order_operation_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of production order operation.
+  - identity_id: production_order_identity
+    dataset_columns:
+    - production_order_id
+    is_entity_universe: false
+    entity_expression:
+    - '[production_order_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many production order operations belong to one production order, every operation
+        matches a production order, and every production order includes at least one operation.
+  - identity_id: operation_identity
+    dataset_columns:
+    - operation_id
+    is_entity_universe: false
+    entity_expression:
+    - '[operation_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many production order operations belong to one operation, every production order
+        operation matches an operation, and an operation may include no production order operation.
+  - identity_id: work_center_identity
+    dataset_columns:
+    - work_center_id
+    is_entity_universe: false
+    entity_expression:
+    - '[work_center_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many production order operations belong to one work center, every production order
+        operation matches a work center, and a work center may include no production order operation.
+  - identity_id: routing_operation_identity
+    dataset_columns:
+    - routing_operation_id
+    is_entity_universe: false
+    entity_expression:
+    - '[routing_operation_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A production order operation may match one routing operation, and a routing operation
+        may include no production order operation.
+- node_id: sf:manufacturing.execution.fact_operation_confirmation
+  descriptor:
+    qualified_name: manufacturing.execution.fact_operation_confirmation
+    display_name: Operation Confirmation
+    description: Reported good and scrap quantity against a production order operation.
+    synonyms: []
+    tags:
+    - fact
+    - execution
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING
+      schema: EXECUTION
+      object: FACT_OPERATION_CONFIRMATION
+      format: table
+  grain:
+    description: One row is one operation confirmation.
+    components:
+    - identity_id: confirmation_identity
+      dataset_columns:
+      - confirmation_id
+      description: Identifier of one operation confirmation.
+  columns:
+  - name: confirmation_id
+    description: Identifier of one operation confirmation.
+  - name: production_order_operation_id
+    description: Production order operation being confirmed.
+  - name: work_unit_id
+    description: Work unit that reported the confirmation, when a unit is named.
+  - name: shift_id
+    description: Shift that reported the confirmation, when a shift is named.
+  - name: employee_id
+    description: Employee who reported the confirmation, when a person is named.
+  - name: calendar_day_id
+    description: Day the confirmation was reported.
+  - name: good_quantity
+    description: Quantity accepted as good on the confirmation.
+  - name: scrap_quantity
+    description: Quantity scrapped on the confirmation.
+  entity_definitions:
+  - identity_id: confirmation_identity
+    dataset_columns:
+    - confirmation_id
+    is_entity_universe: true
+    entity_expression:
+    - '[confirmation_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of operation confirmation.
+  - identity_id: production_order_operation_identity
+    dataset_columns:
+    - production_order_operation_id
+    is_entity_universe: false
+    entity_expression:
+    - '[production_order_operation_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many confirmations belong to one production order operation, every confirmation matches
+        a production order operation, and a production order operation may include no confirmation.
+  - identity_id: work_unit_identity
+    dataset_columns:
+    - work_unit_id
+    is_entity_universe: false
+    entity_expression:
+    - '[work_unit_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A confirmation may match one work unit, and a work unit may include no confirmation.
+  - identity_id: shift_identity
+    dataset_columns:
+    - shift_id
+    is_entity_universe: false
+    entity_expression:
+    - '[shift_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A confirmation may match one shift, and a shift may include no confirmation.
+  - identity_id: employee_identity
+    dataset_columns:
+    - employee_id
+    is_entity_universe: false
+    entity_expression:
+    - '[employee_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A confirmation may match one employee, and an employee may include no confirmation.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many confirmations belong to one calendar day, every confirmation matches a calendar
+        day, and a calendar day may include no confirmation.
+- node_id: sf:manufacturing.execution.fact_labor_ticket
+  descriptor:
+    qualified_name: manufacturing.execution.fact_labor_ticket
+    display_name: Labor Ticket
+    description: Hours an employee charged to a work center and optionally to an order operation.
+    synonyms: []
+    tags:
+    - fact
+    - execution
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING
+      schema: EXECUTION
+      object: FACT_LABOR_TICKET
+      format: table
+  grain:
+    description: One row is one labor ticket.
+    components:
+    - identity_id: labor_ticket_identity
+      dataset_columns:
+      - labor_ticket_id
+      description: Identifier of one labor ticket.
+  columns:
+  - name: labor_ticket_id
+    description: Identifier of one labor ticket.
+  - name: employee_id
+    description: Employee who worked the hours.
+  - name: production_order_operation_id
+    description: Production order operation charged, when the time is direct.
+  - name: work_center_id
+    description: Work center where the hours were spent.
+  - name: shift_id
+    description: Shift on which the hours were worked.
+  - name: calendar_day_id
+    description: Day the hours were worked.
+  - name: labor_hours
+    description: Hours recorded on the labor ticket.
+  entity_definitions:
+  - identity_id: labor_ticket_identity
+    dataset_columns:
+    - labor_ticket_id
+    is_entity_universe: true
+    entity_expression:
+    - '[labor_ticket_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of labor ticket.
+  - identity_id: employee_identity
+    dataset_columns:
+    - employee_id
+    is_entity_universe: false
+    entity_expression:
+    - '[employee_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many labor tickets belong to one employee, every labor ticket matches an employee,
+        and an employee may include no labor ticket.
+  - identity_id: production_order_operation_identity
+    dataset_columns:
+    - production_order_operation_id
+    is_entity_universe: false
+    entity_expression:
+    - '[production_order_operation_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A labor ticket may match one production order operation, and a production order operation
+        may include no labor ticket.
+  - identity_id: work_center_identity
+    dataset_columns:
+    - work_center_id
+    is_entity_universe: false
+    entity_expression:
+    - '[work_center_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many labor tickets belong to one work center, every labor ticket matches a work center,
+        and a work center may include no labor ticket.
+  - identity_id: shift_identity
+    dataset_columns:
+    - shift_id
+    is_entity_universe: false
+    entity_expression:
+    - '[shift_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many labor tickets belong to one shift, every labor ticket matches a shift, and a
+        shift may include no labor ticket.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many labor tickets belong to one calendar day, every labor ticket matches a calendar
+        day, and a calendar day may include no labor ticket.
+- node_id: sf:manufacturing.execution.fact_material_issue
+  descriptor:
+    qualified_name: manufacturing.execution.fact_material_issue
+    display_name: Material Issue
+    description: Quantity of an item issued from a storage location to a production order.
+    synonyms: []
+    tags:
+    - fact
+    - execution
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING
+      schema: EXECUTION
+      object: FACT_MATERIAL_ISSUE
+      format: table
+  grain:
+    description: One row is one material issue.
+    components:
+    - identity_id: material_issue_identity
+      dataset_columns:
+      - material_issue_id
+      description: Identifier of one material issue.
+  columns:
+  - name: material_issue_id
+    description: Identifier of one material issue.
+  - name: production_order_id
+    description: Production order that received the material.
+  - name: item_id
+    description: Item issued to the order.
+  - name: storage_location_id
+    description: Storage location the material left.
+  - name: lot_id
+    description: Lot issued, when the item is lot-controlled.
+  - name: issued_quantity
+    description: Quantity issued to the production order.
+  entity_definitions:
+  - identity_id: material_issue_identity
+    dataset_columns:
+    - material_issue_id
+    is_entity_universe: true
+    entity_expression:
+    - '[material_issue_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of material issue.
+  - identity_id: production_order_identity
+    dataset_columns:
+    - production_order_id
+    is_entity_universe: false
+    entity_expression:
+    - '[production_order_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many material issues belong to one production order, every material issue matches
+        a production order, and a production order may include no material issue.
+  - identity_id: item_identity
+    dataset_columns:
+    - item_id
+    is_entity_universe: false
+    entity_expression:
+    - '[item_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many material issues belong to one item, every material issue matches an item, and
+        an item may include no material issue.
+  - identity_id: storage_location_identity
+    dataset_columns:
+    - storage_location_id
+    is_entity_universe: false
+    entity_expression:
+    - '[storage_location_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many material issues belong to one storage location, every material issue matches
+        a storage location, and a storage location may include no material issue.
+  - identity_id: lot_identity
+    dataset_columns:
+    - lot_id
+    is_entity_universe: false
+    entity_expression:
+    - '[lot_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A material issue may match one lot, and a lot may include no material issue.
+- node_id: sf:manufacturing.execution.fact_production_receipt
+  descriptor:
+    qualified_name: manufacturing.execution.fact_production_receipt
+    display_name: Production Receipt
+    description: Quantity of an item revision received from a production order into stock.
+    synonyms: []
+    tags:
+    - fact
+    - execution
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING
+      schema: EXECUTION
+      object: FACT_PRODUCTION_RECEIPT
+      format: table
+  grain:
+    description: One row is one production receipt.
+    components:
+    - identity_id: production_receipt_identity
+      dataset_columns:
+      - production_receipt_id
+      description: Identifier of one production receipt.
+  columns:
+  - name: production_receipt_id
+    description: Identifier of one production receipt.
+  - name: production_order_id
+    description: Production order that completed the quantity.
+  - name: item_revision_id
+    description: Item revision received into stock.
+  - name: storage_location_id
+    description: Storage location that received the quantity.
+  - name: lot_id
+    description: Lot created or received, when the item is lot-controlled.
+  - name: received_quantity
+    description: Quantity received from the production order.
+  entity_definitions:
+  - identity_id: production_receipt_identity
+    dataset_columns:
+    - production_receipt_id
+    is_entity_universe: true
+    entity_expression:
+    - '[production_receipt_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of production receipt.
+  - identity_id: production_order_identity
+    dataset_columns:
+    - production_order_id
+    is_entity_universe: false
+    entity_expression:
+    - '[production_order_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many production receipts belong to one production order, every production receipt
+        matches a production order, and a production order may include no production receipt.
+  - identity_id: item_revision_identity
+    dataset_columns:
+    - item_revision_id
+    is_entity_universe: false
+    entity_expression:
+    - '[item_revision_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many production receipts belong to one item revision, every production receipt matches
+        an item revision, and an item revision may include no production receipt.
+  - identity_id: storage_location_identity
+    dataset_columns:
+    - storage_location_id
+    is_entity_universe: false
+    entity_expression:
+    - '[storage_location_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many production receipts belong to one storage location, every production receipt
+        matches a storage location, and a storage location may include no production receipt.
+  - identity_id: lot_identity
+    dataset_columns:
+    - lot_id
+    is_entity_universe: false
+    entity_expression:
+    - '[lot_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A production receipt may match one lot, and a lot may include no production receipt.
+- node_id: sf:manufacturing.execution.fact_capacity_load
+  descriptor:
+    qualified_name: manufacturing.execution.fact_capacity_load
+    display_name: Capacity Load
+    description: Hours of load placed on a work center for a day.
+    synonyms: []
+    tags:
+    - fact
+    - execution
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING
+      schema: EXECUTION
+      object: FACT_CAPACITY_LOAD
+      format: table
+  grain:
+    description: One row is one capacity load.
+    components:
+    - identity_id: capacity_load_identity
+      dataset_columns:
+      - capacity_load_id
+      description: Identifier of one capacity load.
+  columns:
+  - name: capacity_load_id
+    description: Identifier of one capacity load.
+  - name: work_center_id
+    description: Work center that carries the load.
+  - name: calendar_day_id
+    description: Day the load applies.
+  - name: shift_id
+    description: Shift the load falls on, when the load is shift-specific.
+  - name: load_hours
+    description: Hours of load on the work center.
+  entity_definitions:
+  - identity_id: capacity_load_identity
+    dataset_columns:
+    - capacity_load_id
+    is_entity_universe: true
+    entity_expression:
+    - '[capacity_load_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of capacity load.
+  - identity_id: work_center_identity
+    dataset_columns:
+    - work_center_id
+    is_entity_universe: false
+    entity_expression:
+    - '[work_center_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many capacity loads belong to one work center, every capacity load matches a work
+        center, and a work center may include no capacity load.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many capacity loads belong to one calendar day, every capacity load matches a calendar
+        day, and a calendar day may include no capacity load.
+  - identity_id: shift_identity
+    dataset_columns:
+    - shift_id
+    is_entity_universe: false
+    entity_expression:
+    - '[shift_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A capacity load may match one shift, and a shift may include no capacity load.
+- node_id: sf:manufacturing.execution.fact_kanban_signal
+  descriptor:
+    qualified_name: manufacturing.execution.fact_kanban_signal
+    display_name: Kanban Signal
+    description: Replenishment signal for an item at a storage location in a plant.
+    synonyms: []
+    tags:
+    - fact
+    - execution
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING
+      schema: EXECUTION
+      object: FACT_KANBAN_SIGNAL
+      format: table
+  grain:
+    description: One row is one kanban signal.
+    components:
+    - identity_id: kanban_signal_identity
+      dataset_columns:
+      - kanban_signal_id
+      description: Identifier of one kanban signal.
+  columns:
+  - name: kanban_signal_id
+    description: Identifier of one kanban signal.
+  - name: item_id
+    description: Item the signal replenishes.
+  - name: storage_location_id
+    description: Storage location the signal serves.
+  - name: plant_id
+    description: Plant that owns the signal.
+  - name: signal_status
+    description: Fill state of the kanban.
+    value_description: empty, in_process, full
+  entity_definitions:
+  - identity_id: kanban_signal_identity
+    dataset_columns:
+    - kanban_signal_id
+    is_entity_universe: true
+    entity_expression:
+    - '[kanban_signal_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of kanban signal.
+  - identity_id: item_identity
+    dataset_columns:
+    - item_id
+    is_entity_universe: false
+    entity_expression:
+    - '[item_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many kanban signals belong to one item, every kanban signal matches an item, and
+        an item may include no kanban signal.
+  - identity_id: storage_location_identity
+    dataset_columns:
+    - storage_location_id
+    is_entity_universe: false
+    entity_expression:
+    - '[storage_location_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many kanban signals belong to one storage location, every kanban signal matches a
+        storage location, and a storage location may include no kanban signal.
+  - identity_id: plant_identity
+    dataset_columns:
+    - plant_id
+    is_entity_universe: false
+    entity_expression:
+    - '[plant_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many kanban signals belong to one plant, every kanban signal matches a plant, and
+        a plant may include no kanban signal.

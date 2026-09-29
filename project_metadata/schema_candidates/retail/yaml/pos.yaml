@@ -1,0 +1,551 @@
+schema_version: '2'
+nodes:
+- node_id: sf:retail.pos.fact_pos_transaction
+  descriptor:
+    qualified_name: retail.pos.fact_pos_transaction
+    display_name: POS transaction
+    description: Basket rung at a storefront by a cashier on a workstation.
+    synonyms: []
+    tags:
+    - fact
+    - pos
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL
+      schema: POS
+      object: FACT_POS_TRANSACTION
+      format: table
+  grain:
+    description: One row is one pos transaction.
+    components:
+    - identity_id: pos_transaction_identity
+      dataset_columns:
+      - pos_transaction_id
+      description: Identifies one POS transaction.
+  columns:
+  - name: pos_transaction_id
+    description: Identifies one POS transaction.
+  - name: store_id
+    description: Storefront where the basket was rung.
+  - name: cashier_id
+    description: Cashier who rang the basket.
+  - name: workstation_id
+    description: Workstation that recorded the basket.
+  - name: calendar_day_id
+    description: Day the basket was rung.
+  - name: hour_id
+    description: Hour the basket was rung.
+  - name: channel_id
+    description: Selling channel of the basket.
+  - name: loyalty_account_id
+    description: Loyalty account presented with the basket when the shopper identified one.
+  - name: transaction_status
+    description: Completion status of the basket.
+    value_description: completed, voided, suspended
+  entity_definitions:
+  - identity_id: pos_transaction_identity
+    dataset_columns:
+    - pos_transaction_id
+    is_entity_universe: true
+    entity_expression:
+    - '[pos_transaction_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of pos transaction.
+  - identity_id: store_identity
+    dataset_columns:
+    - store_id
+    is_entity_universe: false
+    entity_expression:
+    - '[store_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each transaction occurs at exactly one storefront, and a storefront may have no transaction.
+  - identity_id: cashier_identity
+    dataset_columns:
+    - cashier_id
+    is_entity_universe: false
+    entity_expression:
+    - '[cashier_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each transaction is rung by exactly one cashier, and a cashier may ring no transaction.
+  - identity_id: workstation_identity
+    dataset_columns:
+    - workstation_id
+    is_entity_universe: false
+    entity_expression:
+    - '[workstation_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each transaction is recorded on exactly one workstation, and a workstation may record
+        no transaction.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each transaction occurs on exactly one calendar day, and a day may have no transaction.
+  - identity_id: hour_identity
+    dataset_columns:
+    - hour_id
+    is_entity_universe: false
+    entity_expression:
+    - '[hour_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each transaction occurs in exactly one hour, and an hour may have no transaction.
+  - identity_id: channel_identity
+    dataset_columns:
+    - channel_id
+    is_entity_universe: false
+    entity_expression:
+    - '[channel_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each transaction uses exactly one channel, and a channel may have no transaction.
+  - identity_id: loyalty_account_identity
+    dataset_columns:
+    - loyalty_account_id
+    is_entity_universe: false
+    entity_expression:
+    - '[loyalty_account_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A transaction may omit a loyalty account, and a loyalty account may appear on no
+        transaction.
+- node_id: sf:retail.pos.fact_pos_line
+  descriptor:
+    qualified_name: retail.pos.fact_pos_line
+    display_name: POS line
+    description: Item line on a POS transaction.
+    synonyms: []
+    tags:
+    - fact
+    - pos
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL
+      schema: POS
+      object: FACT_POS_LINE
+      format: table
+  grain:
+    description: One row is one pos line.
+    components:
+    - identity_id: pos_line_identity
+      dataset_columns:
+      - pos_line_id
+      description: Identifies one POS item line.
+  columns:
+  - name: pos_line_id
+    description: Identifies one POS item line.
+  - name: pos_transaction_id
+    description: Transaction that contains the line.
+  - name: item_id
+    description: Item sold on the line.
+  - name: uom_id
+    description: Selling unit of measure when it differs from the item default.
+  - name: promotion_id
+    description: Promotion applied to the line when one was used.
+  - name: sold_quantity
+    description: Quantity of the item sold on the line.
+  - name: extended_amount
+    description: Extended selling amount of the line.
+  entity_definitions:
+  - identity_id: pos_line_identity
+    dataset_columns:
+    - pos_line_id
+    is_entity_universe: true
+    entity_expression:
+    - '[pos_line_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of pos line.
+  - identity_id: pos_transaction_identity
+    dataset_columns:
+    - pos_transaction_id
+    is_entity_universe: false
+    entity_expression:
+    - '[pos_transaction_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each POS transaction has one or more item lines, and each line belongs to exactly
+        one transaction.
+  - identity_id: item_identity
+    dataset_columns:
+    - item_id
+    is_entity_universe: false
+    entity_expression:
+    - '[item_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each line sells exactly one item, and an item may appear on no line.
+  - identity_id: uom_identity
+    dataset_columns:
+    - uom_id
+    is_entity_universe: false
+    entity_expression:
+    - '[uom_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A line may omit a selling unit of measure, and a unit of measure may appear on no
+        line.
+  - identity_id: promotion_identity
+    dataset_columns:
+    - promotion_id
+    is_entity_universe: false
+    entity_expression:
+    - '[promotion_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A line may omit a promotion, and a promotion may apply to no line.
+- node_id: sf:retail.pos.fact_pos_tender
+  descriptor:
+    qualified_name: retail.pos.fact_pos_tender
+    display_name: POS tender
+    description: Tender applied to a POS transaction.
+    synonyms: []
+    tags:
+    - fact
+    - pos
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL
+      schema: POS
+      object: FACT_POS_TENDER
+      format: table
+  grain:
+    description: One row is one pos tender.
+    components:
+    - identity_id: pos_tender_identity
+      dataset_columns:
+      - pos_tender_id
+      description: Identifies one POS tender.
+  columns:
+  - name: pos_tender_id
+    description: Identifies one POS tender.
+  - name: pos_transaction_id
+    description: Transaction the tender pays.
+  - name: tender_type_id
+    description: Type of payment applied.
+  - name: tender_amount
+    description: Amount applied by this tender.
+  entity_definitions:
+  - identity_id: pos_tender_identity
+    dataset_columns:
+    - pos_tender_id
+    is_entity_universe: true
+    entity_expression:
+    - '[pos_tender_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of pos tender.
+  - identity_id: pos_transaction_identity
+    dataset_columns:
+    - pos_transaction_id
+    is_entity_universe: false
+    entity_expression:
+    - '[pos_transaction_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each POS transaction has one or more tenders, and each tender belongs to exactly
+        one transaction.
+  - identity_id: tender_type_identity
+    dataset_columns:
+    - tender_type_id
+    is_entity_universe: false
+    entity_expression:
+    - '[tender_type_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each tender uses exactly one tender type, and a tender type may be used on no tender.
+- node_id: sf:retail.pos.fact_pos_discount
+  descriptor:
+    qualified_name: retail.pos.fact_pos_discount
+    display_name: POS discount
+    description: Discount taken against a POS line.
+    synonyms: []
+    tags:
+    - fact
+    - pos
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL
+      schema: POS
+      object: FACT_POS_DISCOUNT
+      format: table
+  grain:
+    description: One row is one pos discount.
+    components:
+    - identity_id: pos_discount_identity
+      dataset_columns:
+      - pos_discount_id
+      description: Identifies one POS discount.
+  columns:
+  - name: pos_discount_id
+    description: Identifies one POS discount.
+  - name: pos_line_id
+    description: POS line the discount reduces.
+  - name: offer_id
+    description: Offer that granted the discount when an offer applied.
+  - name: coupon_id
+    description: Coupon that granted the discount when a coupon was scanned.
+  - name: discount_amount
+    description: Amount taken off the line by this discount.
+  entity_definitions:
+  - identity_id: pos_discount_identity
+    dataset_columns:
+    - pos_discount_id
+    is_entity_universe: true
+    entity_expression:
+    - '[pos_discount_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of pos discount.
+  - identity_id: pos_line_identity
+    dataset_columns:
+    - pos_line_id
+    is_entity_universe: false
+    entity_expression:
+    - '[pos_line_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each POS line has one or more discounts, and each discount belongs to exactly one
+        line.
+  - identity_id: offer_identity
+    dataset_columns:
+    - offer_id
+    is_entity_universe: false
+    entity_expression:
+    - '[offer_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A discount may omit an offer, and an offer may grant no discount.
+  - identity_id: coupon_identity
+    dataset_columns:
+    - coupon_id
+    is_entity_universe: false
+    entity_expression:
+    - '[coupon_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A discount may omit a coupon, and a coupon may grant no discount.
+- node_id: sf:retail.pos.fact_transaction_tax
+  descriptor:
+    qualified_name: retail.pos.fact_transaction_tax
+    display_name: Transaction tax
+    description: Tax amount charged on a POS line for a jurisdiction.
+    synonyms: []
+    tags:
+    - fact
+    - pos
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL
+      schema: POS
+      object: FACT_TRANSACTION_TAX
+      format: table
+  grain:
+    description: One row is one transaction tax.
+    components:
+    - identity_id: transaction_tax_identity
+      dataset_columns:
+      - transaction_tax_id
+      description: Identifies one line tax charge.
+  columns:
+  - name: transaction_tax_id
+    description: Identifies one line tax charge.
+  - name: pos_line_id
+    description: POS line the tax is charged on.
+  - name: tax_jurisdiction_id
+    description: Jurisdiction that assessed the tax.
+  - name: tax_amount
+    description: Tax amount assessed on the line.
+  entity_definitions:
+  - identity_id: transaction_tax_identity
+    dataset_columns:
+    - transaction_tax_id
+    is_entity_universe: true
+    entity_expression:
+    - '[transaction_tax_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of transaction tax.
+  - identity_id: pos_line_identity
+    dataset_columns:
+    - pos_line_id
+    is_entity_universe: false
+    entity_expression:
+    - '[pos_line_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each tax charge belongs to exactly one POS line, and a POS line may have no tax charge.
+  - identity_id: tax_jurisdiction_identity
+    dataset_columns:
+    - tax_jurisdiction_id
+    is_entity_universe: false
+    entity_expression:
+    - '[tax_jurisdiction_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each tax charge names exactly one jurisdiction, and a jurisdiction may assess no
+        charge.
+- node_id: sf:retail.pos.fact_customer_return
+  descriptor:
+    qualified_name: retail.pos.fact_customer_return
+    display_name: Customer return
+    description: Quantity of an item returned at a storefront.
+    synonyms: []
+    tags:
+    - fact
+    - pos
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL
+      schema: POS
+      object: FACT_CUSTOMER_RETURN
+      format: table
+  grain:
+    description: One row is one customer return.
+    components:
+    - identity_id: customer_return_identity
+      dataset_columns:
+      - customer_return_id
+      description: Identifies one customer return.
+  columns:
+  - name: customer_return_id
+    description: Identifies one customer return.
+  - name: store_id
+    description: Storefront that accepted the return.
+  - name: item_id
+    description: Item that was returned.
+  - name: pos_line_id
+    description: Original POS line being returned when the sale line is known.
+  - name: reason_code_id
+    description: Reason the customer returned the item.
+  - name: calendar_day_id
+    description: Day the return was accepted.
+  - name: return_quantity
+    description: Quantity of the item returned.
+  entity_definitions:
+  - identity_id: customer_return_identity
+    dataset_columns:
+    - customer_return_id
+    is_entity_universe: true
+    entity_expression:
+    - '[customer_return_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of customer return.
+  - identity_id: store_identity
+    dataset_columns:
+    - store_id
+    is_entity_universe: false
+    entity_expression:
+    - '[store_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each return is accepted at exactly one storefront, and a storefront may have no return.
+  - identity_id: item_identity
+    dataset_columns:
+    - item_id
+    is_entity_universe: false
+    entity_expression:
+    - '[item_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each return names exactly one item, and an item may have no return.
+  - identity_id: pos_line_identity
+    dataset_columns:
+    - pos_line_id
+    is_entity_universe: false
+    entity_expression:
+    - '[pos_line_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A return may omit the original POS line, and a POS line may have no return.
+  - identity_id: reason_code_identity
+    dataset_columns:
+    - reason_code_id
+    is_entity_universe: false
+    entity_expression:
+    - '[reason_code_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each return names exactly one reason code, and a reason code may explain no return.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each return occurs on exactly one day, and a day may have no return.

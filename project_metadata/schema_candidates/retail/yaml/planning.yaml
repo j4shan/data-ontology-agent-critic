@@ -1,0 +1,81 @@
+schema_version: '2'
+nodes:
+- node_id: sf:retail.planning.fact_demand_forecast
+  descriptor:
+    qualified_name: retail.planning.fact_demand_forecast
+    display_name: Demand forecast
+    description: Forecast quantity of an item at a storefront on a day.
+    synonyms: []
+    tags:
+    - fact
+    - planning
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL
+      schema: PLANNING
+      object: FACT_DEMAND_FORECAST
+      format: table
+  grain:
+    description: One row is one demand forecast.
+    components:
+    - identity_id: forecast_identity
+      dataset_columns:
+      - forecast_id
+      description: Identifies one demand forecast.
+  columns:
+  - name: forecast_id
+    description: Identifies one demand forecast.
+  - name: item_id
+    description: Item being forecast.
+  - name: store_id
+    description: Storefront the forecast is for.
+  - name: calendar_day_id
+    description: Day the forecast applies to.
+  - name: forecast_quantity
+    description: Forecast quantity of the item at the storefront on that day.
+  entity_definitions:
+  - identity_id: forecast_identity
+    dataset_columns:
+    - forecast_id
+    is_entity_universe: true
+    entity_expression:
+    - '[forecast_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of demand forecast.
+  - identity_id: item_identity
+    dataset_columns:
+    - item_id
+    is_entity_universe: false
+    entity_expression:
+    - '[item_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each forecast names exactly one item, and an item may have no forecast.
+  - identity_id: store_identity
+    dataset_columns:
+    - store_id
+    is_entity_universe: false
+    entity_expression:
+    - '[store_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each forecast names exactly one storefront, and a storefront may have no forecast.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each forecast applies to exactly one day, and a day may have no forecast.

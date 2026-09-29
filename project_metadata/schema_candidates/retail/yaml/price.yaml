@@ -1,0 +1,332 @@
+schema_version: '2'
+nodes:
+- node_id: sf:retail.price.fact_retail_price
+  descriptor:
+    qualified_name: retail.price.fact_retail_price
+    display_name: Retail price
+    description: Retail price of an item in a price zone on a day.
+    synonyms: []
+    tags:
+    - fact
+    - price
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL
+      schema: PRICE
+      object: FACT_RETAIL_PRICE
+      format: table
+  grain:
+    description: One row is one retail price.
+    components:
+    - identity_id: price_identity
+      dataset_columns:
+      - price_id
+      description: Identifies one retail price.
+  columns:
+  - name: price_id
+    description: Identifies one retail price.
+  - name: item_id
+    description: Item being priced.
+  - name: price_zone_id
+    description: Price zone the price applies in.
+  - name: calendar_day_id
+    description: Day the price is effective.
+  - name: retail_price
+    description: Retail selling price of the item in the zone on that day.
+  entity_definitions:
+  - identity_id: price_identity
+    dataset_columns:
+    - price_id
+    is_entity_universe: true
+    entity_expression:
+    - '[price_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of retail price.
+  - identity_id: item_identity
+    dataset_columns:
+    - item_id
+    is_entity_universe: false
+    entity_expression:
+    - '[item_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each price names exactly one item, and an item may have no zone price.
+  - identity_id: price_zone_identity
+    dataset_columns:
+    - price_zone_id
+    is_entity_universe: false
+    entity_expression:
+    - '[price_zone_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each price names exactly one price zone, and a price zone may have no price row.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each price is effective on exactly one day, and a day may have no price row.
+- node_id: sf:retail.price.fact_item_cost
+  descriptor:
+    qualified_name: retail.price.fact_item_cost
+    display_name: Item cost
+    description: Unit cost of an item, optionally for a vendor and a storefront.
+    synonyms: []
+    tags:
+    - fact
+    - price
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL
+      schema: PRICE
+      object: FACT_ITEM_COST
+      format: table
+  grain:
+    description: One row is one item cost.
+    components:
+    - identity_id: item_cost_identity
+      dataset_columns:
+      - item_cost_id
+      description: Identifies one item cost.
+  columns:
+  - name: item_cost_id
+    description: Identifies one item cost.
+  - name: item_id
+    description: Item the cost applies to.
+  - name: vendor_id
+    description: Vendor the cost was quoted from when a vendor is known.
+  - name: store_id
+    description: Storefront the cost applies to when the cost is store-specific.
+  - name: unit_cost
+    description: Unit cost of the item.
+  entity_definitions:
+  - identity_id: item_cost_identity
+    dataset_columns:
+    - item_cost_id
+    is_entity_universe: true
+    entity_expression:
+    - '[item_cost_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of item cost.
+  - identity_id: item_identity
+    dataset_columns:
+    - item_id
+    is_entity_universe: false
+    entity_expression:
+    - '[item_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each cost names exactly one item, and an item may have no cost row.
+  - identity_id: vendor_identity
+    dataset_columns:
+    - vendor_id
+    is_entity_universe: false
+    entity_expression:
+    - '[vendor_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A cost may omit a vendor, and a vendor may have no cost row.
+  - identity_id: store_identity
+    dataset_columns:
+    - store_id
+    is_entity_universe: false
+    entity_expression:
+    - '[store_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A cost may omit a storefront, and a storefront may have no cost row.
+- node_id: sf:retail.price.fact_markdown_event
+  descriptor:
+    qualified_name: retail.price.fact_markdown_event
+    display_name: Markdown event
+    description: Markdown taken on an item at a storefront.
+    synonyms: []
+    tags:
+    - fact
+    - price
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL
+      schema: PRICE
+      object: FACT_MARKDOWN_EVENT
+      format: table
+  grain:
+    description: One row is one markdown event.
+    components:
+    - identity_id: markdown_identity
+      dataset_columns:
+      - markdown_id
+      description: Identifies one markdown event.
+  columns:
+  - name: markdown_id
+    description: Identifies one markdown event.
+  - name: item_id
+    description: Item that was marked down.
+  - name: store_id
+    description: Storefront that took the markdown.
+  - name: reason_code_id
+    description: Reason the price was reduced.
+  - name: calendar_day_id
+    description: Day the markdown was taken.
+  - name: markdown_amount
+    description: Amount of price reduction taken in the event.
+  entity_definitions:
+  - identity_id: markdown_identity
+    dataset_columns:
+    - markdown_id
+    is_entity_universe: true
+    entity_expression:
+    - '[markdown_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of markdown event.
+  - identity_id: item_identity
+    dataset_columns:
+    - item_id
+    is_entity_universe: false
+    entity_expression:
+    - '[item_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each markdown names exactly one item, and an item may have no markdown.
+  - identity_id: store_identity
+    dataset_columns:
+    - store_id
+    is_entity_universe: false
+    entity_expression:
+    - '[store_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each markdown occurs at exactly one storefront, and a storefront may have no markdown.
+  - identity_id: reason_code_identity
+    dataset_columns:
+    - reason_code_id
+    is_entity_universe: false
+    entity_expression:
+    - '[reason_code_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each markdown names exactly one reason code, and a reason code may explain no markdown.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each markdown occurs on exactly one day, and a day may have no markdown.
+- node_id: sf:retail.price.fact_competitor_price
+  descriptor:
+    qualified_name: retail.price.fact_competitor_price
+    display_name: Competitor price
+    description: Observed competitor price of an item on a day.
+    synonyms: []
+    tags:
+    - fact
+    - price
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL
+      schema: PRICE
+      object: FACT_COMPETITOR_PRICE
+      format: table
+  grain:
+    description: One row is one competitor price.
+    components:
+    - identity_id: competitor_price_identity
+      dataset_columns:
+      - competitor_price_id
+      description: Identifies one competitor price observation.
+  columns:
+  - name: competitor_price_id
+    description: Identifies one competitor price observation.
+  - name: competitor_id
+    description: Competitor whose price was observed.
+  - name: item_id
+    description: Item whose price was observed.
+  - name: calendar_day_id
+    description: Day the price was observed.
+  - name: observed_price
+    description: Price observed at the competitor.
+  entity_definitions:
+  - identity_id: competitor_price_identity
+    dataset_columns:
+    - competitor_price_id
+    is_entity_universe: true
+    entity_expression:
+    - '[competitor_price_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of competitor price.
+  - identity_id: competitor_identity
+    dataset_columns:
+    - competitor_id
+    is_entity_universe: false
+    entity_expression:
+    - '[competitor_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each observation names exactly one competitor, and a competitor may have no price
+        observation.
+  - identity_id: item_identity
+    dataset_columns:
+    - item_id
+    is_entity_universe: false
+    entity_expression:
+    - '[item_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each observation names exactly one item, and an item may have no competitor price.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each observation is dated on exactly one day, and a day may have no competitor price.
