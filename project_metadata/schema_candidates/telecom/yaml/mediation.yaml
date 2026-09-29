@@ -1,0 +1,320 @@
+schema_version: '2'
+nodes:
+- node_id: sf:telecom.mediation.fact_mediation_file
+  descriptor:
+    qualified_name: telecom.mediation.fact_mediation_file
+    display_name: Mediation File
+    description: One CDR file emitted by a network element on one day.
+    synonyms: []
+    tags:
+    - fact
+    - mediation
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM
+      schema: MEDIATION
+      object: FACT_MEDIATION_FILE
+      format: table
+  grain:
+    description: One row is one mediation file.
+    components:
+    - identity_id: mediation_file_identity
+      dataset_columns:
+      - mediation_file_id
+      description: Identifier of one mediation File.
+  columns:
+  - name: mediation_file_id
+    description: Identifier of one mediation File.
+  - name: network_element_id
+    description: Every network element emits one file each day of the window.
+  - name: calendar_day_id
+    description: Every day has mediation files.
+  - name: file_format_id
+    description: Reference to the file Format.
+  - name: recording_entity_id
+    description: Reference to the recording Entity.
+  - name: file_name
+    description: Transfer file name.
+  - name: record_count
+    description: CDR records declared in the file header.
+  entity_definitions:
+  - identity_id: mediation_file_identity
+    dataset_columns:
+    - mediation_file_id
+    is_entity_universe: true
+    entity_expression:
+    - '[mediation_file_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of mediation file.
+  - identity_id: network_element_identity
+    dataset_columns:
+    - network_element_id
+    is_entity_universe: false
+    entity_expression:
+    - '[network_element_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many mediation Files belong to one network Element, every mediation File matches
+        a network Element, and every network Element includes at least one mediation File. Every network
+        element emits one file each day of the window.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many mediation Files belong to one calendar Day, every mediation File matches a calendar
+        Day, and every calendar Day includes at least one mediation File. Every day has mediation files.
+  - identity_id: file_format_identity
+    dataset_columns:
+    - file_format_id
+    is_entity_universe: false
+    entity_expression:
+    - '[file_format_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many mediation Files belong to one file Format, every mediation File matches a file
+        Format, and every file Format includes at least one mediation File.
+  - identity_id: recording_entity_identity
+    dataset_columns:
+    - recording_entity_id
+    is_entity_universe: false
+    entity_expression:
+    - '[recording_entity_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many mediation Files belong to one recording Entity, every mediation File matches
+        a recording Entity, and every recording Entity includes at least one mediation File.
+- node_id: sf:telecom.mediation.fact_mediation_reject
+  descriptor:
+    qualified_name: telecom.mediation.fact_mediation_reject
+    display_name: Mediation Reject
+    description: One CDR rejected by mediation.
+    synonyms: []
+    tags:
+    - fact
+    - mediation
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM
+      schema: MEDIATION
+      object: FACT_MEDIATION_REJECT
+      format: table
+  grain:
+    description: One row is one mediation reject.
+    components:
+    - identity_id: mediation_reject_identity
+      dataset_columns:
+      - mediation_reject_id
+      description: Identifier of one mediation Reject.
+  columns:
+  - name: mediation_reject_id
+    description: Identifier of one mediation Reject.
+  - name: mediation_rule_id
+    description: Reference to the mediation Rule.
+  - name: record_type_id
+    description: Reference to the record Type.
+  - name: calendar_day_id
+    description: Reference to the calendar Day.
+  - name: recording_entity_id
+    description: Reference to the recording Entity.
+  - name: data_cdr_id
+    description: A reject may cite the data CDR it failed.
+  - name: voice_cdr_id
+    description: Reference to the voice CDR.
+  - name: sms_cdr_id
+    description: Reference to the sMS CDR.
+  - name: reject_reason
+    description: Mediation reject reason.
+  entity_definitions:
+  - identity_id: mediation_reject_identity
+    dataset_columns:
+    - mediation_reject_id
+    is_entity_universe: true
+    entity_expression:
+    - '[mediation_reject_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of mediation reject.
+  - identity_id: mediation_rule_identity
+    dataset_columns:
+    - mediation_rule_id
+    is_entity_universe: false
+    entity_expression:
+    - '[mediation_rule_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many mediation Rejects belong to one mediation Rule, every mediation Reject matches
+        a mediation Rule, and every mediation Rule includes at least one mediation Reject.
+  - identity_id: record_type_identity
+    dataset_columns:
+    - record_type_id
+    is_entity_universe: false
+    entity_expression:
+    - '[record_type_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many mediation Rejects belong to one record Type, every mediation Reject matches
+        a record Type, and a record Type may include no mediation Reject.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many mediation Rejects belong to one calendar Day, every mediation Reject matches
+        a calendar Day, and every calendar Day includes at least one mediation Reject.
+  - identity_id: recording_entity_identity
+    dataset_columns:
+    - recording_entity_id
+    is_entity_universe: false
+    entity_expression:
+    - '[recording_entity_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many mediation Rejects belong to one recording Entity, every mediation Reject matches
+        a recording Entity, and a recording Entity may include no mediation Reject.
+  - identity_id: data_cdr_identity
+    dataset_columns:
+    - data_cdr_id
+    is_entity_universe: false
+    entity_expression:
+    - '[data_cdr_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: '1:1'
+      business_rule: A mediation Reject may match one data CDR, and a data CDR may match one mediation
+        Reject. A reject may cite the data CDR it failed.
+  - identity_id: voice_cdr_identity
+    dataset_columns:
+    - voice_cdr_id
+    is_entity_universe: false
+    entity_expression:
+    - '[voice_cdr_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: '1:1'
+      business_rule: A mediation Reject may match one voice CDR, and a voice CDR may match one mediation
+        Reject.
+  - identity_id: sms_cdr_identity
+    dataset_columns:
+    - sms_cdr_id
+    is_entity_universe: false
+    entity_expression:
+    - '[sms_cdr_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: '1:1'
+      business_rule: A mediation Reject may match one sMS CDR, and a sMS CDR may match one mediation Reject.
+- node_id: sf:telecom.mediation.fact_duplicate_suspect
+  descriptor:
+    qualified_name: telecom.mediation.fact_duplicate_suspect
+    display_name: Duplicate Suspect
+    description: One CDR flagged as a possible duplicate.
+    synonyms: []
+    tags:
+    - fact
+    - mediation
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM
+      schema: MEDIATION
+      object: FACT_DUPLICATE_SUSPECT
+      format: table
+  grain:
+    description: One row is one duplicate suspect.
+    components:
+    - identity_id: duplicate_suspect_identity
+      dataset_columns:
+      - duplicate_suspect_id
+      description: Identifier of one duplicate Suspect.
+  columns:
+  - name: duplicate_suspect_id
+    description: Identifier of one duplicate Suspect.
+  - name: record_type_id
+    description: Reference to the record Type.
+  - name: calendar_day_id
+    description: Reference to the calendar Day.
+  - name: subscription_id
+    description: Reference to the subscription.
+  - name: duplicate_score
+    description: Score that ranked the suspect.
+  entity_definitions:
+  - identity_id: duplicate_suspect_identity
+    dataset_columns:
+    - duplicate_suspect_id
+    is_entity_universe: true
+    entity_expression:
+    - '[duplicate_suspect_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of duplicate suspect.
+  - identity_id: record_type_identity
+    dataset_columns:
+    - record_type_id
+    is_entity_universe: false
+    entity_expression:
+    - '[record_type_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many duplicate Suspects belong to one record Type, every duplicate Suspect matches
+        a record Type, and a record Type may include no duplicate Suspect.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many duplicate Suspects belong to one calendar Day, every duplicate Suspect matches
+        a calendar Day, and a calendar Day may include no duplicate Suspect.
+  - identity_id: subscription_identity
+    dataset_columns:
+    - subscription_id
+    is_entity_universe: false
+    entity_expression:
+    - '[subscription_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A duplicate Suspect may match one subscription, and a subscription may include no
+        duplicate Suspect.

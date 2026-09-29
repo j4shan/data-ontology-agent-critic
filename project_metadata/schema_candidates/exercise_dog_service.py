@@ -60,6 +60,32 @@ CASES = {
             "sf:commerce.order.fact_order_line",
         ),
     },
+    "telecom": {
+        "search": "subscriber",
+        "dataset": "sf:telecom.party.dim_subscriber",
+        "hops_from": "sf:telecom.organization.dim_market",
+        "expected_hops": [
+            ("sf:telecom.network.dim_cell_site", "1:many", "always"),
+            ("sf:telecom.organization.dim_employee", "1:1", "always"),
+        ],
+        "path": (
+            "sf:telecom.party.dim_subscriber",
+            "sf:telecom.usage.fact_voice_cdr",
+        ),
+    },
+    "payer": {
+        "search": "provider",
+        "dataset": "sf:payer.provider.dim_provider",
+        "hops_from": "sf:payer.claim.fact_claim_header",
+        "expected_hops": [
+            ("sf:payer.claim.fact_claim_line", "1:many", "always"),
+            ("sf:payer.claim.fact_claim_diagnosis", "1:many", "always"),
+        ],
+        "path": (
+            "sf:payer.provider.dim_provider",
+            "sf:payer.claim.fact_claim_line",
+        ),
+    },
 }
 
 
@@ -211,12 +237,47 @@ def exercise(domain: str) -> dict:
     }
 
 
+def _check_statistics() -> list[str]:
+    failures = []
+    telecom = json.loads((ROOT / "telecom" / "statistics.json").read_text(encoding="utf-8"))
+    payer = json.loads((ROOT / "payer" / "statistics.json").read_text(encoding="utf-8"))
+    by_name = {item["dataset"]: item for item in telecom["populations"]}
+    mediated = (
+        by_name["fact_data_cdr"]["rows"]
+        + by_name["fact_voice_cdr"]["rows"]
+        + by_name["fact_sms_cdr"]["rows"]
+        + by_name["fact_content_cdr"]["rows"]
+    )
+    if mediated != 2_100_000_000:
+        failures.append("telecom mediated CDR total")
+    if by_name["fact_cell_counter"]["rows"] != 85_000 * 96 * 30:
+        failures.append("telecom cell counter grid")
+    if by_name["fact_charging_event"]["rows"] != 6_300_000_000:
+        failures.append("telecom charging events")
+    payer_rows = {item["dataset"]: item["rows"] for item in payer["populations"]}
+    if payer_rows["dim_member"] != 68_000_000 or payer_rows["fact_claim_header"] != 84_000_000:
+        failures.append("payer CMS-scale anchors")
+    if payer_rows["fact_claim_line"] != 420_000_000:
+        failures.append("payer claim line fan-out")
+    line = next(item for item in payer["major_facts"] if item["dataset"] == "fact_claim_line")
+    header_join = next(item for item in line["outbound"] if item["column"] == "claim_header_id")
+    if header_join["distinct_parent_keys"] != 84_000_000 or header_join["avg_children_per_matched_parent"] != 5:
+        failures.append("payer header-to-line join")
+    if not line["inbound"]:
+        failures.append("payer claim line inbound")
+    voice = next(item for item in telecom["major_facts"] if item["dataset"] == "fact_voice_cdr")
+    if not voice["outbound"] or not voice["inbound"]:
+        failures.append("telecom voice joins")
+    return failures
+
+
 def main() -> None:
     ARTIFACTS.mkdir(parents=True, exist_ok=True)
+    stat_failures = _check_statistics()
     results = [exercise(domain) for domain in CASES]
     destination = ARTIFACTS / "dog-service-exercise.json"
     destination.write_text(json.dumps(results, indent=2) + "\n", encoding="utf-8")
-    failures = []
+    failures = list(stat_failures)
     for result in results:
         build = result["build"]
         if build["node_count"] < 100 or build["contradictions"] or build["identities_missing_single_universe"]:

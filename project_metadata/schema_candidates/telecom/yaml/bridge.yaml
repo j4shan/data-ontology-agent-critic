@@ -1,0 +1,1572 @@
+schema_version: '2'
+nodes:
+- node_id: sf:telecom.bridge.bridge_subscription_addon
+  descriptor:
+    qualified_name: telecom.bridge.bridge_subscription_addon
+    display_name: Subscription Add On
+    description: One add-on attached to a subscription.
+    synonyms: []
+    tags:
+    - bridge
+    - bridge
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM
+      schema: BRIDGE
+      object: BRIDGE_SUBSCRIPTION_ADDON
+      format: table
+  grain:
+    description: One row is one subscription add on.
+    components:
+    - identity_id: subscription_addon_identity
+      dataset_columns:
+      - subscription_addon_id
+      description: Identifier of one subscription Add On.
+  columns:
+  - name: subscription_addon_id
+    description: Identifier of one subscription Add On.
+  - name: subscription_id
+    description: Reference to the subscription.
+  - name: addon_id
+    description: Reference to the add On.
+  entity_definitions:
+  - identity_id: subscription_addon_identity
+    dataset_columns:
+    - subscription_addon_id
+    is_entity_universe: true
+    entity_expression:
+    - '[subscription_addon_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of subscription add on.
+  - identity_id: subscription_identity
+    dataset_columns:
+    - subscription_id
+    is_entity_universe: false
+    entity_expression:
+    - '[subscription_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many subscription Add Ons belong to one subscription, every subscription Add On matches
+        a subscription, and a subscription may include no subscription Add On.
+  - identity_id: addon_identity
+    dataset_columns:
+    - addon_id
+    is_entity_universe: false
+    entity_expression:
+    - '[addon_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many subscription Add Ons belong to one add On, every subscription Add On matches
+        a add On, and every add On includes at least one subscription Add On.
+- node_id: sf:telecom.bridge.bridge_account_contact
+  descriptor:
+    qualified_name: telecom.bridge.bridge_account_contact
+    display_name: Account Contact
+    description: One contact designated for a billing account.
+    synonyms: []
+    tags:
+    - bridge
+    - bridge
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM
+      schema: BRIDGE
+      object: BRIDGE_ACCOUNT_CONTACT
+      format: table
+  grain:
+    description: One row is one account contact.
+    components:
+    - identity_id: account_contact_identity
+      dataset_columns:
+      - account_contact_id
+      description: Identifier of one account Contact.
+  columns:
+  - name: account_contact_id
+    description: Identifier of one account Contact.
+  - name: billing_account_id
+    description: Each billing account has one primary contact row.
+  - name: contact_id
+    description: Reference to the contact.
+  entity_definitions:
+  - identity_id: account_contact_identity
+    dataset_columns:
+    - account_contact_id
+    is_entity_universe: true
+    entity_expression:
+    - '[account_contact_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of account contact.
+  - identity_id: billing_account_identity
+    dataset_columns:
+    - billing_account_id
+    is_entity_universe: false
+    entity_expression:
+    - '[billing_account_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: '1:1'
+      business_rule: Each account Contact matches exactly one billing Account, and each billing Account
+        matches exactly one account Contact. Each billing account has one primary contact row.
+  - identity_id: contact_identity
+    dataset_columns:
+    - contact_id
+    is_entity_universe: false
+    entity_expression:
+    - '[contact_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many account Contacts belong to one contact, every account Contact matches a contact,
+        and a contact may include no account Contact.
+- node_id: sf:telecom.bridge.bridge_cell_neighbor
+  descriptor:
+    qualified_name: telecom.bridge.bridge_cell_neighbor
+    display_name: Cell Neighbor
+    description: One neighbor relation from a source cell.
+    synonyms: []
+    tags:
+    - bridge
+    - bridge
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM
+      schema: BRIDGE
+      object: BRIDGE_CELL_NEIGHBOR
+      format: table
+  grain:
+    description: One row is one cell neighbor.
+    components:
+    - identity_id: cell_neighbor_identity
+      dataset_columns:
+      - cell_neighbor_id
+      description: Identifier of one cell Neighbor.
+  columns:
+  - name: cell_neighbor_id
+    description: Identifier of one cell Neighbor.
+  - name: cell_id
+    description: Source cell of the neighbor relation.
+  entity_definitions:
+  - identity_id: cell_neighbor_identity
+    dataset_columns:
+    - cell_neighbor_id
+    is_entity_universe: true
+    entity_expression:
+    - '[cell_neighbor_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of cell neighbor.
+  - identity_id: cell_identity
+    dataset_columns:
+    - cell_id
+    is_entity_universe: false
+    entity_expression:
+    - '[cell_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many cell Neighbors belong to one cell, every cell Neighbor matches a cell, and a
+        cell may include no cell Neighbor. Source cell of the neighbor relation.
+- node_id: sf:telecom.bridge.bridge_neighbor_target
+  descriptor:
+    qualified_name: telecom.bridge.bridge_neighbor_target
+    display_name: Neighbor Target
+    description: Neighbor cell of one neighbor relation.
+    synonyms: []
+    tags:
+    - bridge
+    - bridge
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM
+      schema: BRIDGE
+      object: BRIDGE_NEIGHBOR_TARGET
+      format: table
+  grain:
+    description: One row is one neighbor target.
+    components:
+    - identity_id: neighbor_target_identity
+      dataset_columns:
+      - neighbor_target_id
+      description: Identifier of one neighbor Target.
+  columns:
+  - name: neighbor_target_id
+    description: Identifier of one neighbor Target.
+  - name: cell_neighbor_id
+    description: Each neighbor relation has one target cell row.
+  - name: neighbor_cell_id
+    description: Neighbor cell.
+  entity_definitions:
+  - identity_id: neighbor_target_identity
+    dataset_columns:
+    - neighbor_target_id
+    is_entity_universe: true
+    entity_expression:
+    - '[neighbor_target_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of neighbor target.
+  - identity_id: cell_neighbor_identity
+    dataset_columns:
+    - cell_neighbor_id
+    is_entity_universe: false
+    entity_expression:
+    - '[cell_neighbor_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: '1:1'
+      business_rule: Each neighbor Target matches exactly one cell Neighbor, and each cell Neighbor matches
+        exactly one neighbor Target. Each neighbor relation has one target cell row.
+  - identity_id: cell_identity
+    dataset_columns:
+    - neighbor_cell_id
+    is_entity_universe: false
+    entity_expression:
+    - '[neighbor_cell_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many neighbor Targets belong to one cell, every neighbor Target matches a cell, and
+        a cell may include no neighbor Target. Neighbor cell.
+- node_id: sf:telecom.bridge.bridge_plan_rating_group
+  descriptor:
+    qualified_name: telecom.bridge.bridge_plan_rating_group
+    display_name: Plan Rating Group
+    description: Rating groups valid on a rate plan.
+    synonyms: []
+    tags:
+    - bridge
+    - bridge
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM
+      schema: BRIDGE
+      object: BRIDGE_PLAN_RATING_GROUP
+      format: table
+  grain:
+    description: One row is one plan rating group.
+    components:
+    - identity_id: plan_rating_group_identity
+      dataset_columns:
+      - plan_rating_group_id
+      description: Identifier of one plan Rating Group.
+  columns:
+  - name: plan_rating_group_id
+    description: Identifier of one plan Rating Group.
+  - name: rate_plan_id
+    description: Reference to the rate Plan.
+  - name: rating_group_id
+    description: Reference to the rating Group.
+  entity_definitions:
+  - identity_id: plan_rating_group_identity
+    dataset_columns:
+    - plan_rating_group_id
+    is_entity_universe: true
+    entity_expression:
+    - '[plan_rating_group_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of plan rating group.
+  - identity_id: rate_plan_identity
+    dataset_columns:
+    - rate_plan_id
+    is_entity_universe: false
+    entity_expression:
+    - '[rate_plan_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many plan Rating Groups belong to one rate Plan, every plan Rating Group matches
+        a rate Plan, and every rate Plan includes at least one plan Rating Group.
+  - identity_id: rating_group_identity
+    dataset_columns:
+    - rating_group_id
+    is_entity_universe: false
+    entity_expression:
+    - '[rating_group_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many plan Rating Groups belong to one rating Group, every plan Rating Group matches
+        a rating Group, and every rating Group includes at least one plan Rating Group.
+- node_id: sf:telecom.bridge.bridge_offering_price
+  descriptor:
+    qualified_name: telecom.bridge.bridge_offering_price
+    display_name: Offering Price
+    description: Price assigned to a product offering.
+    synonyms: []
+    tags:
+    - bridge
+    - bridge
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM
+      schema: BRIDGE
+      object: BRIDGE_OFFERING_PRICE
+      format: table
+  grain:
+    description: One row is one offering price.
+    components:
+    - identity_id: offering_price_identity
+      dataset_columns:
+      - offering_price_id
+      description: Identifier of one offering Price.
+  columns:
+  - name: offering_price_id
+    description: Identifier of one offering Price.
+  - name: product_offering_id
+    description: Reference to the product Offering.
+  - name: price_id
+    description: Reference to the price.
+  entity_definitions:
+  - identity_id: offering_price_identity
+    dataset_columns:
+    - offering_price_id
+    is_entity_universe: true
+    entity_expression:
+    - '[offering_price_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of offering price.
+  - identity_id: product_offering_identity
+    dataset_columns:
+    - product_offering_id
+    is_entity_universe: false
+    entity_expression:
+    - '[product_offering_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many offering Prices belong to one product Offering, every offering Price matches
+        a product Offering, and every product Offering includes at least one offering Price.
+  - identity_id: price_identity
+    dataset_columns:
+    - price_id
+    is_entity_universe: false
+    entity_expression:
+    - '[price_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: '1:1'
+      business_rule: Each offering Price matches exactly one price, and each price matches exactly one
+        offering Price.
+- node_id: sf:telecom.bridge.bridge_tariff_zone
+  descriptor:
+    qualified_name: telecom.bridge.bridge_tariff_zone
+    display_name: Tariff Zone
+    description: Destination zone priced by a tariff.
+    synonyms: []
+    tags:
+    - bridge
+    - bridge
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM
+      schema: BRIDGE
+      object: BRIDGE_TARIFF_ZONE
+      format: table
+  grain:
+    description: One row is one tariff zone.
+    components:
+    - identity_id: tariff_zone_identity
+      dataset_columns:
+      - tariff_zone_id
+      description: Identifier of one tariff Zone.
+  columns:
+  - name: tariff_zone_id
+    description: Identifier of one tariff Zone.
+  - name: tariff_id
+    description: Reference to the tariff.
+  - name: destination_zone_id
+    description: Reference to the destination Zone.
+  entity_definitions:
+  - identity_id: tariff_zone_identity
+    dataset_columns:
+    - tariff_zone_id
+    is_entity_universe: true
+    entity_expression:
+    - '[tariff_zone_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of tariff zone.
+  - identity_id: tariff_identity
+    dataset_columns:
+    - tariff_id
+    is_entity_universe: false
+    entity_expression:
+    - '[tariff_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many tariff Zones belong to one tariff, every tariff Zone matches a tariff, and every
+        tariff includes at least one tariff Zone.
+  - identity_id: destination_zone_identity
+    dataset_columns:
+    - destination_zone_id
+    is_entity_universe: false
+    entity_expression:
+    - '[destination_zone_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many tariff Zones belong to one destination Zone, every tariff Zone matches a destination
+        Zone, and every destination Zone includes at least one tariff Zone.
+- node_id: sf:telecom.bridge.bridge_employee_queue
+  descriptor:
+    qualified_name: telecom.bridge.bridge_employee_queue
+    display_name: Employee Queue
+    description: Care queue an employee can serve.
+    synonyms: []
+    tags:
+    - bridge
+    - bridge
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM
+      schema: BRIDGE
+      object: BRIDGE_EMPLOYEE_QUEUE
+      format: table
+  grain:
+    description: One row is one employee queue.
+    components:
+    - identity_id: employee_queue_identity
+      dataset_columns:
+      - employee_queue_id
+      description: Identifier of one employee Queue.
+  columns:
+  - name: employee_queue_id
+    description: Identifier of one employee Queue.
+  - name: employee_id
+    description: Reference to the employee.
+  - name: queue_id
+    description: Reference to the care Queue.
+  entity_definitions:
+  - identity_id: employee_queue_identity
+    dataset_columns:
+    - employee_queue_id
+    is_entity_universe: true
+    entity_expression:
+    - '[employee_queue_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of employee queue.
+  - identity_id: employee_identity
+    dataset_columns:
+    - employee_id
+    is_entity_universe: false
+    entity_expression:
+    - '[employee_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many employee Queues belong to one employee, every employee Queue matches a employee,
+        and a employee may include no employee Queue.
+  - identity_id: queue_identity
+    dataset_columns:
+    - queue_id
+    is_entity_universe: false
+    entity_expression:
+    - '[queue_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many employee Queues belong to one care Queue, every employee Queue matches a care
+        Queue, and every care Queue includes at least one employee Queue.
+- node_id: sf:telecom.bridge.bridge_partner_plmn
+  descriptor:
+    qualified_name: telecom.bridge.bridge_partner_plmn
+    display_name: Partner PLMN
+    description: PLMN operated by a roaming partner.
+    synonyms: []
+    tags:
+    - bridge
+    - bridge
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM
+      schema: BRIDGE
+      object: BRIDGE_PARTNER_PLMN
+      format: table
+  grain:
+    description: One row is one partner plmn.
+    components:
+    - identity_id: partner_plmn_identity
+      dataset_columns:
+      - partner_plmn_id
+      description: Identifier of one partner PLMN.
+  columns:
+  - name: partner_plmn_id
+    description: Identifier of one partner PLMN.
+  - name: roaming_partner_id
+    description: Reference to the roaming Partner.
+  - name: plmn_id
+    description: Reference to the pLMN.
+  entity_definitions:
+  - identity_id: partner_plmn_identity
+    dataset_columns:
+    - partner_plmn_id
+    is_entity_universe: true
+    entity_expression:
+    - '[partner_plmn_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of partner plmn.
+  - identity_id: roaming_partner_identity
+    dataset_columns:
+    - roaming_partner_id
+    is_entity_universe: false
+    entity_expression:
+    - '[roaming_partner_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many partner PLMNs belong to one roaming Partner, every partner PLMN matches a roaming
+        Partner, and every roaming Partner includes at least one partner PLMN.
+  - identity_id: plmn_identity
+    dataset_columns:
+    - plmn_id
+    is_entity_universe: false
+    entity_expression:
+    - '[plmn_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many partner PLMNs belong to one pLMN, every partner PLMN matches a pLMN, and a pLMN
+        may include no partner PLMN.
+- node_id: sf:telecom.bridge.bridge_device_capability
+  descriptor:
+    qualified_name: telecom.bridge.bridge_device_capability
+    display_name: Device Capability
+    description: Technology a device model supports.
+    synonyms: []
+    tags:
+    - bridge
+    - bridge
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM
+      schema: BRIDGE
+      object: BRIDGE_DEVICE_CAPABILITY
+      format: table
+  grain:
+    description: One row is one device capability.
+    components:
+    - identity_id: device_capability_identity
+      dataset_columns:
+      - device_capability_id
+      description: Identifier of one device Capability.
+  columns:
+  - name: device_capability_id
+    description: Identifier of one device Capability.
+  - name: device_model_id
+    description: Reference to the device Model.
+  - name: technology_id
+    description: Reference to the technology.
+  entity_definitions:
+  - identity_id: device_capability_identity
+    dataset_columns:
+    - device_capability_id
+    is_entity_universe: true
+    entity_expression:
+    - '[device_capability_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of device capability.
+  - identity_id: device_model_identity
+    dataset_columns:
+    - device_model_id
+    is_entity_universe: false
+    entity_expression:
+    - '[device_model_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many device Capabilities belong to one device Model, every device Capability matches
+        a device Model, and every device Model includes at least one device Capability.
+  - identity_id: technology_identity
+    dataset_columns:
+    - technology_id
+    is_entity_universe: false
+    entity_expression:
+    - '[technology_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many device Capabilities belong to one technology, every device Capability matches
+        a technology, and every technology includes at least one device Capability.
+- node_id: sf:telecom.bridge.bridge_subscriber_party
+  descriptor:
+    qualified_name: telecom.bridge.bridge_subscriber_party
+    display_name: Subscriber Party
+    description: Party that owns a subscriber.
+    synonyms: []
+    tags:
+    - bridge
+    - bridge
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM
+      schema: BRIDGE
+      object: BRIDGE_SUBSCRIBER_PARTY
+      format: table
+  grain:
+    description: One row is one subscriber party.
+    components:
+    - identity_id: subscriber_party_identity
+      dataset_columns:
+      - subscriber_party_id
+      description: Identifier of one subscriber Party.
+  columns:
+  - name: subscriber_party_id
+    description: Identifier of one subscriber Party.
+  - name: subscriber_id
+    description: Each subscriber has one owning-party row.
+  - name: party_id
+    description: Reference to the party.
+  entity_definitions:
+  - identity_id: subscriber_party_identity
+    dataset_columns:
+    - subscriber_party_id
+    is_entity_universe: true
+    entity_expression:
+    - '[subscriber_party_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of subscriber party.
+  - identity_id: subscriber_identity
+    dataset_columns:
+    - subscriber_id
+    is_entity_universe: false
+    entity_expression:
+    - '[subscriber_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: '1:1'
+      business_rule: Each subscriber Party matches exactly one subscriber, and each subscriber matches
+        exactly one subscriber Party. Each subscriber has one owning-party row.
+  - identity_id: party_identity
+    dataset_columns:
+    - party_id
+    is_entity_universe: false
+    entity_expression:
+    - '[party_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many subscriber Parties belong to one party, every subscriber Party matches a party,
+        and a party may include no subscriber Party.
+- node_id: sf:telecom.bridge.bridge_trunk_prefix
+  descriptor:
+    qualified_name: telecom.bridge.bridge_trunk_prefix
+    display_name: Trunk Prefix
+    description: Number prefix routed over a trunk.
+    synonyms: []
+    tags:
+    - bridge
+    - bridge
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM
+      schema: BRIDGE
+      object: BRIDGE_TRUNK_PREFIX
+      format: table
+  grain:
+    description: One row is one trunk prefix.
+    components:
+    - identity_id: trunk_prefix_identity
+      dataset_columns:
+      - trunk_prefix_id
+      description: Identifier of one trunk Prefix.
+  columns:
+  - name: trunk_prefix_id
+    description: Identifier of one trunk Prefix.
+  - name: interconnect_trunk_id
+    description: Reference to the interconnect Trunk.
+  - name: number_prefix_id
+    description: Reference to the number Prefix.
+  entity_definitions:
+  - identity_id: trunk_prefix_identity
+    dataset_columns:
+    - trunk_prefix_id
+    is_entity_universe: true
+    entity_expression:
+    - '[trunk_prefix_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of trunk prefix.
+  - identity_id: interconnect_trunk_identity
+    dataset_columns:
+    - interconnect_trunk_id
+    is_entity_universe: false
+    entity_expression:
+    - '[interconnect_trunk_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many trunk Prefixes belong to one interconnect Trunk, every trunk Prefix matches
+        a interconnect Trunk, and every interconnect Trunk includes at least one trunk Prefix.
+  - identity_id: number_prefix_identity
+    dataset_columns:
+    - number_prefix_id
+    is_entity_universe: false
+    entity_expression:
+    - '[number_prefix_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many trunk Prefixes belong to one number Prefix, every trunk Prefix matches a number
+        Prefix, and a number Prefix may include no trunk Prefix.
+- node_id: sf:telecom.bridge.bridge_agent_skill
+  descriptor:
+    qualified_name: telecom.bridge.bridge_agent_skill
+    display_name: Agent Skill
+    description: Trouble code a care agent can handle.
+    synonyms: []
+    tags:
+    - bridge
+    - bridge
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM
+      schema: BRIDGE
+      object: BRIDGE_AGENT_SKILL
+      format: table
+  grain:
+    description: One row is one agent skill.
+    components:
+    - identity_id: agent_skill_identity
+      dataset_columns:
+      - agent_skill_id
+      description: Identifier of one agent Skill.
+  columns:
+  - name: agent_skill_id
+    description: Identifier of one agent Skill.
+  - name: agent_id
+    description: Reference to the care Agent.
+  - name: trouble_code_id
+    description: Reference to the trouble Code.
+  entity_definitions:
+  - identity_id: agent_skill_identity
+    dataset_columns:
+    - agent_skill_id
+    is_entity_universe: true
+    entity_expression:
+    - '[agent_skill_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of agent skill.
+  - identity_id: agent_identity
+    dataset_columns:
+    - agent_id
+    is_entity_universe: false
+    entity_expression:
+    - '[agent_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many agent Skills belong to one care Agent, every agent Skill matches a care Agent,
+        and a care Agent may include no agent Skill.
+  - identity_id: trouble_code_identity
+    dataset_columns:
+    - trouble_code_id
+    is_entity_universe: false
+    entity_expression:
+    - '[trouble_code_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many agent Skills belong to one trouble Code, every agent Skill matches a trouble
+        Code, and a trouble Code may include no agent Skill.
+- node_id: sf:telecom.bridge.bridge_market_channel
+  descriptor:
+    qualified_name: telecom.bridge.bridge_market_channel
+    display_name: Market Channel
+    description: Channel enabled in a market.
+    synonyms: []
+    tags:
+    - bridge
+    - bridge
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM
+      schema: BRIDGE
+      object: BRIDGE_MARKET_CHANNEL
+      format: table
+  grain:
+    description: One row is one market channel.
+    components:
+    - identity_id: market_channel_identity
+      dataset_columns:
+      - market_channel_id
+      description: Identifier of one market Channel.
+  columns:
+  - name: market_channel_id
+    description: Identifier of one market Channel.
+  - name: market_id
+    description: Reference to the market.
+  - name: channel_id
+    description: Reference to the channel.
+  entity_definitions:
+  - identity_id: market_channel_identity
+    dataset_columns:
+    - market_channel_id
+    is_entity_universe: true
+    entity_expression:
+    - '[market_channel_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of market channel.
+  - identity_id: market_identity
+    dataset_columns:
+    - market_id
+    is_entity_universe: false
+    entity_expression:
+    - '[market_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many market Channels belong to one market, every market Channel matches a market,
+        and every market includes at least one market Channel.
+  - identity_id: channel_identity
+    dataset_columns:
+    - channel_id
+    is_entity_universe: false
+    entity_expression:
+    - '[channel_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many market Channels belong to one channel, every market Channel matches a channel,
+        and every channel includes at least one market Channel.
+- node_id: sf:telecom.bridge.bridge_dealer_plan
+  descriptor:
+    qualified_name: telecom.bridge.bridge_dealer_plan
+    display_name: Dealer Plan
+    description: Rate plan a dealer is allowed to sell.
+    synonyms: []
+    tags:
+    - bridge
+    - bridge
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM
+      schema: BRIDGE
+      object: BRIDGE_DEALER_PLAN
+      format: table
+  grain:
+    description: One row is one dealer plan.
+    components:
+    - identity_id: dealer_plan_identity
+      dataset_columns:
+      - dealer_plan_id
+      description: Identifier of one dealer Plan.
+  columns:
+  - name: dealer_plan_id
+    description: Identifier of one dealer Plan.
+  - name: dealer_id
+    description: Reference to the dealer.
+  - name: rate_plan_id
+    description: Reference to the rate Plan.
+  entity_definitions:
+  - identity_id: dealer_plan_identity
+    dataset_columns:
+    - dealer_plan_id
+    is_entity_universe: true
+    entity_expression:
+    - '[dealer_plan_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of dealer plan.
+  - identity_id: dealer_identity
+    dataset_columns:
+    - dealer_id
+    is_entity_universe: false
+    entity_expression:
+    - '[dealer_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many dealer Plans belong to one dealer, every dealer Plan matches a dealer, and every
+        dealer includes at least one dealer Plan.
+  - identity_id: rate_plan_identity
+    dataset_columns:
+    - rate_plan_id
+    is_entity_universe: false
+    entity_expression:
+    - '[rate_plan_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many dealer Plans belong to one rate Plan, every dealer Plan matches a rate Plan,
+        and a rate Plan may include no dealer Plan.
+- node_id: sf:telecom.bridge.bridge_cell_spectrum
+  descriptor:
+    qualified_name: telecom.bridge.bridge_cell_spectrum
+    display_name: Cell Spectrum
+    description: Spectrum band configured on a cell.
+    synonyms: []
+    tags:
+    - bridge
+    - bridge
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM
+      schema: BRIDGE
+      object: BRIDGE_CELL_SPECTRUM
+      format: table
+  grain:
+    description: One row is one cell spectrum.
+    components:
+    - identity_id: cell_spectrum_identity
+      dataset_columns:
+      - cell_spectrum_id
+      description: Identifier of one cell Spectrum.
+  columns:
+  - name: cell_spectrum_id
+    description: Identifier of one cell Spectrum.
+  - name: cell_id
+    description: Reference to the cell.
+  - name: spectrum_band_id
+    description: Reference to the spectrum Band.
+  entity_definitions:
+  - identity_id: cell_spectrum_identity
+    dataset_columns:
+    - cell_spectrum_id
+    is_entity_universe: true
+    entity_expression:
+    - '[cell_spectrum_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of cell spectrum.
+  - identity_id: cell_identity
+    dataset_columns:
+    - cell_id
+    is_entity_universe: false
+    entity_expression:
+    - '[cell_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many cell Spectrums belong to one cell, every cell Spectrum matches a cell, and every
+        cell includes at least one cell Spectrum.
+  - identity_id: cell_band_identity
+    dataset_columns:
+    - spectrum_band_id
+    is_entity_universe: false
+    entity_expression:
+    - '[spectrum_band_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many cell Spectrums belong to one spectrum Band, every cell Spectrum matches a spectrum
+        Band, and every spectrum Band includes at least one cell Spectrum.
+- node_id: sf:telecom.bridge.bridge_policy_apn
+  descriptor:
+    qualified_name: telecom.bridge.bridge_policy_apn
+    display_name: Policy APN
+    description: APN a policy rule can govern.
+    synonyms: []
+    tags:
+    - bridge
+    - bridge
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM
+      schema: BRIDGE
+      object: BRIDGE_POLICY_APN
+      format: table
+  grain:
+    description: One row is one policy apn.
+    components:
+    - identity_id: policy_apn_identity
+      dataset_columns:
+      - policy_apn_id
+      description: Identifier of one policy APN.
+  columns:
+  - name: policy_apn_id
+    description: Identifier of one policy APN.
+  - name: policy_rule_id
+    description: Reference to the policy Rule.
+  - name: apn_id
+    description: Reference to the aPN DNN.
+  entity_definitions:
+  - identity_id: policy_apn_identity
+    dataset_columns:
+    - policy_apn_id
+    is_entity_universe: true
+    entity_expression:
+    - '[policy_apn_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of policy apn.
+  - identity_id: policy_rule_identity
+    dataset_columns:
+    - policy_rule_id
+    is_entity_universe: false
+    entity_expression:
+    - '[policy_rule_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many policy APNs belong to one policy Rule, every policy APN matches a policy Rule,
+        and every policy Rule includes at least one policy APN.
+  - identity_id: apn_identity
+    dataset_columns:
+    - apn_id
+    is_entity_universe: false
+    entity_expression:
+    - '[apn_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many policy APNs belong to one aPN DNN, every policy APN matches a aPN DNN, and a
+        aPN DNN may include no policy APN.
+- node_id: sf:telecom.bridge.bridge_roaming_zone
+  descriptor:
+    qualified_name: telecom.bridge.bridge_roaming_zone
+    display_name: Roaming Zone
+    description: Destination zone agreed with a roaming partner.
+    synonyms: []
+    tags:
+    - bridge
+    - bridge
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM
+      schema: BRIDGE
+      object: BRIDGE_ROAMING_ZONE
+      format: table
+  grain:
+    description: One row is one roaming zone.
+    components:
+    - identity_id: roaming_zone_identity
+      dataset_columns:
+      - roaming_zone_id
+      description: Identifier of one roaming Zone.
+  columns:
+  - name: roaming_zone_id
+    description: Identifier of one roaming Zone.
+  - name: roaming_partner_id
+    description: Reference to the roaming Partner.
+  - name: destination_zone_id
+    description: Reference to the destination Zone.
+  entity_definitions:
+  - identity_id: roaming_zone_identity
+    dataset_columns:
+    - roaming_zone_id
+    is_entity_universe: true
+    entity_expression:
+    - '[roaming_zone_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of roaming zone.
+  - identity_id: roaming_partner_identity
+    dataset_columns:
+    - roaming_partner_id
+    is_entity_universe: false
+    entity_expression:
+    - '[roaming_partner_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many roaming Zones belong to one roaming Partner, every roaming Zone matches a roaming
+        Partner, and every roaming Partner includes at least one roaming Zone.
+  - identity_id: destination_zone_identity
+    dataset_columns:
+    - destination_zone_id
+    is_entity_universe: false
+    entity_expression:
+    - '[destination_zone_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many roaming Zones belong to one destination Zone, every roaming Zone matches a destination
+        Zone, and a destination Zone may include no roaming Zone.
+- node_id: sf:telecom.bridge.bridge_content_rating
+  descriptor:
+    qualified_name: telecom.bridge.bridge_content_rating
+    display_name: Content Rating
+    description: Rating group used for a content provider.
+    synonyms: []
+    tags:
+    - bridge
+    - bridge
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM
+      schema: BRIDGE
+      object: BRIDGE_CONTENT_RATING
+      format: table
+  grain:
+    description: One row is one content rating.
+    components:
+    - identity_id: content_rating_identity
+      dataset_columns:
+      - content_rating_id
+      description: Identifier of one content Rating.
+  columns:
+  - name: content_rating_id
+    description: Identifier of one content Rating.
+  - name: content_provider_id
+    description: Reference to the content Provider.
+  - name: rating_group_id
+    description: Reference to the rating Group.
+  entity_definitions:
+  - identity_id: content_rating_identity
+    dataset_columns:
+    - content_rating_id
+    is_entity_universe: true
+    entity_expression:
+    - '[content_rating_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of content rating.
+  - identity_id: content_provider_identity
+    dataset_columns:
+    - content_provider_id
+    is_entity_universe: false
+    entity_expression:
+    - '[content_provider_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many content Ratings belong to one content Provider, every content Rating matches
+        a content Provider, and every content Provider includes at least one content Rating.
+  - identity_id: rating_group_identity
+    dataset_columns:
+    - rating_group_id
+    is_entity_universe: false
+    entity_expression:
+    - '[rating_group_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many content Ratings belong to one rating Group, every content Rating matches a rating
+        Group, and a rating Group may include no content Rating.
+- node_id: sf:telecom.bridge.bridge_prefix_zone
+  descriptor:
+    qualified_name: telecom.bridge.bridge_prefix_zone
+    display_name: Prefix Zone
+    description: Destination zone of a number prefix.
+    synonyms: []
+    tags:
+    - bridge
+    - bridge
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM
+      schema: BRIDGE
+      object: BRIDGE_PREFIX_ZONE
+      format: table
+  grain:
+    description: One row is one prefix zone.
+    components:
+    - identity_id: prefix_zone_identity
+      dataset_columns:
+      - prefix_zone_id
+      description: Identifier of one prefix Zone.
+  columns:
+  - name: prefix_zone_id
+    description: Identifier of one prefix Zone.
+  - name: number_prefix_id
+    description: Reference to the number Prefix.
+  - name: destination_zone_id
+    description: Reference to the destination Zone.
+  entity_definitions:
+  - identity_id: prefix_zone_identity
+    dataset_columns:
+    - prefix_zone_id
+    is_entity_universe: true
+    entity_expression:
+    - '[prefix_zone_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of prefix zone.
+  - identity_id: number_prefix_identity
+    dataset_columns:
+    - number_prefix_id
+    is_entity_universe: false
+    entity_expression:
+    - '[number_prefix_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: '1:1'
+      business_rule: Each prefix Zone matches exactly one number Prefix, and each number Prefix matches
+        exactly one prefix Zone.
+  - identity_id: destination_zone_identity
+    dataset_columns:
+    - destination_zone_id
+    is_entity_universe: false
+    entity_expression:
+    - '[destination_zone_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many prefix Zones belong to one destination Zone, every prefix Zone matches a destination
+        Zone, and every destination Zone includes at least one prefix Zone.
+- node_id: sf:telecom.bridge.bridge_party_address
+  descriptor:
+    qualified_name: telecom.bridge.bridge_party_address
+    display_name: Party Address
+    description: Address linked to a party.
+    synonyms: []
+    tags:
+    - bridge
+    - bridge
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM
+      schema: BRIDGE
+      object: BRIDGE_PARTY_ADDRESS
+      format: table
+  grain:
+    description: One row is one party address.
+    components:
+    - identity_id: party_address_identity
+      dataset_columns:
+      - party_address_id
+      description: Identifier of one party Address.
+  columns:
+  - name: party_address_id
+    description: Identifier of one party Address.
+  - name: party_id
+    description: Reference to the party.
+  - name: address_id
+    description: Each address is linked once.
+  entity_definitions:
+  - identity_id: party_address_identity
+    dataset_columns:
+    - party_address_id
+    is_entity_universe: true
+    entity_expression:
+    - '[party_address_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of party address.
+  - identity_id: party_identity
+    dataset_columns:
+    - party_id
+    is_entity_universe: false
+    entity_expression:
+    - '[party_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many party Addresses belong to one party, every party Address matches a party, and
+        a party may include no party Address.
+  - identity_id: address_identity
+    dataset_columns:
+    - address_id
+    is_entity_universe: false
+    entity_expression:
+    - '[address_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: '1:1'
+      business_rule: Each party Address matches exactly one address, and each address matches exactly
+        one party Address. Each address is linked once.
+- node_id: sf:telecom.bridge.bridge_workgroup_employee
+  descriptor:
+    qualified_name: telecom.bridge.bridge_workgroup_employee
+    display_name: Workgroup Employee
+    description: Membership of an employee in a workgroup.
+    synonyms: []
+    tags:
+    - bridge
+    - bridge
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM
+      schema: BRIDGE
+      object: BRIDGE_WORKGROUP_EMPLOYEE
+      format: table
+  grain:
+    description: One row is one workgroup employee.
+    components:
+    - identity_id: workgroup_employee_identity
+      dataset_columns:
+      - workgroup_employee_id
+      description: Identifier of one workgroup Employee.
+  columns:
+  - name: workgroup_employee_id
+    description: Identifier of one workgroup Employee.
+  - name: employee_id
+    description: Reference to the employee.
+  - name: workgroup_id
+    description: Reference to the workgroup.
+  entity_definitions:
+  - identity_id: workgroup_employee_identity
+    dataset_columns:
+    - workgroup_employee_id
+    is_entity_universe: true
+    entity_expression:
+    - '[workgroup_employee_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of workgroup employee.
+  - identity_id: employee_identity
+    dataset_columns:
+    - employee_id
+    is_entity_universe: false
+    entity_expression:
+    - '[employee_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: '1:1'
+      business_rule: Each workgroup Employee matches exactly one employee, and each employee matches exactly
+        one workgroup Employee.
+  - identity_id: workgroup_identity
+    dataset_columns:
+    - workgroup_id
+    is_entity_universe: false
+    entity_expression:
+    - '[workgroup_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many workgroup Employees belong to one workgroup, every workgroup Employee matches
+        a workgroup, and every workgroup includes at least one workgroup Employee.
+- node_id: sf:telecom.bridge.bridge_campaign_plan
+  descriptor:
+    qualified_name: telecom.bridge.bridge_campaign_plan
+    display_name: Campaign Plan
+    description: Rate plan promoted by a campaign.
+    synonyms: []
+    tags:
+    - bridge
+    - bridge
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM
+      schema: BRIDGE
+      object: BRIDGE_CAMPAIGN_PLAN
+      format: table
+  grain:
+    description: One row is one campaign plan.
+    components:
+    - identity_id: campaign_plan_identity
+      dataset_columns:
+      - campaign_plan_id
+      description: Identifier of one campaign Plan.
+  columns:
+  - name: campaign_plan_id
+    description: Identifier of one campaign Plan.
+  - name: campaign_id
+    description: Reference to the campaign.
+  - name: rate_plan_id
+    description: Reference to the rate Plan.
+  entity_definitions:
+  - identity_id: campaign_plan_identity
+    dataset_columns:
+    - campaign_plan_id
+    is_entity_universe: true
+    entity_expression:
+    - '[campaign_plan_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of campaign plan.
+  - identity_id: campaign_identity
+    dataset_columns:
+    - campaign_id
+    is_entity_universe: false
+    entity_expression:
+    - '[campaign_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many campaign Plans belong to one campaign, every campaign Plan matches a campaign,
+        and every campaign includes at least one campaign Plan.
+  - identity_id: rate_plan_identity
+    dataset_columns:
+    - rate_plan_id
+    is_entity_universe: false
+    entity_expression:
+    - '[rate_plan_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many campaign Plans belong to one rate Plan, every campaign Plan matches a rate Plan,
+        and a rate Plan may include no campaign Plan.
+- node_id: sf:telecom.bridge.bridge_slice_qos
+  descriptor:
+    qualified_name: telecom.bridge.bridge_slice_qos
+    display_name: Slice QoS
+    description: QoS profile allowed on a slice.
+    synonyms: []
+    tags:
+    - bridge
+    - bridge
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM
+      schema: BRIDGE
+      object: BRIDGE_SLICE_QOS
+      format: table
+  grain:
+    description: One row is one slice qos.
+    components:
+    - identity_id: slice_qos_identity
+      dataset_columns:
+      - slice_qos_id
+      description: Identifier of one slice QoS.
+  columns:
+  - name: slice_qos_id
+    description: Identifier of one slice QoS.
+  - name: slice_id
+    description: Reference to the network Slice.
+  - name: qos_id
+    description: Reference to the qoS Profile.
+  entity_definitions:
+  - identity_id: slice_qos_identity
+    dataset_columns:
+    - slice_qos_id
+    is_entity_universe: true
+    entity_expression:
+    - '[slice_qos_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of slice qos.
+  - identity_id: slice_identity
+    dataset_columns:
+    - slice_id
+    is_entity_universe: false
+    entity_expression:
+    - '[slice_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many slice QoSs belong to one network Slice, every slice QoS matches a network Slice,
+        and every network Slice includes at least one slice QoS.
+  - identity_id: qos_identity
+    dataset_columns:
+    - qos_id
+    is_entity_universe: false
+    entity_expression:
+    - '[qos_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many slice QoSs belong to one qoS Profile, every slice QoS matches a qoS Profile,
+        and a qoS Profile may include no slice QoS.

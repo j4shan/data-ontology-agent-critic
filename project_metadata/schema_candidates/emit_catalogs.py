@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import sys
 from collections import defaultdict
 from pathlib import Path
@@ -14,9 +15,12 @@ if str(ROOT) not in sys.path:
 
 from domains.commerce import DOMAIN as COMMERCE  # noqa: E402
 from domains.manufacturing import DOMAIN as MANUFACTURING  # noqa: E402
+from domains.payer import DOMAIN as PAYER  # noqa: E402
 from domains.retail import DOMAIN as RETAIL  # noqa: E402
+from domains.telecom import DOMAIN as TELECOM  # noqa: E402
+from population_stats import build_population, render_readme_statistics, render_statistics_markdown  # noqa: E402
 
-DOMAINS = (MANUFACTURING, RETAIL, COMMERCE)
+DOMAINS = (MANUFACTURING, RETAIL, COMMERCE, TELECOM, PAYER)
 _MULTIPLICITY = {"1:1", "1:many", "many:1", "many:many", "unknown"}
 _EXISTENCE = {"always", "optional", "unknown"}
 
@@ -259,8 +263,15 @@ def _business_markdown(domain: dict, edges: list[dict]) -> str:
             "columns realize the same logical identity with `is_entity_universe: false`, because "
             "the child dataset does not hold the complete population. Edges join those two "
             "realizations. Multiplicity and match existence are directional and follow the "
-            "operating rules below. Row counts, distinct counts, and other data statistics are "
-            "intentionally absent."
+            "operating rules below. "
+            + (
+                "Synthetic row counts and join fan-out for a "
+                f"{domain['statistics_window_days']}-day window are in `statistics.md`. "
+                "They are derived from authored populations and these multiplicity rules. "
+                "The YAML nodes do not carry those statistics."
+                if domain.get("statistics_window_days")
+                else "Row counts, distinct counts, and other data statistics are intentionally absent."
+            )
         ),
         "",
         "## Signature relationships",
@@ -358,6 +369,35 @@ def emit(domain: dict) -> dict:
         _business_markdown(domain, checked["edges"]),
         encoding="utf-8",
     )
+    if domain.get("statistics_window_days"):
+        report = build_population(domain, checked["edges"])
+        (target / "statistics.json").write_text(
+            json.dumps(report, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        (target / "statistics.md").write_text(
+            render_statistics_markdown(report),
+            encoding="utf-8",
+        )
+        readme = "\n".join(
+            [
+                f"# {domain['business_name']}",
+                "",
+                "## Introduction",
+                "",
+                domain["readme_intro"].strip(),
+                "",
+                "The business narrative and the full relationship table are in `business-model.md`. Loadable YAML is in `yaml/`.",
+                "",
+                "## BI questions",
+                "",
+                domain["readme_questions"].strip(),
+                "",
+                render_readme_statistics(report).rstrip(),
+                "",
+            ]
+        )
+        (target / "README.md").write_text(readme, encoding="utf-8")
     return {
         "key": domain["key"],
         "datasets": len(domain["datasets"]),

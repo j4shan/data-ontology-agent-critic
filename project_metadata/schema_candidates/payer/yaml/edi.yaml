@@ -1,0 +1,84 @@
+schema_version: '2'
+nodes:
+- node_id: sf:payer.edi.fact_edi_batch
+  descriptor:
+    qualified_name: payer.edi.fact_edi_batch
+    display_name: EDI Batch
+    description: One inbound claim batch from a submitter.
+    synonyms: []
+    tags:
+    - fact
+    - edi
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: PAYER
+      schema: EDI
+      object: FACT_EDI_BATCH
+      format: table
+  grain:
+    description: One row is one edi batch.
+    components:
+    - identity_id: edi_batch_identity
+      dataset_columns:
+      - edi_batch_id
+      description: Identifier of one eDI Batch.
+  columns:
+  - name: edi_batch_id
+    description: Identifier of one eDI Batch.
+  - name: submitter_id
+    description: Every submitter sends batches in the window.
+  - name: trading_partner_id
+    description: Reference to the trading Partner.
+  - name: calendar_day_id
+    description: Reference to the calendar Day.
+  - name: transaction_count
+    description: Claim transactions declared in the batch.
+  entity_definitions:
+  - identity_id: edi_batch_identity
+    dataset_columns:
+    - edi_batch_id
+    is_entity_universe: true
+    entity_expression:
+    - '[edi_batch_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of edi batch.
+  - identity_id: submitter_identity
+    dataset_columns:
+    - submitter_id
+    is_entity_universe: false
+    entity_expression:
+    - '[submitter_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many eDI Batches belong to one submitter, every eDI Batch matches a submitter, and
+        every submitter includes at least one eDI Batch. Every submitter sends batches in the window.
+  - identity_id: trading_partner_identity
+    dataset_columns:
+    - trading_partner_id
+    is_entity_universe: false
+    entity_expression:
+    - '[trading_partner_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many eDI Batches belong to one trading Partner, every eDI Batch matches a trading
+        Partner, and every trading Partner includes at least one eDI Batch.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many eDI Batches belong to one calendar Day, every eDI Batch matches a calendar Day,
+        and every calendar Day includes at least one eDI Batch.

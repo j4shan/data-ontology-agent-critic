@@ -15,7 +15,7 @@ Schema version 2 defines one assembled document:
 
 A single file may contain all three collections. The financial reference catalog is stored that way. A directory may also be loaded: every `.yaml` file is merged, and any file may contain any mix of the three keys. The merge checks duplicate identity ids and duplicate `node_id` values. It does not record which file owns which collection, and it accepts a file that mixes identities, nodes, and edges.
 
-The three catalogs in this scratchpad already keep the collections apart:
+The catalogs in this scratchpad already keep the collections apart:
 
 | Collection | File |
 | --- | --- |
@@ -68,7 +68,7 @@ No relationship is inferred. The manifest tracks file ownership. It does not add
 
 ## Examples
 
-Manifests for the three scratchpad catalogs are in `manifests/`. They match the files already present under each catalog's `yaml/` directory. They are not builder input.
+Manifests for the scratchpad catalogs are in `manifests/`. They match the files already present under each catalog's `yaml/` directory. They are not builder input.
 
 ## Out of scope
 

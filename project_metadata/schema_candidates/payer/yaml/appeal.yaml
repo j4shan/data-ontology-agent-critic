@@ -1,0 +1,209 @@
+schema_version: '2'
+nodes:
+- node_id: sf:payer.appeal.fact_appeal
+  descriptor:
+    qualified_name: payer.appeal.fact_appeal
+    display_name: Appeal
+    description: One claim appeal.
+    synonyms: []
+    tags:
+    - fact
+    - appeal
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: PAYER
+      schema: APPEAL
+      object: FACT_APPEAL
+      format: table
+  grain:
+    description: One row is one appeal.
+    components:
+    - identity_id: appeal_identity
+      dataset_columns:
+      - appeal_id
+      description: Identifier of one appeal.
+  columns:
+  - name: appeal_id
+    description: Identifier of one appeal.
+  - name: claim_header_id
+    description: Reference to the claim Header.
+  - name: member_id
+    description: Reference to the member.
+  - name: appeal_level_id
+    description: Reference to the appeal Level.
+  - name: calendar_day_id
+    description: Reference to the calendar Day.
+  - name: employee_id
+    description: Reference to the employee.
+  - name: appeal_status
+    description: Status of the appeal.
+    value_description: open, upheld, overturned, dismissed
+  entity_definitions:
+  - identity_id: appeal_identity
+    dataset_columns:
+    - appeal_id
+    is_entity_universe: true
+    entity_expression:
+    - '[appeal_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of appeal.
+  - identity_id: claim_header_identity
+    dataset_columns:
+    - claim_header_id
+    is_entity_universe: false
+    entity_expression:
+    - '[claim_header_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many appeals belong to one claim Header, every appeal matches a claim Header, and
+        a claim Header may include no appeal.
+  - identity_id: member_identity
+    dataset_columns:
+    - member_id
+    is_entity_universe: false
+    entity_expression:
+    - '[member_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many appeals belong to one member, every appeal matches a member, and a member may
+        include no appeal.
+  - identity_id: appeal_level_identity
+    dataset_columns:
+    - appeal_level_id
+    is_entity_universe: false
+    entity_expression:
+    - '[appeal_level_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many appeals belong to one appeal Level, every appeal matches a appeal Level, and
+        every appeal Level includes at least one appeal.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many appeals belong to one calendar Day, every appeal matches a calendar Day, and
+        a calendar Day may include no appeal.
+  - identity_id: employee_identity
+    dataset_columns:
+    - employee_id
+    is_entity_universe: false
+    entity_expression:
+    - '[employee_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A appeal may match one employee, and a employee may include no appeal.
+- node_id: sf:payer.appeal.fact_appeal_decision
+  descriptor:
+    qualified_name: payer.appeal.fact_appeal_decision
+    display_name: Appeal Decision
+    description: One decision on an appeal.
+    synonyms: []
+    tags:
+    - fact
+    - appeal
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: PAYER
+      schema: APPEAL
+      object: FACT_APPEAL_DECISION
+      format: table
+  grain:
+    description: One row is one appeal decision.
+    components:
+    - identity_id: appeal_decision_identity
+      dataset_columns:
+      - appeal_decision_id
+      description: Identifier of one appeal Decision.
+  columns:
+  - name: appeal_decision_id
+    description: Identifier of one appeal Decision.
+  - name: appeal_id
+    description: Reference to the appeal.
+  - name: employee_id
+    description: Reference to the employee.
+  - name: calendar_day_id
+    description: Reference to the calendar Day.
+  - name: denial_reason_id
+    description: Reference to the denial Reason.
+  - name: decision
+    description: Decision.
+    value_description: upheld, overturned, partial
+  entity_definitions:
+  - identity_id: appeal_decision_identity
+    dataset_columns:
+    - appeal_decision_id
+    is_entity_universe: true
+    entity_expression:
+    - '[appeal_decision_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of appeal decision.
+  - identity_id: appeal_identity
+    dataset_columns:
+    - appeal_id
+    is_entity_universe: false
+    entity_expression:
+    - '[appeal_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many appeal Decisions belong to one appeal, every appeal Decision matches a appeal,
+        and a appeal may include no appeal Decision.
+  - identity_id: employee_identity
+    dataset_columns:
+    - employee_id
+    is_entity_universe: false
+    entity_expression:
+    - '[employee_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many appeal Decisions belong to one employee, every appeal Decision matches a employee,
+        and a employee may include no appeal Decision.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many appeal Decisions belong to one calendar Day, every appeal Decision matches a
+        calendar Day, and a calendar Day may include no appeal Decision.
+  - identity_id: denial_reason_identity
+    dataset_columns:
+    - denial_reason_id
+    is_entity_universe: false
+    entity_expression:
+    - '[denial_reason_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A appeal Decision may match one denial Reason, and a denial Reason may include no
+        appeal Decision.
