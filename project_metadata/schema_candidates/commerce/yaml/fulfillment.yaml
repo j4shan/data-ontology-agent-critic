@@ -1,0 +1,689 @@
+schema_version: '2'
+nodes:
+- node_id: sf:commerce.fulfillment.dim_shipping_method
+  descriptor:
+    qualified_name: commerce.fulfillment.dim_shipping_method
+    display_name: Shipping method
+    description: Buyer-facing shipping choice that may name a carrier.
+    synonyms: []
+    tags:
+    - dimension
+    - fulfillment
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE
+      schema: FULFILLMENT
+      object: DIM_SHIPPING_METHOD
+      format: table
+  grain:
+    description: One row is one shipping method.
+    components:
+    - identity_id: shipping_method_identity
+      dataset_columns:
+      - shipping_method_id
+      description: Identifies one shipping method.
+  columns:
+  - name: shipping_method_id
+    description: Identifies one shipping method.
+  - name: carrier_id
+    description: Carrier that performs the shipping method.
+  entity_definitions:
+  - identity_id: shipping_method_identity
+    dataset_columns:
+    - shipping_method_id
+    is_entity_universe: true
+    entity_expression:
+    - '[shipping_method_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
+  - identity_id: carrier_identity
+    dataset_columns:
+    - carrier_id
+    is_entity_universe: false
+    entity_expression:
+    - '[carrier_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A shipping method may have no carrier, and a carrier may have no shipping methods.
+- node_id: sf:commerce.fulfillment.dim_carrier
+  descriptor:
+    qualified_name: commerce.fulfillment.dim_carrier
+    display_name: Carrier
+    description: Carrier that moves shipments for the marketplace.
+    synonyms: []
+    tags:
+    - dimension
+    - fulfillment
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE
+      schema: FULFILLMENT
+      object: DIM_CARRIER
+      format: table
+  grain:
+    description: One row is one carrier.
+    components:
+    - identity_id: carrier_identity
+      dataset_columns:
+      - carrier_id
+      description: Identifies one carrier.
+  columns:
+  - name: carrier_id
+    description: Identifies one carrier.
+  entity_definitions:
+  - identity_id: carrier_identity
+    dataset_columns:
+    - carrier_id
+    is_entity_universe: true
+    entity_expression:
+    - '[carrier_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
+- node_id: sf:commerce.fulfillment.dim_carrier_service
+  descriptor:
+    qualified_name: commerce.fulfillment.dim_carrier_service
+    display_name: Carrier service
+    description: Service level offered by a carrier.
+    synonyms: []
+    tags:
+    - dimension
+    - fulfillment
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE
+      schema: FULFILLMENT
+      object: DIM_CARRIER_SERVICE
+      format: table
+  grain:
+    description: One row is one carrier service.
+    components:
+    - identity_id: carrier_service_identity
+      dataset_columns:
+      - carrier_service_id
+      description: Identifies one carrier service.
+  columns:
+  - name: carrier_service_id
+    description: Identifies one carrier service.
+  - name: carrier_id
+    description: Carrier that offers the service.
+  entity_definitions:
+  - identity_id: carrier_service_identity
+    dataset_columns:
+    - carrier_service_id
+    is_entity_universe: true
+    entity_expression:
+    - '[carrier_service_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
+  - identity_id: carrier_identity
+    dataset_columns:
+    - carrier_id
+    is_entity_universe: false
+    entity_expression:
+    - '[carrier_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Every carrier includes one or more carrier services, and each carrier service belongs
+        to exactly one carrier.
+- node_id: sf:commerce.fulfillment.dim_seller_warehouse
+  descriptor:
+    qualified_name: commerce.fulfillment.dim_seller_warehouse
+    display_name: Seller warehouse
+    description: Warehouse a seller uses to hold inventory.
+    synonyms: []
+    tags:
+    - dimension
+    - fulfillment
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE
+      schema: FULFILLMENT
+      object: DIM_SELLER_WAREHOUSE
+      format: table
+  grain:
+    description: One row is one seller warehouse.
+    components:
+    - identity_id: seller_warehouse_identity
+      dataset_columns:
+      - seller_warehouse_id
+      description: Identifies one seller warehouse.
+  columns:
+  - name: seller_warehouse_id
+    description: Identifies one seller warehouse.
+  - name: seller_id
+    description: Seller that operates the warehouse.
+  - name: country_id
+    description: Country where the warehouse is located.
+  entity_definitions:
+  - identity_id: seller_warehouse_identity
+    dataset_columns:
+    - seller_warehouse_id
+    is_entity_universe: true
+    entity_expression:
+    - '[seller_warehouse_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
+  - identity_id: seller_identity
+    dataset_columns:
+    - seller_id
+    is_entity_universe: false
+    entity_expression:
+    - '[seller_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Every seller includes one or more warehouses, and each warehouse belongs to exactly
+        one seller.
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    is_entity_universe: false
+    entity_expression:
+    - '[country_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each warehouse belongs to exactly one country, and a country may have no warehouses.
+- node_id: sf:commerce.fulfillment.dim_fulfillment_center
+  descriptor:
+    qualified_name: commerce.fulfillment.dim_fulfillment_center
+    display_name: Fulfillment center
+    description: Marketplace fulfillment center that can ship seller goods.
+    synonyms: []
+    tags:
+    - dimension
+    - fulfillment
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE
+      schema: FULFILLMENT
+      object: DIM_FULFILLMENT_CENTER
+      format: table
+  grain:
+    description: One row is one fulfillment center.
+    components:
+    - identity_id: fulfillment_center_identity
+      dataset_columns:
+      - fulfillment_center_id
+      description: Identifies one fulfillment center.
+  columns:
+  - name: fulfillment_center_id
+    description: Identifies one fulfillment center.
+  - name: country_id
+    description: Country where the fulfillment center is located.
+  - name: region_id
+    description: Region where the fulfillment center is located.
+  entity_definitions:
+  - identity_id: fulfillment_center_identity
+    dataset_columns:
+    - fulfillment_center_id
+    is_entity_universe: true
+    entity_expression:
+    - '[fulfillment_center_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    is_entity_universe: false
+    entity_expression:
+    - '[country_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each fulfillment center belongs to exactly one country, and a country may have no
+        fulfillment centers.
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    is_entity_universe: false
+    entity_expression:
+    - '[region_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A fulfillment center may have no region, and a region may have no fulfillment centers.
+- node_id: sf:commerce.fulfillment.dim_package_type
+  descriptor:
+    qualified_name: commerce.fulfillment.dim_package_type
+    display_name: Package type
+    description: Package type used when a shipment is packed.
+    synonyms: []
+    tags:
+    - dimension
+    - fulfillment
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE
+      schema: FULFILLMENT
+      object: DIM_PACKAGE_TYPE
+      format: table
+  grain:
+    description: One row is one package type.
+    components:
+    - identity_id: package_type_identity
+      dataset_columns:
+      - package_type_id
+      description: Identifies one package type.
+  columns:
+  - name: package_type_id
+    description: Identifies one package type.
+  entity_definitions:
+  - identity_id: package_type_identity
+    dataset_columns:
+    - package_type_id
+    is_entity_universe: true
+    entity_expression:
+    - '[package_type_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
+- node_id: sf:commerce.fulfillment.fact_shipment
+  descriptor:
+    qualified_name: commerce.fulfillment.fact_shipment
+    display_name: Shipment
+    description: Shipment of goods for one order.
+    synonyms: []
+    tags:
+    - fact
+    - fulfillment
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE
+      schema: FULFILLMENT
+      object: FACT_SHIPMENT
+      format: table
+  grain:
+    description: One row is one shipment.
+    components:
+    - identity_id: shipment_identity
+      dataset_columns:
+      - shipment_id
+      description: Identifies one shipment.
+  columns:
+  - name: shipment_id
+    description: Identifies one shipment.
+  - name: order_id
+    description: Order the shipment fulfills.
+  - name: carrier_service_id
+    description: Carrier service that moves the shipment.
+  - name: fulfillment_center_id
+    description: Fulfillment center that ships the goods.
+  - name: seller_warehouse_id
+    description: Seller warehouse that ships the goods.
+  - name: ship_date_id
+    description: Calendar day when the shipment left.
+  - name: shipment_status
+    description: Movement standing of the shipment.
+    value_description: pending, in_transit, delivered, exception
+  entity_definitions:
+  - identity_id: shipment_identity
+    dataset_columns:
+    - shipment_id
+    is_entity_universe: true
+    entity_expression:
+    - '[shipment_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
+  - identity_id: order_identity
+    dataset_columns:
+    - order_id
+    is_entity_universe: false
+    entity_expression:
+    - '[order_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each shipment belongs to exactly one order, and an order may have no shipments.
+  - identity_id: carrier_service_identity
+    dataset_columns:
+    - carrier_service_id
+    is_entity_universe: false
+    entity_expression:
+    - '[carrier_service_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A shipment may have no carrier service, and a carrier service may have no shipments.
+  - identity_id: fulfillment_center_identity
+    dataset_columns:
+    - fulfillment_center_id
+    is_entity_universe: false
+    entity_expression:
+    - '[fulfillment_center_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A shipment may have no fulfillment center, and a fulfillment center may have no shipments.
+  - identity_id: seller_warehouse_identity
+    dataset_columns:
+    - seller_warehouse_id
+    is_entity_universe: false
+    entity_expression:
+    - '[seller_warehouse_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A shipment may have no seller warehouse, and a seller warehouse may have no shipments.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - ship_date_id
+    is_entity_universe: false
+    entity_expression:
+    - '[ship_date_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A shipment may have no ship date, and a calendar day may have no shipments dated
+        on it.
+- node_id: sf:commerce.fulfillment.fact_shipment_line
+  descriptor:
+    qualified_name: commerce.fulfillment.fact_shipment_line
+    display_name: Shipment line
+    description: Order-line quantity included on a shipment.
+    synonyms: []
+    tags:
+    - fact
+    - fulfillment
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE
+      schema: FULFILLMENT
+      object: FACT_SHIPMENT_LINE
+      format: table
+  grain:
+    description: One row is one shipment line.
+    components:
+    - identity_id: shipment_line_identity
+      dataset_columns:
+      - shipment_line_id
+      description: Identifies one shipment line.
+  columns:
+  - name: shipment_line_id
+    description: Identifies one shipment line.
+  - name: shipment_id
+    description: Shipment that contains the line.
+  - name: order_line_id
+    description: Order line shipped on this line.
+  - name: shipped_quantity
+    description: Units of the order line included on the shipment line.
+  entity_definitions:
+  - identity_id: shipment_line_identity
+    dataset_columns:
+    - shipment_line_id
+    is_entity_universe: true
+    entity_expression:
+    - '[shipment_line_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
+  - identity_id: shipment_identity
+    dataset_columns:
+    - shipment_id
+    is_entity_universe: false
+    entity_expression:
+    - '[shipment_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Every shipment includes one or more shipment lines, and each shipment line belongs
+        to exactly one shipment.
+  - identity_id: order_line_identity
+    dataset_columns:
+    - order_line_id
+    is_entity_universe: false
+    entity_expression:
+    - '[order_line_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each shipment line belongs to exactly one order line, and an order line may have
+        no shipment lines.
+- node_id: sf:commerce.fulfillment.fact_shipment_event
+  descriptor:
+    qualified_name: commerce.fulfillment.fact_shipment_event
+    display_name: Shipment event
+    description: Scan event recorded against a shipment.
+    synonyms: []
+    tags:
+    - fact
+    - fulfillment
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE
+      schema: FULFILLMENT
+      object: FACT_SHIPMENT_EVENT
+      format: table
+  grain:
+    description: One row is one shipment event.
+    components:
+    - identity_id: shipment_event_identity
+      dataset_columns:
+      - shipment_event_id
+      description: Identifies one shipment event.
+  columns:
+  - name: shipment_event_id
+    description: Identifies one shipment event.
+  - name: shipment_id
+    description: Shipment the scan belongs to.
+  - name: calendar_day_id
+    description: Calendar day of the scan.
+  - name: scan_type
+    description: Kind of carrier scan recorded for the shipment.
+    value_description: picked_up, in_transit, delivered, exception
+  entity_definitions:
+  - identity_id: shipment_event_identity
+    dataset_columns:
+    - shipment_event_id
+    is_entity_universe: true
+    entity_expression:
+    - '[shipment_event_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
+  - identity_id: shipment_identity
+    dataset_columns:
+    - shipment_id
+    is_entity_universe: false
+    entity_expression:
+    - '[shipment_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Every shipment includes one or more shipment events, and each shipment event belongs
+        to exactly one shipment.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each shipment event belongs to exactly one calendar day, and a calendar day may have
+        no shipment events.
+- node_id: sf:commerce.fulfillment.fact_delivery
+  descriptor:
+    qualified_name: commerce.fulfillment.fact_delivery
+    display_name: Delivery
+    description: Delivery confirmation for a shipment.
+    synonyms: []
+    tags:
+    - fact
+    - fulfillment
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE
+      schema: FULFILLMENT
+      object: FACT_DELIVERY
+      format: table
+  grain:
+    description: One row is one delivery.
+    components:
+    - identity_id: delivery_identity
+      dataset_columns:
+      - delivery_id
+      description: Identifies one delivery.
+  columns:
+  - name: delivery_id
+    description: Identifies one delivery.
+  - name: shipment_id
+    description: Shipment that was delivered.
+  - name: calendar_day_id
+    description: Calendar day of the delivery.
+  - name: delivery_status
+    description: Outcome of the delivery attempt.
+    value_description: pending, delivered, failed
+  entity_definitions:
+  - identity_id: delivery_identity
+    dataset_columns:
+    - delivery_id
+    is_entity_universe: true
+    entity_expression:
+    - '[delivery_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
+  - identity_id: shipment_identity
+    dataset_columns:
+    - shipment_id
+    is_entity_universe: false
+    entity_expression:
+    - '[shipment_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each delivery belongs to exactly one shipment, and a shipment may have no deliveries.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A delivery may have no calendar day, and a calendar day may have no deliveries.
+- node_id: sf:commerce.fulfillment.fact_package
+  descriptor:
+    qualified_name: commerce.fulfillment.fact_package
+    display_name: Package
+    description: Package packed for a shipment.
+    synonyms: []
+    tags:
+    - fact
+    - fulfillment
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE
+      schema: FULFILLMENT
+      object: FACT_PACKAGE
+      format: table
+  grain:
+    description: One row is one package.
+    components:
+    - identity_id: package_identity
+      dataset_columns:
+      - package_id
+      description: Identifies one package.
+  columns:
+  - name: package_id
+    description: Identifies one package.
+  - name: shipment_id
+    description: Shipment that contains the package.
+  - name: package_type_id
+    description: Package type used for the package.
+  - name: package_weight
+    description: Declared package weight in the carrier unit.
+  entity_definitions:
+  - identity_id: package_identity
+    dataset_columns:
+    - package_id
+    is_entity_universe: true
+    entity_expression:
+    - '[package_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
+  - identity_id: shipment_identity
+    dataset_columns:
+    - shipment_id
+    is_entity_universe: false
+    entity_expression:
+    - '[shipment_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Every shipment includes one or more packages, and each package belongs to exactly
+        one shipment.
+  - identity_id: package_type_identity
+    dataset_columns:
+    - package_type_id
+    is_entity_universe: false
+    entity_expression:
+    - '[package_type_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each package uses exactly one package type, and a package type may have no packages.

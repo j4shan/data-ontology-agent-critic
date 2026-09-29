@@ -1,0 +1,263 @@
+schema_version: '2'
+nodes:
+- node_id: sf:retail.merchandising.dim_category
+  descriptor:
+    qualified_name: retail.merchandising.dim_category
+    display_name: Category
+    description: Merchandise category inside a department.
+    synonyms: []
+    tags:
+    - dimension
+    - merchandising
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL
+      schema: MERCHANDISING
+      object: DIM_CATEGORY
+      format: table
+  grain:
+    description: One row is one category.
+    components:
+    - identity_id: category_identity
+      dataset_columns:
+      - category_id
+      description: Identifies one merchandise category.
+  columns:
+  - name: category_id
+    description: Identifies one merchandise category.
+  - name: department_id
+    description: Merchandise department that owns the category.
+  entity_definitions:
+  - identity_id: category_identity
+    dataset_columns:
+    - category_id
+    is_entity_universe: true
+    entity_expression:
+    - '[category_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of category.
+  - identity_id: department_identity
+    dataset_columns:
+    - department_id
+    is_entity_universe: false
+    entity_expression:
+    - '[department_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each merchandise department contains one or more categories, and each category belongs
+        to exactly one department.
+- node_id: sf:retail.merchandising.dim_subcategory
+  descriptor:
+    qualified_name: retail.merchandising.dim_subcategory
+    display_name: Subcategory
+    description: Merchandise subcategory inside a category.
+    synonyms: []
+    tags:
+    - dimension
+    - merchandising
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL
+      schema: MERCHANDISING
+      object: DIM_SUBCATEGORY
+      format: table
+  grain:
+    description: One row is one subcategory.
+    components:
+    - identity_id: subcategory_identity
+      dataset_columns:
+      - subcategory_id
+      description: Identifies one merchandise subcategory.
+  columns:
+  - name: subcategory_id
+    description: Identifies one merchandise subcategory.
+  - name: category_id
+    description: Category that owns the subcategory.
+  entity_definitions:
+  - identity_id: subcategory_identity
+    dataset_columns:
+    - subcategory_id
+    is_entity_universe: true
+    entity_expression:
+    - '[subcategory_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of subcategory.
+  - identity_id: category_identity
+    dataset_columns:
+    - category_id
+    is_entity_universe: false
+    entity_expression:
+    - '[category_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each category contains one or more subcategories, and each subcategory belongs to
+        exactly one category.
+- node_id: sf:retail.merchandising.dim_brand
+  descriptor:
+    qualified_name: retail.merchandising.dim_brand
+    display_name: Brand
+    description: Brand that may be named on a sellable item.
+    synonyms: []
+    tags:
+    - dimension
+    - merchandising
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL
+      schema: MERCHANDISING
+      object: DIM_BRAND
+      format: table
+  grain:
+    description: One row is one brand.
+    components:
+    - identity_id: brand_identity
+      dataset_columns:
+      - brand_id
+      description: Identifies one brand.
+  columns:
+  - name: brand_id
+    description: Identifies one brand.
+  entity_definitions:
+  - identity_id: brand_identity
+    dataset_columns:
+    - brand_id
+    is_entity_universe: true
+    entity_expression:
+    - '[brand_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of brand.
+- node_id: sf:retail.merchandising.dim_unit_of_measure
+  descriptor:
+    qualified_name: retail.merchandising.dim_unit_of_measure
+    display_name: Unit of measure
+    description: Unit in which an item is stocked, ordered, or sold.
+    synonyms: []
+    tags:
+    - dimension
+    - merchandising
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL
+      schema: MERCHANDISING
+      object: DIM_UNIT_OF_MEASURE
+      format: table
+  grain:
+    description: One row is one unit of measure.
+    components:
+    - identity_id: uom_identity
+      dataset_columns:
+      - uom_id
+      description: Identifies one unit of measure.
+  columns:
+  - name: uom_id
+    description: Identifies one unit of measure.
+  entity_definitions:
+  - identity_id: uom_identity
+    dataset_columns:
+    - uom_id
+    is_entity_universe: true
+    entity_expression:
+    - '[uom_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of unit of measure.
+- node_id: sf:retail.merchandising.dim_item
+  descriptor:
+    qualified_name: retail.merchandising.dim_item
+    display_name: Item
+    description: Sellable or produced SKU classified under a subcategory.
+    synonyms: []
+    tags:
+    - dimension
+    - merchandising
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL
+      schema: MERCHANDISING
+      object: DIM_ITEM
+      format: table
+  grain:
+    description: One row is one item.
+    components:
+    - identity_id: item_identity
+      dataset_columns:
+      - item_id
+      description: Identifies one merchandise item.
+  columns:
+  - name: item_id
+    description: Identifies one merchandise item.
+  - name: subcategory_id
+    description: Subcategory that classifies the item.
+  - name: brand_id
+    description: Brand named on the item when the item carries one.
+  - name: uom_id
+    description: Stocking unit of measure for the item.
+  - name: item_type
+    description: Merchandise type of the item.
+    value_description: grocery, fresh, general_merchandise, private_label
+  entity_definitions:
+  - identity_id: item_identity
+    dataset_columns:
+    - item_id
+    is_entity_universe: true
+    entity_expression:
+    - '[item_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of item.
+  - identity_id: subcategory_identity
+    dataset_columns:
+    - subcategory_id
+    is_entity_universe: false
+    entity_expression:
+    - '[subcategory_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each subcategory contains one or more items, and each item belongs to exactly one
+        subcategory.
+  - identity_id: brand_identity
+    dataset_columns:
+    - brand_id
+    is_entity_universe: false
+    entity_expression:
+    - '[brand_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: An item may omit a brand, and a brand may be named on no item.
+  - identity_id: uom_identity
+    dataset_columns:
+    - uom_id
+    is_entity_universe: false
+    entity_expression:
+    - '[uom_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each item uses exactly one unit of measure, and a unit of measure may be unused.

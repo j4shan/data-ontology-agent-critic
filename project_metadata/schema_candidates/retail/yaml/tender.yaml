@@ -1,0 +1,125 @@
+schema_version: '2'
+nodes:
+- node_id: sf:retail.tender.dim_tender_type
+  descriptor:
+    qualified_name: retail.tender.dim_tender_type
+    display_name: Tender type
+    description: Form of payment a basket or gift card transaction can use.
+    synonyms: []
+    tags:
+    - dimension
+    - tender
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL
+      schema: TENDER
+      object: DIM_TENDER_TYPE
+      format: table
+  grain:
+    description: One row is one tender type.
+    components:
+    - identity_id: tender_type_identity
+      dataset_columns:
+      - tender_type_id
+      description: Identifies one tender type.
+  columns:
+  - name: tender_type_id
+    description: Identifies one tender type.
+  entity_definitions:
+  - identity_id: tender_type_identity
+    dataset_columns:
+    - tender_type_id
+    is_entity_universe: true
+    entity_expression:
+    - '[tender_type_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of tender type.
+- node_id: sf:retail.tender.fact_gift_card_txn
+  descriptor:
+    qualified_name: retail.tender.fact_gift_card_txn
+    display_name: Gift card transaction
+    description: Issue, redemption, or reload of a gift card at a storefront.
+    synonyms: []
+    tags:
+    - fact
+    - tender
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL
+      schema: TENDER
+      object: FACT_GIFT_CARD_TXN
+      format: table
+  grain:
+    description: One row is one gift card transaction.
+    components:
+    - identity_id: gift_card_txn_identity
+      dataset_columns:
+      - gift_card_txn_id
+      description: Identifies one gift card transaction.
+  columns:
+  - name: gift_card_txn_id
+    description: Identifies one gift card transaction.
+  - name: tender_type_id
+    description: Tender type of the gift card instrument when one is classified.
+  - name: store_id
+    description: Storefront where the gift card activity occurred.
+  - name: pos_transaction_id
+    description: POS transaction the gift card activity settled when it was part of a basket.
+  - name: amount
+    description: Amount issued, redeemed, or reloaded.
+  - name: txn_type
+    description: Kind of gift card activity.
+    value_description: issue, redeem, reload
+  entity_definitions:
+  - identity_id: gift_card_txn_identity
+    dataset_columns:
+    - gift_card_txn_id
+    is_entity_universe: true
+    entity_expression:
+    - '[gift_card_txn_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of gift card transaction.
+  - identity_id: tender_type_identity
+    dataset_columns:
+    - tender_type_id
+    is_entity_universe: false
+    entity_expression:
+    - '[tender_type_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A gift card transaction may omit a tender type, and a tender type may be used on
+        no gift card transaction.
+  - identity_id: store_identity
+    dataset_columns:
+    - store_id
+    is_entity_universe: false
+    entity_expression:
+    - '[store_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each gift card transaction occurs at exactly one storefront, and a storefront may
+        have no gift card transaction.
+  - identity_id: pos_transaction_identity
+    dataset_columns:
+    - pos_transaction_id
+    is_entity_universe: false
+    entity_expression:
+    - '[pos_transaction_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A gift card transaction may omit a POS transaction, and a POS transaction may have
+        no gift card activity.

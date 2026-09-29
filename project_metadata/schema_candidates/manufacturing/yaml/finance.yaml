@@ -1,0 +1,465 @@
+schema_version: '2'
+nodes:
+- node_id: sf:manufacturing.finance.dim_gl_account
+  descriptor:
+    qualified_name: manufacturing.finance.dim_gl_account
+    display_name: General Ledger Account
+    description: Ledger account owned by a legal entity.
+    synonyms: []
+    tags:
+    - dimension
+    - finance
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING
+      schema: FINANCE
+      object: DIM_GL_ACCOUNT
+      format: table
+  grain:
+    description: One row is one general ledger account.
+    components:
+    - identity_id: gl_account_identity
+      dataset_columns:
+      - gl_account_id
+      description: Identifier of one general-ledger account.
+  columns:
+  - name: gl_account_id
+    description: Identifier of one general-ledger account.
+  - name: legal_entity_id
+    description: Legal entity that owns the account.
+  - name: account_name
+    description: Name of the general-ledger account.
+  entity_definitions:
+  - identity_id: gl_account_identity
+    dataset_columns:
+    - gl_account_id
+    is_entity_universe: true
+    entity_expression:
+    - '[gl_account_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of general ledger account.
+  - identity_id: legal_entity_identity
+    dataset_columns:
+    - legal_entity_id
+    is_entity_universe: false
+    entity_expression:
+    - '[legal_entity_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many general-ledger accounts belong to one legal entity, every account matches a
+        legal entity, and a legal entity may include no account.
+- node_id: sf:manufacturing.finance.dim_payment_term
+  descriptor:
+    qualified_name: manufacturing.finance.dim_payment_term
+    display_name: Payment Term
+    description: Commercial term that states when an invoice is due.
+    synonyms: []
+    tags:
+    - dimension
+    - finance
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING
+      schema: FINANCE
+      object: DIM_PAYMENT_TERM
+      format: table
+  grain:
+    description: One row is one payment term.
+    components:
+    - identity_id: payment_term_identity
+      dataset_columns:
+      - payment_term_id
+      description: Identifier of one payment term.
+  columns:
+  - name: payment_term_id
+    description: Identifier of one payment term.
+  - name: term_name
+    description: Name of the payment term.
+  entity_definitions:
+  - identity_id: payment_term_identity
+    dataset_columns:
+    - payment_term_id
+    is_entity_universe: true
+    entity_expression:
+    - '[payment_term_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of payment term.
+- node_id: sf:manufacturing.finance.fact_standard_cost
+  descriptor:
+    qualified_name: manufacturing.finance.fact_standard_cost
+    display_name: Standard Cost
+    description: Standard cost amount of an item revision at a plant.
+    synonyms: []
+    tags:
+    - fact
+    - finance
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING
+      schema: FINANCE
+      object: FACT_STANDARD_COST
+      format: table
+  grain:
+    description: One row is one standard cost.
+    components:
+    - identity_id: standard_cost_identity
+      dataset_columns:
+      - standard_cost_id
+      description: Identifier of one standard cost.
+  columns:
+  - name: standard_cost_id
+    description: Identifier of one standard cost.
+  - name: item_revision_id
+    description: Item revision the standard cost prices.
+  - name: plant_id
+    description: Plant the standard cost applies to.
+  - name: cost_center_id
+    description: Cost center the standard cost element belongs to, when the cost is center-specific.
+  - name: gl_account_id
+    description: General-ledger account for the cost element, when an account is named.
+  - name: standard_cost_amount
+    description: Standard cost amount for the item revision at the plant.
+  entity_definitions:
+  - identity_id: standard_cost_identity
+    dataset_columns:
+    - standard_cost_id
+    is_entity_universe: true
+    entity_expression:
+    - '[standard_cost_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of standard cost.
+  - identity_id: item_revision_identity
+    dataset_columns:
+    - item_revision_id
+    is_entity_universe: false
+    entity_expression:
+    - '[item_revision_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many standard costs belong to one item revision, every standard cost matches an item
+        revision, and an item revision may include no standard cost.
+  - identity_id: plant_identity
+    dataset_columns:
+    - plant_id
+    is_entity_universe: false
+    entity_expression:
+    - '[plant_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many standard costs belong to one plant, every standard cost matches a plant, and
+        a plant may include no standard cost.
+  - identity_id: cost_center_identity
+    dataset_columns:
+    - cost_center_id
+    is_entity_universe: false
+    entity_expression:
+    - '[cost_center_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A standard cost may match one cost center, and a cost center may include no standard
+        cost.
+  - identity_id: gl_account_identity
+    dataset_columns:
+    - gl_account_id
+    is_entity_universe: false
+    entity_expression:
+    - '[gl_account_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A standard cost may match one general-ledger account, and an account may include
+        no standard cost.
+- node_id: sf:manufacturing.finance.fact_cost_absorption
+  descriptor:
+    qualified_name: manufacturing.finance.fact_cost_absorption
+    display_name: Cost Absorption
+    description: Amount absorbed from a cost center to a production order.
+    synonyms: []
+    tags:
+    - fact
+    - finance
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING
+      schema: FINANCE
+      object: FACT_COST_ABSORPTION
+      format: table
+  grain:
+    description: One row is one cost absorption.
+    components:
+    - identity_id: absorption_identity
+      dataset_columns:
+      - absorption_id
+      description: Identifier of one cost absorption.
+  columns:
+  - name: absorption_id
+    description: Identifier of one cost absorption.
+  - name: production_order_id
+    description: Production order that absorbed the cost.
+  - name: cost_center_id
+    description: Cost center that gave up the cost.
+  - name: gl_account_id
+    description: General-ledger account that records the absorption.
+  - name: calendar_day_id
+    description: Day the absorption was posted.
+  - name: absorbed_amount
+    description: Amount absorbed onto the production order.
+  entity_definitions:
+  - identity_id: absorption_identity
+    dataset_columns:
+    - absorption_id
+    is_entity_universe: true
+    entity_expression:
+    - '[absorption_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of cost absorption.
+  - identity_id: production_order_identity
+    dataset_columns:
+    - production_order_id
+    is_entity_universe: false
+    entity_expression:
+    - '[production_order_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many absorptions belong to one production order, every absorption matches a production
+        order, and a production order may include no absorption.
+  - identity_id: cost_center_identity
+    dataset_columns:
+    - cost_center_id
+    is_entity_universe: false
+    entity_expression:
+    - '[cost_center_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many absorptions belong to one cost center, every absorption matches a cost center,
+        and a cost center may include no absorption.
+  - identity_id: gl_account_identity
+    dataset_columns:
+    - gl_account_id
+    is_entity_universe: false
+    entity_expression:
+    - '[gl_account_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many absorptions belong to one general-ledger account, every absorption matches an
+        account, and an account may include no absorption.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many absorptions belong to one calendar day, every absorption matches a calendar
+        day, and a calendar day may include no absorption.
+- node_id: sf:manufacturing.finance.fact_purchase_price_variance
+  descriptor:
+    qualified_name: manufacturing.finance.fact_purchase_price_variance
+    display_name: Purchase Price Variance
+    description: Variance between purchase price and standard for a purchase order line.
+    synonyms: []
+    tags:
+    - fact
+    - finance
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING
+      schema: FINANCE
+      object: FACT_PURCHASE_PRICE_VARIANCE
+      format: table
+  grain:
+    description: One row is one purchase price variance.
+    components:
+    - identity_id: ppv_identity
+      dataset_columns:
+      - ppv_id
+      description: Identifier of one purchase-price variance.
+  columns:
+  - name: ppv_id
+    description: Identifier of one purchase-price variance.
+  - name: purchase_order_line_id
+    description: Purchase order line that generated the variance.
+  - name: item_revision_id
+    description: Item revision the variance prices.
+  - name: gl_account_id
+    description: General-ledger account that records the variance.
+  - name: variance_amount
+    description: Purchase-price variance amount.
+  entity_definitions:
+  - identity_id: ppv_identity
+    dataset_columns:
+    - ppv_id
+    is_entity_universe: true
+    entity_expression:
+    - '[ppv_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of purchase price variance.
+  - identity_id: purchase_order_line_identity
+    dataset_columns:
+    - purchase_order_line_id
+    is_entity_universe: false
+    entity_expression:
+    - '[purchase_order_line_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many variances belong to one purchase order line, every variance matches a purchase
+        order line, and a purchase order line may include no variance.
+  - identity_id: item_revision_identity
+    dataset_columns:
+    - item_revision_id
+    is_entity_universe: false
+    entity_expression:
+    - '[item_revision_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many variances belong to one item revision, every variance matches an item revision,
+        and an item revision may include no variance.
+  - identity_id: gl_account_identity
+    dataset_columns:
+    - gl_account_id
+    is_entity_universe: false
+    entity_expression:
+    - '[gl_account_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many variances belong to one general-ledger account, every variance matches an account,
+        and an account may include no variance.
+- node_id: sf:manufacturing.finance.fact_freight_charge
+  descriptor:
+    qualified_name: manufacturing.finance.fact_freight_charge
+    display_name: Freight Charge
+    description: Freight amount charged by a carrier, optionally against a shipment.
+    synonyms: []
+    tags:
+    - fact
+    - finance
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING
+      schema: FINANCE
+      object: FACT_FREIGHT_CHARGE
+      format: table
+  grain:
+    description: One row is one freight charge.
+    components:
+    - identity_id: freight_charge_identity
+      dataset_columns:
+      - freight_charge_id
+      description: Identifier of one freight charge.
+  columns:
+  - name: freight_charge_id
+    description: Identifier of one freight charge.
+  - name: shipment_id
+    description: Shipment the freight covers, when the charge is matched to a shipment.
+  - name: carrier_id
+    description: Carrier that billed the freight.
+  - name: gl_account_id
+    description: General-ledger account that records the freight.
+  - name: currency_id
+    description: Currency of the freight amount.
+  - name: freight_amount
+    description: Amount charged for freight.
+  entity_definitions:
+  - identity_id: freight_charge_identity
+    dataset_columns:
+    - freight_charge_id
+    is_entity_universe: true
+    entity_expression:
+    - '[freight_charge_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of freight charge.
+  - identity_id: shipment_identity
+    dataset_columns:
+    - shipment_id
+    is_entity_universe: false
+    entity_expression:
+    - '[shipment_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A freight charge may match one shipment, and a shipment may include no freight charge.
+  - identity_id: carrier_identity
+    dataset_columns:
+    - carrier_id
+    is_entity_universe: false
+    entity_expression:
+    - '[carrier_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many freight charges belong to one carrier, every freight charge matches a carrier,
+        and a carrier may include no freight charge.
+  - identity_id: gl_account_identity
+    dataset_columns:
+    - gl_account_id
+    is_entity_universe: false
+    entity_expression:
+    - '[gl_account_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many freight charges belong to one general-ledger account, every freight charge matches
+        an account, and an account may include no freight charge.
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    is_entity_universe: false
+    entity_expression:
+    - '[currency_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many freight charges share one currency, every freight charge matches a currency,
+        and a currency may include no freight charge.

@@ -1,0 +1,278 @@
+schema_version: '2'
+nodes:
+- node_id: sf:retail.fresh.dim_recipe
+  descriptor:
+    qualified_name: retail.fresh.dim_recipe
+    display_name: Recipe
+    description: Fresh recipe whose finished good is a sellable item.
+    synonyms: []
+    tags:
+    - dimension
+    - fresh
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL
+      schema: FRESH
+      object: DIM_RECIPE
+      format: table
+  grain:
+    description: One row is one recipe.
+    components:
+    - identity_id: recipe_identity
+      dataset_columns:
+      - recipe_id
+      description: Identifies one fresh recipe.
+  columns:
+  - name: recipe_id
+    description: Identifies one fresh recipe.
+  - name: item_id
+    description: Finished fresh SKU the recipe produces.
+  entity_definitions:
+  - identity_id: recipe_identity
+    dataset_columns:
+    - recipe_id
+    is_entity_universe: true
+    entity_expression:
+    - '[recipe_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of recipe.
+  - identity_id: item_identity
+    dataset_columns:
+    - item_id
+    is_entity_universe: false
+    entity_expression:
+    - '[item_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each recipe produces exactly one finished item, and an item may have no recipe.
+- node_id: sf:retail.fresh.dim_ingredient
+  descriptor:
+    qualified_name: retail.fresh.dim_ingredient
+    display_name: Ingredient
+    description: Component item that a fresh recipe can consume.
+    synonyms: []
+    tags:
+    - dimension
+    - fresh
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL
+      schema: FRESH
+      object: DIM_INGREDIENT
+      format: table
+  grain:
+    description: One row is one ingredient.
+    components:
+    - identity_id: ingredient_identity
+      dataset_columns:
+      - ingredient_id
+      description: Identifies one recipe ingredient.
+  columns:
+  - name: ingredient_id
+    description: Identifies one recipe ingredient.
+  - name: item_id
+    description: Item stocked as this ingredient.
+  entity_definitions:
+  - identity_id: ingredient_identity
+    dataset_columns:
+    - ingredient_id
+    is_entity_universe: true
+    entity_expression:
+    - '[ingredient_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of ingredient.
+  - identity_id: item_identity
+    dataset_columns:
+    - item_id
+    is_entity_universe: false
+    entity_expression:
+    - '[item_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each ingredient is exactly one item, and an item may have no ingredient row.
+- node_id: sf:retail.fresh.fact_fresh_production
+  descriptor:
+    qualified_name: retail.fresh.fact_fresh_production
+    display_name: Production batch
+    description: Batch of a fresh recipe produced at a storefront.
+    synonyms: []
+    tags:
+    - fact
+    - fresh
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL
+      schema: FRESH
+      object: FACT_FRESH_PRODUCTION
+      format: table
+  grain:
+    description: One row is one production batch.
+    components:
+    - identity_id: production_batch_identity
+      dataset_columns:
+      - production_batch_id
+      description: Identifies one fresh production batch.
+  columns:
+  - name: production_batch_id
+    description: Identifies one fresh production batch.
+  - name: recipe_id
+    description: Recipe that was produced.
+  - name: store_id
+    description: Storefront that produced the batch.
+  - name: calendar_day_id
+    description: Day the batch was produced.
+  - name: produced_quantity
+    description: Quantity of finished product made in the batch.
+  entity_definitions:
+  - identity_id: production_batch_identity
+    dataset_columns:
+    - production_batch_id
+    is_entity_universe: true
+    entity_expression:
+    - '[production_batch_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of production batch.
+  - identity_id: recipe_identity
+    dataset_columns:
+    - recipe_id
+    is_entity_universe: false
+    entity_expression:
+    - '[recipe_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each batch follows exactly one recipe, and a recipe may have no production batch.
+  - identity_id: store_identity
+    dataset_columns:
+    - store_id
+    is_entity_universe: false
+    entity_expression:
+    - '[store_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each batch is produced at exactly one storefront, and a storefront may have no production
+        batch.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each batch is produced on exactly one day, and a day may have no production batch.
+- node_id: sf:retail.fresh.fact_waste_event
+  descriptor:
+    qualified_name: retail.fresh.fact_waste_event
+    display_name: Waste event
+    description: Fresh or other product discarded at a storefront.
+    synonyms: []
+    tags:
+    - fact
+    - fresh
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL
+      schema: FRESH
+      object: FACT_WASTE_EVENT
+      format: table
+  grain:
+    description: One row is one waste event.
+    components:
+    - identity_id: waste_event_identity
+      dataset_columns:
+      - waste_event_id
+      description: Identifies one waste event.
+  columns:
+  - name: waste_event_id
+    description: Identifies one waste event.
+  - name: item_id
+    description: Item that was discarded.
+  - name: store_id
+    description: Storefront where the product was discarded.
+  - name: shrink_reason_id
+    description: Shrink reason for the waste when a reason was recorded.
+  - name: calendar_day_id
+    description: Day the waste was recorded.
+  - name: waste_quantity
+    description: Quantity discarded in the event.
+  entity_definitions:
+  - identity_id: waste_event_identity
+    dataset_columns:
+    - waste_event_id
+    is_entity_universe: true
+    entity_expression:
+    - '[waste_event_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of waste event.
+  - identity_id: item_identity
+    dataset_columns:
+    - item_id
+    is_entity_universe: false
+    entity_expression:
+    - '[item_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each waste event names exactly one item, and an item may have no waste event.
+  - identity_id: store_identity
+    dataset_columns:
+    - store_id
+    is_entity_universe: false
+    entity_expression:
+    - '[store_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each waste event occurs at exactly one storefront, and a storefront may have no waste
+        event.
+  - identity_id: shrink_reason_identity
+    dataset_columns:
+    - shrink_reason_id
+    is_entity_universe: false
+    entity_expression:
+    - '[shrink_reason_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A waste event may omit a shrink reason, and a shrink reason may explain no waste
+        event.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each waste event occurs on exactly one day, and a day may have no waste event.

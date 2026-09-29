@@ -1,0 +1,346 @@
+schema_version: '2'
+nodes:
+- node_id: sf:retail.space.dim_aisle
+  descriptor:
+    qualified_name: retail.space.dim_aisle
+    display_name: Aisle
+    description: Selling aisle inside a storefront.
+    synonyms: []
+    tags:
+    - dimension
+    - space
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL
+      schema: SPACE
+      object: DIM_AISLE
+      format: table
+  grain:
+    description: One row is one aisle.
+    components:
+    - identity_id: aisle_identity
+      dataset_columns:
+      - aisle_id
+      description: Identifies one aisle.
+  columns:
+  - name: aisle_id
+    description: Identifies one aisle.
+  - name: store_id
+    description: Storefront that contains the aisle.
+  entity_definitions:
+  - identity_id: aisle_identity
+    dataset_columns:
+    - aisle_id
+    is_entity_universe: true
+    entity_expression:
+    - '[aisle_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of aisle.
+  - identity_id: store_identity
+    dataset_columns:
+    - store_id
+    is_entity_universe: false
+    entity_expression:
+    - '[store_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each storefront contains one or more aisles, and each aisle belongs to exactly one
+        storefront.
+- node_id: sf:retail.space.dim_fixture
+  descriptor:
+    qualified_name: retail.space.dim_fixture
+    display_name: Fixture
+    description: Shelf or display fixture installed in an aisle.
+    synonyms: []
+    tags:
+    - dimension
+    - space
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL
+      schema: SPACE
+      object: DIM_FIXTURE
+      format: table
+  grain:
+    description: One row is one fixture.
+    components:
+    - identity_id: fixture_identity
+      dataset_columns:
+      - fixture_id
+      description: Identifies one fixture.
+  columns:
+  - name: fixture_id
+    description: Identifies one fixture.
+  - name: aisle_id
+    description: Aisle that holds the fixture.
+  entity_definitions:
+  - identity_id: fixture_identity
+    dataset_columns:
+    - fixture_id
+    is_entity_universe: true
+    entity_expression:
+    - '[fixture_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of fixture.
+  - identity_id: aisle_identity
+    dataset_columns:
+    - aisle_id
+    is_entity_universe: false
+    entity_expression:
+    - '[aisle_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each aisle contains one or more fixtures, and each fixture belongs to exactly one
+        aisle.
+- node_id: sf:retail.space.dim_planogram
+  descriptor:
+    qualified_name: retail.space.dim_planogram
+    display_name: Planogram
+    description: Plan for how a subcategory should be presented on fixtures.
+    synonyms: []
+    tags:
+    - dimension
+    - space
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL
+      schema: SPACE
+      object: DIM_PLANOGRAM
+      format: table
+  grain:
+    description: One row is one planogram.
+    components:
+    - identity_id: planogram_identity
+      dataset_columns:
+      - planogram_id
+      description: Identifies one planogram.
+  columns:
+  - name: planogram_id
+    description: Identifies one planogram.
+  - name: subcategory_id
+    description: Subcategory the planogram presents when one is targeted.
+  entity_definitions:
+  - identity_id: planogram_identity
+    dataset_columns:
+    - planogram_id
+    is_entity_universe: true
+    entity_expression:
+    - '[planogram_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of planogram.
+  - identity_id: subcategory_identity
+    dataset_columns:
+    - subcategory_id
+    is_entity_universe: false
+    entity_expression:
+    - '[subcategory_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A planogram may omit a subcategory, and a subcategory may have no planogram.
+- node_id: sf:retail.space.fact_planogram_compliance
+  descriptor:
+    qualified_name: retail.space.fact_planogram_compliance
+    display_name: Planogram compliance
+    description: Check of whether a storefront matched a planogram.
+    synonyms: []
+    tags:
+    - fact
+    - space
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL
+      schema: SPACE
+      object: FACT_PLANOGRAM_COMPLIANCE
+      format: table
+  grain:
+    description: One row is one planogram compliance.
+    components:
+    - identity_id: compliance_identity
+      dataset_columns:
+      - compliance_id
+      description: Identifies one planogram compliance check.
+  columns:
+  - name: compliance_id
+    description: Identifies one planogram compliance check.
+  - name: planogram_id
+    description: Planogram that was checked.
+  - name: store_id
+    description: Storefront that was checked.
+  - name: fixture_id
+    description: Fixture that was checked when the audit names one.
+  - name: calendar_day_id
+    description: Day the check was performed.
+  - name: compliance_status
+    description: Result of the planogram check.
+    value_description: compliant, exception, skipped
+  entity_definitions:
+  - identity_id: compliance_identity
+    dataset_columns:
+    - compliance_id
+    is_entity_universe: true
+    entity_expression:
+    - '[compliance_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of planogram compliance.
+  - identity_id: planogram_identity
+    dataset_columns:
+    - planogram_id
+    is_entity_universe: false
+    entity_expression:
+    - '[planogram_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each check evaluates exactly one planogram, and a planogram may have no compliance
+        check.
+  - identity_id: store_identity
+    dataset_columns:
+    - store_id
+    is_entity_universe: false
+    entity_expression:
+    - '[store_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each check covers exactly one storefront, and a storefront may have no compliance
+        check.
+  - identity_id: fixture_identity
+    dataset_columns:
+    - fixture_id
+    is_entity_universe: false
+    entity_expression:
+    - '[fixture_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A check may omit a fixture, and a fixture may have no compliance check.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each check occurs on exactly one day, and a day may have no compliance check.
+- node_id: sf:retail.space.fact_space_audit
+  descriptor:
+    qualified_name: retail.space.fact_space_audit
+    display_name: Space audit
+    description: Audit of store space, optionally of one aisle, performed by an employee.
+    synonyms: []
+    tags:
+    - fact
+    - space
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL
+      schema: SPACE
+      object: FACT_SPACE_AUDIT
+      format: table
+  grain:
+    description: One row is one space audit.
+    components:
+    - identity_id: space_audit_identity
+      dataset_columns:
+      - space_audit_id
+      description: Identifies one space audit.
+  columns:
+  - name: space_audit_id
+    description: Identifies one space audit.
+  - name: store_id
+    description: Storefront that was audited.
+  - name: aisle_id
+    description: Aisle that was audited when the audit names one.
+  - name: employee_id
+    description: Employee who performed the audit.
+  - name: calendar_day_id
+    description: Day the audit was performed.
+  - name: audit_status
+    description: Result of the space audit.
+    value_description: open, passed, failed
+  entity_definitions:
+  - identity_id: space_audit_identity
+    dataset_columns:
+    - space_audit_id
+    is_entity_universe: true
+    entity_expression:
+    - '[space_audit_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of space audit.
+  - identity_id: store_identity
+    dataset_columns:
+    - store_id
+    is_entity_universe: false
+    entity_expression:
+    - '[store_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each audit covers exactly one storefront, and a storefront may have no space audit.
+  - identity_id: aisle_identity
+    dataset_columns:
+    - aisle_id
+    is_entity_universe: false
+    entity_expression:
+    - '[aisle_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: An audit may omit an aisle, and an aisle may have no space audit.
+  - identity_id: employee_identity
+    dataset_columns:
+    - employee_id
+    is_entity_universe: false
+    entity_expression:
+    - '[employee_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each audit is performed by exactly one employee, and an employee may perform no space
+        audit.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each audit occurs on exactly one day, and a day may have no space audit.

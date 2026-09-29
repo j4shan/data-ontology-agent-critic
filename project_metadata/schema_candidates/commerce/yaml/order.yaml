@@ -1,0 +1,472 @@
+schema_version: '2'
+nodes:
+- node_id: sf:commerce.order.fact_order
+  descriptor:
+    qualified_name: commerce.order.fact_order
+    display_name: Order
+    description: Commercial commitment by a buyer account to purchase from a seller.
+    synonyms: []
+    tags:
+    - fact
+    - order
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE
+      schema: ORDER
+      object: FACT_ORDER
+      format: table
+  grain:
+    description: One row is one order.
+    components:
+    - identity_id: order_identity
+      dataset_columns:
+      - order_id
+      description: Identifies one order.
+  columns:
+  - name: order_id
+    description: Identifies one order.
+  - name: buyer_account_id
+    description: Buyer account that placed the order.
+  - name: buyer_user_id
+    description: Buyer user who placed the order.
+  - name: seller_id
+    description: Seller that fulfills the order.
+  - name: marketplace_id
+    description: Marketplace on which the order was placed.
+  - name: currency_id
+    description: Currency of the order amounts.
+  - name: ship_to_address_id
+    description: Address the order ships to.
+  - name: channel_id
+    description: Channel where the order was placed.
+  - name: calendar_day_id
+    description: Calendar day when the order was placed.
+  - name: contract_id
+    description: Contract that prices the order.
+  - name: order_status
+    description: Fulfillment standing of the order.
+    value_description: placed, allocated, shipped, delivered, cancelled
+  entity_definitions:
+  - identity_id: order_identity
+    dataset_columns:
+    - order_id
+    is_entity_universe: true
+    entity_expression:
+    - '[order_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
+  - identity_id: buyer_account_identity
+    dataset_columns:
+    - buyer_account_id
+    is_entity_universe: false
+    entity_expression:
+    - '[buyer_account_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each order belongs to exactly one buyer account, and a buyer account may have no
+        orders.
+  - identity_id: buyer_user_identity
+    dataset_columns:
+    - buyer_user_id
+    is_entity_universe: false
+    entity_expression:
+    - '[buyer_user_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: An order may have no buyer user, and a buyer user may have no orders.
+  - identity_id: seller_identity
+    dataset_columns:
+    - seller_id
+    is_entity_universe: false
+    entity_expression:
+    - '[seller_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each order belongs to exactly one seller, and a seller may have no orders.
+  - identity_id: marketplace_identity
+    dataset_columns:
+    - marketplace_id
+    is_entity_universe: false
+    entity_expression:
+    - '[marketplace_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each order belongs to exactly one marketplace, and a marketplace may have no orders.
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    is_entity_universe: false
+    entity_expression:
+    - '[currency_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each order uses exactly one currency, and a currency may have no orders.
+  - identity_id: address_identity
+    dataset_columns:
+    - ship_to_address_id
+    is_entity_universe: false
+    entity_expression:
+    - '[ship_to_address_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each order ships to exactly one address, and an address may have no orders shipped
+        to it.
+  - identity_id: channel_identity
+    dataset_columns:
+    - channel_id
+    is_entity_universe: false
+    entity_expression:
+    - '[channel_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each order belongs to exactly one channel, and a channel may have no orders.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each order belongs to exactly one calendar day, and a calendar day may have no orders.
+  - identity_id: contract_identity
+    dataset_columns:
+    - contract_id
+    is_entity_universe: false
+    entity_expression:
+    - '[contract_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: An order may have no contract, and a contract may have no orders.
+- node_id: sf:commerce.order.fact_order_bill_to
+  descriptor:
+    qualified_name: commerce.order.fact_order_bill_to
+    display_name: Order bill-to
+    description: Optional billing address recorded for one order.
+    synonyms: []
+    tags:
+    - fact
+    - order
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE
+      schema: ORDER
+      object: FACT_ORDER_BILL_TO
+      format: table
+  grain:
+    description: One row is one order bill-to.
+    components:
+    - identity_id: order_bill_to_identity
+      dataset_columns:
+      - order_bill_to_id
+      description: Identifies one order bill-to address.
+  columns:
+  - name: order_bill_to_id
+    description: Identifies one order bill-to address.
+  - name: order_id
+    description: Order billed at this address.
+  - name: address_id
+    description: Address billed for the order.
+  entity_definitions:
+  - identity_id: order_bill_to_identity
+    dataset_columns:
+    - order_bill_to_id
+    is_entity_universe: true
+    entity_expression:
+    - '[order_bill_to_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
+  - identity_id: order_identity
+    dataset_columns:
+    - order_id
+    is_entity_universe: false
+    entity_expression:
+    - '[order_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: '1:1'
+      business_rule: Each bill-to record matches exactly one order, an order has at most one bill-to record,
+        and an order may have no bill-to record.
+  - identity_id: address_identity
+    dataset_columns:
+    - address_id
+    is_entity_universe: false
+    entity_expression:
+    - '[address_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each bill-to record names exactly one address, and an address may have no bill-to
+        records.
+- node_id: sf:commerce.order.fact_order_line
+  descriptor:
+    qualified_name: commerce.order.fact_order_line
+    display_name: Order line
+    description: Variant quantity purchased on an order from one storefront.
+    synonyms: []
+    tags:
+    - fact
+    - order
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE
+      schema: ORDER
+      object: FACT_ORDER_LINE
+      format: table
+  grain:
+    description: One row is one order line.
+    components:
+    - identity_id: order_line_identity
+      dataset_columns:
+      - order_line_id
+      description: Identifies one order line.
+  columns:
+  - name: order_line_id
+    description: Identifies one order line.
+  - name: order_id
+    description: Order that contains the line.
+  - name: variant_id
+    description: Variant purchased on the line.
+  - name: listing_id
+    description: Listing the order line was bought from.
+  - name: seller_storefront_id
+    description: Storefront that sold the line.
+  - name: ordered_quantity
+    description: Units of the variant ordered on the line.
+  - name: extended_amount
+    description: Extended amount charged for the order line.
+  entity_definitions:
+  - identity_id: order_line_identity
+    dataset_columns:
+    - order_line_id
+    is_entity_universe: true
+    entity_expression:
+    - '[order_line_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
+  - identity_id: order_identity
+    dataset_columns:
+    - order_id
+    is_entity_universe: false
+    entity_expression:
+    - '[order_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Every order includes one or more order lines, and each order line belongs to exactly
+        one order.
+  - identity_id: variant_identity
+    dataset_columns:
+    - variant_id
+    is_entity_universe: false
+    entity_expression:
+    - '[variant_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each order line belongs to exactly one variant, and a variant may have no order lines.
+  - identity_id: listing_identity
+    dataset_columns:
+    - listing_id
+    is_entity_universe: false
+    entity_expression:
+    - '[listing_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: An order line may have no listing, and a listing may have no order lines.
+  - identity_id: seller_storefront_identity
+    dataset_columns:
+    - seller_storefront_id
+    is_entity_universe: false
+    entity_expression:
+    - '[seller_storefront_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each order line belongs to exactly one storefront, and a storefront may have no order
+        lines.
+- node_id: sf:commerce.order.fact_order_allocation
+  descriptor:
+    qualified_name: commerce.order.fact_order_allocation
+    display_name: Order allocation
+    description: Quantity of an order line allocated to a warehouse or fulfillment center.
+    synonyms: []
+    tags:
+    - fact
+    - order
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE
+      schema: ORDER
+      object: FACT_ORDER_ALLOCATION
+      format: table
+  grain:
+    description: One row is one order allocation.
+    components:
+    - identity_id: allocation_identity
+      dataset_columns:
+      - allocation_id
+      description: Identifies one order allocation.
+  columns:
+  - name: allocation_id
+    description: Identifies one order allocation.
+  - name: order_line_id
+    description: Order line that is allocated.
+  - name: seller_warehouse_id
+    description: Seller warehouse that will supply the allocation.
+  - name: fulfillment_center_id
+    description: Fulfillment center that will supply the allocation.
+  - name: allocated_quantity
+    description: Units of the order line assigned by this allocation.
+  entity_definitions:
+  - identity_id: allocation_identity
+    dataset_columns:
+    - allocation_id
+    is_entity_universe: true
+    entity_expression:
+    - '[allocation_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
+  - identity_id: order_line_identity
+    dataset_columns:
+    - order_line_id
+    is_entity_universe: false
+    entity_expression:
+    - '[order_line_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Every order line includes one or more allocations, and each allocation belongs to
+        exactly one order line.
+  - identity_id: seller_warehouse_identity
+    dataset_columns:
+    - seller_warehouse_id
+    is_entity_universe: false
+    entity_expression:
+    - '[seller_warehouse_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: An allocation may have no seller warehouse, and a seller warehouse may have no allocations.
+  - identity_id: fulfillment_center_identity
+    dataset_columns:
+    - fulfillment_center_id
+    is_entity_universe: false
+    entity_expression:
+    - '[fulfillment_center_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: An allocation may have no fulfillment center, and a fulfillment center may have no
+        allocations.
+- node_id: sf:commerce.order.fact_backorder
+  descriptor:
+    qualified_name: commerce.order.fact_backorder
+    display_name: Backorder
+    description: Unfilled demand recorded against an order line.
+    synonyms: []
+    tags:
+    - fact
+    - order
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE
+      schema: ORDER
+      object: FACT_BACKORDER
+      format: table
+  grain:
+    description: One row is one backorder.
+    components:
+    - identity_id: backorder_identity
+      dataset_columns:
+      - backorder_id
+      description: Identifies one backorder.
+  columns:
+  - name: backorder_id
+    description: Identifies one backorder.
+  - name: order_line_id
+    description: Order line that is backordered.
+  - name: variant_id
+    description: Variant that is backordered.
+  - name: backorder_status
+    description: Fulfillment standing of the backorder.
+    value_description: open, filled, cancelled
+  entity_definitions:
+  - identity_id: backorder_identity
+    dataset_columns:
+    - backorder_id
+    is_entity_universe: true
+    entity_expression:
+    - '[backorder_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
+  - identity_id: order_line_identity
+    dataset_columns:
+    - order_line_id
+    is_entity_universe: false
+    entity_expression:
+    - '[order_line_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each backorder belongs to exactly one order line, and an order line may have no backorders.
+  - identity_id: variant_identity
+    dataset_columns:
+    - variant_id
+    is_entity_universe: false
+    entity_expression:
+    - '[variant_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each backorder belongs to exactly one variant, and a variant may have no backorders.

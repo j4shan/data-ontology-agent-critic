@@ -1,0 +1,975 @@
+schema_version: '2'
+nodes:
+- node_id: sf:retail.supply.dim_warehouse
+  descriptor:
+    qualified_name: retail.supply.dim_warehouse
+    display_name: Distribution center
+    description: Distribution center that replenishes storefronts.
+    synonyms: []
+    tags:
+    - dimension
+    - supply
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL
+      schema: SUPPLY
+      object: DIM_WAREHOUSE
+      format: table
+  grain:
+    description: One row is one distribution center.
+    components:
+    - identity_id: warehouse_identity
+      dataset_columns:
+      - warehouse_id
+      description: Identifies one distribution center.
+  columns:
+  - name: warehouse_id
+    description: Identifies one distribution center.
+  - name: warehouse_name
+    description: Name of the distribution center.
+  entity_definitions:
+  - identity_id: warehouse_identity
+    dataset_columns:
+    - warehouse_id
+    is_entity_universe: true
+    entity_expression:
+    - '[warehouse_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of distribution center.
+- node_id: sf:retail.supply.dim_dc_location
+  descriptor:
+    qualified_name: retail.supply.dim_dc_location
+    display_name: DC location
+    description: Storage location inside a distribution center.
+    synonyms: []
+    tags:
+    - dimension
+    - supply
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL
+      schema: SUPPLY
+      object: DIM_DC_LOCATION
+      format: table
+  grain:
+    description: One row is one dc location.
+    components:
+    - identity_id: dc_location_identity
+      dataset_columns:
+      - dc_location_id
+      description: Identifies one distribution-center location.
+  columns:
+  - name: dc_location_id
+    description: Identifies one distribution-center location.
+  - name: warehouse_id
+    description: Distribution center that contains the location.
+  entity_definitions:
+  - identity_id: dc_location_identity
+    dataset_columns:
+    - dc_location_id
+    is_entity_universe: true
+    entity_expression:
+    - '[dc_location_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of dc location.
+  - identity_id: warehouse_identity
+    dataset_columns:
+    - warehouse_id
+    is_entity_universe: false
+    entity_expression:
+    - '[warehouse_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each distribution center has one or more locations, and each location belongs to
+        exactly one distribution center.
+- node_id: sf:retail.supply.dim_carrier
+  descriptor:
+    qualified_name: retail.supply.dim_carrier
+    display_name: Carrier
+    description: Carrier that hauls store deliveries or e-commerce orders.
+    synonyms: []
+    tags:
+    - dimension
+    - supply
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL
+      schema: SUPPLY
+      object: DIM_CARRIER
+      format: table
+  grain:
+    description: One row is one carrier.
+    components:
+    - identity_id: carrier_identity
+      dataset_columns:
+      - carrier_id
+      description: Identifies one carrier.
+  columns:
+  - name: carrier_id
+    description: Identifies one carrier.
+  entity_definitions:
+  - identity_id: carrier_identity
+    dataset_columns:
+    - carrier_id
+    is_entity_universe: true
+    entity_expression:
+    - '[carrier_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of carrier.
+- node_id: sf:retail.supply.fact_store_receipt
+  descriptor:
+    qualified_name: retail.supply.fact_store_receipt
+    display_name: Store receipt
+    description: Receipt of a distribution-center shipment at a storefront.
+    synonyms: []
+    tags:
+    - fact
+    - supply
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL
+      schema: SUPPLY
+      object: FACT_STORE_RECEIPT
+      format: table
+  grain:
+    description: One row is one store receipt.
+    components:
+    - identity_id: store_receipt_identity
+      dataset_columns:
+      - store_receipt_id
+      description: Identifies one store receipt.
+  columns:
+  - name: store_receipt_id
+    description: Identifies one store receipt.
+  - name: store_id
+    description: Storefront that received the goods.
+  - name: warehouse_id
+    description: Distribution center that shipped the goods.
+  - name: carrier_id
+    description: Carrier that delivered the receipt when a carrier is known.
+  - name: calendar_day_id
+    description: Day the storefront received the goods.
+  entity_definitions:
+  - identity_id: store_receipt_identity
+    dataset_columns:
+    - store_receipt_id
+    is_entity_universe: true
+    entity_expression:
+    - '[store_receipt_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of store receipt.
+  - identity_id: store_identity
+    dataset_columns:
+    - store_id
+    is_entity_universe: false
+    entity_expression:
+    - '[store_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each receipt arrives at exactly one storefront, and a storefront may have no receipt.
+  - identity_id: warehouse_identity
+    dataset_columns:
+    - warehouse_id
+    is_entity_universe: false
+    entity_expression:
+    - '[warehouse_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each receipt comes from exactly one distribution center, and a distribution center
+        may have no store receipt.
+  - identity_id: carrier_identity
+    dataset_columns:
+    - carrier_id
+    is_entity_universe: false
+    entity_expression:
+    - '[carrier_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A receipt may omit a carrier, and a carrier may deliver no store receipt.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each receipt occurs on exactly one day, and a day may have no store receipt.
+- node_id: sf:retail.supply.fact_store_receipt_line
+  descriptor:
+    qualified_name: retail.supply.fact_store_receipt_line
+    display_name: Store receipt line
+    description: Item quantity received on a store receipt.
+    synonyms: []
+    tags:
+    - fact
+    - supply
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL
+      schema: SUPPLY
+      object: FACT_STORE_RECEIPT_LINE
+      format: table
+  grain:
+    description: One row is one store receipt line.
+    components:
+    - identity_id: store_receipt_line_identity
+      dataset_columns:
+      - store_receipt_line_id
+      description: Identifies one store receipt line.
+  columns:
+  - name: store_receipt_line_id
+    description: Identifies one store receipt line.
+  - name: store_receipt_id
+    description: Receipt that contains the line.
+  - name: item_id
+    description: Item that was received.
+  - name: received_quantity
+    description: Quantity of the item received on the line.
+  entity_definitions:
+  - identity_id: store_receipt_line_identity
+    dataset_columns:
+    - store_receipt_line_id
+    is_entity_universe: true
+    entity_expression:
+    - '[store_receipt_line_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of store receipt line.
+  - identity_id: store_receipt_identity
+    dataset_columns:
+    - store_receipt_id
+    is_entity_universe: false
+    entity_expression:
+    - '[store_receipt_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each store receipt has one or more lines, and each line belongs to exactly one receipt.
+  - identity_id: item_identity
+    dataset_columns:
+    - item_id
+    is_entity_universe: false
+    entity_expression:
+    - '[item_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each receipt line names exactly one item, and an item may appear on no receipt line.
+- node_id: sf:retail.supply.fact_dc_shipment
+  descriptor:
+    qualified_name: retail.supply.fact_dc_shipment
+    display_name: DC shipment
+    description: Shipment from a distribution center to a storefront.
+    synonyms: []
+    tags:
+    - fact
+    - supply
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL
+      schema: SUPPLY
+      object: FACT_DC_SHIPMENT
+      format: table
+  grain:
+    description: One row is one dc shipment.
+    components:
+    - identity_id: dc_shipment_identity
+      dataset_columns:
+      - dc_shipment_id
+      description: Identifies one distribution-center shipment.
+  columns:
+  - name: dc_shipment_id
+    description: Identifies one distribution-center shipment.
+  - name: warehouse_id
+    description: Distribution center that shipped the goods.
+  - name: store_id
+    description: Storefront the shipment is destined for.
+  - name: carrier_id
+    description: Carrier hauling the shipment when a carrier is known.
+  - name: calendar_day_id
+    description: Day the shipment was dispatched.
+  entity_definitions:
+  - identity_id: dc_shipment_identity
+    dataset_columns:
+    - dc_shipment_id
+    is_entity_universe: true
+    entity_expression:
+    - '[dc_shipment_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of dc shipment.
+  - identity_id: warehouse_identity
+    dataset_columns:
+    - warehouse_id
+    is_entity_universe: false
+    entity_expression:
+    - '[warehouse_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each shipment leaves exactly one distribution center, and a distribution center may
+        have no shipment.
+  - identity_id: store_identity
+    dataset_columns:
+    - store_id
+    is_entity_universe: false
+    entity_expression:
+    - '[store_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each shipment is destined for exactly one storefront, and a storefront may have no
+        shipment.
+  - identity_id: carrier_identity
+    dataset_columns:
+    - carrier_id
+    is_entity_universe: false
+    entity_expression:
+    - '[carrier_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A shipment may omit a carrier, and a carrier may haul no shipment.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each shipment is dispatched on exactly one day, and a day may have no shipment.
+- node_id: sf:retail.supply.fact_dc_shipment_line
+  descriptor:
+    qualified_name: retail.supply.fact_dc_shipment_line
+    display_name: DC shipment line
+    description: Item quantity shipped on a distribution-center shipment.
+    synonyms: []
+    tags:
+    - fact
+    - supply
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL
+      schema: SUPPLY
+      object: FACT_DC_SHIPMENT_LINE
+      format: table
+  grain:
+    description: One row is one dc shipment line.
+    components:
+    - identity_id: dc_shipment_line_identity
+      dataset_columns:
+      - dc_shipment_line_id
+      description: Identifies one distribution-center shipment line.
+  columns:
+  - name: dc_shipment_line_id
+    description: Identifies one distribution-center shipment line.
+  - name: dc_shipment_id
+    description: Shipment that contains the line.
+  - name: item_id
+    description: Item that was shipped.
+  - name: dc_location_id
+    description: Distribution-center location the quantity was picked from when a location is known.
+  - name: shipped_quantity
+    description: Quantity of the item shipped on the line.
+  entity_definitions:
+  - identity_id: dc_shipment_line_identity
+    dataset_columns:
+    - dc_shipment_line_id
+    is_entity_universe: true
+    entity_expression:
+    - '[dc_shipment_line_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of dc shipment line.
+  - identity_id: dc_shipment_identity
+    dataset_columns:
+    - dc_shipment_id
+    is_entity_universe: false
+    entity_expression:
+    - '[dc_shipment_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each distribution-center shipment has one or more lines, and each line belongs to
+        exactly one shipment.
+  - identity_id: item_identity
+    dataset_columns:
+    - item_id
+    is_entity_universe: false
+    entity_expression:
+    - '[item_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each shipment line names exactly one item, and an item may appear on no shipment
+        line.
+  - identity_id: dc_location_identity
+    dataset_columns:
+    - dc_location_id
+    is_entity_universe: false
+    entity_expression:
+    - '[dc_location_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A shipment line may omit a location, and a location may be picked on no shipment
+        line.
+- node_id: sf:retail.supply.fact_purchase_order
+  descriptor:
+    qualified_name: retail.supply.fact_purchase_order
+    display_name: Purchase order
+    description: Order placed with a vendor site for delivery to a distribution center.
+    synonyms: []
+    tags:
+    - fact
+    - supply
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL
+      schema: SUPPLY
+      object: FACT_PURCHASE_ORDER
+      format: table
+  grain:
+    description: One row is one purchase order.
+    components:
+    - identity_id: purchase_order_identity
+      dataset_columns:
+      - purchase_order_id
+      description: Identifies one purchase order.
+  columns:
+  - name: purchase_order_id
+    description: Identifies one purchase order.
+  - name: vendor_id
+    description: Vendor the order is placed with.
+  - name: vendor_site_id
+    description: Vendor site that will ship the order.
+  - name: warehouse_id
+    description: Distribution center that will receive the order.
+  - name: currency_id
+    description: Currency of the order.
+  - name: po_status
+    description: Fulfillment status of the purchase order.
+    value_description: open, partial, closed, cancelled
+  entity_definitions:
+  - identity_id: purchase_order_identity
+    dataset_columns:
+    - purchase_order_id
+    is_entity_universe: true
+    entity_expression:
+    - '[purchase_order_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of purchase order.
+  - identity_id: vendor_identity
+    dataset_columns:
+    - vendor_id
+    is_entity_universe: false
+    entity_expression:
+    - '[vendor_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each purchase order names exactly one vendor, and a vendor may have no purchase order.
+  - identity_id: vendor_site_identity
+    dataset_columns:
+    - vendor_site_id
+    is_entity_universe: false
+    entity_expression:
+    - '[vendor_site_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each purchase order names exactly one vendor site, and a vendor site may have no
+        purchase order.
+  - identity_id: warehouse_identity
+    dataset_columns:
+    - warehouse_id
+    is_entity_universe: false
+    entity_expression:
+    - '[warehouse_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each purchase order is destined for exactly one distribution center, and a distribution
+        center may have no purchase order.
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    is_entity_universe: false
+    entity_expression:
+    - '[currency_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each purchase order uses exactly one currency, and a currency may be used on no purchase
+        order.
+- node_id: sf:retail.supply.fact_purchase_order_line
+  descriptor:
+    qualified_name: retail.supply.fact_purchase_order_line
+    display_name: Purchase order line
+    description: Item quantity ordered on a purchase order.
+    synonyms: []
+    tags:
+    - fact
+    - supply
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL
+      schema: SUPPLY
+      object: FACT_PURCHASE_ORDER_LINE
+      format: table
+  grain:
+    description: One row is one purchase order line.
+    components:
+    - identity_id: purchase_order_line_identity
+      dataset_columns:
+      - purchase_order_line_id
+      description: Identifies one purchase-order line.
+  columns:
+  - name: purchase_order_line_id
+    description: Identifies one purchase-order line.
+  - name: purchase_order_id
+    description: Purchase order that contains the line.
+  - name: item_id
+    description: Item that was ordered.
+  - name: uom_id
+    description: Unit of measure the quantity is ordered in.
+  - name: ordered_quantity
+    description: Quantity of the item ordered on the line.
+  entity_definitions:
+  - identity_id: purchase_order_line_identity
+    dataset_columns:
+    - purchase_order_line_id
+    is_entity_universe: true
+    entity_expression:
+    - '[purchase_order_line_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of purchase order line.
+  - identity_id: purchase_order_identity
+    dataset_columns:
+    - purchase_order_id
+    is_entity_universe: false
+    entity_expression:
+    - '[purchase_order_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each purchase order has one or more lines, and each line belongs to exactly one purchase
+        order.
+  - identity_id: item_identity
+    dataset_columns:
+    - item_id
+    is_entity_universe: false
+    entity_expression:
+    - '[item_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each purchase-order line names exactly one item, and an item may appear on no purchase-order
+        line.
+  - identity_id: uom_identity
+    dataset_columns:
+    - uom_id
+    is_entity_universe: false
+    entity_expression:
+    - '[uom_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each purchase-order line uses exactly one unit of measure, and a unit of measure
+        may be unused on an order line.
+- node_id: sf:retail.supply.fact_vendor_invoice
+  descriptor:
+    qualified_name: retail.supply.fact_vendor_invoice
+    display_name: Vendor invoice
+    description: Invoice presented by a vendor.
+    synonyms: []
+    tags:
+    - fact
+    - supply
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL
+      schema: SUPPLY
+      object: FACT_VENDOR_INVOICE
+      format: table
+  grain:
+    description: One row is one vendor invoice.
+    components:
+    - identity_id: vendor_invoice_identity
+      dataset_columns:
+      - vendor_invoice_id
+      description: Identifies one vendor invoice.
+  columns:
+  - name: vendor_invoice_id
+    description: Identifies one vendor invoice.
+  - name: vendor_id
+    description: Vendor that issued the invoice.
+  - name: currency_id
+    description: Currency of the invoice.
+  - name: calendar_day_id
+    description: Day the invoice is dated.
+  entity_definitions:
+  - identity_id: vendor_invoice_identity
+    dataset_columns:
+    - vendor_invoice_id
+    is_entity_universe: true
+    entity_expression:
+    - '[vendor_invoice_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of vendor invoice.
+  - identity_id: vendor_identity
+    dataset_columns:
+    - vendor_id
+    is_entity_universe: false
+    entity_expression:
+    - '[vendor_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each invoice is issued by exactly one vendor, and a vendor may issue no invoice.
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    is_entity_universe: false
+    entity_expression:
+    - '[currency_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each invoice uses exactly one currency, and a currency may be used on no invoice.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each invoice is dated on exactly one day, and a day may have no invoice.
+- node_id: sf:retail.supply.fact_vendor_invoice_line
+  descriptor:
+    qualified_name: retail.supply.fact_vendor_invoice_line
+    display_name: Vendor invoice line
+    description: Charge line on a vendor invoice.
+    synonyms: []
+    tags:
+    - fact
+    - supply
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL
+      schema: SUPPLY
+      object: FACT_VENDOR_INVOICE_LINE
+      format: table
+  grain:
+    description: One row is one vendor invoice line.
+    components:
+    - identity_id: vendor_invoice_line_identity
+      dataset_columns:
+      - vendor_invoice_line_id
+      description: Identifies one vendor invoice line.
+  columns:
+  - name: vendor_invoice_line_id
+    description: Identifies one vendor invoice line.
+  - name: vendor_invoice_id
+    description: Invoice that contains the line.
+  - name: purchase_order_line_id
+    description: Purchase-order line the charge matches when a match is known.
+  - name: gl_account_id
+    description: General-ledger account that classifies the charge.
+  - name: extended_amount
+    description: Extended amount charged on the invoice line.
+  entity_definitions:
+  - identity_id: vendor_invoice_line_identity
+    dataset_columns:
+    - vendor_invoice_line_id
+    is_entity_universe: true
+    entity_expression:
+    - '[vendor_invoice_line_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of vendor invoice line.
+  - identity_id: vendor_invoice_identity
+    dataset_columns:
+    - vendor_invoice_id
+    is_entity_universe: false
+    entity_expression:
+    - '[vendor_invoice_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each vendor invoice has one or more lines, and each line belongs to exactly one invoice.
+  - identity_id: purchase_order_line_identity
+    dataset_columns:
+    - purchase_order_line_id
+    is_entity_universe: false
+    entity_expression:
+    - '[purchase_order_line_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: An invoice line may omit a purchase-order line, and a purchase-order line may be
+        unmatched by an invoice.
+  - identity_id: gl_account_identity
+    dataset_columns:
+    - gl_account_id
+    is_entity_universe: false
+    entity_expression:
+    - '[gl_account_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each invoice line posts to exactly one general-ledger account, and an account may
+        classify no invoice line.
+- node_id: sf:retail.supply.fact_replenishment_order
+  descriptor:
+    qualified_name: retail.supply.fact_replenishment_order
+    display_name: Replenishment order
+    description: Storefront request that a distribution center replenish an item.
+    synonyms: []
+    tags:
+    - fact
+    - supply
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL
+      schema: SUPPLY
+      object: FACT_REPLENISHMENT_ORDER
+      format: table
+  grain:
+    description: One row is one replenishment order.
+    components:
+    - identity_id: replenishment_order_identity
+      dataset_columns:
+      - replenishment_order_id
+      description: Identifies one replenishment order.
+  columns:
+  - name: replenishment_order_id
+    description: Identifies one replenishment order.
+  - name: store_id
+    description: Storefront requesting the item.
+  - name: warehouse_id
+    description: Distribution center asked to supply the item.
+  - name: item_id
+    description: Item being replenished.
+  - name: calendar_day_id
+    description: Day the replenishment was ordered.
+  - name: order_quantity
+    description: Quantity requested on the replenishment order.
+  entity_definitions:
+  - identity_id: replenishment_order_identity
+    dataset_columns:
+    - replenishment_order_id
+    is_entity_universe: true
+    entity_expression:
+    - '[replenishment_order_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of replenishment order.
+  - identity_id: store_identity
+    dataset_columns:
+    - store_id
+    is_entity_universe: false
+    entity_expression:
+    - '[store_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each replenishment order names exactly one storefront, and a storefront may have
+        no replenishment order.
+  - identity_id: warehouse_identity
+    dataset_columns:
+    - warehouse_id
+    is_entity_universe: false
+    entity_expression:
+    - '[warehouse_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each replenishment order names exactly one distribution center, and a distribution
+        center may have no replenishment order.
+  - identity_id: item_identity
+    dataset_columns:
+    - item_id
+    is_entity_universe: false
+    entity_expression:
+    - '[item_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each replenishment order names exactly one item, and an item may have no replenishment
+        order.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each replenishment order is dated on exactly one day, and a day may have no replenishment
+        order.
+- node_id: sf:retail.supply.fact_vendor_fill
+  descriptor:
+    qualified_name: retail.supply.fact_vendor_fill
+    display_name: Vendor fill
+    description: Quantity a vendor filled against a purchase-order line.
+    synonyms: []
+    tags:
+    - fact
+    - supply
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL
+      schema: SUPPLY
+      object: FACT_VENDOR_FILL
+      format: table
+  grain:
+    description: One row is one vendor fill.
+    components:
+    - identity_id: vendor_fill_identity
+      dataset_columns:
+      - vendor_fill_id
+      description: Identifies one vendor fill.
+  columns:
+  - name: vendor_fill_id
+    description: Identifies one vendor fill.
+  - name: vendor_id
+    description: Vendor that filled the quantity.
+  - name: purchase_order_line_id
+    description: Purchase-order line that was filled.
+  - name: calendar_day_id
+    description: Day the fill was recorded.
+  - name: filled_quantity
+    description: Quantity the vendor filled against the line.
+  entity_definitions:
+  - identity_id: vendor_fill_identity
+    dataset_columns:
+    - vendor_fill_id
+    is_entity_universe: true
+    entity_expression:
+    - '[vendor_fill_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of vendor fill.
+  - identity_id: vendor_identity
+    dataset_columns:
+    - vendor_id
+    is_entity_universe: false
+    entity_expression:
+    - '[vendor_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each fill names exactly one vendor, and a vendor may have no fill.
+  - identity_id: purchase_order_line_identity
+    dataset_columns:
+    - purchase_order_line_id
+    is_entity_universe: false
+    entity_expression:
+    - '[purchase_order_line_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each fill matches exactly one purchase-order line, and a purchase-order line may
+        have no fill.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each fill is recorded on exactly one day, and a day may have no vendor fill.

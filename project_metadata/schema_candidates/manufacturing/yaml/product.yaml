@@ -1,0 +1,589 @@
+schema_version: '2'
+nodes:
+- node_id: sf:manufacturing.product.dim_product_family
+  descriptor:
+    qualified_name: manufacturing.product.dim_product_family
+    display_name: Product Family
+    description: Commercial family that groups related pump items.
+    synonyms: []
+    tags:
+    - dimension
+    - product
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING
+      schema: PRODUCT
+      object: DIM_PRODUCT_FAMILY
+      format: table
+  grain:
+    description: One row is one product family.
+    components:
+    - identity_id: product_family_identity
+      dataset_columns:
+      - product_family_id
+      description: Identifier of one product family.
+  columns:
+  - name: product_family_id
+    description: Identifier of one product family.
+  - name: family_name
+    description: Name of the product family.
+  entity_definitions:
+  - identity_id: product_family_identity
+    dataset_columns:
+    - product_family_id
+    is_entity_universe: true
+    entity_expression:
+    - '[product_family_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of product family.
+- node_id: sf:manufacturing.product.dim_commodity
+  descriptor:
+    qualified_name: manufacturing.product.dim_commodity
+    display_name: Commodity
+    description: Purchasing commodity used to classify materials and parts.
+    synonyms: []
+    tags:
+    - dimension
+    - product
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING
+      schema: PRODUCT
+      object: DIM_COMMODITY
+      format: table
+  grain:
+    description: One row is one commodity.
+    components:
+    - identity_id: commodity_identity
+      dataset_columns:
+      - commodity_id
+      description: Identifier of one commodity.
+  columns:
+  - name: commodity_id
+    description: Identifier of one commodity.
+  - name: commodity_name
+    description: Name of the commodity.
+  entity_definitions:
+  - identity_id: commodity_identity
+    dataset_columns:
+    - commodity_id
+    is_entity_universe: true
+    entity_expression:
+    - '[commodity_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of commodity.
+- node_id: sf:manufacturing.product.dim_unit_of_measure
+  descriptor:
+    qualified_name: manufacturing.product.dim_unit_of_measure
+    display_name: Unit of Measure
+    description: Unit in which an item quantity is stocked, ordered, or shipped.
+    synonyms: []
+    tags:
+    - dimension
+    - product
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING
+      schema: PRODUCT
+      object: DIM_UNIT_OF_MEASURE
+      format: table
+  grain:
+    description: One row is one unit of measure.
+    components:
+    - identity_id: uom_identity
+      dataset_columns:
+      - uom_id
+      description: Identifier of one unit of measure.
+  columns:
+  - name: uom_id
+    description: Identifier of one unit of measure.
+  - name: uom_code
+    description: Short code of the unit of measure.
+  entity_definitions:
+  - identity_id: uom_identity
+    dataset_columns:
+    - uom_id
+    is_entity_universe: true
+    entity_expression:
+    - '[uom_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of unit of measure.
+- node_id: sf:manufacturing.product.dim_item
+  descriptor:
+    qualified_name: manufacturing.product.dim_item
+    display_name: Item
+    description: Material or part that Alderford makes, buys, or uses as a phantom.
+    synonyms:
+    - material
+    - part
+    tags:
+    - dimension
+    - product
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING
+      schema: PRODUCT
+      object: DIM_ITEM
+      format: table
+  grain:
+    description: One row is one item.
+    components:
+    - identity_id: item_identity
+      dataset_columns:
+      - item_id
+      description: Identifier of one item.
+  columns:
+  - name: item_id
+    description: Identifier of one item.
+  - name: product_family_id
+    description: Product family that classifies the item.
+  - name: commodity_id
+    description: Commodity that classifies the item.
+  - name: base_uom_id
+    description: Base unit of measure for the item.
+  - name: item_name
+    description: Name of the item.
+  - name: item_type
+    description: Planning source of the item.
+    value_description: make, buy, phantom
+  entity_definitions:
+  - identity_id: item_identity
+    dataset_columns:
+    - item_id
+    is_entity_universe: true
+    entity_expression:
+    - '[item_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of item.
+  - identity_id: product_family_identity
+    dataset_columns:
+    - product_family_id
+    is_entity_universe: false
+    entity_expression:
+    - '[product_family_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many items belong to one product family, every item matches a product family, and
+        a product family may include no item.
+  - identity_id: commodity_identity
+    dataset_columns:
+    - commodity_id
+    is_entity_universe: false
+    entity_expression:
+    - '[commodity_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many items belong to one commodity, every item matches a commodity, and a commodity
+        may include no item.
+  - identity_id: uom_identity
+    dataset_columns:
+    - base_uom_id
+    is_entity_universe: false
+    entity_expression:
+    - '[base_uom_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many items share one base unit of measure, every item matches a unit of measure,
+        and a unit of measure may include no item.
+- node_id: sf:manufacturing.product.dim_item_revision
+  descriptor:
+    qualified_name: manufacturing.product.dim_item_revision
+    display_name: Item Revision
+    description: Controlled engineering revision of an item.
+    synonyms: []
+    tags:
+    - dimension
+    - product
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING
+      schema: PRODUCT
+      object: DIM_ITEM_REVISION
+      format: table
+  grain:
+    description: One row is one item revision.
+    components:
+    - identity_id: item_revision_identity
+      dataset_columns:
+      - item_revision_id
+      description: Identifier of one item revision.
+  columns:
+  - name: item_revision_id
+    description: Identifier of one item revision.
+  - name: item_id
+    description: Item that the revision defines.
+  - name: revision_code
+    description: Engineering code of the revision.
+  - name: revision_status
+    description: Release state of the item revision.
+    value_description: draft, released, obsolete
+  entity_definitions:
+  - identity_id: item_revision_identity
+    dataset_columns:
+    - item_revision_id
+    is_entity_universe: true
+    entity_expression:
+    - '[item_revision_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of item revision.
+  - identity_id: item_identity
+    dataset_columns:
+    - item_id
+    is_entity_universe: false
+    entity_expression:
+    - '[item_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many revisions belong to one item, every revision matches an item, and every item
+        includes at least one revision.
+- node_id: sf:manufacturing.product.dim_bom_header
+  descriptor:
+    qualified_name: manufacturing.product.dim_bom_header
+    display_name: BOM Header
+    description: Bill of materials for a parent item revision at a plant.
+    synonyms: []
+    tags:
+    - dimension
+    - product
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING
+      schema: PRODUCT
+      object: DIM_BOM_HEADER
+      format: table
+  grain:
+    description: One row is one bom header.
+    components:
+    - identity_id: bom_header_identity
+      dataset_columns:
+      - bom_header_id
+      description: Identifier of one bill of materials.
+  columns:
+  - name: bom_header_id
+    description: Identifier of one bill of materials.
+  - name: parent_item_revision_id
+    description: Parent item revision the bill of materials builds.
+  - name: plant_id
+    description: Plant where the bill of materials is effective.
+  entity_definitions:
+  - identity_id: bom_header_identity
+    dataset_columns:
+    - bom_header_id
+    is_entity_universe: true
+    entity_expression:
+    - '[bom_header_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of bom header.
+  - identity_id: item_revision_identity
+    dataset_columns:
+    - parent_item_revision_id
+    is_entity_universe: false
+    entity_expression:
+    - '[parent_item_revision_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many bills of materials belong to one parent item revision, every bill of materials
+        matches a parent revision, and an item revision may include no bill of materials.
+  - identity_id: plant_identity
+    dataset_columns:
+    - plant_id
+    is_entity_universe: false
+    entity_expression:
+    - '[plant_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many bills of materials belong to one plant, every bill of materials matches a plant,
+        and a plant may include no bill of materials.
+- node_id: sf:manufacturing.product.dim_routing_header
+  descriptor:
+    qualified_name: manufacturing.product.dim_routing_header
+    display_name: Routing Header
+    description: Manufacturing routing for an item revision at a plant.
+    synonyms: []
+    tags:
+    - dimension
+    - product
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING
+      schema: PRODUCT
+      object: DIM_ROUTING_HEADER
+      format: table
+  grain:
+    description: One row is one routing header.
+    components:
+    - identity_id: routing_identity
+      dataset_columns:
+      - routing_id
+      description: Identifier of one routing.
+  columns:
+  - name: routing_id
+    description: Identifier of one routing.
+  - name: item_revision_id
+    description: Item revision the routing produces.
+  - name: plant_id
+    description: Plant where the routing is effective.
+  entity_definitions:
+  - identity_id: routing_identity
+    dataset_columns:
+    - routing_id
+    is_entity_universe: true
+    entity_expression:
+    - '[routing_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of routing header.
+  - identity_id: item_revision_identity
+    dataset_columns:
+    - item_revision_id
+    is_entity_universe: false
+    entity_expression:
+    - '[item_revision_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many routings belong to one item revision, every routing matches an item revision,
+        and an item revision may include no routing.
+  - identity_id: plant_identity
+    dataset_columns:
+    - plant_id
+    is_entity_universe: false
+    entity_expression:
+    - '[plant_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many routings belong to one plant, every routing matches a plant, and a plant may
+        include no routing.
+- node_id: sf:manufacturing.product.dim_operation
+  descriptor:
+    qualified_name: manufacturing.product.dim_operation
+    display_name: Operation
+    description: Standard manufacturing operation that can appear on a routing.
+    synonyms: []
+    tags:
+    - dimension
+    - product
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING
+      schema: PRODUCT
+      object: DIM_OPERATION
+      format: table
+  grain:
+    description: One row is one operation.
+    components:
+    - identity_id: operation_identity
+      dataset_columns:
+      - operation_id
+      description: Identifier of one operation.
+  columns:
+  - name: operation_id
+    description: Identifier of one operation.
+  - name: operation_code
+    description: Shop-floor code of the operation.
+  entity_definitions:
+  - identity_id: operation_identity
+    dataset_columns:
+    - operation_id
+    is_entity_universe: true
+    entity_expression:
+    - '[operation_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of operation.
+- node_id: sf:manufacturing.product.dim_tool
+  descriptor:
+    qualified_name: manufacturing.product.dim_tool
+    display_name: Tool
+    description: Gauge, fixture, or tool kept at a plant and subject to calibration.
+    synonyms: []
+    tags:
+    - dimension
+    - product
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING
+      schema: PRODUCT
+      object: DIM_TOOL
+      format: table
+  grain:
+    description: One row is one tool.
+    components:
+    - identity_id: tool_identity
+      dataset_columns:
+      - tool_id
+      description: Identifier of one tool.
+  columns:
+  - name: tool_id
+    description: Identifier of one tool.
+  - name: plant_id
+    description: Plant that keeps the tool.
+  - name: tool_name
+    description: Name of the tool.
+  entity_definitions:
+  - identity_id: tool_identity
+    dataset_columns:
+    - tool_id
+    is_entity_universe: true
+    entity_expression:
+    - '[tool_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of tool.
+  - identity_id: plant_identity
+    dataset_columns:
+    - plant_id
+    is_entity_universe: false
+    entity_expression:
+    - '[plant_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many tools belong to one plant, every tool matches a plant, and a plant may include
+        no tool.
+- node_id: sf:manufacturing.product.dim_engineering_document
+  descriptor:
+    qualified_name: manufacturing.product.dim_engineering_document
+    display_name: Engineering Document
+    description: Controlled document that may describe an item revision.
+    synonyms: []
+    tags:
+    - dimension
+    - product
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING
+      schema: PRODUCT
+      object: DIM_ENGINEERING_DOCUMENT
+      format: table
+  grain:
+    description: One row is one engineering document.
+    components:
+    - identity_id: document_identity
+      dataset_columns:
+      - document_id
+      description: Identifier of one engineering document.
+  columns:
+  - name: document_id
+    description: Identifier of one engineering document.
+  - name: item_revision_id
+    description: Item revision the document describes, when the document is revision-specific.
+  - name: document_title
+    description: Title of the engineering document.
+  entity_definitions:
+  - identity_id: document_identity
+    dataset_columns:
+    - document_id
+    is_entity_universe: true
+    entity_expression:
+    - '[document_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of engineering document.
+  - identity_id: item_revision_identity
+    dataset_columns:
+    - item_revision_id
+    is_entity_universe: false
+    entity_expression:
+    - '[item_revision_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: An engineering document may match one item revision, and an item revision may include
+        no engineering document.
+- node_id: sf:manufacturing.product.dim_engineering_change
+  descriptor:
+    qualified_name: manufacturing.product.dim_engineering_change
+    display_name: Engineering Change
+    description: Change order that authorizes a revision to product definition.
+    synonyms: []
+    tags:
+    - dimension
+    - product
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING
+      schema: PRODUCT
+      object: DIM_ENGINEERING_CHANGE
+      format: table
+  grain:
+    description: One row is one engineering change.
+    components:
+    - identity_id: engineering_change_identity
+      dataset_columns:
+      - engineering_change_id
+      description: Identifier of one engineering change.
+  columns:
+  - name: engineering_change_id
+    description: Identifier of one engineering change.
+  - name: change_number
+    description: Public number of the engineering change.
+  - name: change_status
+    description: Workflow state of the engineering change.
+    value_description: proposed, approved, implemented, cancelled
+  entity_definitions:
+  - identity_id: engineering_change_identity
+    dataset_columns:
+    - engineering_change_id
+    is_entity_universe: true
+    entity_expression:
+    - '[engineering_change_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of engineering change.

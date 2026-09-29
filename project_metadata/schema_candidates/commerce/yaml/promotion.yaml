@@ -1,0 +1,107 @@
+schema_version: '2'
+nodes:
+- node_id: sf:commerce.promotion.dim_promotion
+  descriptor:
+    qualified_name: commerce.promotion.dim_promotion
+    display_name: Promotion
+    description: Promotion that may be funded by a seller.
+    synonyms: []
+    tags:
+    - dimension
+    - promotion
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE
+      schema: PROMOTION
+      object: DIM_PROMOTION
+      format: table
+  grain:
+    description: One row is one promotion.
+    components:
+    - identity_id: promotion_identity
+      dataset_columns:
+      - promotion_id
+      description: Identifies one promotion.
+  columns:
+  - name: promotion_id
+    description: Identifies one promotion.
+  - name: seller_id
+    description: Seller that funds the promotion.
+  - name: promotion_status
+    description: Lifecycle standing of the promotion.
+    value_description: draft, active, ended
+  entity_definitions:
+  - identity_id: promotion_identity
+    dataset_columns:
+    - promotion_id
+    is_entity_universe: true
+    entity_expression:
+    - '[promotion_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
+  - identity_id: seller_identity
+    dataset_columns:
+    - seller_id
+    is_entity_universe: false
+    entity_expression:
+    - '[seller_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A promotion may have no seller, and a seller may have no promotions.
+- node_id: sf:commerce.promotion.dim_coupon
+  descriptor:
+    qualified_name: commerce.promotion.dim_coupon
+    display_name: Coupon
+    description: Coupon that may be issued under a promotion.
+    synonyms: []
+    tags:
+    - dimension
+    - promotion
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE
+      schema: PROMOTION
+      object: DIM_COUPON
+      format: table
+  grain:
+    description: One row is one coupon.
+    components:
+    - identity_id: coupon_identity
+      dataset_columns:
+      - coupon_id
+      description: Identifies one coupon.
+  columns:
+  - name: coupon_id
+    description: Identifies one coupon.
+  - name: promotion_id
+    description: Promotion that issues the coupon.
+  entity_definitions:
+  - identity_id: coupon_identity
+    dataset_columns:
+    - coupon_id
+    is_entity_universe: true
+    entity_expression:
+    - '[coupon_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
+  - identity_id: promotion_identity
+    dataset_columns:
+    - promotion_id
+    is_entity_universe: false
+    entity_expression:
+    - '[promotion_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A coupon may have no promotion, and a promotion may have no coupons.

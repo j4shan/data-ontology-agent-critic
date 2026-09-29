@@ -1,0 +1,521 @@
+schema_version: '2'
+nodes:
+- node_id: sf:commerce.catalog.dim_catalog
+  descriptor:
+    qualified_name: commerce.catalog.dim_catalog
+    display_name: Catalog
+    description: Assortment of products published by a seller.
+    synonyms: []
+    tags:
+    - dimension
+    - catalog
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE
+      schema: CATALOG
+      object: DIM_CATALOG
+      format: table
+  grain:
+    description: One row is one catalog.
+    components:
+    - identity_id: catalog_identity
+      dataset_columns:
+      - catalog_id
+      description: Identifies one catalog.
+  columns:
+  - name: catalog_id
+    description: Identifies one catalog.
+  - name: seller_id
+    description: Seller that owns the catalog.
+  entity_definitions:
+  - identity_id: catalog_identity
+    dataset_columns:
+    - catalog_id
+    is_entity_universe: true
+    entity_expression:
+    - '[catalog_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
+  - identity_id: seller_identity
+    dataset_columns:
+    - seller_id
+    is_entity_universe: false
+    entity_expression:
+    - '[seller_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Every seller includes one or more catalogs, and each catalog belongs to exactly one
+        seller.
+- node_id: sf:commerce.catalog.dim_category
+  descriptor:
+    qualified_name: commerce.catalog.dim_category
+    display_name: Category
+    description: Product category that classifies products without a parent category link.
+    synonyms: []
+    tags:
+    - dimension
+    - catalog
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE
+      schema: CATALOG
+      object: DIM_CATEGORY
+      format: table
+  grain:
+    description: One row is one category.
+    components:
+    - identity_id: category_identity
+      dataset_columns:
+      - category_id
+      description: Identifies one category.
+  columns:
+  - name: category_id
+    description: Identifies one category.
+  entity_definitions:
+  - identity_id: category_identity
+    dataset_columns:
+    - category_id
+    is_entity_universe: true
+    entity_expression:
+    - '[category_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
+- node_id: sf:commerce.catalog.dim_brand
+  descriptor:
+    qualified_name: commerce.catalog.dim_brand
+    display_name: Brand
+    description: Brand that may be named on a product.
+    synonyms: []
+    tags:
+    - dimension
+    - catalog
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE
+      schema: CATALOG
+      object: DIM_BRAND
+      format: table
+  grain:
+    description: One row is one brand.
+    components:
+    - identity_id: brand_identity
+      dataset_columns:
+      - brand_id
+      description: Identifies one brand.
+  columns:
+  - name: brand_id
+    description: Identifies one brand.
+  entity_definitions:
+  - identity_id: brand_identity
+    dataset_columns:
+    - brand_id
+    is_entity_universe: true
+    entity_expression:
+    - '[brand_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
+- node_id: sf:commerce.catalog.dim_product
+  descriptor:
+    qualified_name: commerce.catalog.dim_product
+    display_name: Product
+    description: Commercial item a seller presents in the catalog.
+    synonyms: []
+    tags:
+    - dimension
+    - catalog
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE
+      schema: CATALOG
+      object: DIM_PRODUCT
+      format: table
+  grain:
+    description: One row is one product.
+    components:
+    - identity_id: product_identity
+      dataset_columns:
+      - product_id
+      description: Identifies one product.
+  columns:
+  - name: product_id
+    description: Identifies one product.
+  - name: brand_id
+    description: Brand named on the product.
+  - name: seller_id
+    description: Seller that presents the product.
+  - name: product_status
+    description: Lifecycle standing of the product.
+    value_description: draft, active, retired
+  entity_definitions:
+  - identity_id: product_identity
+    dataset_columns:
+    - product_id
+    is_entity_universe: true
+    entity_expression:
+    - '[product_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
+  - identity_id: brand_identity
+    dataset_columns:
+    - brand_id
+    is_entity_universe: false
+    entity_expression:
+    - '[brand_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A product may have no brand, and a brand may have no products.
+  - identity_id: seller_identity
+    dataset_columns:
+    - seller_id
+    is_entity_universe: false
+    entity_expression:
+    - '[seller_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each product belongs to exactly one seller, and a seller may have no products.
+- node_id: sf:commerce.catalog.dim_variant
+  descriptor:
+    qualified_name: commerce.catalog.dim_variant
+    display_name: Variant
+    description: Sellable unit of a product that inventory and orders move.
+    synonyms: []
+    tags:
+    - dimension
+    - catalog
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE
+      schema: CATALOG
+      object: DIM_VARIANT
+      format: table
+  grain:
+    description: One row is one variant.
+    components:
+    - identity_id: variant_identity
+      dataset_columns:
+      - variant_id
+      description: Identifies one variant.
+  columns:
+  - name: variant_id
+    description: Identifies one variant.
+  - name: product_id
+    description: Product that owns the variant.
+  - name: uom_id
+    description: Unit of measure for the variant.
+  - name: variant_status
+    description: Whether the variant can still be sold.
+    value_description: active, discontinued
+  entity_definitions:
+  - identity_id: variant_identity
+    dataset_columns:
+    - variant_id
+    is_entity_universe: true
+    entity_expression:
+    - '[variant_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
+  - identity_id: product_identity
+    dataset_columns:
+    - product_id
+    is_entity_universe: false
+    entity_expression:
+    - '[product_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Every product includes one or more variants, and each variant belongs to exactly
+        one product.
+  - identity_id: uom_identity
+    dataset_columns:
+    - uom_id
+    is_entity_universe: false
+    entity_expression:
+    - '[uom_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each variant uses exactly one unit of measure, and a unit of measure may have no
+        variants.
+- node_id: sf:commerce.catalog.dim_attribute
+  descriptor:
+    qualified_name: commerce.catalog.dim_attribute
+    display_name: Attribute
+    description: Descriptive attribute that can be assigned to a variant.
+    synonyms: []
+    tags:
+    - dimension
+    - catalog
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE
+      schema: CATALOG
+      object: DIM_ATTRIBUTE
+      format: table
+  grain:
+    description: One row is one attribute.
+    components:
+    - identity_id: attribute_identity
+      dataset_columns:
+      - attribute_id
+      description: Identifies one attribute.
+  columns:
+  - name: attribute_id
+    description: Identifies one attribute.
+  entity_definitions:
+  - identity_id: attribute_identity
+    dataset_columns:
+    - attribute_id
+    is_entity_universe: true
+    entity_expression:
+    - '[attribute_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
+- node_id: sf:commerce.catalog.dim_media_asset
+  descriptor:
+    qualified_name: commerce.catalog.dim_media_asset
+    display_name: Media asset
+    description: Media file that may illustrate a product.
+    synonyms: []
+    tags:
+    - dimension
+    - catalog
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE
+      schema: CATALOG
+      object: DIM_MEDIA_ASSET
+      format: table
+  grain:
+    description: One row is one media asset.
+    components:
+    - identity_id: media_asset_identity
+      dataset_columns:
+      - media_asset_id
+      description: Identifies one media asset.
+  columns:
+  - name: media_asset_id
+    description: Identifies one media asset.
+  - name: product_id
+    description: Product illustrated by the media asset.
+  entity_definitions:
+  - identity_id: media_asset_identity
+    dataset_columns:
+    - media_asset_id
+    is_entity_universe: true
+    entity_expression:
+    - '[media_asset_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
+  - identity_id: product_identity
+    dataset_columns:
+    - product_id
+    is_entity_universe: false
+    entity_expression:
+    - '[product_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A media asset may have no product, and a product may have no media assets.
+- node_id: sf:commerce.catalog.dim_uom
+  descriptor:
+    qualified_name: commerce.catalog.dim_uom
+    display_name: Unit of measure
+    description: Unit in which a variant is stocked and sold.
+    synonyms: []
+    tags:
+    - dimension
+    - catalog
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE
+      schema: CATALOG
+      object: DIM_UOM
+      format: table
+  grain:
+    description: One row is one unit of measure.
+    components:
+    - identity_id: uom_identity
+      dataset_columns:
+      - uom_id
+      description: Identifies one unit of measure.
+  columns:
+  - name: uom_id
+    description: Identifies one unit of measure.
+  entity_definitions:
+  - identity_id: uom_identity
+    dataset_columns:
+    - uom_id
+    is_entity_universe: true
+    entity_expression:
+    - '[uom_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
+- node_id: sf:commerce.catalog.dim_hs_code
+  descriptor:
+    qualified_name: commerce.catalog.dim_hs_code
+    display_name: HS code
+    description: Harmonized-system code available for a customs declaration.
+    synonyms: []
+    tags:
+    - dimension
+    - catalog
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE
+      schema: CATALOG
+      object: DIM_HS_CODE
+      format: table
+  grain:
+    description: One row is one hs code.
+    components:
+    - identity_id: hs_code_identity
+      dataset_columns:
+      - hs_code_id
+      description: Identifies one harmonized-system code.
+  columns:
+  - name: hs_code_id
+    description: Identifies one harmonized-system code.
+  entity_definitions:
+  - identity_id: hs_code_identity
+    dataset_columns:
+    - hs_code_id
+    is_entity_universe: true
+    entity_expression:
+    - '[hs_code_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
+- node_id: sf:commerce.catalog.dim_bundle
+  descriptor:
+    qualified_name: commerce.catalog.dim_bundle
+    display_name: Bundle
+    description: Sellable bundle whose parent is one variant.
+    synonyms: []
+    tags:
+    - dimension
+    - catalog
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE
+      schema: CATALOG
+      object: DIM_BUNDLE
+      format: table
+  grain:
+    description: One row is one bundle.
+    components:
+    - identity_id: bundle_identity
+      dataset_columns:
+      - bundle_id
+      description: Identifies one bundle.
+  columns:
+  - name: bundle_id
+    description: Identifies one bundle.
+  - name: parent_variant_id
+    description: Parent variant sold as the bundle.
+  entity_definitions:
+  - identity_id: bundle_identity
+    dataset_columns:
+    - bundle_id
+    is_entity_universe: true
+    entity_expression:
+    - '[bundle_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
+  - identity_id: variant_identity
+    dataset_columns:
+    - parent_variant_id
+    is_entity_universe: false
+    entity_expression:
+    - '[parent_variant_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each bundle names exactly one parent variant, and a variant may be the parent of
+        no bundle.
+- node_id: sf:commerce.catalog.dim_compatibility_group
+  descriptor:
+    qualified_name: commerce.catalog.dim_compatibility_group
+    display_name: Compatibility group
+    description: Set of variants that can be used together.
+    synonyms: []
+    tags:
+    - dimension
+    - catalog
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE
+      schema: CATALOG
+      object: DIM_COMPATIBILITY_GROUP
+      format: table
+  grain:
+    description: One row is one compatibility group.
+    components:
+    - identity_id: compatibility_group_identity
+      dataset_columns:
+      - compatibility_group_id
+      description: Identifies one compatibility group.
+  columns:
+  - name: compatibility_group_id
+    description: Identifies one compatibility group.
+  entity_definitions:
+  - identity_id: compatibility_group_identity
+    dataset_columns:
+    - compatibility_group_id
+    is_entity_universe: true
+    entity_expression:
+    - '[compatibility_group_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.

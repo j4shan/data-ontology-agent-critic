@@ -1,0 +1,469 @@
+schema_version: '2'
+nodes:
+- node_id: sf:retail.inventory.fact_inventory_position
+  descriptor:
+    qualified_name: retail.inventory.fact_inventory_position
+    display_name: Inventory position
+    description: On-hand position of an item at a storefront or a distribution-center location.
+    synonyms: []
+    tags:
+    - fact
+    - inventory
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL
+      schema: INVENTORY
+      object: FACT_INVENTORY_POSITION
+      format: table
+  grain:
+    description: One row is one inventory position.
+    components:
+    - identity_id: inventory_position_identity
+      dataset_columns:
+      - inventory_position_id
+      description: Identifies one inventory position.
+  columns:
+  - name: inventory_position_id
+    description: Identifies one inventory position.
+  - name: item_id
+    description: Item whose quantity is on hand.
+  - name: store_id
+    description: Storefront holding the inventory when the position is in a shop.
+  - name: dc_location_id
+    description: Distribution-center location holding the inventory when the position is in a warehouse.
+  - name: on_hand_quantity
+    description: Quantity on hand for the position.
+  entity_definitions:
+  - identity_id: inventory_position_identity
+    dataset_columns:
+    - inventory_position_id
+    is_entity_universe: true
+    entity_expression:
+    - '[inventory_position_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of inventory position.
+  - identity_id: item_identity
+    dataset_columns:
+    - item_id
+    is_entity_universe: false
+    entity_expression:
+    - '[item_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each position names exactly one item, and an item may have no position.
+  - identity_id: store_identity
+    dataset_columns:
+    - store_id
+    is_entity_universe: false
+    entity_expression:
+    - '[store_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A position may omit a storefront, and a storefront may have no inventory position.
+  - identity_id: dc_location_identity
+    dataset_columns:
+    - dc_location_id
+    is_entity_universe: false
+    entity_expression:
+    - '[dc_location_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A position may omit a distribution-center location, and a location may have no inventory
+        position.
+- node_id: sf:retail.inventory.fact_inventory_movement
+  descriptor:
+    qualified_name: retail.inventory.fact_inventory_movement
+    display_name: Inventory movement
+    description: Quantity movement of an item, optionally at a storefront.
+    synonyms: []
+    tags:
+    - fact
+    - inventory
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL
+      schema: INVENTORY
+      object: FACT_INVENTORY_MOVEMENT
+      format: table
+  grain:
+    description: One row is one inventory movement.
+    components:
+    - identity_id: movement_identity
+      dataset_columns:
+      - movement_id
+      description: Identifies one inventory movement.
+  columns:
+  - name: movement_id
+    description: Identifies one inventory movement.
+  - name: item_id
+    description: Item that moved.
+  - name: store_id
+    description: Storefront where the movement occurred when it was in a shop.
+  - name: reason_code_id
+    description: Reason the quantity moved.
+  - name: calendar_day_id
+    description: Day the movement was recorded.
+  - name: movement_quantity
+    description: Quantity added or removed by the movement.
+  - name: movement_type
+    description: Kind of inventory movement.
+    value_description: receipt, sale, transfer, adjustment
+  entity_definitions:
+  - identity_id: movement_identity
+    dataset_columns:
+    - movement_id
+    is_entity_universe: true
+    entity_expression:
+    - '[movement_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of inventory movement.
+  - identity_id: item_identity
+    dataset_columns:
+    - item_id
+    is_entity_universe: false
+    entity_expression:
+    - '[item_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each movement names exactly one item, and an item may have no movement.
+  - identity_id: store_identity
+    dataset_columns:
+    - store_id
+    is_entity_universe: false
+    entity_expression:
+    - '[store_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A movement may omit a storefront, and a storefront may have no movement.
+  - identity_id: reason_code_identity
+    dataset_columns:
+    - reason_code_id
+    is_entity_universe: false
+    entity_expression:
+    - '[reason_code_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each movement names exactly one reason code, and a reason code may explain no movement.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each movement occurs on exactly one day, and a day may have no movement.
+- node_id: sf:retail.inventory.fact_shrink_event
+  descriptor:
+    qualified_name: retail.inventory.fact_shrink_event
+    display_name: Shrink event
+    description: Known loss of an item at a storefront.
+    synonyms: []
+    tags:
+    - fact
+    - inventory
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL
+      schema: INVENTORY
+      object: FACT_SHRINK_EVENT
+      format: table
+  grain:
+    description: One row is one shrink event.
+    components:
+    - identity_id: shrink_event_identity
+      dataset_columns:
+      - shrink_event_id
+      description: Identifies one shrink event.
+  columns:
+  - name: shrink_event_id
+    description: Identifies one shrink event.
+  - name: store_id
+    description: Storefront where the loss occurred.
+  - name: item_id
+    description: Item that was lost.
+  - name: shrink_reason_id
+    description: Reason recorded for the loss.
+  - name: calendar_day_id
+    description: Day the loss was recorded.
+  - name: shrink_quantity
+    description: Quantity lost in the event.
+  entity_definitions:
+  - identity_id: shrink_event_identity
+    dataset_columns:
+    - shrink_event_id
+    is_entity_universe: true
+    entity_expression:
+    - '[shrink_event_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of shrink event.
+  - identity_id: store_identity
+    dataset_columns:
+    - store_id
+    is_entity_universe: false
+    entity_expression:
+    - '[store_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each shrink event occurs at exactly one storefront, and a storefront may have no
+        shrink event.
+  - identity_id: item_identity
+    dataset_columns:
+    - item_id
+    is_entity_universe: false
+    entity_expression:
+    - '[item_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each shrink event names exactly one item, and an item may have no shrink event.
+  - identity_id: shrink_reason_identity
+    dataset_columns:
+    - shrink_reason_id
+    is_entity_universe: false
+    entity_expression:
+    - '[shrink_reason_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each shrink event names exactly one shrink reason, and a shrink reason may explain
+        no event.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each shrink event occurs on exactly one day, and a day may have no shrink event.
+- node_id: sf:retail.inventory.fact_cycle_count
+  descriptor:
+    qualified_name: retail.inventory.fact_cycle_count
+    display_name: Cycle count
+    description: Physical count of an item at a storefront or a distribution-center location.
+    synonyms: []
+    tags:
+    - fact
+    - inventory
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL
+      schema: INVENTORY
+      object: FACT_CYCLE_COUNT
+      format: table
+  grain:
+    description: One row is one cycle count.
+    components:
+    - identity_id: cycle_count_identity
+      dataset_columns:
+      - cycle_count_id
+      description: Identifies one cycle count.
+  columns:
+  - name: cycle_count_id
+    description: Identifies one cycle count.
+  - name: store_id
+    description: Storefront that was counted when the count is in a shop.
+  - name: dc_location_id
+    description: Distribution-center location that was counted when the count is in a warehouse.
+  - name: item_id
+    description: Item that was counted.
+  - name: employee_id
+    description: Employee who performed the count.
+  - name: calendar_day_id
+    description: Day the count was taken.
+  - name: counted_quantity
+    description: Quantity recorded by the count.
+  entity_definitions:
+  - identity_id: cycle_count_identity
+    dataset_columns:
+    - cycle_count_id
+    is_entity_universe: true
+    entity_expression:
+    - '[cycle_count_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of cycle count.
+  - identity_id: store_identity
+    dataset_columns:
+    - store_id
+    is_entity_universe: false
+    entity_expression:
+    - '[store_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A cycle count may omit a storefront, and a storefront may have no cycle count.
+  - identity_id: dc_location_identity
+    dataset_columns:
+    - dc_location_id
+    is_entity_universe: false
+    entity_expression:
+    - '[dc_location_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A cycle count may omit a distribution-center location, and a location may have no
+        cycle count.
+  - identity_id: item_identity
+    dataset_columns:
+    - item_id
+    is_entity_universe: false
+    entity_expression:
+    - '[item_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each cycle count names exactly one item, and an item may have no cycle count.
+  - identity_id: employee_identity
+    dataset_columns:
+    - employee_id
+    is_entity_universe: false
+    entity_expression:
+    - '[employee_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each cycle count is performed by exactly one employee, and an employee may perform
+        no cycle count.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each cycle count occurs on exactly one day, and a day may have no cycle count.
+- node_id: sf:retail.inventory.fact_out_of_stock
+  descriptor:
+    qualified_name: retail.inventory.fact_out_of_stock
+    display_name: Out of stock event
+    description: Observation that an item was unavailable at a storefront.
+    synonyms: []
+    tags:
+    - fact
+    - inventory
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL
+      schema: INVENTORY
+      object: FACT_OUT_OF_STOCK
+      format: table
+  grain:
+    description: One row is one out of stock event.
+    components:
+    - identity_id: out_of_stock_identity
+      dataset_columns:
+      - out_of_stock_id
+      description: Identifies one out-of-stock observation.
+  columns:
+  - name: out_of_stock_id
+    description: Identifies one out-of-stock observation.
+  - name: item_id
+    description: Item that was unavailable.
+  - name: store_id
+    description: Storefront where the item was unavailable.
+  - name: calendar_day_id
+    description: Day the item was unavailable.
+  - name: hour_id
+    description: Hour the item was observed unavailable when an hour was recorded.
+  entity_definitions:
+  - identity_id: out_of_stock_identity
+    dataset_columns:
+    - out_of_stock_id
+    is_entity_universe: true
+    entity_expression:
+    - '[out_of_stock_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of out of stock event.
+  - identity_id: item_identity
+    dataset_columns:
+    - item_id
+    is_entity_universe: false
+    entity_expression:
+    - '[item_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each observation names exactly one item, and an item may have no out-of-stock observation.
+  - identity_id: store_identity
+    dataset_columns:
+    - store_id
+    is_entity_universe: false
+    entity_expression:
+    - '[store_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each observation names exactly one storefront, and a storefront may have no out-of-stock
+        observation.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each observation occurs on exactly one day, and a day may have no out-of-stock observation.
+  - identity_id: hour_identity
+    dataset_columns:
+    - hour_id
+    is_entity_universe: false
+    entity_expression:
+    - '[hour_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: An observation may omit an hour, and an hour may have no out-of-stock observation.
