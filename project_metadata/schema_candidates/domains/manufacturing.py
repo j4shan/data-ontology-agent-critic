@@ -1418,6 +1418,34 @@ DOMAIN = {
             ],
         ),
         table(
+            "bridge",
+            "bridge_engineering_change_revision",
+            "bridge",
+            "Engineering Change Revision",
+            "Item revision an engineering change authorizes.",
+            [
+                pk(
+                    "engineering_change_revision_id",
+                    "engineering_change_revision_identity",
+                    "Identifier of one engineering-change revision link.",
+                ),
+                ref(
+                    "engineering_change_id",
+                    "engineering_change_identity",
+                    "Engineering change that authorizes the revision.",
+                    "Many revision links belong to one engineering change, every link matches an engineering change, and an engineering change may include no revision link.",
+                    "n1",
+                ),
+                ref(
+                    "item_revision_id",
+                    "item_revision_identity",
+                    "Item revision the change authorizes.",
+                    "Many revision links belong to one item revision, every link matches an item revision, and an item revision may include no engineering change.",
+                    "n1",
+                ),
+            ],
+        ),
+        table(
             "commercial",
             "fact_sales_quote",
             "fact",

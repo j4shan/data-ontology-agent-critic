@@ -14,7 +14,7 @@ Quality records inspection results against a characteristic, with outcomes of pa
 
 ## Data ecosystem
 
-The authored catalog `manufacturing-discrete` contains 113 datasets (51 dimensions, 51 facts, 11 bridges) in the Snowflake database `MANUFACTURING_DISCRETE` on account `alderford.us-east-1`.
+The authored catalog `manufacturing-discrete` contains 114 datasets (51 dimensions, 51 facts, 12 bridges) in the Snowflake database `MANUFACTURING_DISCRETE` on account `alderford.us-east-1`.
 
 Each dataset is one ontology node. The grain column is the system of record for that dataset's logical identity and is marked `is_entity_universe: true`. Foreign-key columns realize the same logical identity with `is_entity_universe: false`, because the child dataset does not hold the complete population. Edges join those two realizations. Multiplicity and match existence are directional and follow the operating rules below. Row counts, distinct counts, and other data statistics are intentionally absent.
 
@@ -112,6 +112,8 @@ Each dataset is one ontology node. The grain column is the system of record for 
 | `bridge_employee_work_center` | `work_center_id` | `dim_work_center` | 1:N | 1:many / optional | many:1 / always | Many qualifications belong to one work center, every qualification matches a work center, and a work center may include no qualification. |
 | `bridge_characteristic_item` | `characteristic_id` | `dim_quality_characteristic` | 1:N | 1:many / optional | many:1 / always | Many applicability rows belong to one characteristic, every row matches a characteristic, and a characteristic may include no applicability row. |
 | `bridge_characteristic_item` | `item_revision_id` | `dim_item_revision` | 1:N | 1:many / optional | many:1 / always | Many applicability rows belong to one item revision, every row matches an item revision, and an item revision may include no applicability row. |
+| `bridge_engineering_change_revision` | `engineering_change_id` | `dim_engineering_change` | 1:N | 1:many / optional | many:1 / always | Many revision links belong to one engineering change, every link matches an engineering change, and an engineering change may include no revision link. |
+| `bridge_engineering_change_revision` | `item_revision_id` | `dim_item_revision` | 1:N | 1:many / optional | many:1 / always | Many revision links belong to one item revision, every link matches an item revision, and an item revision may include no engineering change. |
 | `fact_sales_quote` | `customer_id` | `dim_customer` | 1:N | 1:many / optional | many:1 / always | Many quotes belong to one customer, every quote matches a customer, and a customer may include no quote. |
 | `fact_sales_quote` | `sales_rep_id` | `dim_sales_representative` | 1:N | 1:many / optional | many:1 / optional | A quote may match one sales representative, and a sales representative may include no quote. |
 | `fact_sales_quote` | `calendar_day_id` | `dim_calendar_day` | 1:N | 1:many / optional | many:1 / always | Many quotes belong to one calendar day, every quote matches a calendar day, and a calendar day may include no quote. |
@@ -319,6 +321,7 @@ Each dataset is one ontology node. The grain column is the system of record for 
 | `bridge_asset_spare` | bridge | `asset_spare_id` | Spare item that can be consumed by an asset. |
 | `bridge_employee_work_center` | bridge | `qualification_id` | Qualification of an employee to work at a work center. |
 | `bridge_characteristic_item` | bridge | `characteristic_applicability_id` | Applicability of a quality characteristic to an item revision. |
+| `bridge_engineering_change_revision` | bridge | `engineering_change_revision_id` | Item revision an engineering change authorizes. |
 
 ### commercial
 

@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Alderford Pump Company builds industrial centrifugal pumps at several plants, both as catalog make-to-stock machines and as engineer-to-order units. The catalog `manufacturing-discrete` is the ontology of that operating system: 113 datasets in the Snowflake database `MANUFACTURING_DISCRETE`, grouped as organization, product, party, inventory, quality, maintenance, finance, commercial, execution, procurement, and bridge.
+Alderford Pump Company builds industrial centrifugal pumps at several plants, both as catalog make-to-stock machines and as engineer-to-order units. The catalog `manufacturing-discrete` is the ontology of that operating system: 114 datasets in the Snowflake database `MANUFACTURING_DISCRETE`, grouped as organization, product, party, inventory, quality, maintenance, finance, commercial, execution, procurement, and bridge.
 
 The equipment hierarchy follows the ISA-95 shape. One enterprise has many legal entities, a plant belongs to one legal entity, and each plant has exactly one plant manager. Every plant has at least one area, every area has at least one production line, every line has at least one work center, and every work center has at least one work unit. Product structure is an item, its revisions, a bill of materials, and a routing. Execution, procurement, order-to-cash, quality, maintenance, and cost are event facts that reference those populations.
 

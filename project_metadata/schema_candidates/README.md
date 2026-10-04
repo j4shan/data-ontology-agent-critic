@@ -7,7 +7,7 @@ Each candidate is one directory:
 
 | Directory | Business | Datasets |
 | --- | --- | --- |
-| `manufacturing-discrete/` | Alderford Pump Company, discrete pump manufacturing | 113 |
+| `manufacturing-discrete/` | Alderford Pump Company, discrete pump manufacturing | 114 |
 | `retail-grocery/` | Greenbasket Markets, regional grocery retail | 110 |
 | `commerce-marketplace/` | Meridian Marketplace, multi-seller commerce | 113 |
 | `telecom-mobile/` | Northline Mobile, national mobile charging and usage | 173 |

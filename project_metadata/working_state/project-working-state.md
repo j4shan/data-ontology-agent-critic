@@ -12,7 +12,7 @@ The project was initialized with its PRD and migrated test assets. No framework 
 | Area | Current baseline | Gap against the PRD |
 | --- | --- | --- |
 | Data sources | The five schema-candidate catalogs under [`schema_candidates/`](../schema_candidates/) are the assessment corpora. `financial` and `student_club` were removed because they are too small for ontology assessment. | The catalogs are schema version 2 and have no `directory-manifest.yaml`, so the current actor builder will not load them. |
-| Question sheets | Each domain has a role-based analytical question sheet: `healthcare-payer` (35), `telecom-mobile` (30), `manufacturing-discrete` (30), `retail-grocery` (30), and `commerce-marketplace` (30). | The sheets are not yet cases. They have no gold AKG. |
+| Question sheets | Each domain has a role-based analytical question sheet: `healthcare-payer` (125), `telecom-mobile` (141), `manufacturing-discrete` (115), `retail-grocery` (138), and `commerce-marketplace` (127). Each sheet stays at or under 150 questions. | The sheets are not yet cases. They have no gold AKG. |
 | Reference catalog | None. The removed `financial` reference catalog is not a benchmark target. | A schema version 3 reference catalog still has to be published for each domain. |
 | Suites and gold | Question text is drafted by role. | No suite, test case, or gold AKG has been authored. |
 | Submission schema and scorer | None. | C0.1 and C0.3. |

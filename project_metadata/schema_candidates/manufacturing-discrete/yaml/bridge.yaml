@@ -772,3 +772,69 @@ nodes:
       mapping: 1:N
       business_rule: Many applicability rows belong to one item revision, every row matches an item revision,
         and an item revision may include no applicability row.
+- node_id: sf:manufacturing-discrete.bridge.bridge_engineering_change_revision
+  descriptor:
+    qualified_name: manufacturing-discrete.bridge.bridge_engineering_change_revision
+    display_name: Engineering Change Revision
+    description: Item revision an engineering change authorizes.
+    synonyms: []
+    tags:
+    - bridge
+    - bridge
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: BRIDGE
+      object: BRIDGE_ENGINEERING_CHANGE_REVISION
+      format: table
+  grain:
+    description: One row is one engineering change revision.
+    components:
+    - identity_id: engineering_change_revision_identity
+      dataset_columns:
+      - engineering_change_revision_id
+      description: Identifier of one engineering-change revision link.
+  columns:
+  - name: engineering_change_revision_id
+    description: Identifier of one engineering-change revision link.
+  - name: engineering_change_id
+    description: Engineering change that authorizes the revision.
+  - name: item_revision_id
+    description: Item revision the change authorizes.
+  entity_definitions:
+  - identity_id: engineering_change_revision_identity
+    dataset_columns:
+    - engineering_change_revision_id
+    is_entity_universe: true
+    entity_expression:
+    - '[engineering_change_revision_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of engineering change revision.
+  - identity_id: engineering_change_identity
+    dataset_columns:
+    - engineering_change_id
+    is_entity_universe: false
+    entity_expression:
+    - '[engineering_change_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many revision links belong to one engineering change, every link matches an engineering
+        change, and an engineering change may include no revision link.
+  - identity_id: item_revision_identity
+    dataset_columns:
+    - item_revision_id
+    is_entity_universe: false
+    entity_expression:
+    - '[item_revision_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many revision links belong to one item revision, every link matches an item revision,
+        and an item revision may include no engineering change.
