@@ -21,11 +21,11 @@ This model is an original warehouse-style ontology informed by the publicly desc
 """
 
 DOMAIN = {
-    "key": "manufacturing",
+    "key": "manufacturing-discrete",
     "business_name": "Alderford Pump Company",
-    "database": "MANUFACTURING",
+    "database": "MANUFACTURING_DISCRETE",
     "account": "alderford.us-east-1",
-    "root": "manufacturing",
+    "root": "manufacturing-discrete",
     "narrative": _NARRATIVE.strip(),
     "provenance": _PROVENANCE.strip(),
     "identity_synonyms": {

@@ -1,0 +1,1212 @@
+schema_version: '2'
+nodes:
+- node_id: sf:manufacturing-discrete.commercial.dim_sales_channel
+  descriptor:
+    qualified_name: manufacturing-discrete.commercial.dim_sales_channel
+    display_name: Sales Channel
+    description: Route to market through which a customer or order is sold.
+    synonyms: []
+    tags:
+    - dimension
+    - commercial
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: COMMERCIAL
+      object: DIM_SALES_CHANNEL
+      format: table
+  grain:
+    description: One row is one sales channel.
+    components:
+    - identity_id: sales_channel_identity
+      dataset_columns:
+      - sales_channel_id
+      description: Identifier of one sales channel.
+  columns:
+  - name: sales_channel_id
+    description: Identifier of one sales channel.
+  - name: channel_name
+    description: Name of the sales channel.
+  entity_definitions:
+  - identity_id: sales_channel_identity
+    dataset_columns:
+    - sales_channel_id
+    is_entity_universe: true
+    entity_expression:
+    - '[sales_channel_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of sales channel.
+- node_id: sf:manufacturing-discrete.commercial.dim_incoterm
+  descriptor:
+    qualified_name: manufacturing-discrete.commercial.dim_incoterm
+    display_name: Incoterm
+    description: Trade term that allocates delivery cost and risk on an order.
+    synonyms: []
+    tags:
+    - dimension
+    - commercial
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: COMMERCIAL
+      object: DIM_INCOTERM
+      format: table
+  grain:
+    description: One row is one incoterm.
+    components:
+    - identity_id: incoterm_identity
+      dataset_columns:
+      - incoterm_id
+      description: Identifier of one incoterm.
+  columns:
+  - name: incoterm_id
+    description: Identifier of one incoterm.
+  - name: incoterm_code
+    description: Standard code of the incoterm.
+  entity_definitions:
+  - identity_id: incoterm_identity
+    dataset_columns:
+    - incoterm_id
+    is_entity_universe: true
+    entity_expression:
+    - '[incoterm_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of incoterm.
+- node_id: sf:manufacturing-discrete.commercial.dim_reason_code
+  descriptor:
+    qualified_name: manufacturing-discrete.commercial.dim_reason_code
+    display_name: Reason Code
+    description: Coded reason for a return, adjustment, or inventory exception.
+    synonyms: []
+    tags:
+    - dimension
+    - commercial
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: COMMERCIAL
+      object: DIM_REASON_CODE
+      format: table
+  grain:
+    description: One row is one reason code.
+    components:
+    - identity_id: reason_code_identity
+      dataset_columns:
+      - reason_code_id
+      description: Identifier of one reason code.
+  columns:
+  - name: reason_code_id
+    description: Identifier of one reason code.
+  - name: reason_name
+    description: Name of the reason.
+  entity_definitions:
+  - identity_id: reason_code_identity
+    dataset_columns:
+    - reason_code_id
+    is_entity_universe: true
+    entity_expression:
+    - '[reason_code_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of reason code.
+- node_id: sf:manufacturing-discrete.commercial.dim_sales_representative
+  descriptor:
+    qualified_name: manufacturing-discrete.commercial.dim_sales_representative
+    display_name: Sales Representative
+    description: Employee who sells to customers.
+    synonyms: []
+    tags:
+    - dimension
+    - commercial
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: COMMERCIAL
+      object: DIM_SALES_REPRESENTATIVE
+      format: table
+  grain:
+    description: One row is one sales representative.
+    components:
+    - identity_id: sales_rep_identity
+      dataset_columns:
+      - sales_rep_id
+      description: Identifier of one sales representative.
+  columns:
+  - name: sales_rep_id
+    description: Identifier of one sales representative.
+  - name: employee_id
+    description: Employee who is the sales representative.
+  entity_definitions:
+  - identity_id: sales_rep_identity
+    dataset_columns:
+    - sales_rep_id
+    is_entity_universe: true
+    entity_expression:
+    - '[sales_rep_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of sales representative.
+  - identity_id: employee_identity
+    dataset_columns:
+    - employee_id
+    is_entity_universe: false
+    entity_expression:
+    - '[employee_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: '1:1'
+      business_rule: Each sales representative matches exactly one employee, each employee holds at most
+        one sales representative role, and not every employee is a sales representative.
+- node_id: sf:manufacturing-discrete.commercial.fact_sales_quote
+  descriptor:
+    qualified_name: manufacturing-discrete.commercial.fact_sales_quote
+    display_name: Sales Quote
+    description: Offer of price and quantity presented to a customer.
+    synonyms: []
+    tags:
+    - fact
+    - commercial
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: COMMERCIAL
+      object: FACT_SALES_QUOTE
+      format: table
+  grain:
+    description: One row is one sales quote.
+    components:
+    - identity_id: quote_identity
+      dataset_columns:
+      - quote_id
+      description: Identifier of one sales quote.
+  columns:
+  - name: quote_id
+    description: Identifier of one sales quote.
+  - name: customer_id
+    description: Customer that received the quote.
+  - name: sales_rep_id
+    description: Sales representative who owns the quote, when one is assigned.
+  - name: calendar_day_id
+    description: Day the quote was issued.
+  - name: quote_status
+    description: Commercial state of the quote.
+    value_description: draft, issued, accepted, rejected, expired
+  entity_definitions:
+  - identity_id: quote_identity
+    dataset_columns:
+    - quote_id
+    is_entity_universe: true
+    entity_expression:
+    - '[quote_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of sales quote.
+  - identity_id: customer_identity
+    dataset_columns:
+    - customer_id
+    is_entity_universe: false
+    entity_expression:
+    - '[customer_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many quotes belong to one customer, every quote matches a customer, and a customer
+        may include no quote.
+  - identity_id: sales_rep_identity
+    dataset_columns:
+    - sales_rep_id
+    is_entity_universe: false
+    entity_expression:
+    - '[sales_rep_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A quote may match one sales representative, and a sales representative may include
+        no quote.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many quotes belong to one calendar day, every quote matches a calendar day, and a
+        calendar day may include no quote.
+- node_id: sf:manufacturing-discrete.commercial.fact_sales_quote_line
+  descriptor:
+    qualified_name: manufacturing-discrete.commercial.fact_sales_quote_line
+    display_name: Sales Quote Line
+    description: Item revision and quantity offered on a sales quote.
+    synonyms: []
+    tags:
+    - fact
+    - commercial
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: COMMERCIAL
+      object: FACT_SALES_QUOTE_LINE
+      format: table
+  grain:
+    description: One row is one sales quote line.
+    components:
+    - identity_id: quote_line_identity
+      dataset_columns:
+      - quote_line_id
+      description: Identifier of one sales quote line.
+  columns:
+  - name: quote_line_id
+    description: Identifier of one sales quote line.
+  - name: quote_id
+    description: Quote that contains the line.
+  - name: item_revision_id
+    description: Item revision offered on the line.
+  - name: quoted_quantity
+    description: Quantity offered on the quote line.
+  entity_definitions:
+  - identity_id: quote_line_identity
+    dataset_columns:
+    - quote_line_id
+    is_entity_universe: true
+    entity_expression:
+    - '[quote_line_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of sales quote line.
+  - identity_id: quote_identity
+    dataset_columns:
+    - quote_id
+    is_entity_universe: false
+    entity_expression:
+    - '[quote_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many quote lines belong to one quote, every quote line matches a quote, and every
+        quote includes at least one quote line.
+  - identity_id: item_revision_identity
+    dataset_columns:
+    - item_revision_id
+    is_entity_universe: false
+    entity_expression:
+    - '[item_revision_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many quote lines belong to one item revision, every quote line matches an item revision,
+        and an item revision may include no quote line.
+- node_id: sf:manufacturing-discrete.commercial.fact_sales_order
+  descriptor:
+    qualified_name: manufacturing-discrete.commercial.fact_sales_order
+    display_name: Sales Order
+    description: Customer commitment to buy pumps or parts from a fulfilling plant.
+    synonyms: []
+    tags:
+    - fact
+    - commercial
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: COMMERCIAL
+      object: FACT_SALES_ORDER
+      format: table
+  grain:
+    description: One row is one sales order.
+    components:
+    - identity_id: sales_order_identity
+      dataset_columns:
+      - sales_order_id
+      description: Identifier of one sales order.
+  columns:
+  - name: sales_order_id
+    description: Identifier of one sales order.
+  - name: customer_id
+    description: Customer that placed the order.
+  - name: ship_to_id
+    description: Ship-to that receives the order.
+  - name: plant_id
+    description: Plant that fulfills the order.
+  - name: sales_channel_id
+    description: Channel through which the order was sold.
+  - name: currency_id
+    description: Currency of the order.
+  - name: payment_term_id
+    description: Payment term applied to the order.
+  - name: sales_rep_id
+    description: Sales representative credited with the order, when one is assigned.
+  - name: incoterm_id
+    description: Incoterm that governs delivery, when one is stated.
+  - name: order_date_id
+    description: Day the order was booked.
+  - name: order_status
+    description: Fulfillment state of the sales order.
+    value_description: open, released, shipped, closed, cancelled
+  entity_definitions:
+  - identity_id: sales_order_identity
+    dataset_columns:
+    - sales_order_id
+    is_entity_universe: true
+    entity_expression:
+    - '[sales_order_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of sales order.
+  - identity_id: customer_identity
+    dataset_columns:
+    - customer_id
+    is_entity_universe: false
+    entity_expression:
+    - '[customer_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many sales orders belong to one customer, every sales order matches a customer, and
+        a customer may include no sales order.
+  - identity_id: ship_to_identity
+    dataset_columns:
+    - ship_to_id
+    is_entity_universe: false
+    entity_expression:
+    - '[ship_to_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many sales orders belong to one ship-to, every sales order matches a ship-to, and
+        a ship-to may include no sales order.
+  - identity_id: plant_identity
+    dataset_columns:
+    - plant_id
+    is_entity_universe: false
+    entity_expression:
+    - '[plant_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many sales orders belong to one plant, every sales order matches a plant, and a plant
+        may include no sales order.
+  - identity_id: sales_channel_identity
+    dataset_columns:
+    - sales_channel_id
+    is_entity_universe: false
+    entity_expression:
+    - '[sales_channel_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many sales orders belong to one sales channel, every sales order matches a sales
+        channel, and a sales channel may include no sales order.
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    is_entity_universe: false
+    entity_expression:
+    - '[currency_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many sales orders share one currency, every sales order matches a currency, and a
+        currency may include no sales order.
+  - identity_id: payment_term_identity
+    dataset_columns:
+    - payment_term_id
+    is_entity_universe: false
+    entity_expression:
+    - '[payment_term_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many sales orders share one payment term, every sales order matches a payment term,
+        and a payment term may include no sales order.
+  - identity_id: sales_rep_identity
+    dataset_columns:
+    - sales_rep_id
+    is_entity_universe: false
+    entity_expression:
+    - '[sales_rep_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A sales order may match one sales representative, and a sales representative may
+        include no sales order.
+  - identity_id: incoterm_identity
+    dataset_columns:
+    - incoterm_id
+    is_entity_universe: false
+    entity_expression:
+    - '[incoterm_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A sales order may match one incoterm, and an incoterm may include no sales order.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - order_date_id
+    is_entity_universe: false
+    entity_expression:
+    - '[order_date_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many sales orders belong to one order date, every sales order matches a calendar
+        day, and a calendar day may include no sales order.
+- node_id: sf:manufacturing-discrete.commercial.fact_sales_order_line
+  descriptor:
+    qualified_name: manufacturing-discrete.commercial.fact_sales_order_line
+    display_name: Sales Order Line
+    description: Ordered quantity of an item revision on a sales order.
+    synonyms: []
+    tags:
+    - fact
+    - commercial
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: COMMERCIAL
+      object: FACT_SALES_ORDER_LINE
+      format: table
+  grain:
+    description: One row is one sales order line.
+    components:
+    - identity_id: sales_order_line_identity
+      dataset_columns:
+      - sales_order_line_id
+      description: Identifier of one sales order line.
+  columns:
+  - name: sales_order_line_id
+    description: Identifier of one sales order line.
+  - name: sales_order_id
+    description: Sales order that contains the line.
+  - name: item_revision_id
+    description: Item revision ordered on the line.
+  - name: uom_id
+    description: Unit of measure of the ordered quantity.
+  - name: ordered_quantity
+    description: Quantity ordered on the line.
+  entity_definitions:
+  - identity_id: sales_order_line_identity
+    dataset_columns:
+    - sales_order_line_id
+    is_entity_universe: true
+    entity_expression:
+    - '[sales_order_line_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of sales order line.
+  - identity_id: sales_order_identity
+    dataset_columns:
+    - sales_order_id
+    is_entity_universe: false
+    entity_expression:
+    - '[sales_order_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many sales order lines belong to one sales order, every line matches a sales order,
+        and every sales order includes at least one line.
+  - identity_id: item_revision_identity
+    dataset_columns:
+    - item_revision_id
+    is_entity_universe: false
+    entity_expression:
+    - '[item_revision_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many sales order lines belong to one item revision, every line matches an item revision,
+        and an item revision may include no sales order line.
+  - identity_id: uom_identity
+    dataset_columns:
+    - uom_id
+    is_entity_universe: false
+    entity_expression:
+    - '[uom_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many sales order lines share one unit of measure, every line matches a unit of measure,
+        and a unit of measure may include no sales order line.
+- node_id: sf:manufacturing-discrete.commercial.fact_sales_order_schedule
+  descriptor:
+    qualified_name: manufacturing-discrete.commercial.fact_sales_order_schedule
+    display_name: Sales Order Schedule
+    description: Promised delivery of a sales order line to a ship-to.
+    synonyms: []
+    tags:
+    - fact
+    - commercial
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: COMMERCIAL
+      object: FACT_SALES_ORDER_SCHEDULE
+      format: table
+  grain:
+    description: One row is one sales order schedule.
+    components:
+    - identity_id: schedule_identity
+      dataset_columns:
+      - schedule_id
+      description: Identifier of one sales order schedule.
+  columns:
+  - name: schedule_id
+    description: Identifier of one sales order schedule.
+  - name: sales_order_line_id
+    description: Sales order line that the schedule delivers.
+  - name: plant_id
+    description: Plant that ships the schedule.
+  - name: ship_to_id
+    description: Ship-to that receives the schedule.
+  - name: promise_date_id
+    description: Day the schedule is promised.
+  entity_definitions:
+  - identity_id: schedule_identity
+    dataset_columns:
+    - schedule_id
+    is_entity_universe: true
+    entity_expression:
+    - '[schedule_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of sales order schedule.
+  - identity_id: sales_order_line_identity
+    dataset_columns:
+    - sales_order_line_id
+    is_entity_universe: false
+    entity_expression:
+    - '[sales_order_line_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many schedules belong to one sales order line, every schedule matches a sales order
+        line, and every sales order line includes at least one schedule.
+  - identity_id: plant_identity
+    dataset_columns:
+    - plant_id
+    is_entity_universe: false
+    entity_expression:
+    - '[plant_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many schedules belong to one plant, every schedule matches a plant, and a plant may
+        include no schedule.
+  - identity_id: ship_to_identity
+    dataset_columns:
+    - ship_to_id
+    is_entity_universe: false
+    entity_expression:
+    - '[ship_to_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many schedules belong to one ship-to, every schedule matches a ship-to, and a ship-to
+        may include no schedule.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - promise_date_id
+    is_entity_universe: false
+    entity_expression:
+    - '[promise_date_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many schedules belong to one promise date, every schedule matches a calendar day,
+        and a calendar day may include no schedule.
+- node_id: sf:manufacturing-discrete.commercial.fact_shipment
+  descriptor:
+    qualified_name: manufacturing-discrete.commercial.fact_shipment
+    display_name: Shipment
+    description: Outbound shipment from a plant to a ship-to on a carrier.
+    synonyms: []
+    tags:
+    - fact
+    - commercial
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: COMMERCIAL
+      object: FACT_SHIPMENT
+      format: table
+  grain:
+    description: One row is one shipment.
+    components:
+    - identity_id: shipment_identity
+      dataset_columns:
+      - shipment_id
+      description: Identifier of one shipment.
+  columns:
+  - name: shipment_id
+    description: Identifier of one shipment.
+  - name: carrier_id
+    description: Carrier that hauls the shipment.
+  - name: ship_to_id
+    description: Ship-to that receives the shipment.
+  - name: plant_id
+    description: Plant that ships the goods.
+  - name: ship_date_id
+    description: Day the shipment leaves the plant.
+  - name: shipment_status
+    description: Progress of the shipment.
+    value_description: planned, in_transit, delivered, cancelled
+  entity_definitions:
+  - identity_id: shipment_identity
+    dataset_columns:
+    - shipment_id
+    is_entity_universe: true
+    entity_expression:
+    - '[shipment_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of shipment.
+  - identity_id: carrier_identity
+    dataset_columns:
+    - carrier_id
+    is_entity_universe: false
+    entity_expression:
+    - '[carrier_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many shipments belong to one carrier, every shipment matches a carrier, and a carrier
+        may include no shipment.
+  - identity_id: ship_to_identity
+    dataset_columns:
+    - ship_to_id
+    is_entity_universe: false
+    entity_expression:
+    - '[ship_to_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many shipments belong to one ship-to, every shipment matches a ship-to, and a ship-to
+        may include no shipment.
+  - identity_id: plant_identity
+    dataset_columns:
+    - plant_id
+    is_entity_universe: false
+    entity_expression:
+    - '[plant_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many shipments belong to one plant, every shipment matches a plant, and a plant may
+        include no shipment.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - ship_date_id
+    is_entity_universe: false
+    entity_expression:
+    - '[ship_date_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many shipments belong to one ship date, every shipment matches a calendar day, and
+        a calendar day may include no shipment.
+- node_id: sf:manufacturing-discrete.commercial.fact_shipment_line
+  descriptor:
+    qualified_name: manufacturing-discrete.commercial.fact_shipment_line
+    display_name: Shipment Line
+    description: Quantity of an item revision placed on a shipment.
+    synonyms: []
+    tags:
+    - fact
+    - commercial
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: COMMERCIAL
+      object: FACT_SHIPMENT_LINE
+      format: table
+  grain:
+    description: One row is one shipment line.
+    components:
+    - identity_id: shipment_line_identity
+      dataset_columns:
+      - shipment_line_id
+      description: Identifier of one shipment line.
+  columns:
+  - name: shipment_line_id
+    description: Identifier of one shipment line.
+  - name: shipment_id
+    description: Shipment that contains the line.
+  - name: sales_order_line_id
+    description: Sales order line fulfilled by the shipment line, when the line is order-backed.
+  - name: item_revision_id
+    description: Item revision shipped on the line.
+  - name: lot_id
+    description: Lot shipped on the line, when the item is lot-controlled.
+  - name: shipped_quantity
+    description: Quantity shipped on the line.
+  entity_definitions:
+  - identity_id: shipment_line_identity
+    dataset_columns:
+    - shipment_line_id
+    is_entity_universe: true
+    entity_expression:
+    - '[shipment_line_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of shipment line.
+  - identity_id: shipment_identity
+    dataset_columns:
+    - shipment_id
+    is_entity_universe: false
+    entity_expression:
+    - '[shipment_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many shipment lines belong to one shipment, every shipment line matches a shipment,
+        and every shipment includes at least one shipment line.
+  - identity_id: sales_order_line_identity
+    dataset_columns:
+    - sales_order_line_id
+    is_entity_universe: false
+    entity_expression:
+    - '[sales_order_line_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A shipment line may match one sales order line, and a sales order line may include
+        no shipment line.
+  - identity_id: item_revision_identity
+    dataset_columns:
+    - item_revision_id
+    is_entity_universe: false
+    entity_expression:
+    - '[item_revision_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many shipment lines belong to one item revision, every shipment line matches an item
+        revision, and an item revision may include no shipment line.
+  - identity_id: lot_identity
+    dataset_columns:
+    - lot_id
+    is_entity_universe: false
+    entity_expression:
+    - '[lot_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A shipment line may match one lot, and a lot may include no shipment line.
+- node_id: sf:manufacturing-discrete.commercial.fact_customer_invoice
+  descriptor:
+    qualified_name: manufacturing-discrete.commercial.fact_customer_invoice
+    display_name: Customer Invoice
+    description: Invoice issued to a customer for goods or services.
+    synonyms: []
+    tags:
+    - fact
+    - commercial
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: COMMERCIAL
+      object: FACT_CUSTOMER_INVOICE
+      format: table
+  grain:
+    description: One row is one customer invoice.
+    components:
+    - identity_id: customer_invoice_identity
+      dataset_columns:
+      - invoice_id
+      description: Identifier of one customer invoice.
+  columns:
+  - name: invoice_id
+    description: Identifier of one customer invoice.
+  - name: customer_id
+    description: Customer billed on the invoice.
+  - name: currency_id
+    description: Currency of the invoice.
+  - name: invoice_date_id
+    description: Day the invoice was issued.
+  - name: invoice_status
+    description: Settlement state of the customer invoice.
+    value_description: draft, issued, partially_paid, paid, void
+  entity_definitions:
+  - identity_id: customer_invoice_identity
+    dataset_columns:
+    - invoice_id
+    is_entity_universe: true
+    entity_expression:
+    - '[invoice_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of customer invoice.
+  - identity_id: customer_identity
+    dataset_columns:
+    - customer_id
+    is_entity_universe: false
+    entity_expression:
+    - '[customer_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many customer invoices belong to one customer, every customer invoice matches a customer,
+        and a customer may include no customer invoice.
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    is_entity_universe: false
+    entity_expression:
+    - '[currency_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many customer invoices share one currency, every customer invoice matches a currency,
+        and a currency may include no customer invoice.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - invoice_date_id
+    is_entity_universe: false
+    entity_expression:
+    - '[invoice_date_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many customer invoices belong to one invoice date, every customer invoice matches
+        a calendar day, and a calendar day may include no customer invoice.
+- node_id: sf:manufacturing-discrete.commercial.fact_customer_invoice_line
+  descriptor:
+    qualified_name: manufacturing-discrete.commercial.fact_customer_invoice_line
+    display_name: Customer Invoice Line
+    description: Amount billed on a customer invoice, optionally against a shipment line.
+    synonyms: []
+    tags:
+    - fact
+    - commercial
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: COMMERCIAL
+      object: FACT_CUSTOMER_INVOICE_LINE
+      format: table
+  grain:
+    description: One row is one customer invoice line.
+    components:
+    - identity_id: customer_invoice_line_identity
+      dataset_columns:
+      - customer_invoice_line_id
+      description: Identifier of one customer invoice line.
+  columns:
+  - name: customer_invoice_line_id
+    description: Identifier of one customer invoice line.
+  - name: invoice_id
+    description: Customer invoice that contains the line.
+  - name: shipment_line_id
+    description: Shipment line billed by the invoice line, when the charge is for a shipment.
+  - name: gl_account_id
+    description: General-ledger account that records the line.
+  - name: extended_amount
+    description: Extended amount billed on the line.
+  entity_definitions:
+  - identity_id: customer_invoice_line_identity
+    dataset_columns:
+    - customer_invoice_line_id
+    is_entity_universe: true
+    entity_expression:
+    - '[customer_invoice_line_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of customer invoice line.
+  - identity_id: customer_invoice_identity
+    dataset_columns:
+    - invoice_id
+    is_entity_universe: false
+    entity_expression:
+    - '[invoice_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many customer invoice lines belong to one customer invoice, every line matches a
+        customer invoice, and every customer invoice includes at least one line.
+  - identity_id: shipment_line_identity
+    dataset_columns:
+    - shipment_line_id
+    is_entity_universe: false
+    entity_expression:
+    - '[shipment_line_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A customer invoice line may match one shipment line, and a shipment line may include
+        no customer invoice line.
+  - identity_id: gl_account_identity
+    dataset_columns:
+    - gl_account_id
+    is_entity_universe: false
+    entity_expression:
+    - '[gl_account_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many customer invoice lines belong to one general-ledger account, every line matches
+        an account, and an account may include no customer invoice line.
+- node_id: sf:manufacturing-discrete.commercial.fact_customer_payment
+  descriptor:
+    qualified_name: manufacturing-discrete.commercial.fact_customer_payment
+    display_name: Customer Payment
+    description: Cash received from a customer, optionally applied to an invoice.
+    synonyms: []
+    tags:
+    - fact
+    - commercial
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: COMMERCIAL
+      object: FACT_CUSTOMER_PAYMENT
+      format: table
+  grain:
+    description: One row is one customer payment.
+    components:
+    - identity_id: customer_payment_identity
+      dataset_columns:
+      - customer_payment_id
+      description: Identifier of one customer payment.
+  columns:
+  - name: customer_payment_id
+    description: Identifier of one customer payment.
+  - name: customer_id
+    description: Customer that paid.
+  - name: invoice_id
+    description: Customer invoice the payment applies to, when the receipt is applied.
+  - name: currency_id
+    description: Currency of the payment.
+  - name: payment_date_id
+    description: Day the payment was received.
+  entity_definitions:
+  - identity_id: customer_payment_identity
+    dataset_columns:
+    - customer_payment_id
+    is_entity_universe: true
+    entity_expression:
+    - '[customer_payment_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of customer payment.
+  - identity_id: customer_identity
+    dataset_columns:
+    - customer_id
+    is_entity_universe: false
+    entity_expression:
+    - '[customer_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many customer payments belong to one customer, every payment matches a customer,
+        and a customer may include no payment.
+  - identity_id: customer_invoice_identity
+    dataset_columns:
+    - invoice_id
+    is_entity_universe: false
+    entity_expression:
+    - '[invoice_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A customer payment may match one customer invoice, and a customer invoice may include
+        no payment.
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    is_entity_universe: false
+    entity_expression:
+    - '[currency_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many customer payments share one currency, every payment matches a currency, and
+        a currency may include no customer payment.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - payment_date_id
+    is_entity_universe: false
+    entity_expression:
+    - '[payment_date_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many customer payments belong to one payment date, every payment matches a calendar
+        day, and a calendar day may include no customer payment.
+- node_id: sf:manufacturing-discrete.commercial.fact_customer_return
+  descriptor:
+    qualified_name: manufacturing-discrete.commercial.fact_customer_return
+    display_name: Customer Return
+    description: Goods returned by a customer, optionally against a sales order line.
+    synonyms: []
+    tags:
+    - fact
+    - commercial
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: COMMERCIAL
+      object: FACT_CUSTOMER_RETURN
+      format: table
+  grain:
+    description: One row is one customer return.
+    components:
+    - identity_id: customer_return_identity
+      dataset_columns:
+      - customer_return_id
+      description: Identifier of one customer return.
+  columns:
+  - name: customer_return_id
+    description: Identifier of one customer return.
+  - name: customer_id
+    description: Customer that returned the goods.
+  - name: sales_order_line_id
+    description: Sales order line the return reverses, when the return is order-backed.
+  - name: reason_code_id
+    description: Reason the customer returned the goods.
+  - name: receipt_date_id
+    description: Day the return was received.
+  entity_definitions:
+  - identity_id: customer_return_identity
+    dataset_columns:
+    - customer_return_id
+    is_entity_universe: true
+    entity_expression:
+    - '[customer_return_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of customer return.
+  - identity_id: customer_identity
+    dataset_columns:
+    - customer_id
+    is_entity_universe: false
+    entity_expression:
+    - '[customer_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many customer returns belong to one customer, every return matches a customer, and
+        a customer may include no return.
+  - identity_id: sales_order_line_identity
+    dataset_columns:
+    - sales_order_line_id
+    is_entity_universe: false
+    entity_expression:
+    - '[sales_order_line_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A customer return may match one sales order line, and a sales order line may include
+        no customer return.
+  - identity_id: reason_code_identity
+    dataset_columns:
+    - reason_code_id
+    is_entity_universe: false
+    entity_expression:
+    - '[reason_code_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many customer returns belong to one reason code, every return matches a reason code,
+        and a reason code may include no customer return.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - receipt_date_id
+    is_entity_universe: false
+    entity_expression:
+    - '[receipt_date_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many customer returns belong to one receipt date, every return matches a calendar
+        day, and a calendar day may include no customer return.

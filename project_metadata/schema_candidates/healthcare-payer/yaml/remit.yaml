@@ -1,0 +1,910 @@
+schema_version: '2'
+nodes:
+- node_id: sf:healthcare-payer.remit.fact_remit_advice
+  descriptor:
+    qualified_name: healthcare-payer.remit.fact_remit_advice
+    display_name: Remit Advice
+    description: One 835 remittance advice.
+    synonyms: []
+    tags:
+    - fact
+    - remit
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: HEALTHCARE_PAYER
+      schema: REMIT
+      object: FACT_REMIT_ADVICE
+      format: table
+  grain:
+    description: One row is one remit advice.
+    components:
+    - identity_id: remit_advice_identity
+      dataset_columns:
+      - remit_advice_id
+      description: Identifier of one remit Advice.
+  columns:
+  - name: remit_advice_id
+    description: Identifier of one remit Advice.
+  - name: billing_provider_id
+    description: Reference to the provider.
+  - name: calendar_day_id
+    description: Reference to the calendar Day.
+  - name: payment_method_id
+    description: Reference to the payment Method.
+  - name: bank_id
+    description: Reference to the bank.
+  - name: jurisdiction_id
+    description: Reference to the jurisdiction.
+  - name: trading_partner_id
+    description: Reference to the trading Partner.
+  - name: payment_amount
+    description: Total payment on the advice.
+  entity_definitions:
+  - identity_id: remit_advice_identity
+    dataset_columns:
+    - remit_advice_id
+    is_entity_universe: true
+    entity_expression:
+    - '[remit_advice_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of remit advice.
+  - identity_id: provider_identity
+    dataset_columns:
+    - billing_provider_id
+    is_entity_universe: false
+    entity_expression:
+    - '[billing_provider_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many remit Advices belong to one provider, every remit Advice matches a provider,
+        and a provider may include no remit Advice.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many remit Advices belong to one calendar Day, every remit Advice matches a calendar
+        Day, and every calendar Day includes at least one remit Advice.
+  - identity_id: payment_method_identity
+    dataset_columns:
+    - payment_method_id
+    is_entity_universe: false
+    entity_expression:
+    - '[payment_method_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many remit Advices belong to one payment Method, every remit Advice matches a payment
+        Method, and every payment Method includes at least one remit Advice.
+  - identity_id: bank_identity
+    dataset_columns:
+    - bank_id
+    is_entity_universe: false
+    entity_expression:
+    - '[bank_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A remit Advice may match one bank, and a bank may include no remit Advice.
+  - identity_id: jurisdiction_identity
+    dataset_columns:
+    - jurisdiction_id
+    is_entity_universe: false
+    entity_expression:
+    - '[jurisdiction_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many remit Advices belong to one jurisdiction, every remit Advice matches a jurisdiction,
+        and a jurisdiction may include no remit Advice.
+  - identity_id: trading_partner_identity
+    dataset_columns:
+    - trading_partner_id
+    is_entity_universe: false
+    entity_expression:
+    - '[trading_partner_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many remit Advices belong to one trading Partner, every remit Advice matches a trading
+        Partner, and a trading Partner may include no remit Advice.
+- node_id: sf:healthcare-payer.remit.fact_remit_line
+  descriptor:
+    qualified_name: healthcare-payer.remit.fact_remit_line
+    display_name: Remit Line
+    description: One 835 service payment line.
+    synonyms: []
+    tags:
+    - fact
+    - remit
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: HEALTHCARE_PAYER
+      schema: REMIT
+      object: FACT_REMIT_LINE
+      format: table
+  grain:
+    description: One row is one remit line.
+    components:
+    - identity_id: remit_line_identity
+      dataset_columns:
+      - remit_line_id
+      description: Identifier of one remit Line.
+  columns:
+  - name: remit_line_id
+    description: Identifier of one remit Line.
+  - name: remit_advice_id
+    description: Every remittance advice has service lines.
+  - name: claim_line_id
+    description: Some service lines are still pended and have no remit line.
+  - name: claim_header_id
+    description: Reference to the claim Header.
+  - name: carc_id
+    description: A paid line may have no adjustment reason.
+  - name: member_id
+    description: Reference to the member.
+  - name: provider_id
+    description: Reference to the provider.
+  - name: calendar_day_id
+    description: Reference to the calendar Day.
+  - name: paid_amount
+    description: Amount paid on the remit line.
+  - name: allowed_amount
+    description: Allowed amount on the remit line.
+  entity_definitions:
+  - identity_id: remit_line_identity
+    dataset_columns:
+    - remit_line_id
+    is_entity_universe: true
+    entity_expression:
+    - '[remit_line_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of remit line.
+  - identity_id: remit_advice_identity
+    dataset_columns:
+    - remit_advice_id
+    is_entity_universe: false
+    entity_expression:
+    - '[remit_advice_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many remit Lines belong to one remit Advice, every remit Line matches a remit Advice,
+        and every remit Advice includes at least one remit Line. Every remittance advice has service lines.
+  - identity_id: claim_line_identity
+    dataset_columns:
+    - claim_line_id
+    is_entity_universe: false
+    entity_expression:
+    - '[claim_line_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many remit Lines belong to one claim Line, every remit Line matches a claim Line,
+        and a claim Line may include no remit Line. Some service lines are still pended and have no remit
+        line.
+  - identity_id: claim_header_identity
+    dataset_columns:
+    - claim_header_id
+    is_entity_universe: false
+    entity_expression:
+    - '[claim_header_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many remit Lines belong to one claim Header, every remit Line matches a claim Header,
+        and a claim Header may include no remit Line.
+  - identity_id: carc_identity
+    dataset_columns:
+    - carc_id
+    is_entity_universe: false
+    entity_expression:
+    - '[carc_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A remit Line may match one cARC, and a cARC may include no remit Line. A paid line
+        may have no adjustment reason.
+  - identity_id: member_identity
+    dataset_columns:
+    - member_id
+    is_entity_universe: false
+    entity_expression:
+    - '[member_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many remit Lines belong to one member, every remit Line matches a member, and a member
+        may include no remit Line.
+  - identity_id: provider_identity
+    dataset_columns:
+    - provider_id
+    is_entity_universe: false
+    entity_expression:
+    - '[provider_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many remit Lines belong to one provider, every remit Line matches a provider, and
+        a provider may include no remit Line.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many remit Lines belong to one calendar Day, every remit Line matches a calendar
+        Day, and every calendar Day includes at least one remit Line.
+- node_id: sf:healthcare-payer.remit.fact_remit_adjustment
+  descriptor:
+    qualified_name: healthcare-payer.remit.fact_remit_adjustment
+    display_name: Remit Adjustment
+    description: One CAS adjustment on a remit line.
+    synonyms: []
+    tags:
+    - fact
+    - remit
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: HEALTHCARE_PAYER
+      schema: REMIT
+      object: FACT_REMIT_ADJUSTMENT
+      format: table
+  grain:
+    description: One row is one remit adjustment.
+    components:
+    - identity_id: remit_adjustment_identity
+      dataset_columns:
+      - remit_adjustment_id
+      description: Identifier of one remit Adjustment.
+  columns:
+  - name: remit_adjustment_id
+    description: Identifier of one remit Adjustment.
+  - name: remit_line_id
+    description: Not every remit line carries an adjustment.
+  - name: carc_id
+    description: Reference to the cARC.
+  - name: rarc_id
+    description: Reference to the rARC.
+  - name: calendar_day_id
+    description: Reference to the calendar Day.
+  - name: adjustment_amount
+    description: Adjustment amount.
+  entity_definitions:
+  - identity_id: remit_adjustment_identity
+    dataset_columns:
+    - remit_adjustment_id
+    is_entity_universe: true
+    entity_expression:
+    - '[remit_adjustment_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of remit adjustment.
+  - identity_id: remit_line_identity
+    dataset_columns:
+    - remit_line_id
+    is_entity_universe: false
+    entity_expression:
+    - '[remit_line_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many remit Adjustments belong to one remit Line, every remit Adjustment matches a
+        remit Line, and a remit Line may include no remit Adjustment. Not every remit line carries an
+        adjustment.
+  - identity_id: carc_identity
+    dataset_columns:
+    - carc_id
+    is_entity_universe: false
+    entity_expression:
+    - '[carc_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many remit Adjustments belong to one cARC, every remit Adjustment matches a cARC,
+        and every cARC includes at least one remit Adjustment.
+  - identity_id: rarc_identity
+    dataset_columns:
+    - rarc_id
+    is_entity_universe: false
+    entity_expression:
+    - '[rarc_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A remit Adjustment may match one rARC, and a rARC may include no remit Adjustment.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many remit Adjustments belong to one calendar Day, every remit Adjustment matches
+        a calendar Day, and every calendar Day includes at least one remit Adjustment.
+- node_id: sf:healthcare-payer.remit.fact_cob_line
+  descriptor:
+    qualified_name: healthcare-payer.remit.fact_cob_line
+    display_name: COB Line
+    description: One coordination-of-benefits amount on a service line.
+    synonyms: []
+    tags:
+    - fact
+    - remit
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: HEALTHCARE_PAYER
+      schema: REMIT
+      object: FACT_COB_LINE
+      format: table
+  grain:
+    description: One row is one cob line.
+    components:
+    - identity_id: cob_line_identity
+      dataset_columns:
+      - cob_line_id
+      description: Identifier of one cOB Line.
+  columns:
+  - name: cob_line_id
+    description: Identifier of one cOB Line.
+  - name: claim_line_id
+    description: Reference to the claim Line.
+  - name: cob_type_id
+    description: Reference to the cOB Type.
+  - name: calendar_day_id
+    description: Reference to the calendar Day.
+  - name: trading_partner_id
+    description: Reference to the trading Partner.
+  - name: other_paid_amount
+    description: Amount paid by the other payer.
+  entity_definitions:
+  - identity_id: cob_line_identity
+    dataset_columns:
+    - cob_line_id
+    is_entity_universe: true
+    entity_expression:
+    - '[cob_line_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of cob line.
+  - identity_id: claim_line_identity
+    dataset_columns:
+    - claim_line_id
+    is_entity_universe: false
+    entity_expression:
+    - '[claim_line_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many cOB Lines belong to one claim Line, every cOB Line matches a claim Line, and
+        a claim Line may include no cOB Line.
+  - identity_id: cob_type_identity
+    dataset_columns:
+    - cob_type_id
+    is_entity_universe: false
+    entity_expression:
+    - '[cob_type_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many cOB Lines belong to one cOB Type, every cOB Line matches a cOB Type, and every
+        cOB Type includes at least one cOB Line.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many cOB Lines belong to one calendar Day, every cOB Line matches a calendar Day,
+        and a calendar Day may include no cOB Line.
+  - identity_id: trading_partner_identity
+    dataset_columns:
+    - trading_partner_id
+    is_entity_universe: false
+    entity_expression:
+    - '[trading_partner_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A cOB Line may match one trading Partner, and a trading Partner may include no cOB
+        Line.
+- node_id: sf:healthcare-payer.remit.fact_provider_payment
+  descriptor:
+    qualified_name: healthcare-payer.remit.fact_provider_payment
+    display_name: Provider Payment
+    description: One EFT or check to a provider.
+    synonyms: []
+    tags:
+    - fact
+    - remit
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: HEALTHCARE_PAYER
+      schema: REMIT
+      object: FACT_PROVIDER_PAYMENT
+      format: table
+  grain:
+    description: One row is one provider payment.
+    components:
+    - identity_id: provider_payment_identity
+      dataset_columns:
+      - provider_payment_id
+      description: Identifier of one provider Payment.
+  columns:
+  - name: provider_payment_id
+    description: Identifier of one provider Payment.
+  - name: provider_id
+    description: Reference to the provider.
+  - name: calendar_day_id
+    description: Reference to the calendar Day.
+  - name: bank_id
+    description: Reference to the bank.
+  - name: jurisdiction_id
+    description: Reference to the jurisdiction.
+  - name: remit_advice_id
+    description: Reference to the remit Advice.
+  - name: payment_amount
+    description: Amount of the payment instrument.
+  entity_definitions:
+  - identity_id: provider_payment_identity
+    dataset_columns:
+    - provider_payment_id
+    is_entity_universe: true
+    entity_expression:
+    - '[provider_payment_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of provider payment.
+  - identity_id: provider_identity
+    dataset_columns:
+    - provider_id
+    is_entity_universe: false
+    entity_expression:
+    - '[provider_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many provider Payments belong to one provider, every provider Payment matches a provider,
+        and a provider may include no provider Payment.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many provider Payments belong to one calendar Day, every provider Payment matches
+        a calendar Day, and every calendar Day includes at least one provider Payment.
+  - identity_id: bank_identity
+    dataset_columns:
+    - bank_id
+    is_entity_universe: false
+    entity_expression:
+    - '[bank_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many provider Payments belong to one bank, every provider Payment matches a bank,
+        and a bank may include no provider Payment.
+  - identity_id: jurisdiction_identity
+    dataset_columns:
+    - jurisdiction_id
+    is_entity_universe: false
+    entity_expression:
+    - '[jurisdiction_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many provider Payments belong to one jurisdiction, every provider Payment matches
+        a jurisdiction, and a jurisdiction may include no provider Payment.
+  - identity_id: remit_advice_identity
+    dataset_columns:
+    - remit_advice_id
+    is_entity_universe: false
+    entity_expression:
+    - '[remit_advice_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A provider Payment may match one remit Advice, and a remit Advice may include no
+        provider Payment.
+- node_id: sf:healthcare-payer.remit.fact_interest_payment
+  descriptor:
+    qualified_name: healthcare-payer.remit.fact_interest_payment
+    display_name: Interest Payment
+    description: One interest payment on a late claim.
+    synonyms: []
+    tags:
+    - fact
+    - remit
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: HEALTHCARE_PAYER
+      schema: REMIT
+      object: FACT_INTEREST_PAYMENT
+      format: table
+  grain:
+    description: One row is one interest payment.
+    components:
+    - identity_id: interest_payment_identity
+      dataset_columns:
+      - interest_payment_id
+      description: Identifier of one interest Payment.
+  columns:
+  - name: interest_payment_id
+    description: Identifier of one interest Payment.
+  - name: claim_header_id
+    description: Reference to the claim Header.
+  - name: interest_reason_id
+    description: Reference to the interest Reason.
+  - name: calendar_day_id
+    description: Reference to the calendar Day.
+  - name: provider_id
+    description: Reference to the provider.
+  - name: interest_amount
+    description: Interest amount.
+  entity_definitions:
+  - identity_id: interest_payment_identity
+    dataset_columns:
+    - interest_payment_id
+    is_entity_universe: true
+    entity_expression:
+    - '[interest_payment_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of interest payment.
+  - identity_id: claim_header_identity
+    dataset_columns:
+    - claim_header_id
+    is_entity_universe: false
+    entity_expression:
+    - '[claim_header_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many interest Payments belong to one claim Header, every interest Payment matches
+        a claim Header, and a claim Header may include no interest Payment.
+  - identity_id: interest_reason_identity
+    dataset_columns:
+    - interest_reason_id
+    is_entity_universe: false
+    entity_expression:
+    - '[interest_reason_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many interest Payments belong to one interest Reason, every interest Payment matches
+        a interest Reason, and every interest Reason includes at least one interest Payment.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many interest Payments belong to one calendar Day, every interest Payment matches
+        a calendar Day, and a calendar Day may include no interest Payment.
+  - identity_id: provider_identity
+    dataset_columns:
+    - provider_id
+    is_entity_universe: false
+    entity_expression:
+    - '[provider_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many interest Payments belong to one provider, every interest Payment matches a provider,
+        and a provider may include no interest Payment.
+- node_id: sf:healthcare-payer.remit.fact_withhold
+  descriptor:
+    qualified_name: healthcare-payer.remit.fact_withhold
+    display_name: Withhold
+    description: One withhold against a provider payment.
+    synonyms: []
+    tags:
+    - fact
+    - remit
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: HEALTHCARE_PAYER
+      schema: REMIT
+      object: FACT_WITHHOLD
+      format: table
+  grain:
+    description: One row is one withhold.
+    components:
+    - identity_id: withhold_identity
+      dataset_columns:
+      - withhold_id
+      description: Identifier of one withhold.
+  columns:
+  - name: withhold_id
+    description: Identifier of one withhold.
+  - name: provider_payment_id
+    description: Reference to the provider Payment.
+  - name: withhold_reason_id
+    description: Reference to the withhold Reason.
+  - name: calendar_day_id
+    description: Reference to the calendar Day.
+  - name: withhold_amount
+    description: Amount withheld.
+  entity_definitions:
+  - identity_id: withhold_identity
+    dataset_columns:
+    - withhold_id
+    is_entity_universe: true
+    entity_expression:
+    - '[withhold_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of withhold.
+  - identity_id: provider_payment_identity
+    dataset_columns:
+    - provider_payment_id
+    is_entity_universe: false
+    entity_expression:
+    - '[provider_payment_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many withholds belong to one provider Payment, every withhold matches a provider
+        Payment, and a provider Payment may include no withhold.
+  - identity_id: withhold_reason_identity
+    dataset_columns:
+    - withhold_reason_id
+    is_entity_universe: false
+    entity_expression:
+    - '[withhold_reason_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many withholds belong to one withhold Reason, every withhold matches a withhold Reason,
+        and every withhold Reason includes at least one withhold.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many withholds belong to one calendar Day, every withhold matches a calendar Day,
+        and a calendar Day may include no withhold.
+- node_id: sf:healthcare-payer.remit.fact_overpayment
+  descriptor:
+    qualified_name: healthcare-payer.remit.fact_overpayment
+    display_name: Overpayment
+    description: One identified overpayment.
+    synonyms: []
+    tags:
+    - fact
+    - remit
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: HEALTHCARE_PAYER
+      schema: REMIT
+      object: FACT_OVERPAYMENT
+      format: table
+  grain:
+    description: One row is one overpayment.
+    components:
+    - identity_id: overpayment_identity
+      dataset_columns:
+      - overpayment_id
+      description: Identifier of one overpayment.
+  columns:
+  - name: overpayment_id
+    description: Identifier of one overpayment.
+  - name: claim_header_id
+    description: Reference to the claim Header.
+  - name: provider_id
+    description: Reference to the provider.
+  - name: calendar_day_id
+    description: Reference to the calendar Day.
+  - name: overpaid_amount
+    description: Overpaid amount.
+  entity_definitions:
+  - identity_id: overpayment_identity
+    dataset_columns:
+    - overpayment_id
+    is_entity_universe: true
+    entity_expression:
+    - '[overpayment_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of overpayment.
+  - identity_id: claim_header_identity
+    dataset_columns:
+    - claim_header_id
+    is_entity_universe: false
+    entity_expression:
+    - '[claim_header_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many overpayments belong to one claim Header, every overpayment matches a claim Header,
+        and a claim Header may include no overpayment.
+  - identity_id: provider_identity
+    dataset_columns:
+    - provider_id
+    is_entity_universe: false
+    entity_expression:
+    - '[provider_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many overpayments belong to one provider, every overpayment matches a provider, and
+        a provider may include no overpayment.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many overpayments belong to one calendar Day, every overpayment matches a calendar
+        Day, and a calendar Day may include no overpayment.
+- node_id: sf:healthcare-payer.remit.fact_recovery
+  descriptor:
+    qualified_name: healthcare-payer.remit.fact_recovery
+    display_name: Recovery
+    description: One recovery against an overpayment.
+    synonyms: []
+    tags:
+    - fact
+    - remit
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: HEALTHCARE_PAYER
+      schema: REMIT
+      object: FACT_RECOVERY
+      format: table
+  grain:
+    description: One row is one recovery.
+    components:
+    - identity_id: recovery_identity
+      dataset_columns:
+      - recovery_id
+      description: Identifier of one recovery.
+  columns:
+  - name: recovery_id
+    description: Identifier of one recovery.
+  - name: overpayment_id
+    description: Reference to the overpayment.
+  - name: calendar_day_id
+    description: Reference to the calendar Day.
+  - name: provider_id
+    description: Reference to the provider.
+  - name: recovered_amount
+    description: Amount recovered.
+  entity_definitions:
+  - identity_id: recovery_identity
+    dataset_columns:
+    - recovery_id
+    is_entity_universe: true
+    entity_expression:
+    - '[recovery_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of recovery.
+  - identity_id: overpayment_identity
+    dataset_columns:
+    - overpayment_id
+    is_entity_universe: false
+    entity_expression:
+    - '[overpayment_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many recoveries belong to one overpayment, every recovery matches a overpayment,
+        and a overpayment may include no recovery.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many recoveries belong to one calendar Day, every recovery matches a calendar Day,
+        and a calendar Day may include no recovery.
+  - identity_id: provider_identity
+    dataset_columns:
+    - provider_id
+    is_entity_universe: false
+    entity_expression:
+    - '[provider_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many recoveries belong to one provider, every recovery matches a provider, and a
+        provider may include no recovery.

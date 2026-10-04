@@ -1,0 +1,700 @@
+schema_version: '2'
+nodes:
+- node_id: sf:healthcare-payer.benefit.dim_drug_class
+  descriptor:
+    qualified_name: healthcare-payer.benefit.dim_drug_class
+    display_name: Drug Class
+    description: Therapeutic class of an NDC.
+    synonyms: []
+    tags:
+    - dimension
+    - benefit
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: HEALTHCARE_PAYER
+      schema: BENEFIT
+      object: DIM_DRUG_CLASS
+      format: table
+  grain:
+    description: One row is one drug class.
+    components:
+    - identity_id: drug_class_identity
+      dataset_columns:
+      - drug_class_id
+      description: Identifier of one drug Class.
+  columns:
+  - name: drug_class_id
+    description: Identifier of one drug Class.
+  - name: code
+    description: Code for the drug class.
+    value_description: statin, insulin, opioid, antibiotic, inhaler
+  entity_definitions:
+  - identity_id: drug_class_identity
+    dataset_columns:
+    - drug_class_id
+    is_entity_universe: true
+    entity_expression:
+    - '[drug_class_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of drug class.
+- node_id: sf:healthcare-payer.benefit.dim_plan
+  descriptor:
+    qualified_name: healthcare-payer.benefit.dim_plan
+    display_name: Plan
+    description: Benefit plan or contract.
+    synonyms: []
+    tags:
+    - dimension
+    - benefit
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: HEALTHCARE_PAYER
+      schema: BENEFIT
+      object: DIM_PLAN
+      format: table
+  grain:
+    description: One row is one plan.
+    components:
+    - identity_id: plan_identity
+      dataset_columns:
+      - plan_id
+      description: Identifier of one plan.
+  columns:
+  - name: plan_id
+    description: Identifier of one plan.
+  - name: legal_entity_id
+    description: Reference to the legal Entity.
+  - name: jurisdiction_id
+    description: Reference to the jurisdiction.
+  - name: lob_id
+    description: Reference to the line of Business.
+  - name: plan_name
+    description: Name of the plan.
+  entity_definitions:
+  - identity_id: plan_identity
+    dataset_columns:
+    - plan_id
+    is_entity_universe: true
+    entity_expression:
+    - '[plan_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of plan.
+  - identity_id: legal_entity_identity
+    dataset_columns:
+    - legal_entity_id
+    is_entity_universe: false
+    entity_expression:
+    - '[legal_entity_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many plans belong to one legal Entity, every plan matches a legal Entity, and a legal
+        Entity may include no plan.
+  - identity_id: jurisdiction_identity
+    dataset_columns:
+    - jurisdiction_id
+    is_entity_universe: false
+    entity_expression:
+    - '[jurisdiction_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many plans belong to one jurisdiction, every plan matches a jurisdiction, and a jurisdiction
+        may include no plan.
+  - identity_id: lob_identity
+    dataset_columns:
+    - lob_id
+    is_entity_universe: false
+    entity_expression:
+    - '[lob_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many plans belong to one line of Business, every plan matches a line of Business,
+        and every line of Business includes at least one plan.
+- node_id: sf:healthcare-payer.benefit.dim_benefit
+  descriptor:
+    qualified_name: healthcare-payer.benefit.dim_benefit
+    display_name: Benefit
+    description: Covered benefit inside a plan.
+    synonyms: []
+    tags:
+    - dimension
+    - benefit
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: HEALTHCARE_PAYER
+      schema: BENEFIT
+      object: DIM_BENEFIT
+      format: table
+  grain:
+    description: One row is one benefit.
+    components:
+    - identity_id: benefit_identity
+      dataset_columns:
+      - benefit_id
+      description: Identifier of one benefit.
+  columns:
+  - name: benefit_id
+    description: Identifier of one benefit.
+  - name: plan_id
+    description: Every plan has benefits.
+  - name: benefit_name
+    description: Name of the benefit.
+  entity_definitions:
+  - identity_id: benefit_identity
+    dataset_columns:
+    - benefit_id
+    is_entity_universe: true
+    entity_expression:
+    - '[benefit_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of benefit.
+  - identity_id: plan_identity
+    dataset_columns:
+    - plan_id
+    is_entity_universe: false
+    entity_expression:
+    - '[plan_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many benefits belong to one plan, every benefit matches a plan, and every plan includes
+        at least one benefit. Every plan has benefits.
+- node_id: sf:healthcare-payer.benefit.dim_contract
+  descriptor:
+    qualified_name: healthcare-payer.benefit.dim_contract
+    display_name: CMS Contract
+    description: Contract identifier associated with a plan.
+    synonyms: []
+    tags:
+    - dimension
+    - benefit
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: HEALTHCARE_PAYER
+      schema: BENEFIT
+      object: DIM_CONTRACT
+      format: table
+  grain:
+    description: One row is one cms contract.
+    components:
+    - identity_id: contract_identity
+      dataset_columns:
+      - contract_id
+      description: Identifier of one cMS Contract.
+  columns:
+  - name: contract_id
+    description: Identifier of one cMS Contract.
+  - name: plan_id
+    description: Every plan has at least one contract row.
+  - name: legal_entity_id
+    description: Reference to the legal Entity.
+  - name: contract_number
+    description: Contract number.
+  entity_definitions:
+  - identity_id: contract_identity
+    dataset_columns:
+    - contract_id
+    is_entity_universe: true
+    entity_expression:
+    - '[contract_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of cms contract.
+  - identity_id: plan_identity
+    dataset_columns:
+    - plan_id
+    is_entity_universe: false
+    entity_expression:
+    - '[plan_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many cMS Contracts belong to one plan, every cMS Contract matches a plan, and every
+        plan includes at least one cMS Contract. Every plan has at least one contract row.
+  - identity_id: legal_entity_identity
+    dataset_columns:
+    - legal_entity_id
+    is_entity_universe: false
+    entity_expression:
+    - '[legal_entity_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many cMS Contracts belong to one legal Entity, every cMS Contract matches a legal
+        Entity, and a legal Entity may include no cMS Contract.
+- node_id: sf:healthcare-payer.benefit.dim_premium_schedule
+  descriptor:
+    qualified_name: healthcare-payer.benefit.dim_premium_schedule
+    display_name: Premium Schedule
+    description: Premium amount schedule for a plan.
+    synonyms: []
+    tags:
+    - dimension
+    - benefit
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: HEALTHCARE_PAYER
+      schema: BENEFIT
+      object: DIM_PREMIUM_SCHEDULE
+      format: table
+  grain:
+    description: One row is one premium schedule.
+    components:
+    - identity_id: premium_schedule_identity
+      dataset_columns:
+      - premium_schedule_id
+      description: Identifier of one premium Schedule.
+  columns:
+  - name: premium_schedule_id
+    description: Identifier of one premium Schedule.
+  - name: plan_id
+    description: Each plan has one premium schedule in the window.
+  - name: monthly_amount
+    description: Monthly premium amount.
+  entity_definitions:
+  - identity_id: premium_schedule_identity
+    dataset_columns:
+    - premium_schedule_id
+    is_entity_universe: true
+    entity_expression:
+    - '[premium_schedule_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of premium schedule.
+  - identity_id: plan_identity
+    dataset_columns:
+    - plan_id
+    is_entity_universe: false
+    entity_expression:
+    - '[plan_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: '1:1'
+      business_rule: Each premium Schedule matches exactly one plan, and each plan matches exactly one
+        premium Schedule. Each plan has one premium schedule in the window.
+- node_id: sf:healthcare-payer.benefit.dim_fee_schedule
+  descriptor:
+    qualified_name: healthcare-payer.benefit.dim_fee_schedule
+    display_name: Fee Schedule
+    description: Fee schedule used to price a service.
+    synonyms: []
+    tags:
+    - dimension
+    - benefit
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: HEALTHCARE_PAYER
+      schema: BENEFIT
+      object: DIM_FEE_SCHEDULE
+      format: table
+  grain:
+    description: One row is one fee schedule.
+    components:
+    - identity_id: fee_schedule_identity
+      dataset_columns:
+      - fee_schedule_id
+      description: Identifier of one fee Schedule.
+  columns:
+  - name: fee_schedule_id
+    description: Identifier of one fee Schedule.
+  - name: jurisdiction_id
+    description: Reference to the jurisdiction.
+  - name: schedule_name
+    description: Name of the fee schedule.
+  entity_definitions:
+  - identity_id: fee_schedule_identity
+    dataset_columns:
+    - fee_schedule_id
+    is_entity_universe: true
+    entity_expression:
+    - '[fee_schedule_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of fee schedule.
+  - identity_id: jurisdiction_identity
+    dataset_columns:
+    - jurisdiction_id
+    is_entity_universe: false
+    entity_expression:
+    - '[jurisdiction_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many fee Schedules belong to one jurisdiction, every fee Schedule matches a jurisdiction,
+        and every jurisdiction includes at least one fee Schedule.
+- node_id: sf:healthcare-payer.benefit.dim_hcc
+  descriptor:
+    qualified_name: healthcare-payer.benefit.dim_hcc
+    display_name: HCC
+    description: Hierarchical condition category.
+    synonyms: []
+    tags:
+    - dimension
+    - benefit
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: HEALTHCARE_PAYER
+      schema: BENEFIT
+      object: DIM_HCC
+      format: table
+  grain:
+    description: One row is one hcc.
+    components:
+    - identity_id: hcc_identity
+      dataset_columns:
+      - hcc_id
+      description: Identifier of one hCC.
+  columns:
+  - name: hcc_id
+    description: Identifier of one hCC.
+  - name: risk_model_id
+    description: Reference to the risk Model.
+  - name: hcc_code
+    description: HCC code.
+  entity_definitions:
+  - identity_id: hcc_identity
+    dataset_columns:
+    - hcc_id
+    is_entity_universe: true
+    entity_expression:
+    - '[hcc_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of hcc.
+  - identity_id: risk_model_identity
+    dataset_columns:
+    - risk_model_id
+    is_entity_universe: false
+    entity_expression:
+    - '[risk_model_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many hCCs belong to one risk Model, every hCC matches a risk Model, and every risk
+        Model includes at least one hCC.
+- node_id: sf:healthcare-payer.benefit.fact_accumulator_entry
+  descriptor:
+    qualified_name: healthcare-payer.benefit.fact_accumulator_entry
+    display_name: Accumulator Entry
+    description: One benefit-accumulator posting from adjudication.
+    synonyms: []
+    tags:
+    - fact
+    - benefit
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: HEALTHCARE_PAYER
+      schema: BENEFIT
+      object: FACT_ACCUMULATOR_ENTRY
+      format: table
+  grain:
+    description: One row is one accumulator entry.
+    components:
+    - identity_id: accumulator_entry_identity
+      dataset_columns:
+      - accumulator_entry_id
+      description: Identifier of one accumulator Entry.
+  columns:
+  - name: accumulator_entry_id
+    description: Identifier of one accumulator Entry.
+  - name: member_id
+    description: Reference to the member.
+  - name: accumulator_type_id
+    description: Reference to the accumulator Type.
+  - name: claim_line_id
+    description: Each posting cites one service line.
+  - name: plan_id
+    description: Reference to the plan.
+  - name: calendar_day_id
+    description: Reference to the calendar Day.
+  - name: applied_amount
+    description: Amount applied to the accumulator.
+  entity_definitions:
+  - identity_id: accumulator_entry_identity
+    dataset_columns:
+    - accumulator_entry_id
+    is_entity_universe: true
+    entity_expression:
+    - '[accumulator_entry_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of accumulator entry.
+  - identity_id: member_identity
+    dataset_columns:
+    - member_id
+    is_entity_universe: false
+    entity_expression:
+    - '[member_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many accumulator Entries belong to one member, every accumulator Entry matches a
+        member, and a member may include no accumulator Entry.
+  - identity_id: accumulator_type_identity
+    dataset_columns:
+    - accumulator_type_id
+    is_entity_universe: false
+    entity_expression:
+    - '[accumulator_type_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many accumulator Entries belong to one accumulator Type, every accumulator Entry
+        matches a accumulator Type, and every accumulator Type includes at least one accumulator Entry.
+  - identity_id: claim_line_identity
+    dataset_columns:
+    - claim_line_id
+    is_entity_universe: false
+    entity_expression:
+    - '[claim_line_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many accumulator Entries belong to one claim Line, every accumulator Entry matches
+        a claim Line, and a claim Line may include no accumulator Entry. Each posting cites one service
+        line.
+  - identity_id: plan_identity
+    dataset_columns:
+    - plan_id
+    is_entity_universe: false
+    entity_expression:
+    - '[plan_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many accumulator Entries belong to one plan, every accumulator Entry matches a plan,
+        and a plan may include no accumulator Entry.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many accumulator Entries belong to one calendar Day, every accumulator Entry matches
+        a calendar Day, and every calendar Day includes at least one accumulator Entry.
+- node_id: sf:healthcare-payer.benefit.fact_accumulator_snapshot
+  descriptor:
+    qualified_name: healthcare-payer.benefit.fact_accumulator_snapshot
+    display_name: Accumulator Snapshot
+    description: Month-end accumulator balance for one member and one accumulator type.
+    synonyms: []
+    tags:
+    - fact
+    - benefit
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: HEALTHCARE_PAYER
+      schema: BENEFIT
+      object: FACT_ACCUMULATOR_SNAPSHOT
+      format: table
+  grain:
+    description: One row is one accumulator snapshot.
+    components:
+    - identity_id: accumulator_snapshot_identity
+      dataset_columns:
+      - accumulator_snapshot_id
+      description: Identifier of one accumulator Snapshot.
+  columns:
+  - name: accumulator_snapshot_id
+    description: Identifier of one accumulator Snapshot.
+  - name: member_id
+    description: Every member has a snapshot row for each accumulator type.
+  - name: accumulator_type_id
+    description: Every accumulator type is snapshotted.
+  - name: plan_id
+    description: Reference to the plan.
+  - name: calendar_day_id
+    description: Reference to the calendar Day.
+  - name: balance_amount
+    description: Balance at month end.
+  entity_definitions:
+  - identity_id: accumulator_snapshot_identity
+    dataset_columns:
+    - accumulator_snapshot_id
+    is_entity_universe: true
+    entity_expression:
+    - '[accumulator_snapshot_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of accumulator snapshot.
+  - identity_id: member_identity
+    dataset_columns:
+    - member_id
+    is_entity_universe: false
+    entity_expression:
+    - '[member_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many accumulator Snapshots belong to one member, every accumulator Snapshot matches
+        a member, and every member includes at least one accumulator Snapshot. Every member has a snapshot
+        row for each accumulator type.
+  - identity_id: accumulator_type_identity
+    dataset_columns:
+    - accumulator_type_id
+    is_entity_universe: false
+    entity_expression:
+    - '[accumulator_type_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many accumulator Snapshots belong to one accumulator Type, every accumulator Snapshot
+        matches a accumulator Type, and every accumulator Type includes at least one accumulator Snapshot.
+        Every accumulator type is snapshotted.
+  - identity_id: plan_identity
+    dataset_columns:
+    - plan_id
+    is_entity_universe: false
+    entity_expression:
+    - '[plan_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many accumulator Snapshots belong to one plan, every accumulator Snapshot matches
+        a plan, and a plan may include no accumulator Snapshot.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many accumulator Snapshots belong to one calendar Day, every accumulator Snapshot
+        matches a calendar Day, and a calendar Day may include no accumulator Snapshot.
+- node_id: sf:healthcare-payer.benefit.fact_fee_schedule_rate
+  descriptor:
+    qualified_name: healthcare-payer.benefit.fact_fee_schedule_rate
+    display_name: Fee Schedule Rate
+    description: One procedure rate on a fee schedule.
+    synonyms: []
+    tags:
+    - fact
+    - benefit
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: HEALTHCARE_PAYER
+      schema: BENEFIT
+      object: FACT_FEE_SCHEDULE_RATE
+      format: table
+  grain:
+    description: One row is one fee schedule rate.
+    components:
+    - identity_id: fee_schedule_rate_identity
+      dataset_columns:
+      - fee_schedule_rate_id
+      description: Identifier of one fee Schedule Rate.
+  columns:
+  - name: fee_schedule_rate_id
+    description: Identifier of one fee Schedule Rate.
+  - name: fee_schedule_id
+    description: Reference to the fee Schedule.
+  - name: procedure_id
+    description: Reference to the procedure.
+  - name: locality_id
+    description: Reference to the payment Locality.
+  - name: rate_amount
+    description: Allowed rate.
+  entity_definitions:
+  - identity_id: fee_schedule_rate_identity
+    dataset_columns:
+    - fee_schedule_rate_id
+    is_entity_universe: true
+    entity_expression:
+    - '[fee_schedule_rate_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of fee schedule rate.
+  - identity_id: fee_schedule_identity
+    dataset_columns:
+    - fee_schedule_id
+    is_entity_universe: false
+    entity_expression:
+    - '[fee_schedule_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many fee Schedule Rates belong to one fee Schedule, every fee Schedule Rate matches
+        a fee Schedule, and every fee Schedule includes at least one fee Schedule Rate.
+  - identity_id: procedure_identity
+    dataset_columns:
+    - procedure_id
+    is_entity_universe: false
+    entity_expression:
+    - '[procedure_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many fee Schedule Rates belong to one procedure, every fee Schedule Rate matches
+        a procedure, and a procedure may include no fee Schedule Rate.
+  - identity_id: locality_identity
+    dataset_columns:
+    - locality_id
+    is_entity_universe: false
+    entity_expression:
+    - '[locality_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many fee Schedule Rates belong to one payment Locality, every fee Schedule Rate matches
+        a payment Locality, and a payment Locality may include no fee Schedule Rate.

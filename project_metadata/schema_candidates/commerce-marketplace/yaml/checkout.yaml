@@ -1,0 +1,96 @@
+schema_version: '2'
+nodes:
+- node_id: sf:commerce-marketplace.checkout.fact_checkout
+  descriptor:
+    qualified_name: commerce-marketplace.checkout.fact_checkout
+    display_name: Checkout
+    description: Attempt to convert a cart into an order.
+    synonyms: []
+    tags:
+    - fact
+    - checkout
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE_MARKETPLACE
+      schema: CHECKOUT
+      object: FACT_CHECKOUT
+      format: table
+  grain:
+    description: One row is one checkout.
+    components:
+    - identity_id: checkout_identity
+      dataset_columns:
+      - checkout_id
+      description: Identifies one checkout.
+  columns:
+  - name: checkout_id
+    description: Identifies one checkout.
+  - name: cart_id
+    description: Cart the checkout started from.
+  - name: buyer_account_id
+    description: Buyer account that is checking out.
+  - name: address_id
+    description: Ship-to address selected at checkout.
+  - name: shipping_method_id
+    description: Shipping method selected at checkout.
+  - name: checkout_status
+    description: Progress of the checkout attempt.
+    value_description: started, completed, abandoned
+  entity_definitions:
+  - identity_id: checkout_identity
+    dataset_columns:
+    - checkout_id
+    is_entity_universe: true
+    entity_expression:
+    - '[checkout_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
+  - identity_id: cart_identity
+    dataset_columns:
+    - cart_id
+    is_entity_universe: false
+    entity_expression:
+    - '[cart_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A checkout may have no cart, and a cart may have no checkouts.
+  - identity_id: buyer_account_identity
+    dataset_columns:
+    - buyer_account_id
+    is_entity_universe: false
+    entity_expression:
+    - '[buyer_account_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each checkout belongs to exactly one buyer account, and a buyer account may have
+        no checkouts.
+  - identity_id: address_identity
+    dataset_columns:
+    - address_id
+    is_entity_universe: false
+    entity_expression:
+    - '[address_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A checkout may have no address, and an address may have no checkouts.
+  - identity_id: shipping_method_identity
+    dataset_columns:
+    - shipping_method_id
+    is_entity_universe: false
+    entity_expression:
+    - '[shipping_method_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A checkout may have no shipping method, and a shipping method may have no checkouts.

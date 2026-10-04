@@ -1,0 +1,774 @@
+schema_version: '2'
+nodes:
+- node_id: sf:manufacturing-discrete.bridge.bridge_employee_skill
+  descriptor:
+    qualified_name: manufacturing-discrete.bridge.bridge_employee_skill
+    display_name: Employee Skill
+    description: Skill held by an employee.
+    synonyms: []
+    tags:
+    - bridge
+    - bridge
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: BRIDGE
+      object: BRIDGE_EMPLOYEE_SKILL
+      format: table
+  grain:
+    description: One row is one employee skill.
+    components:
+    - identity_id: employee_skill_identity
+      dataset_columns:
+      - employee_skill_id
+      description: Identifier of one employee skill assignment.
+  columns:
+  - name: employee_skill_id
+    description: Identifier of one employee skill assignment.
+  - name: employee_id
+    description: Employee who holds the skill.
+  - name: skill_id
+    description: Skill assigned to the employee.
+  entity_definitions:
+  - identity_id: employee_skill_identity
+    dataset_columns:
+    - employee_skill_id
+    is_entity_universe: true
+    entity_expression:
+    - '[employee_skill_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of employee skill.
+  - identity_id: employee_identity
+    dataset_columns:
+    - employee_id
+    is_entity_universe: false
+    entity_expression:
+    - '[employee_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many skill assignments belong to one employee, every assignment matches an employee,
+        and an employee may include no skill assignment.
+  - identity_id: labor_skill_identity
+    dataset_columns:
+    - skill_id
+    is_entity_universe: false
+    entity_expression:
+    - '[skill_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many skill assignments belong to one labor skill, every assignment matches a labor
+        skill, and a labor skill may include no assignment.
+- node_id: sf:manufacturing-discrete.bridge.bridge_employee_reporting
+  descriptor:
+    qualified_name: manufacturing-discrete.bridge.bridge_employee_reporting
+    display_name: Employee Reporting
+    description: Reporting line from an employee to a manager.
+    synonyms: []
+    tags:
+    - bridge
+    - bridge
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: BRIDGE
+      object: BRIDGE_EMPLOYEE_REPORTING
+      format: table
+  grain:
+    description: One row is one employee reporting.
+    components:
+    - identity_id: reporting_identity
+      dataset_columns:
+      - reporting_id
+      description: Identifier of one reporting relationship.
+  columns:
+  - name: reporting_id
+    description: Identifier of one reporting relationship.
+  - name: employee_id
+    description: Employee who reports to a manager.
+  - name: reporting_manager_id
+    description: Reporting-manager role named on the reporting row.
+  entity_definitions:
+  - identity_id: reporting_identity
+    dataset_columns:
+    - reporting_id
+    is_entity_universe: true
+    entity_expression:
+    - '[reporting_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of employee reporting.
+  - identity_id: employee_identity
+    dataset_columns:
+    - employee_id
+    is_entity_universe: false
+    entity_expression:
+    - '[employee_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many reporting rows name one employee as the report, every reporting row matches
+        that employee, and an employee may include no reporting row.
+  - identity_id: reporting_manager_identity
+    dataset_columns:
+    - reporting_manager_id
+    is_entity_universe: false
+    entity_expression:
+    - '[reporting_manager_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many reporting rows name one reporting manager, every reporting row matches that
+        role, and a reporting manager may include no reporting row.
+- node_id: sf:manufacturing-discrete.bridge.bridge_item_plant
+  descriptor:
+    qualified_name: manufacturing-discrete.bridge.bridge_item_plant
+    display_name: Item Plant
+    description: Authorization to stock or build an item at a plant.
+    synonyms: []
+    tags:
+    - bridge
+    - bridge
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: BRIDGE
+      object: BRIDGE_ITEM_PLANT
+      format: table
+  grain:
+    description: One row is one item plant.
+    components:
+    - identity_id: item_plant_identity
+      dataset_columns:
+      - item_plant_id
+      description: Identifier of one item-plant assignment.
+  columns:
+  - name: item_plant_id
+    description: Identifier of one item-plant assignment.
+  - name: item_id
+    description: Item extended to the plant.
+  - name: plant_id
+    description: Plant that stocks or builds the item.
+  entity_definitions:
+  - identity_id: item_plant_identity
+    dataset_columns:
+    - item_plant_id
+    is_entity_universe: true
+    entity_expression:
+    - '[item_plant_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of item plant.
+  - identity_id: item_identity
+    dataset_columns:
+    - item_id
+    is_entity_universe: false
+    entity_expression:
+    - '[item_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many item-plant rows belong to one item, every row matches an item, and an item may
+        include no plant assignment.
+  - identity_id: plant_identity
+    dataset_columns:
+    - plant_id
+    is_entity_universe: false
+    entity_expression:
+    - '[plant_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many item-plant rows belong to one plant, every row matches a plant, and a plant
+        may include no item assignment.
+- node_id: sf:manufacturing-discrete.bridge.bridge_work_center_skill
+  descriptor:
+    qualified_name: manufacturing-discrete.bridge.bridge_work_center_skill
+    display_name: Work Center Skill
+    description: Skill required to run a work center.
+    synonyms: []
+    tags:
+    - bridge
+    - bridge
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: BRIDGE
+      object: BRIDGE_WORK_CENTER_SKILL
+      format: table
+  grain:
+    description: One row is one work center skill.
+    components:
+    - identity_id: work_center_skill_identity
+      dataset_columns:
+      - work_center_skill_id
+      description: Identifier of one work-center skill requirement.
+  columns:
+  - name: work_center_skill_id
+    description: Identifier of one work-center skill requirement.
+  - name: work_center_id
+    description: Work center that requires the skill.
+  - name: skill_id
+    description: Skill required by the work center.
+  entity_definitions:
+  - identity_id: work_center_skill_identity
+    dataset_columns:
+    - work_center_skill_id
+    is_entity_universe: true
+    entity_expression:
+    - '[work_center_skill_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of work center skill.
+  - identity_id: work_center_identity
+    dataset_columns:
+    - work_center_id
+    is_entity_universe: false
+    entity_expression:
+    - '[work_center_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many skill requirements belong to one work center, every requirement matches a work
+        center, and a work center may include no skill requirement.
+  - identity_id: labor_skill_identity
+    dataset_columns:
+    - skill_id
+    is_entity_universe: false
+    entity_expression:
+    - '[skill_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many skill requirements belong to one labor skill, every requirement matches a labor
+        skill, and a labor skill may include no work-center requirement.
+- node_id: sf:manufacturing-discrete.bridge.bridge_bom_component
+  descriptor:
+    qualified_name: manufacturing-discrete.bridge.bridge_bom_component
+    display_name: BOM Component
+    description: Component item consumed by a bill of materials.
+    synonyms: []
+    tags:
+    - bridge
+    - bridge
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: BRIDGE
+      object: BRIDGE_BOM_COMPONENT
+      format: table
+  grain:
+    description: One row is one bom component.
+    components:
+    - identity_id: bom_component_identity
+      dataset_columns:
+      - bom_component_id
+      description: Identifier of one BOM component row.
+  columns:
+  - name: bom_component_id
+    description: Identifier of one BOM component row.
+  - name: bom_header_id
+    description: Bill of materials that contains the component.
+  - name: component_item_id
+    description: Item consumed as the component.
+  - name: operation_id
+    description: Operation that consumes the component, when consumption is operation-specific.
+  - name: component_quantity
+    description: Quantity of the component required per parent.
+  entity_definitions:
+  - identity_id: bom_component_identity
+    dataset_columns:
+    - bom_component_id
+    is_entity_universe: true
+    entity_expression:
+    - '[bom_component_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of bom component.
+  - identity_id: bom_header_identity
+    dataset_columns:
+    - bom_header_id
+    is_entity_universe: false
+    entity_expression:
+    - '[bom_header_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many components belong to one bill of materials, every component matches a bill of
+        materials, and every bill of materials includes at least one component.
+  - identity_id: item_identity
+    dataset_columns:
+    - component_item_id
+    is_entity_universe: false
+    entity_expression:
+    - '[component_item_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many component rows belong to one item, every component row matches an item, and
+        an item may include no component row.
+  - identity_id: operation_identity
+    dataset_columns:
+    - operation_id
+    is_entity_universe: false
+    entity_expression:
+    - '[operation_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A component row may match one operation, and an operation may include no component
+        row.
+- node_id: sf:manufacturing-discrete.bridge.bridge_routing_operation
+  descriptor:
+    qualified_name: manufacturing-discrete.bridge.bridge_routing_operation
+    display_name: Routing Operation
+    description: Operation step on a routing, performed at a work center.
+    synonyms: []
+    tags:
+    - bridge
+    - bridge
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: BRIDGE
+      object: BRIDGE_ROUTING_OPERATION
+      format: table
+  grain:
+    description: One row is one routing operation.
+    components:
+    - identity_id: routing_operation_identity
+      dataset_columns:
+      - routing_operation_id
+      description: Identifier of one routing operation.
+  columns:
+  - name: routing_operation_id
+    description: Identifier of one routing operation.
+  - name: routing_id
+    description: Routing that contains the operation step.
+  - name: operation_id
+    description: Standard operation performed at this step.
+  - name: work_center_id
+    description: Work center that performs the step.
+  - name: sequence_number
+    description: Sequence of the step on the routing.
+  entity_definitions:
+  - identity_id: routing_operation_identity
+    dataset_columns:
+    - routing_operation_id
+    is_entity_universe: true
+    entity_expression:
+    - '[routing_operation_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of routing operation.
+  - identity_id: routing_identity
+    dataset_columns:
+    - routing_id
+    is_entity_universe: false
+    entity_expression:
+    - '[routing_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many routing operations belong to one routing, every routing operation matches a
+        routing, and every routing includes at least one routing operation.
+  - identity_id: operation_identity
+    dataset_columns:
+    - operation_id
+    is_entity_universe: false
+    entity_expression:
+    - '[operation_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many routing operations belong to one operation, every routing operation matches
+        an operation, and an operation may include no routing operation.
+  - identity_id: work_center_identity
+    dataset_columns:
+    - work_center_id
+    is_entity_universe: false
+    entity_expression:
+    - '[work_center_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many routing operations belong to one work center, every routing operation matches
+        a work center, and a work center may include no routing operation.
+- node_id: sf:manufacturing-discrete.bridge.bridge_item_customer
+  descriptor:
+    qualified_name: manufacturing-discrete.bridge.bridge_item_customer
+    display_name: Item Customer
+    description: Commercial link between an item and a customer that buys it.
+    synonyms: []
+    tags:
+    - bridge
+    - bridge
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: BRIDGE
+      object: BRIDGE_ITEM_CUSTOMER
+      format: table
+  grain:
+    description: One row is one item customer.
+    components:
+    - identity_id: item_customer_identity
+      dataset_columns:
+      - item_customer_id
+      description: Identifier of one item-customer agreement.
+  columns:
+  - name: item_customer_id
+    description: Identifier of one item-customer agreement.
+  - name: item_id
+    description: Item the customer buys.
+  - name: customer_id
+    description: Customer that buys the item.
+  entity_definitions:
+  - identity_id: item_customer_identity
+    dataset_columns:
+    - item_customer_id
+    is_entity_universe: true
+    entity_expression:
+    - '[item_customer_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of item customer.
+  - identity_id: item_identity
+    dataset_columns:
+    - item_id
+    is_entity_universe: false
+    entity_expression:
+    - '[item_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many item-customer rows belong to one item, every row matches an item, and an item
+        may include no customer link.
+  - identity_id: customer_identity
+    dataset_columns:
+    - customer_id
+    is_entity_universe: false
+    entity_expression:
+    - '[customer_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many item-customer rows belong to one customer, every row matches a customer, and
+        a customer may include no item link.
+- node_id: sf:manufacturing-discrete.bridge.bridge_supplier_item
+  descriptor:
+    qualified_name: manufacturing-discrete.bridge.bridge_supplier_item
+    display_name: Supplier Item
+    description: Source relationship between a supplier and an item.
+    synonyms: []
+    tags:
+    - bridge
+    - bridge
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: BRIDGE
+      object: BRIDGE_SUPPLIER_ITEM
+      format: table
+  grain:
+    description: One row is one supplier item.
+    components:
+    - identity_id: supplier_item_identity
+      dataset_columns:
+      - supplier_item_id
+      description: Identifier of one supplier-item source.
+  columns:
+  - name: supplier_item_id
+    description: Identifier of one supplier-item source.
+  - name: supplier_id
+    description: Supplier that can furnish the item.
+  - name: item_id
+    description: Item the supplier can furnish.
+  - name: supplier_site_id
+    description: Supplier site that ships the item, when a site is designated.
+  entity_definitions:
+  - identity_id: supplier_item_identity
+    dataset_columns:
+    - supplier_item_id
+    is_entity_universe: true
+    entity_expression:
+    - '[supplier_item_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of supplier item.
+  - identity_id: supplier_identity
+    dataset_columns:
+    - supplier_id
+    is_entity_universe: false
+    entity_expression:
+    - '[supplier_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many supplier-item rows belong to one supplier, every row matches a supplier, and
+        a supplier may include no item source.
+  - identity_id: item_identity
+    dataset_columns:
+    - item_id
+    is_entity_universe: false
+    entity_expression:
+    - '[item_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many supplier-item rows belong to one item, every row matches an item, and an item
+        may include no supplier source.
+  - identity_id: supplier_site_identity
+    dataset_columns:
+    - supplier_site_id
+    is_entity_universe: false
+    entity_expression:
+    - '[supplier_site_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A supplier-item row may match one supplier site, and a supplier site may include
+        no supplier-item row.
+- node_id: sf:manufacturing-discrete.bridge.bridge_asset_spare
+  descriptor:
+    qualified_name: manufacturing-discrete.bridge.bridge_asset_spare
+    display_name: Asset Spare
+    description: Spare item that can be consumed by an asset.
+    synonyms: []
+    tags:
+    - bridge
+    - bridge
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: BRIDGE
+      object: BRIDGE_ASSET_SPARE
+      format: table
+  grain:
+    description: One row is one asset spare.
+    components:
+    - identity_id: asset_spare_identity
+      dataset_columns:
+      - asset_spare_id
+      description: Identifier of one asset spare link.
+  columns:
+  - name: asset_spare_id
+    description: Identifier of one asset spare link.
+  - name: asset_id
+    description: Asset that uses the spare.
+  - name: item_id
+    description: Item stocked as the spare.
+  entity_definitions:
+  - identity_id: asset_spare_identity
+    dataset_columns:
+    - asset_spare_id
+    is_entity_universe: true
+    entity_expression:
+    - '[asset_spare_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of asset spare.
+  - identity_id: asset_identity
+    dataset_columns:
+    - asset_id
+    is_entity_universe: false
+    entity_expression:
+    - '[asset_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many spare links belong to one asset, every spare link matches an asset, and an asset
+        may include no spare link.
+  - identity_id: item_identity
+    dataset_columns:
+    - item_id
+    is_entity_universe: false
+    entity_expression:
+    - '[item_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many spare links belong to one item, every spare link matches an item, and an item
+        may include no spare link.
+- node_id: sf:manufacturing-discrete.bridge.bridge_employee_work_center
+  descriptor:
+    qualified_name: manufacturing-discrete.bridge.bridge_employee_work_center
+    display_name: Work Center Qualification
+    description: Qualification of an employee to work at a work center.
+    synonyms: []
+    tags:
+    - bridge
+    - bridge
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: BRIDGE
+      object: BRIDGE_EMPLOYEE_WORK_CENTER
+      format: table
+  grain:
+    description: One row is one work center qualification.
+    components:
+    - identity_id: qualification_identity
+      dataset_columns:
+      - qualification_id
+      description: Identifier of one work-center qualification.
+  columns:
+  - name: qualification_id
+    description: Identifier of one work-center qualification.
+  - name: employee_id
+    description: Employee who is qualified.
+  - name: work_center_id
+    description: Work center the employee may run.
+  entity_definitions:
+  - identity_id: qualification_identity
+    dataset_columns:
+    - qualification_id
+    is_entity_universe: true
+    entity_expression:
+    - '[qualification_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of work center qualification.
+  - identity_id: employee_identity
+    dataset_columns:
+    - employee_id
+    is_entity_universe: false
+    entity_expression:
+    - '[employee_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many qualifications belong to one employee, every qualification matches an employee,
+        and an employee may include no qualification.
+  - identity_id: work_center_identity
+    dataset_columns:
+    - work_center_id
+    is_entity_universe: false
+    entity_expression:
+    - '[work_center_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many qualifications belong to one work center, every qualification matches a work
+        center, and a work center may include no qualification.
+- node_id: sf:manufacturing-discrete.bridge.bridge_characteristic_item
+  descriptor:
+    qualified_name: manufacturing-discrete.bridge.bridge_characteristic_item
+    display_name: Characteristic Applicability
+    description: Applicability of a quality characteristic to an item revision.
+    synonyms: []
+    tags:
+    - bridge
+    - bridge
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: BRIDGE
+      object: BRIDGE_CHARACTERISTIC_ITEM
+      format: table
+  grain:
+    description: One row is one characteristic applicability.
+    components:
+    - identity_id: characteristic_applicability_identity
+      dataset_columns:
+      - characteristic_applicability_id
+      description: Identifier of one characteristic applicability.
+  columns:
+  - name: characteristic_applicability_id
+    description: Identifier of one characteristic applicability.
+  - name: characteristic_id
+    description: Quality characteristic that applies.
+  - name: item_revision_id
+    description: Item revision the characteristic applies to.
+  entity_definitions:
+  - identity_id: characteristic_applicability_identity
+    dataset_columns:
+    - characteristic_applicability_id
+    is_entity_universe: true
+    entity_expression:
+    - '[characteristic_applicability_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of characteristic applicability.
+  - identity_id: characteristic_identity
+    dataset_columns:
+    - characteristic_id
+    is_entity_universe: false
+    entity_expression:
+    - '[characteristic_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many applicability rows belong to one characteristic, every row matches a characteristic,
+        and a characteristic may include no applicability row.
+  - identity_id: item_revision_identity
+    dataset_columns:
+    - item_revision_id
+    is_entity_universe: false
+    entity_expression:
+    - '[item_revision_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many applicability rows belong to one item revision, every row matches an item revision,
+        and an item revision may include no applicability row.

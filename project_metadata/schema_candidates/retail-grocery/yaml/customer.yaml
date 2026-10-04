@@ -1,0 +1,455 @@
+schema_version: '2'
+nodes:
+- node_id: sf:retail-grocery.customer.dim_loyalty_program
+  descriptor:
+    qualified_name: retail-grocery.customer.dim_loyalty_program
+    display_name: Loyalty program
+    description: Loyalty program a customer account can join.
+    synonyms: []
+    tags:
+    - dimension
+    - customer
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL_GROCERY
+      schema: CUSTOMER
+      object: DIM_LOYALTY_PROGRAM
+      format: table
+  grain:
+    description: One row is one loyalty program.
+    components:
+    - identity_id: loyalty_program_identity
+      dataset_columns:
+      - loyalty_program_id
+      description: Identifies one loyalty program.
+  columns:
+  - name: loyalty_program_id
+    description: Identifies one loyalty program.
+  entity_definitions:
+  - identity_id: loyalty_program_identity
+    dataset_columns:
+    - loyalty_program_id
+    is_entity_universe: true
+    entity_expression:
+    - '[loyalty_program_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of loyalty program.
+- node_id: sf:retail-grocery.customer.dim_customer
+  descriptor:
+    qualified_name: retail-grocery.customer.dim_customer
+    display_name: Customer
+    description: Shopper who may belong to a household and hold a loyalty account.
+    synonyms: []
+    tags:
+    - dimension
+    - customer
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL_GROCERY
+      schema: CUSTOMER
+      object: DIM_CUSTOMER
+      format: table
+  grain:
+    description: One row is one customer.
+    components:
+    - identity_id: customer_identity
+      dataset_columns:
+      - customer_id
+      description: Identifies one customer.
+  columns:
+  - name: customer_id
+    description: Identifies one customer.
+  - name: household_id
+    description: Household the shopper belongs to when one is known.
+  entity_definitions:
+  - identity_id: customer_identity
+    dataset_columns:
+    - customer_id
+    is_entity_universe: true
+    entity_expression:
+    - '[customer_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of customer.
+  - identity_id: household_identity
+    dataset_columns:
+    - household_id
+    is_entity_universe: false
+    entity_expression:
+    - '[household_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A customer may omit a household, and a household may have no customer on this reference.
+- node_id: sf:retail-grocery.customer.dim_household
+  descriptor:
+    qualified_name: retail-grocery.customer.dim_household
+    display_name: Household
+    description: Household that groups shoppers who share a home.
+    synonyms: []
+    tags:
+    - dimension
+    - customer
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL_GROCERY
+      schema: CUSTOMER
+      object: DIM_HOUSEHOLD
+      format: table
+  grain:
+    description: One row is one household.
+    components:
+    - identity_id: household_identity
+      dataset_columns:
+      - household_id
+      description: Identifies one household.
+  columns:
+  - name: household_id
+    description: Identifies one household.
+  entity_definitions:
+  - identity_id: household_identity
+    dataset_columns:
+    - household_id
+    is_entity_universe: true
+    entity_expression:
+    - '[household_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of household.
+- node_id: sf:retail-grocery.customer.dim_loyalty_account
+  descriptor:
+    qualified_name: retail-grocery.customer.dim_loyalty_account
+    display_name: Loyalty account
+    description: Account that joins one customer to one loyalty program.
+    synonyms: []
+    tags:
+    - dimension
+    - customer
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL_GROCERY
+      schema: CUSTOMER
+      object: DIM_LOYALTY_ACCOUNT
+      format: table
+  grain:
+    description: One row is one loyalty account.
+    components:
+    - identity_id: loyalty_account_identity
+      dataset_columns:
+      - loyalty_account_id
+      description: Identifies one loyalty account.
+  columns:
+  - name: loyalty_account_id
+    description: Identifies one loyalty account.
+  - name: loyalty_program_id
+    description: Program the account belongs to.
+  - name: customer_id
+    description: Customer who holds the account.
+  entity_definitions:
+  - identity_id: loyalty_account_identity
+    dataset_columns:
+    - loyalty_account_id
+    is_entity_universe: true
+    entity_expression:
+    - '[loyalty_account_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of loyalty account.
+  - identity_id: loyalty_program_identity
+    dataset_columns:
+    - loyalty_program_id
+    is_entity_universe: false
+    entity_expression:
+    - '[loyalty_program_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each loyalty account belongs to exactly one program, and a program may have no account.
+  - identity_id: customer_identity
+    dataset_columns:
+    - customer_id
+    is_entity_universe: false
+    entity_expression:
+    - '[customer_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each loyalty account belongs to exactly one customer, and a customer may hold no
+        loyalty account.
+- node_id: sf:retail-grocery.customer.dim_customer_segment
+  descriptor:
+    qualified_name: retail-grocery.customer.dim_customer_segment
+    display_name: Customer segment
+    description: Named segment a customer can be a member of.
+    synonyms: []
+    tags:
+    - dimension
+    - customer
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL_GROCERY
+      schema: CUSTOMER
+      object: DIM_CUSTOMER_SEGMENT
+      format: table
+  grain:
+    description: One row is one customer segment.
+    components:
+    - identity_id: segment_identity
+      dataset_columns:
+      - segment_id
+      description: Identifies one customer segment.
+  columns:
+  - name: segment_id
+    description: Identifies one customer segment.
+  entity_definitions:
+  - identity_id: segment_identity
+    dataset_columns:
+    - segment_id
+    is_entity_universe: true
+    entity_expression:
+    - '[segment_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of customer segment.
+- node_id: sf:retail-grocery.customer.fact_loyalty_accrual
+  descriptor:
+    qualified_name: retail-grocery.customer.fact_loyalty_accrual
+    display_name: Loyalty accrual
+    description: Points posted to a loyalty account, optionally from a POS transaction.
+    synonyms: []
+    tags:
+    - fact
+    - customer
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL_GROCERY
+      schema: CUSTOMER
+      object: FACT_LOYALTY_ACCRUAL
+      format: table
+  grain:
+    description: One row is one loyalty accrual.
+    components:
+    - identity_id: accrual_identity
+      dataset_columns:
+      - accrual_id
+      description: Identifies one loyalty accrual.
+  columns:
+  - name: accrual_id
+    description: Identifies one loyalty accrual.
+  - name: loyalty_account_id
+    description: Account that earned the points.
+  - name: pos_transaction_id
+    description: POS transaction that earned the points when the accrual came from a basket.
+  - name: points
+    description: Points posted by the accrual.
+  entity_definitions:
+  - identity_id: accrual_identity
+    dataset_columns:
+    - accrual_id
+    is_entity_universe: true
+    entity_expression:
+    - '[accrual_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of loyalty accrual.
+  - identity_id: loyalty_account_identity
+    dataset_columns:
+    - loyalty_account_id
+    is_entity_universe: false
+    entity_expression:
+    - '[loyalty_account_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each accrual posts to exactly one loyalty account, and an account may have no accrual.
+  - identity_id: pos_transaction_identity
+    dataset_columns:
+    - pos_transaction_id
+    is_entity_universe: false
+    entity_expression:
+    - '[pos_transaction_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: An accrual may omit a POS transaction, and a transaction may have no accrual.
+- node_id: sf:retail-grocery.customer.fact_loyalty_redemption
+  descriptor:
+    qualified_name: retail-grocery.customer.fact_loyalty_redemption
+    display_name: Loyalty redemption
+    description: Points redeemed from a loyalty account, optionally against a POS transaction.
+    synonyms: []
+    tags:
+    - fact
+    - customer
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL_GROCERY
+      schema: CUSTOMER
+      object: FACT_LOYALTY_REDEMPTION
+      format: table
+  grain:
+    description: One row is one loyalty redemption.
+    components:
+    - identity_id: loyalty_redemption_identity
+      dataset_columns:
+      - loyalty_redemption_id
+      description: Identifies one loyalty redemption.
+  columns:
+  - name: loyalty_redemption_id
+    description: Identifies one loyalty redemption.
+  - name: loyalty_account_id
+    description: Account the points were redeemed from.
+  - name: pos_transaction_id
+    description: POS transaction the points paid toward when the redemption settled a basket.
+  - name: points_redeemed
+    description: Points redeemed on this posting.
+  entity_definitions:
+  - identity_id: loyalty_redemption_identity
+    dataset_columns:
+    - loyalty_redemption_id
+    is_entity_universe: true
+    entity_expression:
+    - '[loyalty_redemption_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of loyalty redemption.
+  - identity_id: loyalty_account_identity
+    dataset_columns:
+    - loyalty_account_id
+    is_entity_universe: false
+    entity_expression:
+    - '[loyalty_account_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each redemption draws from exactly one loyalty account, and an account may have no
+        redemption.
+  - identity_id: pos_transaction_identity
+    dataset_columns:
+    - pos_transaction_id
+    is_entity_universe: false
+    entity_expression:
+    - '[pos_transaction_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A redemption may omit a POS transaction, and a transaction may have no loyalty redemption.
+- node_id: sf:retail-grocery.customer.fact_household_visit
+  descriptor:
+    qualified_name: retail-grocery.customer.fact_household_visit
+    display_name: Household visit
+    description: Trip header for a visit to a storefront, distinct from the POS transaction.
+    synonyms: []
+    tags:
+    - fact
+    - customer
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL_GROCERY
+      schema: CUSTOMER
+      object: FACT_HOUSEHOLD_VISIT
+      format: table
+  grain:
+    description: One row is one household visit.
+    components:
+    - identity_id: visit_identity
+      dataset_columns:
+      - visit_id
+      description: Identifies one household visit.
+  columns:
+  - name: visit_id
+    description: Identifies one household visit.
+  - name: store_id
+    description: Storefront that was visited.
+  - name: household_id
+    description: Household that visited when the household is known.
+  - name: calendar_day_id
+    description: Day of the visit.
+  - name: channel_id
+    description: Channel of the visit.
+  entity_definitions:
+  - identity_id: visit_identity
+    dataset_columns:
+    - visit_id
+    is_entity_universe: true
+    entity_expression:
+    - '[visit_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of household visit.
+  - identity_id: store_identity
+    dataset_columns:
+    - store_id
+    is_entity_universe: false
+    entity_expression:
+    - '[store_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each visit occurs at exactly one storefront, and a storefront may have no visit.
+  - identity_id: household_identity
+    dataset_columns:
+    - household_id
+    is_entity_universe: false
+    entity_expression:
+    - '[household_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A visit may omit a household, and a household may have no visit.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each visit occurs on exactly one day, and a day may have no visit.
+  - identity_id: channel_identity
+    dataset_columns:
+    - channel_id
+    is_entity_universe: false
+    entity_expression:
+    - '[channel_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each visit uses exactly one channel, and a channel may have no visit.

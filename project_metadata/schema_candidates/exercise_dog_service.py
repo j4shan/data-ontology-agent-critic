@@ -22,68 +22,68 @@ ROOT = Path(__file__).resolve().parent
 ARTIFACTS = Path("/opt/cursor/artifacts")
 PYTHON = "python3"
 CASES = {
-    "manufacturing": {
+    "manufacturing-discrete": {
         "search": "plant manager",
-        "dataset": "sf:manufacturing.organization.dim_plant",
-        "hops_from": "sf:manufacturing.organization.dim_plant",
+        "dataset": "sf:manufacturing-discrete.organization.dim_plant",
+        "hops_from": "sf:manufacturing-discrete.organization.dim_plant",
         "expected_hops": [
-            ("sf:manufacturing.organization.dim_area", "1:many", "always"),
+            ("sf:manufacturing-discrete.organization.dim_area", "1:many", "always"),
         ],
         "path": (
-            "sf:manufacturing.organization.dim_plant",
-            "sf:manufacturing.organization.dim_work_unit",
+            "sf:manufacturing-discrete.organization.dim_plant",
+            "sf:manufacturing-discrete.organization.dim_work_unit",
         ),
     },
-    "retail": {
+    "retail-grocery": {
         "search": "cashier",
-        "dataset": "sf:retail.organization.dim_store",
-        "hops_from": "sf:retail.organization.dim_store",
+        "dataset": "sf:retail-grocery.organization.dim_store",
+        "hops_from": "sf:retail-grocery.organization.dim_store",
         "expected_hops": [
-            ("sf:retail.storefront.dim_cashier", "1:many", "always"),
-            ("sf:retail.organization.dim_employee", "1:1", "always"),
+            ("sf:retail-grocery.storefront.dim_cashier", "1:many", "always"),
+            ("sf:retail-grocery.organization.dim_employee", "1:1", "always"),
         ],
         "path": (
-            "sf:retail.storefront.dim_cashier",
-            "sf:retail.pos.fact_pos_line",
+            "sf:retail-grocery.storefront.dim_cashier",
+            "sf:retail-grocery.pos.fact_pos_line",
         ),
     },
-    "commerce": {
+    "commerce-marketplace": {
         "search": "storefront",
-        "dataset": "sf:commerce.party.dim_seller",
-        "hops_from": "sf:commerce.party.dim_seller",
+        "dataset": "sf:commerce-marketplace.party.dim_seller",
+        "hops_from": "sf:commerce-marketplace.party.dim_seller",
         "expected_hops": [
-            ("sf:commerce.party.dim_seller_storefront", "1:many", "always"),
-            ("sf:commerce.party.dim_employee", "1:1", "always"),
+            ("sf:commerce-marketplace.party.dim_seller_storefront", "1:many", "always"),
+            ("sf:commerce-marketplace.party.dim_employee", "1:1", "always"),
         ],
         "path": (
-            "sf:commerce.party.dim_seller_storefront",
-            "sf:commerce.order.fact_order_line",
+            "sf:commerce-marketplace.party.dim_seller_storefront",
+            "sf:commerce-marketplace.order.fact_order_line",
         ),
     },
-    "telecom": {
+    "telecom-mobile": {
         "search": "subscriber",
-        "dataset": "sf:telecom.party.dim_subscriber",
-        "hops_from": "sf:telecom.organization.dim_market",
+        "dataset": "sf:telecom-mobile.party.dim_subscriber",
+        "hops_from": "sf:telecom-mobile.organization.dim_market",
         "expected_hops": [
-            ("sf:telecom.network.dim_cell_site", "1:many", "always"),
-            ("sf:telecom.organization.dim_employee", "1:1", "always"),
+            ("sf:telecom-mobile.network.dim_cell_site", "1:many", "always"),
+            ("sf:telecom-mobile.organization.dim_employee", "1:1", "always"),
         ],
         "path": (
-            "sf:telecom.party.dim_subscriber",
-            "sf:telecom.usage.fact_voice_cdr",
+            "sf:telecom-mobile.party.dim_subscriber",
+            "sf:telecom-mobile.usage.fact_voice_cdr",
         ),
     },
-    "payer": {
+    "healthcare-payer": {
         "search": "provider",
-        "dataset": "sf:payer.provider.dim_provider",
-        "hops_from": "sf:payer.claim.fact_claim_header",
+        "dataset": "sf:healthcare-payer.provider.dim_provider",
+        "hops_from": "sf:healthcare-payer.claim.fact_claim_header",
         "expected_hops": [
-            ("sf:payer.claim.fact_claim_line", "1:many", "always"),
-            ("sf:payer.claim.fact_claim_diagnosis", "1:many", "always"),
+            ("sf:healthcare-payer.claim.fact_claim_line", "1:many", "always"),
+            ("sf:healthcare-payer.claim.fact_claim_diagnosis", "1:many", "always"),
         ],
         "path": (
-            "sf:payer.provider.dim_provider",
-            "sf:payer.claim.fact_claim_line",
+            "sf:healthcare-payer.provider.dim_provider",
+            "sf:healthcare-payer.claim.fact_claim_line",
         ),
     },
 }
@@ -239,8 +239,8 @@ def exercise(domain: str) -> dict:
 
 def _check_statistics() -> list[str]:
     failures = []
-    telecom = json.loads((ROOT / "telecom" / "statistics.json").read_text(encoding="utf-8"))
-    payer = json.loads((ROOT / "payer" / "statistics.json").read_text(encoding="utf-8"))
+    telecom = json.loads((ROOT / "telecom-mobile" / "statistics.json").read_text(encoding="utf-8"))
+    payer = json.loads((ROOT / "healthcare-payer" / "statistics.json").read_text(encoding="utf-8"))
     by_name = {item["dataset"]: item for item in telecom["populations"]}
     mediated = (
         by_name["fact_data_cdr"]["rows"]
@@ -249,25 +249,25 @@ def _check_statistics() -> list[str]:
         + by_name["fact_content_cdr"]["rows"]
     )
     if mediated != 2_100_000_000:
-        failures.append("telecom mediated CDR total")
+        failures.append("telecom-mobile mediated CDR total")
     if by_name["fact_cell_counter"]["rows"] != 85_000 * 96 * 30:
-        failures.append("telecom cell counter grid")
+        failures.append("telecom-mobile cell counter grid")
     if by_name["fact_charging_event"]["rows"] != 6_300_000_000:
-        failures.append("telecom charging events")
+        failures.append("telecom-mobile charging events")
     payer_rows = {item["dataset"]: item["rows"] for item in payer["populations"]}
     if payer_rows["dim_member"] != 68_000_000 or payer_rows["fact_claim_header"] != 84_000_000:
-        failures.append("payer CMS-scale anchors")
+        failures.append("healthcare-payer CMS-scale anchors")
     if payer_rows["fact_claim_line"] != 420_000_000:
-        failures.append("payer claim line fan-out")
+        failures.append("healthcare-payer claim line fan-out")
     line = next(item for item in payer["major_facts"] if item["dataset"] == "fact_claim_line")
     header_join = next(item for item in line["outbound"] if item["column"] == "claim_header_id")
     if header_join["distinct_parent_keys"] != 84_000_000 or header_join["avg_children_per_matched_parent"] != 5:
-        failures.append("payer header-to-line join")
+        failures.append("healthcare-payer header-to-line join")
     if not line["inbound"]:
-        failures.append("payer claim line inbound")
+        failures.append("healthcare-payer claim line inbound")
     voice = next(item for item in telecom["major_facts"] if item["dataset"] == "fact_voice_cdr")
     if not voice["outbound"] or not voice["inbound"]:
-        failures.append("telecom voice joins")
+        failures.append("telecom-mobile voice joins")
     return failures
 
 
