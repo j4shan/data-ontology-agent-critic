@@ -1,0 +1,94 @@
+schema_version: '2'
+nodes:
+- node_id: sf:retail-grocery.party.dim_vendor
+  descriptor:
+    qualified_name: retail-grocery.party.dim_vendor
+    display_name: Vendor
+    description: Supplier that sells merchandise to Greenbasket.
+    synonyms: []
+    tags:
+    - dimension
+    - party
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL_GROCERY
+      schema: PARTY
+      object: DIM_VENDOR
+      format: table
+  grain:
+    description: One row is one vendor.
+    components:
+    - identity_id: vendor_identity
+      dataset_columns:
+      - vendor_id
+      description: Identifies one vendor.
+  columns:
+  - name: vendor_id
+    description: Identifies one vendor.
+  - name: vendor_status
+    description: Commercial status of the vendor.
+    value_description: active, suspended, inactive
+  entity_definitions:
+  - identity_id: vendor_identity
+    dataset_columns:
+    - vendor_id
+    is_entity_universe: true
+    entity_expression:
+    - '[vendor_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of vendor.
+- node_id: sf:retail-grocery.party.dim_vendor_site
+  descriptor:
+    qualified_name: retail-grocery.party.dim_vendor_site
+    display_name: Vendor site
+    description: Ship-from or order site that belongs to a vendor.
+    synonyms: []
+    tags:
+    - dimension
+    - party
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL_GROCERY
+      schema: PARTY
+      object: DIM_VENDOR_SITE
+      format: table
+  grain:
+    description: One row is one vendor site.
+    components:
+    - identity_id: vendor_site_identity
+      dataset_columns:
+      - vendor_site_id
+      description: Identifies one vendor site.
+  columns:
+  - name: vendor_site_id
+    description: Identifies one vendor site.
+  - name: vendor_id
+    description: Vendor that operates the site.
+  entity_definitions:
+  - identity_id: vendor_site_identity
+    dataset_columns:
+    - vendor_site_id
+    is_entity_universe: true
+    entity_expression:
+    - '[vendor_site_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of vendor site.
+  - identity_id: vendor_identity
+    dataset_columns:
+    - vendor_id
+    is_entity_universe: false
+    entity_expression:
+    - '[vendor_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each vendor has one or more sites, and each site belongs to exactly one vendor.

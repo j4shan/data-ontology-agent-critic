@@ -1,0 +1,163 @@
+schema_version: '2'
+nodes:
+- node_id: sf:commerce-marketplace.inventory.fact_inventory_position
+  descriptor:
+    qualified_name: commerce-marketplace.inventory.fact_inventory_position
+    display_name: Inventory position
+    description: Available units of a variant at a warehouse or fulfillment center.
+    synonyms: []
+    tags:
+    - fact
+    - inventory
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE_MARKETPLACE
+      schema: INVENTORY
+      object: FACT_INVENTORY_POSITION
+      format: table
+  grain:
+    description: One row is one inventory position.
+    components:
+    - identity_id: inventory_position_identity
+      dataset_columns:
+      - inventory_position_id
+      description: Identifies one inventory position.
+  columns:
+  - name: inventory_position_id
+    description: Identifies one inventory position.
+  - name: variant_id
+    description: Variant held in the position.
+  - name: seller_warehouse_id
+    description: Seller warehouse that holds the position.
+  - name: fulfillment_center_id
+    description: Fulfillment center that holds the position.
+  - name: available_quantity
+    description: Units of the variant available in this position.
+  entity_definitions:
+  - identity_id: inventory_position_identity
+    dataset_columns:
+    - inventory_position_id
+    is_entity_universe: true
+    entity_expression:
+    - '[inventory_position_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
+  - identity_id: variant_identity
+    dataset_columns:
+    - variant_id
+    is_entity_universe: false
+    entity_expression:
+    - '[variant_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each inventory position belongs to exactly one variant, and a variant may have no
+        inventory positions.
+  - identity_id: seller_warehouse_identity
+    dataset_columns:
+    - seller_warehouse_id
+    is_entity_universe: false
+    entity_expression:
+    - '[seller_warehouse_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: An inventory position may have no seller warehouse, and a seller warehouse may have
+        no inventory positions.
+  - identity_id: fulfillment_center_identity
+    dataset_columns:
+    - fulfillment_center_id
+    is_entity_universe: false
+    entity_expression:
+    - '[fulfillment_center_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: An inventory position may have no fulfillment center, and a fulfillment center may
+        have no inventory positions.
+- node_id: sf:commerce-marketplace.inventory.fact_inventory_reservation
+  descriptor:
+    qualified_name: commerce-marketplace.inventory.fact_inventory_reservation
+    display_name: Inventory reservation
+    description: Units of a variant reserved, optionally for an order line.
+    synonyms: []
+    tags:
+    - fact
+    - inventory
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE_MARKETPLACE
+      schema: INVENTORY
+      object: FACT_INVENTORY_RESERVATION
+      format: table
+  grain:
+    description: One row is one inventory reservation.
+    components:
+    - identity_id: reservation_identity
+      dataset_columns:
+      - reservation_id
+      description: Identifies one inventory reservation.
+  columns:
+  - name: reservation_id
+    description: Identifies one inventory reservation.
+  - name: variant_id
+    description: Variant reserved by the row.
+  - name: order_line_id
+    description: Order line that holds the reservation.
+  - name: seller_warehouse_id
+    description: Seller warehouse that holds the reserved units.
+  - name: reserved_quantity
+    description: Units of the variant held by this reservation.
+  entity_definitions:
+  - identity_id: reservation_identity
+    dataset_columns:
+    - reservation_id
+    is_entity_universe: true
+    entity_expression:
+    - '[reservation_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
+  - identity_id: variant_identity
+    dataset_columns:
+    - variant_id
+    is_entity_universe: false
+    entity_expression:
+    - '[variant_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each reservation belongs to exactly one variant, and a variant may have no reservations.
+  - identity_id: order_line_identity
+    dataset_columns:
+    - order_line_id
+    is_entity_universe: false
+    entity_expression:
+    - '[order_line_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A reservation may have no order line, and an order line may have no reservations.
+  - identity_id: seller_warehouse_identity
+    dataset_columns:
+    - seller_warehouse_id
+    is_entity_universe: false
+    entity_expression:
+    - '[seller_warehouse_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A reservation may have no seller warehouse, and a seller warehouse may have no reservations.

@@ -1,0 +1,679 @@
+schema_version: '2'
+nodes:
+- node_id: sf:retail-grocery.storefront.dim_cashier
+  descriptor:
+    qualified_name: retail-grocery.storefront.dim_cashier
+    display_name: Cashier
+    description: Till operator employed by exactly one storefront.
+    synonyms: []
+    tags:
+    - dimension
+    - storefront
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL_GROCERY
+      schema: STOREFRONT
+      object: DIM_CASHIER
+      format: table
+  grain:
+    description: One row is one cashier.
+    components:
+    - identity_id: cashier_identity
+      dataset_columns:
+      - cashier_id
+      description: Identifies one cashier.
+  columns:
+  - name: cashier_id
+    description: Identifies one cashier.
+  - name: employee_id
+    description: Employee record specialized as this cashier.
+  - name: store_id
+    description: Storefront that employs the cashier.
+  - name: cashier_status
+    description: Till status of the cashier.
+    value_description: active, training, inactive
+  entity_definitions:
+  - identity_id: cashier_identity
+    dataset_columns:
+    - cashier_id
+    is_entity_universe: true
+    entity_expression:
+    - '[cashier_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of cashier.
+  - identity_id: employee_identity
+    dataset_columns:
+    - employee_id
+    is_entity_universe: false
+    entity_expression:
+    - '[employee_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: '1:1'
+      business_rule: Each cashier is exactly one employee, and an employee is at most one cashier.
+  - identity_id: store_identity
+    dataset_columns:
+    - store_id
+    is_entity_universe: false
+    entity_expression:
+    - '[store_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each storefront includes one or more cashiers, and each cashier belongs to exactly
+        one storefront.
+- node_id: sf:retail-grocery.storefront.dim_labor_role
+  descriptor:
+    qualified_name: retail-grocery.storefront.dim_labor_role
+    display_name: Labor role
+    description: Job role a store employee can be scheduled to work.
+    synonyms: []
+    tags:
+    - dimension
+    - storefront
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL_GROCERY
+      schema: STOREFRONT
+      object: DIM_LABOR_ROLE
+      format: table
+  grain:
+    description: One row is one labor role.
+    components:
+    - identity_id: labor_role_identity
+      dataset_columns:
+      - labor_role_id
+      description: Identifies one labor role.
+  columns:
+  - name: labor_role_id
+    description: Identifies one labor role.
+  entity_definitions:
+  - identity_id: labor_role_identity
+    dataset_columns:
+    - labor_role_id
+    is_entity_universe: true
+    entity_expression:
+    - '[labor_role_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of labor role.
+- node_id: sf:retail-grocery.storefront.dim_shift
+  descriptor:
+    qualified_name: retail-grocery.storefront.dim_shift
+    display_name: Shift
+    description: Named work shift offered by a storefront.
+    synonyms: []
+    tags:
+    - dimension
+    - storefront
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL_GROCERY
+      schema: STOREFRONT
+      object: DIM_SHIFT
+      format: table
+  grain:
+    description: One row is one shift.
+    components:
+    - identity_id: shift_identity
+      dataset_columns:
+      - shift_id
+      description: Identifies one storefront shift.
+  columns:
+  - name: shift_id
+    description: Identifies one storefront shift.
+  - name: store_id
+    description: Storefront that defines the shift.
+  entity_definitions:
+  - identity_id: shift_identity
+    dataset_columns:
+    - shift_id
+    is_entity_universe: true
+    entity_expression:
+    - '[shift_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of shift.
+  - identity_id: store_identity
+    dataset_columns:
+    - store_id
+    is_entity_universe: false
+    entity_expression:
+    - '[store_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each shift belongs to exactly one storefront, and a storefront may define no shift.
+- node_id: sf:retail-grocery.storefront.dim_lane_type
+  descriptor:
+    qualified_name: retail-grocery.storefront.dim_lane_type
+    display_name: Lane type
+    description: Kind of checkout lane, such as a staffed belt or self-checkout.
+    synonyms: []
+    tags:
+    - dimension
+    - storefront
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL_GROCERY
+      schema: STOREFRONT
+      object: DIM_LANE_TYPE
+      format: table
+  grain:
+    description: One row is one lane type.
+    components:
+    - identity_id: lane_type_identity
+      dataset_columns:
+      - lane_type_id
+      description: Identifies one lane type.
+  columns:
+  - name: lane_type_id
+    description: Identifies one lane type.
+  entity_definitions:
+  - identity_id: lane_type_identity
+    dataset_columns:
+    - lane_type_id
+    is_entity_universe: true
+    entity_expression:
+    - '[lane_type_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of lane type.
+- node_id: sf:retail-grocery.storefront.dim_workstation
+  descriptor:
+    qualified_name: retail-grocery.storefront.dim_workstation
+    display_name: Workstation
+    description: POS workstation installed in a storefront.
+    synonyms: []
+    tags:
+    - dimension
+    - storefront
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL_GROCERY
+      schema: STOREFRONT
+      object: DIM_WORKSTATION
+      format: table
+  grain:
+    description: One row is one workstation.
+    components:
+    - identity_id: workstation_identity
+      dataset_columns:
+      - workstation_id
+      description: Identifies one POS workstation.
+  columns:
+  - name: workstation_id
+    description: Identifies one POS workstation.
+  - name: store_id
+    description: Storefront that houses the workstation.
+  - name: lane_type_id
+    description: Lane type of the workstation.
+  - name: workstation_status
+    description: Operating status of the workstation.
+    value_description: active, offline, retired
+  entity_definitions:
+  - identity_id: workstation_identity
+    dataset_columns:
+    - workstation_id
+    is_entity_universe: true
+    entity_expression:
+    - '[workstation_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of workstation.
+  - identity_id: store_identity
+    dataset_columns:
+    - store_id
+    is_entity_universe: false
+    entity_expression:
+    - '[store_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each storefront has one or more POS workstations, and each workstation belongs to
+        exactly one storefront.
+  - identity_id: lane_type_identity
+    dataset_columns:
+    - lane_type_id
+    is_entity_universe: false
+    entity_expression:
+    - '[lane_type_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each workstation uses exactly one lane type, and a lane type may be unused.
+- node_id: sf:retail-grocery.storefront.dim_payment_terminal
+  descriptor:
+    qualified_name: retail-grocery.storefront.dim_payment_terminal
+    display_name: Payment terminal
+    description: Payment terminal bound to one POS workstation.
+    synonyms: []
+    tags:
+    - dimension
+    - storefront
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL_GROCERY
+      schema: STOREFRONT
+      object: DIM_PAYMENT_TERMINAL
+      format: table
+  grain:
+    description: One row is one payment terminal.
+    components:
+    - identity_id: payment_terminal_identity
+      dataset_columns:
+      - payment_terminal_id
+      description: Identifies one payment terminal.
+  columns:
+  - name: payment_terminal_id
+    description: Identifies one payment terminal.
+  - name: workstation_id
+    description: Workstation the terminal is attached to.
+  entity_definitions:
+  - identity_id: payment_terminal_identity
+    dataset_columns:
+    - payment_terminal_id
+    is_entity_universe: true
+    entity_expression:
+    - '[payment_terminal_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of payment terminal.
+  - identity_id: workstation_identity
+    dataset_columns:
+    - workstation_id
+    is_entity_universe: false
+    entity_expression:
+    - '[workstation_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: '1:1'
+      business_rule: Each payment terminal belongs to exactly one workstation, and a workstation has at
+        most one payment terminal.
+- node_id: sf:retail-grocery.storefront.fact_cashier_drawer
+  descriptor:
+    qualified_name: retail-grocery.storefront.fact_cashier_drawer
+    display_name: Drawer session
+    description: Cash drawer session worked by a cashier on a workstation.
+    synonyms: []
+    tags:
+    - fact
+    - storefront
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL_GROCERY
+      schema: STOREFRONT
+      object: FACT_CASHIER_DRAWER
+      format: table
+  grain:
+    description: One row is one drawer session.
+    components:
+    - identity_id: drawer_session_identity
+      dataset_columns:
+      - drawer_session_id
+      description: Identifies one cashier drawer session.
+  columns:
+  - name: drawer_session_id
+    description: Identifies one cashier drawer session.
+  - name: cashier_id
+    description: Cashier who operated the drawer.
+  - name: workstation_id
+    description: Workstation the drawer was attached to.
+  - name: shift_id
+    description: Shift during which the drawer was open.
+  - name: calendar_day_id
+    description: Day the drawer session occurred.
+  - name: opening_amount
+    description: Cash amount in the drawer when the session opened.
+  entity_definitions:
+  - identity_id: drawer_session_identity
+    dataset_columns:
+    - drawer_session_id
+    is_entity_universe: true
+    entity_expression:
+    - '[drawer_session_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of drawer session.
+  - identity_id: cashier_identity
+    dataset_columns:
+    - cashier_id
+    is_entity_universe: false
+    entity_expression:
+    - '[cashier_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each drawer session is operated by exactly one cashier, and a cashier may have no
+        drawer session.
+  - identity_id: workstation_identity
+    dataset_columns:
+    - workstation_id
+    is_entity_universe: false
+    entity_expression:
+    - '[workstation_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each drawer session uses exactly one workstation, and a workstation may have no drawer
+        session.
+  - identity_id: shift_identity
+    dataset_columns:
+    - shift_id
+    is_entity_universe: false
+    entity_expression:
+    - '[shift_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each drawer session belongs to exactly one shift, and a shift may have no drawer
+        session.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each drawer session occurs on exactly one day, and a day may have no drawer session.
+- node_id: sf:retail-grocery.storefront.fact_labor_punch
+  descriptor:
+    qualified_name: retail-grocery.storefront.fact_labor_punch
+    display_name: Labor punch
+    description: Time punch for an employee at a storefront.
+    synonyms: []
+    tags:
+    - fact
+    - storefront
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL_GROCERY
+      schema: STOREFRONT
+      object: FACT_LABOR_PUNCH
+      format: table
+  grain:
+    description: One row is one labor punch.
+    components:
+    - identity_id: punch_identity
+      dataset_columns:
+      - punch_id
+      description: Identifies one labor punch.
+  columns:
+  - name: punch_id
+    description: Identifies one labor punch.
+  - name: employee_id
+    description: Employee who punched.
+  - name: store_id
+    description: Storefront where the employee punched.
+  - name: shift_id
+    description: Shift the punch is associated with when a shift is known.
+  - name: calendar_day_id
+    description: Day of the punch.
+  - name: hours_worked
+    description: Hours recorded on the punch.
+  entity_definitions:
+  - identity_id: punch_identity
+    dataset_columns:
+    - punch_id
+    is_entity_universe: true
+    entity_expression:
+    - '[punch_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of labor punch.
+  - identity_id: employee_identity
+    dataset_columns:
+    - employee_id
+    is_entity_universe: false
+    entity_expression:
+    - '[employee_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each punch belongs to exactly one employee, and an employee may have no punch.
+  - identity_id: store_identity
+    dataset_columns:
+    - store_id
+    is_entity_universe: false
+    entity_expression:
+    - '[store_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each punch occurs at exactly one storefront, and a storefront may have no punch.
+  - identity_id: shift_identity
+    dataset_columns:
+    - shift_id
+    is_entity_universe: false
+    entity_expression:
+    - '[shift_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A punch may omit a shift, and a shift may have no punch.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each punch occurs on exactly one day, and a day may have no punch.
+- node_id: sf:retail-grocery.storefront.fact_schedule_shift
+  descriptor:
+    qualified_name: retail-grocery.storefront.fact_schedule_shift
+    display_name: Scheduled shift
+    description: Shift an employee is scheduled to work at a storefront.
+    synonyms: []
+    tags:
+    - fact
+    - storefront
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL_GROCERY
+      schema: STOREFRONT
+      object: FACT_SCHEDULE_SHIFT
+      format: table
+  grain:
+    description: One row is one scheduled shift.
+    components:
+    - identity_id: scheduled_shift_identity
+      dataset_columns:
+      - scheduled_shift_id
+      description: Identifies one scheduled shift.
+  columns:
+  - name: scheduled_shift_id
+    description: Identifies one scheduled shift.
+  - name: employee_id
+    description: Employee who is scheduled.
+  - name: store_id
+    description: Storefront where the employee is scheduled.
+  - name: labor_role_id
+    description: Role the employee is scheduled to work.
+  - name: shift_id
+    description: Shift definition being scheduled.
+  - name: calendar_day_id
+    description: Day the shift is scheduled.
+  entity_definitions:
+  - identity_id: scheduled_shift_identity
+    dataset_columns:
+    - scheduled_shift_id
+    is_entity_universe: true
+    entity_expression:
+    - '[scheduled_shift_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of scheduled shift.
+  - identity_id: employee_identity
+    dataset_columns:
+    - employee_id
+    is_entity_universe: false
+    entity_expression:
+    - '[employee_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each scheduled shift names exactly one employee, and an employee may have no scheduled
+        shift.
+  - identity_id: store_identity
+    dataset_columns:
+    - store_id
+    is_entity_universe: false
+    entity_expression:
+    - '[store_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each scheduled shift names exactly one storefront, and a storefront may have no scheduled
+        shift.
+  - identity_id: labor_role_identity
+    dataset_columns:
+    - labor_role_id
+    is_entity_universe: false
+    entity_expression:
+    - '[labor_role_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each scheduled shift names exactly one labor role, and a labor role may be unscheduled.
+  - identity_id: shift_identity
+    dataset_columns:
+    - shift_id
+    is_entity_universe: false
+    entity_expression:
+    - '[shift_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each scheduled shift uses exactly one shift, and a shift may have no scheduled assignment.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each scheduled shift falls on exactly one day, and a day may have no scheduled shift.
+- node_id: sf:retail-grocery.storefront.fact_utility_reading
+  descriptor:
+    qualified_name: retail-grocery.storefront.fact_utility_reading
+    display_name: Utility reading
+    description: Utility usage recorded for a storefront on a day.
+    synonyms: []
+    tags:
+    - fact
+    - storefront
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL_GROCERY
+      schema: STOREFRONT
+      object: FACT_UTILITY_READING
+      format: table
+  grain:
+    description: One row is one utility reading.
+    components:
+    - identity_id: utility_reading_identity
+      dataset_columns:
+      - utility_reading_id
+      description: Identifies one utility reading.
+  columns:
+  - name: utility_reading_id
+    description: Identifies one utility reading.
+  - name: store_id
+    description: Storefront the reading belongs to.
+  - name: calendar_day_id
+    description: Day of the reading.
+  - name: usage_quantity
+    description: Utility usage recorded for the storefront on that day.
+  - name: utility_type
+    description: Utility that was metered.
+    value_description: electric, gas, water
+  entity_definitions:
+  - identity_id: utility_reading_identity
+    dataset_columns:
+    - utility_reading_id
+    is_entity_universe: true
+    entity_expression:
+    - '[utility_reading_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of utility reading.
+  - identity_id: store_identity
+    dataset_columns:
+    - store_id
+    is_entity_universe: false
+    entity_expression:
+    - '[store_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each reading belongs to exactly one storefront, and a storefront may have no utility
+        reading.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each reading is dated on exactly one day, and a day may have no utility reading.

@@ -1,0 +1,83 @@
+schema_version: '2'
+nodes:
+- node_id: sf:commerce-marketplace.pricing.fact_price_change
+  descriptor:
+    qualified_name: commerce-marketplace.pricing.fact_price_change
+    display_name: Price change
+    description: Recorded change to the price of a variant.
+    synonyms: []
+    tags:
+    - fact
+    - pricing
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE_MARKETPLACE
+      schema: PRICING
+      object: FACT_PRICE_CHANGE
+      format: table
+  grain:
+    description: One row is one price change.
+    components:
+    - identity_id: price_change_identity
+      dataset_columns:
+      - price_change_id
+      description: Identifies one price change.
+  columns:
+  - name: price_change_id
+    description: Identifies one price change.
+  - name: variant_id
+    description: Variant whose price changed.
+  - name: price_list_id
+    description: Price list the change applies to.
+  - name: calendar_day_id
+    description: Calendar day of the price change.
+  - name: new_price
+    description: Price recorded by the price change.
+  entity_definitions:
+  - identity_id: price_change_identity
+    dataset_columns:
+    - price_change_id
+    is_entity_universe: true
+    entity_expression:
+    - '[price_change_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
+  - identity_id: variant_identity
+    dataset_columns:
+    - variant_id
+    is_entity_universe: false
+    entity_expression:
+    - '[variant_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each price change belongs to exactly one variant, and a variant may have no price
+        changes.
+  - identity_id: price_list_identity
+    dataset_columns:
+    - price_list_id
+    is_entity_universe: false
+    entity_expression:
+    - '[price_list_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A price change may have no price list, and a price list may have no price changes.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each price change belongs to exactly one calendar day, and a calendar day may have
+        no price changes.

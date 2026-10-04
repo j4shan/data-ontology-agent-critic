@@ -1,0 +1,420 @@
+schema_version: '2'
+nodes:
+- node_id: sf:retail-grocery.ecommerce.fact_ecommerce_order
+  descriptor:
+    qualified_name: retail-grocery.ecommerce.fact_ecommerce_order
+    display_name: Ecommerce order
+    description: Store e-commerce order fulfilled from a storefront.
+    synonyms: []
+    tags:
+    - fact
+    - ecommerce
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL_GROCERY
+      schema: ECOMMERCE
+      object: FACT_ECOMMERCE_ORDER
+      format: table
+  grain:
+    description: One row is one ecommerce order.
+    components:
+    - identity_id: ecommerce_order_identity
+      dataset_columns:
+      - ecommerce_order_id
+      description: Identifies one e-commerce order.
+  columns:
+  - name: ecommerce_order_id
+    description: Identifies one e-commerce order.
+  - name: customer_id
+    description: Customer who placed the order.
+  - name: store_id
+    description: Storefront that fulfills the order.
+  - name: fulfillment_type_id
+    description: Way the order will be fulfilled.
+  - name: delivery_slot_id
+    description: Pickup or delivery slot promised for the order when a slot was chosen.
+  - name: calendar_day_id
+    description: Day the order was placed.
+  - name: order_status
+    description: Fulfillment status of the order.
+    value_description: placed, picking, ready, delivered, cancelled
+  entity_definitions:
+  - identity_id: ecommerce_order_identity
+    dataset_columns:
+    - ecommerce_order_id
+    is_entity_universe: true
+    entity_expression:
+    - '[ecommerce_order_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of ecommerce order.
+  - identity_id: customer_identity
+    dataset_columns:
+    - customer_id
+    is_entity_universe: false
+    entity_expression:
+    - '[customer_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each order is placed by exactly one customer, and a customer may place no order.
+  - identity_id: store_identity
+    dataset_columns:
+    - store_id
+    is_entity_universe: false
+    entity_expression:
+    - '[store_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each order is fulfilled by exactly one storefront, and a storefront may fulfill no
+        order.
+  - identity_id: fulfillment_type_identity
+    dataset_columns:
+    - fulfillment_type_id
+    is_entity_universe: false
+    entity_expression:
+    - '[fulfillment_type_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each order uses exactly one fulfillment type, and a fulfillment type may be used
+        on no order.
+  - identity_id: delivery_slot_identity
+    dataset_columns:
+    - delivery_slot_id
+    is_entity_universe: false
+    entity_expression:
+    - '[delivery_slot_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: An order may omit a delivery slot, and a delivery slot may be chosen on no order.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each order is placed on exactly one day, and a day may have no order.
+- node_id: sf:retail-grocery.ecommerce.fact_ecommerce_order_line
+  descriptor:
+    qualified_name: retail-grocery.ecommerce.fact_ecommerce_order_line
+    display_name: Ecommerce order line
+    description: Item line on a store e-commerce order.
+    synonyms: []
+    tags:
+    - fact
+    - ecommerce
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL_GROCERY
+      schema: ECOMMERCE
+      object: FACT_ECOMMERCE_ORDER_LINE
+      format: table
+  grain:
+    description: One row is one ecommerce order line.
+    components:
+    - identity_id: ecommerce_order_line_identity
+      dataset_columns:
+      - ecommerce_order_line_id
+      description: Identifies one e-commerce order line.
+  columns:
+  - name: ecommerce_order_line_id
+    description: Identifies one e-commerce order line.
+  - name: ecommerce_order_id
+    description: Order that contains the line.
+  - name: item_id
+    description: Item the customer ordered.
+  - name: ordered_quantity
+    description: Quantity of the item ordered on the line.
+  entity_definitions:
+  - identity_id: ecommerce_order_line_identity
+    dataset_columns:
+    - ecommerce_order_line_id
+    is_entity_universe: true
+    entity_expression:
+    - '[ecommerce_order_line_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of ecommerce order line.
+  - identity_id: ecommerce_order_identity
+    dataset_columns:
+    - ecommerce_order_id
+    is_entity_universe: false
+    entity_expression:
+    - '[ecommerce_order_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each e-commerce order has one or more lines, and each line belongs to exactly one
+        order.
+  - identity_id: item_identity
+    dataset_columns:
+    - item_id
+    is_entity_universe: false
+    entity_expression:
+    - '[item_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each order line names exactly one item, and an item may appear on no order line.
+- node_id: sf:retail-grocery.ecommerce.fact_pick_task
+  descriptor:
+    qualified_name: retail-grocery.ecommerce.fact_pick_task
+    display_name: Pick task
+    description: Store pick of one e-commerce order line.
+    synonyms: []
+    tags:
+    - fact
+    - ecommerce
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL_GROCERY
+      schema: ECOMMERCE
+      object: FACT_PICK_TASK
+      format: table
+  grain:
+    description: One row is one pick task.
+    components:
+    - identity_id: pick_task_identity
+      dataset_columns:
+      - pick_task_id
+      description: Identifies one pick task.
+  columns:
+  - name: pick_task_id
+    description: Identifies one pick task.
+  - name: ecommerce_order_line_id
+    description: Order line the task picks.
+  - name: employee_id
+    description: Employee who picked the line when a picker is assigned.
+  - name: store_id
+    description: Storefront where the line is picked.
+  - name: pick_status
+    description: Status of the pick.
+    value_description: pending, picked, short, cancelled
+  entity_definitions:
+  - identity_id: pick_task_identity
+    dataset_columns:
+    - pick_task_id
+    is_entity_universe: true
+    entity_expression:
+    - '[pick_task_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of pick task.
+  - identity_id: ecommerce_order_line_identity
+    dataset_columns:
+    - ecommerce_order_line_id
+    is_entity_universe: false
+    entity_expression:
+    - '[ecommerce_order_line_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each e-commerce order line has one or more pick tasks, and each pick task belongs
+        to exactly one order line.
+  - identity_id: employee_identity
+    dataset_columns:
+    - employee_id
+    is_entity_universe: false
+    entity_expression:
+    - '[employee_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A pick task may omit an employee, and an employee may have no pick task.
+  - identity_id: store_identity
+    dataset_columns:
+    - store_id
+    is_entity_universe: false
+    entity_expression:
+    - '[store_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each pick task occurs at exactly one storefront, and a storefront may have no pick
+        task.
+- node_id: sf:retail-grocery.ecommerce.fact_delivery
+  descriptor:
+    qualified_name: retail-grocery.ecommerce.fact_delivery
+    display_name: Delivery
+    description: Handoff of an e-commerce order to a carrier or to the customer.
+    synonyms: []
+    tags:
+    - fact
+    - ecommerce
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL_GROCERY
+      schema: ECOMMERCE
+      object: FACT_DELIVERY
+      format: table
+  grain:
+    description: One row is one delivery.
+    components:
+    - identity_id: delivery_identity
+      dataset_columns:
+      - delivery_id
+      description: Identifies one order delivery.
+  columns:
+  - name: delivery_id
+    description: Identifies one order delivery.
+  - name: ecommerce_order_id
+    description: Order being delivered.
+  - name: carrier_id
+    description: Carrier that hauls the order when a carrier is used.
+  - name: calendar_day_id
+    description: Day the delivery was attempted.
+  - name: delivery_status
+    description: Status of the delivery.
+    value_description: pending, dispatched, delivered, failed
+  entity_definitions:
+  - identity_id: delivery_identity
+    dataset_columns:
+    - delivery_id
+    is_entity_universe: true
+    entity_expression:
+    - '[delivery_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of delivery.
+  - identity_id: ecommerce_order_identity
+    dataset_columns:
+    - ecommerce_order_id
+    is_entity_universe: false
+    entity_expression:
+    - '[ecommerce_order_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each delivery covers exactly one e-commerce order, and an order may have no delivery.
+  - identity_id: carrier_identity
+    dataset_columns:
+    - carrier_id
+    is_entity_universe: false
+    entity_expression:
+    - '[carrier_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A delivery may omit a carrier, and a carrier may haul no delivery.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each delivery is dated on exactly one day, and a day may have no delivery.
+- node_id: sf:retail-grocery.ecommerce.fact_slot_capacity
+  descriptor:
+    qualified_name: retail-grocery.ecommerce.fact_slot_capacity
+    display_name: Slot capacity
+    description: Order capacity a storefront offers for a delivery slot on a day.
+    synonyms: []
+    tags:
+    - fact
+    - ecommerce
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL_GROCERY
+      schema: ECOMMERCE
+      object: FACT_SLOT_CAPACITY
+      format: table
+  grain:
+    description: One row is one slot capacity.
+    components:
+    - identity_id: slot_capacity_identity
+      dataset_columns:
+      - slot_capacity_id
+      description: Identifies one slot capacity.
+  columns:
+  - name: slot_capacity_id
+    description: Identifies one slot capacity.
+  - name: delivery_slot_id
+    description: Slot the capacity applies to.
+  - name: store_id
+    description: Storefront offering the capacity.
+  - name: calendar_day_id
+    description: Day the capacity applies.
+  - name: capacity_orders
+    description: Order capacity offered for the slot at the storefront on that day.
+  entity_definitions:
+  - identity_id: slot_capacity_identity
+    dataset_columns:
+    - slot_capacity_id
+    is_entity_universe: true
+    entity_expression:
+    - '[slot_capacity_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of slot capacity.
+  - identity_id: delivery_slot_identity
+    dataset_columns:
+    - delivery_slot_id
+    is_entity_universe: false
+    entity_expression:
+    - '[delivery_slot_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each capacity row names exactly one delivery slot, and a slot may have no capacity
+        row.
+  - identity_id: store_identity
+    dataset_columns:
+    - store_id
+    is_entity_universe: false
+    entity_expression:
+    - '[store_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each capacity row names exactly one storefront, and a storefront may have no slot
+        capacity.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each capacity row applies to exactly one day, and a day may have no slot capacity.

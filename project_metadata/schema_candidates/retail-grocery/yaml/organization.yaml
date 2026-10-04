@@ -1,0 +1,456 @@
+schema_version: '2'
+nodes:
+- node_id: sf:retail-grocery.organization.dim_banner
+  descriptor:
+    qualified_name: retail-grocery.organization.dim_banner
+    display_name: Banner
+    description: Single consumer-facing banner under which Greenbasket storefronts trade.
+    synonyms: []
+    tags:
+    - dimension
+    - organization
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL_GROCERY
+      schema: ORGANIZATION
+      object: DIM_BANNER
+      format: table
+  grain:
+    description: One row is one banner.
+    components:
+    - identity_id: banner_identity
+      dataset_columns:
+      - banner_id
+      description: Identifies the Greenbasket banner.
+  columns:
+  - name: banner_id
+    description: Identifies the Greenbasket banner.
+  - name: banner_name
+    description: Consumer-facing name of the banner.
+  entity_definitions:
+  - identity_id: banner_identity
+    dataset_columns:
+    - banner_id
+    is_entity_universe: true
+    entity_expression:
+    - '[banner_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of banner.
+- node_id: sf:retail-grocery.organization.dim_region
+  descriptor:
+    qualified_name: retail-grocery.organization.dim_region
+    display_name: Region
+    description: Geographic region that groups districts inside the banner.
+    synonyms: []
+    tags:
+    - dimension
+    - organization
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL_GROCERY
+      schema: ORGANIZATION
+      object: DIM_REGION
+      format: table
+  grain:
+    description: One row is one region.
+    components:
+    - identity_id: region_identity
+      dataset_columns:
+      - region_id
+      description: Identifies one operating region.
+  columns:
+  - name: region_id
+    description: Identifies one operating region.
+  - name: banner_id
+    description: Banner that owns the region.
+  entity_definitions:
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    is_entity_universe: true
+    entity_expression:
+    - '[region_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of region.
+  - identity_id: banner_identity
+    dataset_columns:
+    - banner_id
+    is_entity_universe: false
+    entity_expression:
+    - '[banner_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each banner contains one or more regions, and each region belongs to exactly one
+        banner.
+- node_id: sf:retail-grocery.organization.dim_district
+  descriptor:
+    qualified_name: retail-grocery.organization.dim_district
+    display_name: District
+    description: Field district that groups storefronts inside a region.
+    synonyms: []
+    tags:
+    - dimension
+    - organization
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL_GROCERY
+      schema: ORGANIZATION
+      object: DIM_DISTRICT
+      format: table
+  grain:
+    description: One row is one district.
+    components:
+    - identity_id: district_identity
+      dataset_columns:
+      - district_id
+      description: Identifies one field district.
+  columns:
+  - name: district_id
+    description: Identifies one field district.
+  - name: region_id
+    description: Region that contains the district.
+  entity_definitions:
+  - identity_id: district_identity
+    dataset_columns:
+    - district_id
+    is_entity_universe: true
+    entity_expression:
+    - '[district_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of district.
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    is_entity_universe: false
+    entity_expression:
+    - '[region_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each region contains one or more districts, and each district belongs to exactly
+        one region.
+- node_id: sf:retail-grocery.organization.dim_store_format
+  descriptor:
+    qualified_name: retail-grocery.organization.dim_store_format
+    display_name: Store format
+    description: Operating format of a storefront, such as a supermarket or a small market.
+    synonyms: []
+    tags:
+    - dimension
+    - organization
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL_GROCERY
+      schema: ORGANIZATION
+      object: DIM_STORE_FORMAT
+      format: table
+  grain:
+    description: One row is one store format.
+    components:
+    - identity_id: store_format_identity
+      dataset_columns:
+      - store_format_id
+      description: Identifies one store format.
+  columns:
+  - name: store_format_id
+    description: Identifies one store format.
+  entity_definitions:
+  - identity_id: store_format_identity
+    dataset_columns:
+    - store_format_id
+    is_entity_universe: true
+    entity_expression:
+    - '[store_format_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of store format.
+- node_id: sf:retail-grocery.organization.dim_price_zone
+  descriptor:
+    qualified_name: retail-grocery.organization.dim_price_zone
+    display_name: Price zone
+    description: Pricing zone that groups storefronts sharing a retail price file.
+    synonyms: []
+    tags:
+    - dimension
+    - organization
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL_GROCERY
+      schema: ORGANIZATION
+      object: DIM_PRICE_ZONE
+      format: table
+  grain:
+    description: One row is one price zone.
+    components:
+    - identity_id: price_zone_identity
+      dataset_columns:
+      - price_zone_id
+      description: Identifies one price zone.
+  columns:
+  - name: price_zone_id
+    description: Identifies one price zone.
+  entity_definitions:
+  - identity_id: price_zone_identity
+    dataset_columns:
+    - price_zone_id
+    is_entity_universe: true
+    entity_expression:
+    - '[price_zone_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of price zone.
+- node_id: sf:retail-grocery.organization.dim_store
+  descriptor:
+    qualified_name: retail-grocery.organization.dim_store
+    display_name: Store
+    description: Storefront shop where customers buy merchandise and pick up e-commerce orders.
+    synonyms:
+    - storefront
+    tags:
+    - dimension
+    - organization
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL_GROCERY
+      schema: ORGANIZATION
+      object: DIM_STORE
+      format: table
+  grain:
+    description: One row is one store.
+    components:
+    - identity_id: store_identity
+      dataset_columns:
+      - store_id
+      description: Identifies one storefront.
+  columns:
+  - name: store_id
+    description: Identifies one storefront.
+  - name: district_id
+    description: District that supervises the storefront.
+  - name: banner_id
+    description: Banner the storefront trades under.
+  - name: store_format_id
+    description: Format used by the storefront.
+  - name: price_zone_id
+    description: Price zone that prices the storefront.
+  - name: manager_employee_id
+    description: Employee who manages the storefront.
+  - name: primary_warehouse_id
+    description: Distribution center that primarily replenishes the storefront.
+  - name: store_status
+    description: Operating status of the storefront.
+    value_description: open, remodel, closed
+  entity_definitions:
+  - identity_id: store_identity
+    dataset_columns:
+    - store_id
+    is_entity_universe: true
+    entity_expression:
+    - '[store_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of store.
+  - identity_id: district_identity
+    dataset_columns:
+    - district_id
+    is_entity_universe: false
+    entity_expression:
+    - '[district_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each district contains one or more storefronts, and each storefront belongs to exactly
+        one district.
+  - identity_id: banner_identity
+    dataset_columns:
+    - banner_id
+    is_entity_universe: false
+    entity_expression:
+    - '[banner_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each storefront belongs to exactly one banner, and a banner may have no storefront
+        on this reference.
+  - identity_id: store_format_identity
+    dataset_columns:
+    - store_format_id
+    is_entity_universe: false
+    entity_expression:
+    - '[store_format_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each storefront uses exactly one store format, and a format may be assigned to no
+        storefront.
+  - identity_id: price_zone_identity
+    dataset_columns:
+    - price_zone_id
+    is_entity_universe: false
+    entity_expression:
+    - '[price_zone_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each storefront belongs to exactly one price zone, and a price zone may contain no
+        storefront.
+  - identity_id: employee_identity
+    dataset_columns:
+    - manager_employee_id
+    is_entity_universe: false
+    entity_expression:
+    - '[manager_employee_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: '1:1'
+      business_rule: Each storefront has exactly one manager, and an employee manages at most one storefront.
+  - identity_id: warehouse_identity
+    dataset_columns:
+    - primary_warehouse_id
+    is_entity_universe: false
+    entity_expression:
+    - '[primary_warehouse_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each storefront names exactly one primary distribution center, and a distribution
+        center may be primary for no storefront.
+- node_id: sf:retail-grocery.organization.dim_department
+  descriptor:
+    qualified_name: retail-grocery.organization.dim_department
+    display_name: Merchandise department
+    description: Merchandise department that groups categories, separate from any store labor department.
+    synonyms: []
+    tags:
+    - dimension
+    - organization
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL_GROCERY
+      schema: ORGANIZATION
+      object: DIM_DEPARTMENT
+      format: table
+  grain:
+    description: One row is one merchandise department.
+    components:
+    - identity_id: department_identity
+      dataset_columns:
+      - department_id
+      description: Identifies one merchandise department.
+  columns:
+  - name: department_id
+    description: Identifies one merchandise department.
+  - name: department_name
+    description: Name of the merchandise department.
+  entity_definitions:
+  - identity_id: department_identity
+    dataset_columns:
+    - department_id
+    is_entity_universe: true
+    entity_expression:
+    - '[department_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of merchandise department.
+- node_id: sf:retail-grocery.organization.dim_employee
+  descriptor:
+    qualified_name: retail-grocery.organization.dim_employee
+    display_name: Employee
+    description: Person employed by a storefront, including the store manager.
+    synonyms: []
+    tags:
+    - dimension
+    - organization
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL_GROCERY
+      schema: ORGANIZATION
+      object: DIM_EMPLOYEE
+      format: table
+  grain:
+    description: One row is one employee.
+    components:
+    - identity_id: employee_identity
+      dataset_columns:
+      - employee_id
+      description: Identifies one employee.
+  columns:
+  - name: employee_id
+    description: Identifies one employee.
+  - name: store_id
+    description: Storefront that employs the person.
+  - name: department_id
+    description: Merchandise department associated with the employee when one is assigned.
+  - name: employment_status
+    description: Employment status of the person.
+    value_description: active, leave, terminated
+  entity_definitions:
+  - identity_id: employee_identity
+    dataset_columns:
+    - employee_id
+    is_entity_universe: true
+    entity_expression:
+    - '[employee_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of employee.
+  - identity_id: store_identity
+    dataset_columns:
+    - store_id
+    is_entity_universe: false
+    entity_expression:
+    - '[store_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Every storefront employs one or more employees, and every employee is assigned to
+        one storefront.
+  - identity_id: department_identity
+    dataset_columns:
+    - department_id
+    is_entity_universe: false
+    entity_expression:
+    - '[department_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: An employee may omit a merchandise department, and a merchandise department may have
+        no employees.

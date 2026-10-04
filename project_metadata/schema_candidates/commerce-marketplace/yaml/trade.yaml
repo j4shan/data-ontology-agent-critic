@@ -1,0 +1,85 @@
+schema_version: '2'
+nodes:
+- node_id: sf:commerce-marketplace.trade.fact_customs_declaration
+  descriptor:
+    qualified_name: commerce-marketplace.trade.fact_customs_declaration
+    display_name: Customs declaration
+    description: Customs declaration filed for a shipment.
+    synonyms: []
+    tags:
+    - fact
+    - trade
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE_MARKETPLACE
+      schema: TRADE
+      object: FACT_CUSTOMS_DECLARATION
+      format: table
+  grain:
+    description: One row is one customs declaration.
+    components:
+    - identity_id: customs_declaration_identity
+      dataset_columns:
+      - customs_declaration_id
+      description: Identifies one customs declaration.
+  columns:
+  - name: customs_declaration_id
+    description: Identifies one customs declaration.
+  - name: shipment_id
+    description: Shipment covered by the declaration.
+  - name: hs_code_id
+    description: Harmonized-system code declared for the shipment.
+  - name: country_id
+    description: Destination country of the declaration.
+  - name: declaration_status
+    description: Filing standing of the customs declaration.
+    value_description: draft, filed, cleared, held
+  entity_definitions:
+  - identity_id: customs_declaration_identity
+    dataset_columns:
+    - customs_declaration_id
+    is_entity_universe: true
+    entity_expression:
+    - '[customs_declaration_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
+  - identity_id: shipment_identity
+    dataset_columns:
+    - shipment_id
+    is_entity_universe: false
+    entity_expression:
+    - '[shipment_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each customs declaration belongs to exactly one shipment, and a shipment may have
+        no customs declarations.
+  - identity_id: hs_code_identity
+    dataset_columns:
+    - hs_code_id
+    is_entity_universe: false
+    entity_expression:
+    - '[hs_code_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A customs declaration may have no harmonized-system code, and a harmonized-system
+        code may have no declarations.
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    is_entity_universe: false
+    entity_expression:
+    - '[country_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each customs declaration belongs to exactly one country, and a country may have no
+        customs declarations.

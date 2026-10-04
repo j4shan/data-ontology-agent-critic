@@ -9,14 +9,12 @@ The actor location, artifact location, and socket path are always configurable i
 
 ## Catalog asset isolation
 
-Authored assets that belong to one BIRD Mini-Dev catalog must not share a file with another
-catalog. `<database>` is the directory name under `resources/data/dev_databases/`.
+Authored assets that belong to one business domain must not share a file with another domain.
 
-- Reference YAML: `resources/data/reference_catalogs/<database>/`. The directory holds only that
-  catalog's `.yaml` files, so it builds as a finalized actor YAML directory.
-- Legacy overlay notes: `resources/data/legacy_overlays/<database>/`.
-- Suites and gold AKGs are also organized per catalog.
-- Never write into the vendored `resources/data/dev_databases/` or `resources/data/bird_minidev/`
-  trees.
-- Current catalogs are `financial` (first suite) and `student_club` (legacy notes only). Do not
-  introduce `superhero` or `toxicology` assets.
+- Schema-candidate catalogs live under `project_metadata/schema_candidates/<domain>/`.
+- Each domain's question sheet is `questions.md` in that directory.
+- Suites and gold AKGs are also organized per domain.
+- Current domains are `healthcare-payer`, `telecom-mobile`, `manufacturing-discrete`,
+  `retail-grocery`, and `commerce-marketplace`.
+- Do not reintroduce `financial`, `student_club`, `superhero`, or `toxicology` assessment
+  assets. `financial` and `student_club` are too small for ontology assessment.

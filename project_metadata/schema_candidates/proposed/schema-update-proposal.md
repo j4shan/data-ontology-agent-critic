@@ -13,7 +13,7 @@ Schema version 2 defines one assembled document:
 | `nodes` | Dataset list |
 | `edges` | Relationship list |
 
-A single file may contain all three collections. The financial reference catalog is stored that way. A directory may also be loaded: every `.yaml` file is merged, and any file may contain any mix of the three keys. The merge checks duplicate identity ids and duplicate `node_id` values. It does not record which file owns which collection, and it accepts a file that mixes identities, nodes, and edges.
+A single file may contain all three collections. A directory may also be loaded: every `.yaml` file is merged, and any file may contain any mix of the three keys. The merge checks duplicate identity ids and duplicate `node_id` values. It does not record which file owns which collection, and it accepts a file that mixes identities, nodes, and edges.
 
 The catalogs in this scratchpad already keep the collections apart:
 
@@ -54,7 +54,7 @@ Paths are relative to the YAML directory. The manifest lists every collection fi
 
 ## Builder behavior
 
-Single-file input stays an assembled `IntermediaryDefinition`. That preserves the financial catalog.
+Single-file input stays an assembled `IntermediaryDefinition`.
 
 Directory input reads the manifest first, then loads only the listed files:
 
@@ -72,4 +72,4 @@ Manifests for the scratchpad catalogs are in `manifests/`. They match the files 
 
 ## Out of scope
 
-This proposal does not move the financial catalog out of its single file, does not add statistics, and does not change entity definitions, multiplicity, or match existence.
+This proposal does not change single-file input, does not add statistics, and does not change entity definitions, multiplicity, or match existence.
