@@ -1,7 +1,7 @@
 # Schema candidates
 
-Scratchpad for business-domain ontology catalogs used to exercise the
-Data Ontology Graph service on schemas larger than the financial snapshot.
+Scratchpad for the five business-domain ontology catalogs used to assess the
+Data Ontology Graph service. `financial` and `student_club` are not part of this set.
 
 Each candidate is one directory:
 
@@ -15,9 +15,9 @@ Each candidate is one directory:
 
 The directory name is the catalog label: a sector, then a hyphen, then the specialty. Qualified dataset names use that label as their first segment, for example `healthcare-payer.claim.fact_claim_header`. The Snowflake database name is the same label in uppercase, with the hyphen written as an underscore, because an unquoted Snowflake identifier cannot contain a hyphen.
 
-A candidate directory holds `README.md`, `business-model.md`, and `yaml/`.
-`README.md` introduces the business and lists BI questions whose datasets and
-joins are fixed by the metadata. The YAML directory is the finalized
+A candidate directory holds `README.md`, `questions.md`, `business-model.md`, and `yaml/`.
+`README.md` introduces the business. `questions.md` is the role-based analytical question
+sheet for the benchmark. The YAML directory is the finalized
 intermediary the graph builder loads. It contains only `.yaml` files: logical
 identities, one file per subject area, and the relationship file.
 

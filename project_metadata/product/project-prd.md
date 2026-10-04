@@ -12,7 +12,7 @@ running a machine-learning critic model.
 | Product | Critic |
 | Primary user | An AI agent or human evaluator running a Graph Service benchmark |
 | Assessment target | Data Ontology Graph Service API |
-| Initial open dataset | [BIRD Mini-Dev](https://github.com/bird-bench/mini_dev) |
+| Initial open dataset | Five schema-candidate domains: `healthcare-payer`, `telecom-mobile`, `manufacturing-discrete`, `retail-grocery`, `commerce-marketplace` |
 
 ## 1. Product Goal
 
@@ -55,15 +55,11 @@ service interface and records the API version that was tested.
 
 ## 3. Testing Assets
 
-Critic maintains a curated package of metadata sources spanning three business domains. Each source
-has recorded provenance and a content hash. Large or externally licensed source material may be
-obtained locally instead of committed, while Critic retains enough metadata to identify the exact
-input used by a session.
-
-The first suite uses the `financial` catalog from
-[BIRD Mini-Dev](https://github.com/bird-bench/mini_dev) and contains 32 query cases. BIRD's
-[canonical dataset release](https://huggingface.co/datasets/birdsql/bird_mini_dev) may be obtained
-separately when the source data is not stored in the repository.
+Critic maintains a curated package of metadata sources spanning five business domains:
+`healthcare-payer`, `telecom-mobile`, `manufacturing-discrete`, `retail-grocery`, and
+`commerce-marketplace`. Each domain keeps its catalog, question sheet, cases, and gold answers
+apart from the others. `financial` and `student_club` are not assessment domains; they are too
+small for ontology assessment.
 
 | ID | Requirement |
 | --- | --- |
@@ -145,7 +141,7 @@ configured Graph Service API.
 
 | Area | Observable acceptance condition |
 | --- | --- |
-| Testing assets | The curated package covers three business domains, preserves per-domain isolation, validates against its schemas, and records source provenance. |
+| Testing assets | The curated package covers the five schema-candidate domains, preserves per-domain isolation, validates against its schemas, and records source provenance. |
 | Configuration | Valid YAML selects an agent/model, suite, and Graph Service API version; invalid configuration produces actionable findings before a session starts. |
 | API evaluation | The same case can run as a single request or as part of an asynchronous batch without changing its expected answer contract. |
 | Accuracy | Unit tests cover perfect, partial, empty, invalid, and alternative-matching answers with known deterministic scores. |
