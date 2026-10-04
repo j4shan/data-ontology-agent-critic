@@ -1,0 +1,742 @@
+schema_version: '2'
+nodes:
+- node_id: sf:healthcare-payer.care.dim_audit_program
+  descriptor:
+    qualified_name: healthcare-payer.care.dim_audit_program
+    display_name: Audit Program
+    description: Program that draws an audit sample.
+    synonyms: []
+    tags:
+    - dimension
+    - care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: HEALTHCARE_PAYER
+      schema: CARE
+      object: DIM_AUDIT_PROGRAM
+      format: table
+  grain:
+    description: One row is one audit program.
+    components:
+    - identity_id: audit_program_identity
+      dataset_columns:
+      - audit_program_id
+      description: Identifier of one audit Program.
+  columns:
+  - name: audit_program_id
+    description: Identifier of one audit Program.
+  - name: code
+    description: Code for the audit program.
+    value_description: CERT, UPIC, RAC, internal
+  entity_definitions:
+  - identity_id: audit_program_identity
+    dataset_columns:
+    - audit_program_id
+    is_entity_universe: true
+    entity_expression:
+    - '[audit_program_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of audit program.
+- node_id: sf:healthcare-payer.care.dim_fraud_scheme
+  descriptor:
+    qualified_name: healthcare-payer.care.dim_fraud_scheme
+    display_name: Fraud Scheme
+    description: Scheme classification of a fraud lead.
+    synonyms: []
+    tags:
+    - dimension
+    - care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: HEALTHCARE_PAYER
+      schema: CARE
+      object: DIM_FRAUD_SCHEME
+      format: table
+  grain:
+    description: One row is one fraud scheme.
+    components:
+    - identity_id: fraud_scheme_identity
+      dataset_columns:
+      - fraud_scheme_id
+      description: Identifier of one fraud Scheme.
+  columns:
+  - name: fraud_scheme_id
+    description: Identifier of one fraud Scheme.
+  - name: code
+    description: Code for the fraud scheme.
+    value_description: upcoding, unbundling, phantom, kickback, identity
+  entity_definitions:
+  - identity_id: fraud_scheme_identity
+    dataset_columns:
+    - fraud_scheme_id
+    is_entity_universe: true
+    entity_expression:
+    - '[fraud_scheme_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of fraud scheme.
+- node_id: sf:healthcare-payer.care.dim_agent
+  descriptor:
+    qualified_name: healthcare-payer.care.dim_agent
+    display_name: Service Agent
+    description: Member-services agent.
+    synonyms: []
+    tags:
+    - dimension
+    - care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: HEALTHCARE_PAYER
+      schema: CARE
+      object: DIM_AGENT
+      format: table
+  grain:
+    description: One row is one service agent.
+    components:
+    - identity_id: agent_identity
+      dataset_columns:
+      - agent_id
+      description: Identifier of one service Agent.
+  columns:
+  - name: agent_id
+    description: Identifier of one service Agent.
+  - name: employee_id
+    description: Each agent is one employee.
+  - name: call_queue_id
+    description: Reference to the call Queue.
+  - name: agent_name
+    description: Name of the agent.
+  entity_definitions:
+  - identity_id: agent_identity
+    dataset_columns:
+    - agent_id
+    is_entity_universe: true
+    entity_expression:
+    - '[agent_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of service agent.
+  - identity_id: employee_identity
+    dataset_columns:
+    - employee_id
+    is_entity_universe: false
+    entity_expression:
+    - '[employee_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: '1:1'
+      business_rule: Each service Agent matches exactly one employee, each employee matches at most one
+        service Agent, and not every employee is matched. Each agent is one employee.
+  - identity_id: call_queue_identity
+    dataset_columns:
+    - call_queue_id
+    is_entity_universe: false
+    entity_expression:
+    - '[call_queue_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many service Agents belong to one call Queue, every service Agent matches a call
+        Queue, and a call Queue may include no service Agent.
+- node_id: sf:healthcare-payer.care.fact_call
+  descriptor:
+    qualified_name: healthcare-payer.care.fact_call
+    display_name: Service Call
+    description: One member-services call.
+    synonyms: []
+    tags:
+    - fact
+    - care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: HEALTHCARE_PAYER
+      schema: CARE
+      object: FACT_CALL
+      format: table
+  grain:
+    description: One row is one service call.
+    components:
+    - identity_id: call_identity
+      dataset_columns:
+      - call_id
+      description: Identifier of one service Call.
+  columns:
+  - name: call_id
+    description: Identifier of one service Call.
+  - name: member_id
+    description: Reference to the member.
+  - name: agent_id
+    description: Every agent takes calls.
+  - name: call_queue_id
+    description: Reference to the call Queue.
+  - name: calendar_day_id
+    description: Reference to the calendar Day.
+  - name: handle_seconds
+    description: Handle time.
+  entity_definitions:
+  - identity_id: call_identity
+    dataset_columns:
+    - call_id
+    is_entity_universe: true
+    entity_expression:
+    - '[call_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of service call.
+  - identity_id: member_identity
+    dataset_columns:
+    - member_id
+    is_entity_universe: false
+    entity_expression:
+    - '[member_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A service Call may match one member, and a member may include no service Call.
+  - identity_id: agent_identity
+    dataset_columns:
+    - agent_id
+    is_entity_universe: false
+    entity_expression:
+    - '[agent_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many service Calls belong to one service Agent, every service Call matches a service
+        Agent, and every service Agent includes at least one service Call. Every agent takes calls.
+  - identity_id: call_queue_identity
+    dataset_columns:
+    - call_queue_id
+    is_entity_universe: false
+    entity_expression:
+    - '[call_queue_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many service Calls belong to one call Queue, every service Call matches a call Queue,
+        and every call Queue includes at least one service Call.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many service Calls belong to one calendar Day, every service Call matches a calendar
+        Day, and every calendar Day includes at least one service Call.
+- node_id: sf:healthcare-payer.care.fact_call_event
+  descriptor:
+    qualified_name: healthcare-payer.care.fact_call_event
+    display_name: Call Event
+    description: One event inside a service call.
+    synonyms: []
+    tags:
+    - fact
+    - care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: HEALTHCARE_PAYER
+      schema: CARE
+      object: FACT_CALL_EVENT
+      format: table
+  grain:
+    description: One row is one call event.
+    components:
+    - identity_id: call_event_identity
+      dataset_columns:
+      - call_event_id
+      description: Identifier of one call Event.
+  columns:
+  - name: call_event_id
+    description: Identifier of one call Event.
+  - name: call_id
+    description: Every call has events.
+  - name: agent_id
+    description: Reference to the service Agent.
+  - name: calendar_day_id
+    description: Reference to the calendar Day.
+  - name: event_type
+    description: Kind of call event.
+    value_description: answer, transfer, hold, disposition
+  entity_definitions:
+  - identity_id: call_event_identity
+    dataset_columns:
+    - call_event_id
+    is_entity_universe: true
+    entity_expression:
+    - '[call_event_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of call event.
+  - identity_id: call_identity
+    dataset_columns:
+    - call_id
+    is_entity_universe: false
+    entity_expression:
+    - '[call_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many call Events belong to one service Call, every call Event matches a service Call,
+        and every service Call includes at least one call Event. Every call has events.
+  - identity_id: agent_identity
+    dataset_columns:
+    - agent_id
+    is_entity_universe: false
+    entity_expression:
+    - '[agent_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many call Events belong to one service Agent, every call Event matches a service
+        Agent, and a service Agent may include no call Event.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many call Events belong to one calendar Day, every call Event matches a calendar
+        Day, and a calendar Day may include no call Event.
+- node_id: sf:healthcare-payer.care.fact_letter
+  descriptor:
+    qualified_name: healthcare-payer.care.fact_letter
+    display_name: Letter
+    description: One letter sent to a member.
+    synonyms: []
+    tags:
+    - fact
+    - care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: HEALTHCARE_PAYER
+      schema: CARE
+      object: FACT_LETTER
+      format: table
+  grain:
+    description: One row is one letter.
+    components:
+    - identity_id: letter_identity
+      dataset_columns:
+      - letter_id
+      description: Identifier of one letter.
+  columns:
+  - name: letter_id
+    description: Identifier of one letter.
+  - name: member_id
+    description: Reference to the member.
+  - name: document_type_id
+    description: Reference to the document Type.
+  - name: calendar_day_id
+    description: Reference to the calendar Day.
+  - name: mail_status
+    description: Mail status.
+    value_description: queued, sent, returned
+  entity_definitions:
+  - identity_id: letter_identity
+    dataset_columns:
+    - letter_id
+    is_entity_universe: true
+    entity_expression:
+    - '[letter_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of letter.
+  - identity_id: member_identity
+    dataset_columns:
+    - member_id
+    is_entity_universe: false
+    entity_expression:
+    - '[member_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many letters belong to one member, every letter matches a member, and a member may
+        include no letter.
+  - identity_id: document_type_identity
+    dataset_columns:
+    - document_type_id
+    is_entity_universe: false
+    entity_expression:
+    - '[document_type_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many letters belong to one document Type, every letter matches a document Type, and
+        a document Type may include no letter.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many letters belong to one calendar Day, every letter matches a calendar Day, and
+        every calendar Day includes at least one letter.
+- node_id: sf:healthcare-payer.care.fact_portal_event
+  descriptor:
+    qualified_name: healthcare-payer.care.fact_portal_event
+    display_name: Portal Event
+    description: One authenticated member-portal event.
+    synonyms: []
+    tags:
+    - fact
+    - care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: HEALTHCARE_PAYER
+      schema: CARE
+      object: FACT_PORTAL_EVENT
+      format: table
+  grain:
+    description: One row is one portal event.
+    components:
+    - identity_id: portal_event_identity
+      dataset_columns:
+      - portal_event_id
+      description: Identifier of one portal Event.
+  columns:
+  - name: portal_event_id
+    description: Identifier of one portal Event.
+  - name: member_id
+    description: Reference to the member.
+  - name: calendar_day_id
+    description: Reference to the calendar Day.
+  - name: event_name
+    description: Portal action.
+    value_description: login, claim-view, id-card, payment
+  entity_definitions:
+  - identity_id: portal_event_identity
+    dataset_columns:
+    - portal_event_id
+    is_entity_universe: true
+    entity_expression:
+    - '[portal_event_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of portal event.
+  - identity_id: member_identity
+    dataset_columns:
+    - member_id
+    is_entity_universe: false
+    entity_expression:
+    - '[member_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many portal Events belong to one member, every portal Event matches a member, and
+        a member may include no portal Event.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many portal Events belong to one calendar Day, every portal Event matches a calendar
+        Day, and every calendar Day includes at least one portal Event.
+- node_id: sf:healthcare-payer.care.fact_audit_sample
+  descriptor:
+    qualified_name: healthcare-payer.care.fact_audit_sample
+    display_name: Audit Sample
+    description: One claim drawn into an audit sample.
+    synonyms: []
+    tags:
+    - fact
+    - care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: HEALTHCARE_PAYER
+      schema: CARE
+      object: FACT_AUDIT_SAMPLE
+      format: table
+  grain:
+    description: One row is one audit sample.
+    components:
+    - identity_id: audit_sample_identity
+      dataset_columns:
+      - audit_sample_id
+      description: Identifier of one audit Sample.
+  columns:
+  - name: audit_sample_id
+    description: Identifier of one audit Sample.
+  - name: audit_program_id
+    description: Reference to the audit Program.
+  - name: claim_header_id
+    description: Reference to the claim Header.
+  - name: calendar_day_id
+    description: Reference to the calendar Day.
+  - name: sample_weight
+    description: Weight of the sample row.
+  entity_definitions:
+  - identity_id: audit_sample_identity
+    dataset_columns:
+    - audit_sample_id
+    is_entity_universe: true
+    entity_expression:
+    - '[audit_sample_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of audit sample.
+  - identity_id: audit_program_identity
+    dataset_columns:
+    - audit_program_id
+    is_entity_universe: false
+    entity_expression:
+    - '[audit_program_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many audit Samples belong to one audit Program, every audit Sample matches a audit
+        Program, and every audit Program includes at least one audit Sample.
+  - identity_id: claim_header_identity
+    dataset_columns:
+    - claim_header_id
+    is_entity_universe: false
+    entity_expression:
+    - '[claim_header_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many audit Samples belong to one claim Header, every audit Sample matches a claim
+        Header, and a claim Header may include no audit Sample.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many audit Samples belong to one calendar Day, every audit Sample matches a calendar
+        Day, and a calendar Day may include no audit Sample.
+- node_id: sf:healthcare-payer.care.fact_fraud_lead
+  descriptor:
+    qualified_name: healthcare-payer.care.fact_fraud_lead
+    display_name: Fraud Lead
+    description: One fraud lead.
+    synonyms: []
+    tags:
+    - fact
+    - care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: HEALTHCARE_PAYER
+      schema: CARE
+      object: FACT_FRAUD_LEAD
+      format: table
+  grain:
+    description: One row is one fraud lead.
+    components:
+    - identity_id: fraud_lead_identity
+      dataset_columns:
+      - fraud_lead_id
+      description: Identifier of one fraud Lead.
+  columns:
+  - name: fraud_lead_id
+    description: Identifier of one fraud Lead.
+  - name: fraud_scheme_id
+    description: Reference to the fraud Scheme.
+  - name: provider_id
+    description: Reference to the provider.
+  - name: member_id
+    description: Reference to the member.
+  - name: calendar_day_id
+    description: Reference to the calendar Day.
+  - name: lead_status
+    description: Status.
+    value_description: open, referred, closed
+  entity_definitions:
+  - identity_id: fraud_lead_identity
+    dataset_columns:
+    - fraud_lead_id
+    is_entity_universe: true
+    entity_expression:
+    - '[fraud_lead_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of fraud lead.
+  - identity_id: fraud_scheme_identity
+    dataset_columns:
+    - fraud_scheme_id
+    is_entity_universe: false
+    entity_expression:
+    - '[fraud_scheme_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many fraud Leads belong to one fraud Scheme, every fraud Lead matches a fraud Scheme,
+        and every fraud Scheme includes at least one fraud Lead.
+  - identity_id: provider_identity
+    dataset_columns:
+    - provider_id
+    is_entity_universe: false
+    entity_expression:
+    - '[provider_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A fraud Lead may match one provider, and a provider may include no fraud Lead.
+  - identity_id: member_identity
+    dataset_columns:
+    - member_id
+    is_entity_universe: false
+    entity_expression:
+    - '[member_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A fraud Lead may match one member, and a member may include no fraud Lead.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many fraud Leads belong to one calendar Day, every fraud Lead matches a calendar
+        Day, and a calendar Day may include no fraud Lead.
+- node_id: sf:healthcare-payer.care.fact_grievance
+  descriptor:
+    qualified_name: healthcare-payer.care.fact_grievance
+    display_name: Grievance
+    description: One member grievance.
+    synonyms: []
+    tags:
+    - fact
+    - care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: HEALTHCARE_PAYER
+      schema: CARE
+      object: FACT_GRIEVANCE
+      format: table
+  grain:
+    description: One row is one grievance.
+    components:
+    - identity_id: grievance_identity
+      dataset_columns:
+      - grievance_id
+      description: Identifier of one grievance.
+  columns:
+  - name: grievance_id
+    description: Identifier of one grievance.
+  - name: member_id
+    description: Reference to the member.
+  - name: plan_id
+    description: Reference to the plan.
+  - name: calendar_day_id
+    description: Reference to the calendar Day.
+  - name: grievance_category
+    description: Category.
+    value_description: access, quality, billing, privacy
+  entity_definitions:
+  - identity_id: grievance_identity
+    dataset_columns:
+    - grievance_id
+    is_entity_universe: true
+    entity_expression:
+    - '[grievance_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of grievance.
+  - identity_id: member_identity
+    dataset_columns:
+    - member_id
+    is_entity_universe: false
+    entity_expression:
+    - '[member_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many grievances belong to one member, every grievance matches a member, and a member
+        may include no grievance.
+  - identity_id: plan_identity
+    dataset_columns:
+    - plan_id
+    is_entity_universe: false
+    entity_expression:
+    - '[plan_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many grievances belong to one plan, every grievance matches a plan, and a plan may
+        include no grievance.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many grievances belong to one calendar Day, every grievance matches a calendar Day,
+        and a calendar Day may include no grievance.

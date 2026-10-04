@@ -31,11 +31,11 @@ def _pk(name: str, identity: str, description: str) -> dict:
 
 
 DOMAIN = {
-    "key": "commerce",
+    "key": "commerce-marketplace",
     "business_name": "Meridian Marketplace",
-    "database": "COMMERCE",
+    "database": "COMMERCE_MARKETPLACE",
     "account": "meridian.us-west-2",
-    "root": "commerce",
+    "root": "commerce-marketplace",
     "narrative": NARRATIVE,
     "provenance": PROVENANCE,
     "identity_synonyms": {

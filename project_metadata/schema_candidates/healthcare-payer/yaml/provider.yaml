@@ -1,0 +1,527 @@
+schema_version: '2'
+nodes:
+- node_id: sf:healthcare-payer.provider.dim_taxonomy
+  descriptor:
+    qualified_name: healthcare-payer.provider.dim_taxonomy
+    display_name: Provider Taxonomy
+    description: NUCC taxonomy code.
+    synonyms: []
+    tags:
+    - dimension
+    - provider
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: HEALTHCARE_PAYER
+      schema: PROVIDER
+      object: DIM_TAXONOMY
+      format: table
+  grain:
+    description: One row is one provider taxonomy.
+    components:
+    - identity_id: taxonomy_identity
+      dataset_columns:
+      - taxonomy_id
+      description: Identifier of one provider Taxonomy.
+  columns:
+  - name: taxonomy_id
+    description: Identifier of one provider Taxonomy.
+  - name: code
+    description: Code for the provider taxonomy.
+    value_description: 207Q00000X, 207R00000X, 363L00000X, 261QE0002X
+  entity_definitions:
+  - identity_id: taxonomy_identity
+    dataset_columns:
+    - taxonomy_id
+    is_entity_universe: true
+    entity_expression:
+    - '[taxonomy_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of provider taxonomy.
+- node_id: sf:healthcare-payer.provider.dim_specialty
+  descriptor:
+    qualified_name: healthcare-payer.provider.dim_specialty
+    display_name: Specialty
+    description: Payer specialty grouping.
+    synonyms: []
+    tags:
+    - dimension
+    - provider
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: HEALTHCARE_PAYER
+      schema: PROVIDER
+      object: DIM_SPECIALTY
+      format: table
+  grain:
+    description: One row is one specialty.
+    components:
+    - identity_id: specialty_identity
+      dataset_columns:
+      - specialty_id
+      description: Identifier of one specialty.
+  columns:
+  - name: specialty_id
+    description: Identifier of one specialty.
+  - name: code
+    description: Code for the specialty.
+    value_description: PCP, cardiology, orthopedics, oncology, radiology, pharmacy
+  entity_definitions:
+  - identity_id: specialty_identity
+    dataset_columns:
+    - specialty_id
+    is_entity_universe: true
+    entity_expression:
+    - '[specialty_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of specialty.
+- node_id: sf:healthcare-payer.provider.dim_network
+  descriptor:
+    qualified_name: healthcare-payer.provider.dim_network
+    display_name: Provider Network
+    description: Contracted network.
+    synonyms: []
+    tags:
+    - dimension
+    - provider
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: HEALTHCARE_PAYER
+      schema: PROVIDER
+      object: DIM_NETWORK
+      format: table
+  grain:
+    description: One row is one provider network.
+    components:
+    - identity_id: network_identity
+      dataset_columns:
+      - network_id
+      description: Identifier of one provider Network.
+  columns:
+  - name: network_id
+    description: Identifier of one provider Network.
+  - name: code
+    description: Code for the provider network.
+    value_description: PPO, HMO, FFS-par, FFS-nonpar, pharmacy
+  entity_definitions:
+  - identity_id: network_identity
+    dataset_columns:
+    - network_id
+    is_entity_universe: true
+    entity_expression:
+    - '[network_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of provider network.
+- node_id: sf:healthcare-payer.provider.dim_provider
+  descriptor:
+    qualified_name: healthcare-payer.provider.dim_provider
+    display_name: Provider
+    description: Billing or rendering provider identified by NPI.
+    synonyms:
+    - provider
+    - billing provider
+    tags:
+    - dimension
+    - provider
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: HEALTHCARE_PAYER
+      schema: PROVIDER
+      object: DIM_PROVIDER
+      format: table
+  grain:
+    description: One row is one provider.
+    components:
+    - identity_id: provider_identity
+      dataset_columns:
+      - provider_id
+      description: Identifier of one provider.
+  columns:
+  - name: provider_id
+    description: Identifier of one provider.
+  - name: taxonomy_id
+    description: Reference to the provider Taxonomy.
+  - name: state_id
+    description: Reference to the state.
+  - name: specialty_id
+    description: Reference to the specialty.
+  - name: npi
+    description: National provider identifier.
+  - name: provider_name
+    description: Name of the provider.
+  entity_definitions:
+  - identity_id: provider_identity
+    dataset_columns:
+    - provider_id
+    is_entity_universe: true
+    entity_expression:
+    - '[provider_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of provider.
+  - identity_id: taxonomy_identity
+    dataset_columns:
+    - taxonomy_id
+    is_entity_universe: false
+    entity_expression:
+    - '[taxonomy_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many providers belong to one provider Taxonomy, every provider matches a provider
+        Taxonomy, and a provider Taxonomy may include no provider.
+  - identity_id: state_identity
+    dataset_columns:
+    - state_id
+    is_entity_universe: false
+    entity_expression:
+    - '[state_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many providers belong to one state, every provider matches a state, and every state
+        includes at least one provider.
+  - identity_id: specialty_identity
+    dataset_columns:
+    - specialty_id
+    is_entity_universe: false
+    entity_expression:
+    - '[specialty_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many providers belong to one specialty, every provider matches a specialty, and a
+        specialty may include no provider.
+- node_id: sf:healthcare-payer.provider.dim_facility
+  descriptor:
+    qualified_name: healthcare-payer.provider.dim_facility
+    display_name: Facility
+    description: Service facility location.
+    synonyms: []
+    tags:
+    - dimension
+    - provider
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: HEALTHCARE_PAYER
+      schema: PROVIDER
+      object: DIM_FACILITY
+      format: table
+  grain:
+    description: One row is one facility.
+    components:
+    - identity_id: facility_identity
+      dataset_columns:
+      - facility_id
+      description: Identifier of one facility.
+  columns:
+  - name: facility_id
+    description: Identifier of one facility.
+  - name: state_id
+    description: Reference to the state.
+  - name: provider_id
+    description: A facility may not yet be tied to a billing NPI.
+  - name: facility_name
+    description: Name of the facility.
+  entity_definitions:
+  - identity_id: facility_identity
+    dataset_columns:
+    - facility_id
+    is_entity_universe: true
+    entity_expression:
+    - '[facility_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of facility.
+  - identity_id: state_identity
+    dataset_columns:
+    - state_id
+    is_entity_universe: false
+    entity_expression:
+    - '[state_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many facilities belong to one state, every facility matches a state, and a state
+        may include no facility.
+  - identity_id: provider_identity
+    dataset_columns:
+    - provider_id
+    is_entity_universe: false
+    entity_expression:
+    - '[provider_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A facility may match one provider, and a provider may include no facility. A facility
+        may not yet be tied to a billing NPI.
+- node_id: sf:healthcare-payer.provider.dim_prescriber
+  descriptor:
+    qualified_name: healthcare-payer.provider.dim_prescriber
+    display_name: Prescriber
+    description: Prescriber on a pharmacy claim.
+    synonyms: []
+    tags:
+    - dimension
+    - provider
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: HEALTHCARE_PAYER
+      schema: PROVIDER
+      object: DIM_PRESCRIBER
+      format: table
+  grain:
+    description: One row is one prescriber.
+    components:
+    - identity_id: prescriber_identity
+      dataset_columns:
+      - prescriber_id
+      description: Identifier of one prescriber.
+  columns:
+  - name: prescriber_id
+    description: Identifier of one prescriber.
+  - name: taxonomy_id
+    description: Reference to the provider Taxonomy.
+  - name: state_id
+    description: Reference to the state.
+  - name: npi
+    description: Prescriber NPI.
+  entity_definitions:
+  - identity_id: prescriber_identity
+    dataset_columns:
+    - prescriber_id
+    is_entity_universe: true
+    entity_expression:
+    - '[prescriber_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of prescriber.
+  - identity_id: taxonomy_identity
+    dataset_columns:
+    - taxonomy_id
+    is_entity_universe: false
+    entity_expression:
+    - '[taxonomy_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many prescribers belong to one provider Taxonomy, every prescriber matches a provider
+        Taxonomy, and a provider Taxonomy may include no prescriber.
+  - identity_id: state_identity
+    dataset_columns:
+    - state_id
+    is_entity_universe: false
+    entity_expression:
+    - '[state_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many prescribers belong to one state, every prescriber matches a state, and a state
+        may include no prescriber.
+- node_id: sf:healthcare-payer.provider.fact_provider_enrollment
+  descriptor:
+    qualified_name: healthcare-payer.provider.fact_provider_enrollment
+    display_name: Provider Enrollment
+    description: One provider enrollment application.
+    synonyms: []
+    tags:
+    - fact
+    - provider
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: HEALTHCARE_PAYER
+      schema: PROVIDER
+      object: FACT_PROVIDER_ENROLLMENT
+      format: table
+  grain:
+    description: One row is one provider enrollment.
+    components:
+    - identity_id: provider_enrollment_identity
+      dataset_columns:
+      - provider_enrollment_id
+      description: Identifier of one provider Enrollment.
+  columns:
+  - name: provider_enrollment_id
+    description: Identifier of one provider Enrollment.
+  - name: provider_id
+    description: Reference to the provider.
+  - name: calendar_day_id
+    description: Reference to the calendar Day.
+  - name: jurisdiction_id
+    description: Reference to the jurisdiction.
+  - name: enrollment_status_id
+    description: Reference to the enrollment Status.
+  - name: application_source
+    description: How the application arrived.
+    value_description: PECOS, paper
+  entity_definitions:
+  - identity_id: provider_enrollment_identity
+    dataset_columns:
+    - provider_enrollment_id
+    is_entity_universe: true
+    entity_expression:
+    - '[provider_enrollment_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of provider enrollment.
+  - identity_id: provider_identity
+    dataset_columns:
+    - provider_id
+    is_entity_universe: false
+    entity_expression:
+    - '[provider_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many provider Enrollments belong to one provider, every provider Enrollment matches
+        a provider, and a provider may include no provider Enrollment.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many provider Enrollments belong to one calendar Day, every provider Enrollment matches
+        a calendar Day, and a calendar Day may include no provider Enrollment.
+  - identity_id: jurisdiction_identity
+    dataset_columns:
+    - jurisdiction_id
+    is_entity_universe: false
+    entity_expression:
+    - '[jurisdiction_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many provider Enrollments belong to one jurisdiction, every provider Enrollment matches
+        a jurisdiction, and every jurisdiction includes at least one provider Enrollment.
+  - identity_id: enrollment_status_identity
+    dataset_columns:
+    - enrollment_status_id
+    is_entity_universe: false
+    entity_expression:
+    - '[enrollment_status_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many provider Enrollments belong to one enrollment Status, every provider Enrollment
+        matches a enrollment Status, and every enrollment Status includes at least one provider Enrollment.
+- node_id: sf:healthcare-payer.provider.fact_revalidation
+  descriptor:
+    qualified_name: healthcare-payer.provider.fact_revalidation
+    display_name: Revalidation
+    description: One provider revalidation.
+    synonyms: []
+    tags:
+    - fact
+    - provider
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: HEALTHCARE_PAYER
+      schema: PROVIDER
+      object: FACT_REVALIDATION
+      format: table
+  grain:
+    description: One row is one revalidation.
+    components:
+    - identity_id: revalidation_identity
+      dataset_columns:
+      - revalidation_id
+      description: Identifier of one revalidation.
+  columns:
+  - name: revalidation_id
+    description: Identifier of one revalidation.
+  - name: provider_id
+    description: Reference to the provider.
+  - name: calendar_day_id
+    description: Reference to the calendar Day.
+  - name: jurisdiction_id
+    description: Reference to the jurisdiction.
+  - name: revalidation_result
+    description: Result.
+    value_description: approved, deactivated, pending
+  entity_definitions:
+  - identity_id: revalidation_identity
+    dataset_columns:
+    - revalidation_id
+    is_entity_universe: true
+    entity_expression:
+    - '[revalidation_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of revalidation.
+  - identity_id: provider_identity
+    dataset_columns:
+    - provider_id
+    is_entity_universe: false
+    entity_expression:
+    - '[provider_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many revalidations belong to one provider, every revalidation matches a provider,
+        and a provider may include no revalidation.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many revalidations belong to one calendar Day, every revalidation matches a calendar
+        Day, and a calendar Day may include no revalidation.
+  - identity_id: jurisdiction_identity
+    dataset_columns:
+    - jurisdiction_id
+    is_entity_universe: false
+    entity_expression:
+    - '[jurisdiction_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many revalidations belong to one jurisdiction, every revalidation matches a jurisdiction,
+        and a jurisdiction may include no revalidation.

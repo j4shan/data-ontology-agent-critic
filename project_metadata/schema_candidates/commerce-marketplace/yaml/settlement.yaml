@@ -1,0 +1,340 @@
+schema_version: '2'
+nodes:
+- node_id: sf:commerce-marketplace.settlement.fact_seller_settlement
+  descriptor:
+    qualified_name: commerce-marketplace.settlement.fact_seller_settlement
+    display_name: Seller settlement
+    description: Settlement of proceeds owed to a seller.
+    synonyms: []
+    tags:
+    - fact
+    - settlement
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE_MARKETPLACE
+      schema: SETTLEMENT
+      object: FACT_SELLER_SETTLEMENT
+      format: table
+  grain:
+    description: One row is one seller settlement.
+    components:
+    - identity_id: seller_settlement_identity
+      dataset_columns:
+      - seller_settlement_id
+      description: Identifies one seller settlement.
+  columns:
+  - name: seller_settlement_id
+    description: Identifies one seller settlement.
+  - name: seller_id
+    description: Seller paid by the settlement.
+  - name: currency_id
+    description: Currency of the settlement.
+  - name: calendar_day_id
+    description: Calendar day of the settlement.
+  - name: settlement_status
+    description: Processing standing of the seller settlement.
+    value_description: open, settled, paid
+  entity_definitions:
+  - identity_id: seller_settlement_identity
+    dataset_columns:
+    - seller_settlement_id
+    is_entity_universe: true
+    entity_expression:
+    - '[seller_settlement_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
+  - identity_id: seller_identity
+    dataset_columns:
+    - seller_id
+    is_entity_universe: false
+    entity_expression:
+    - '[seller_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each seller settlement belongs to exactly one seller, and a seller may have no settlements.
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    is_entity_universe: false
+    entity_expression:
+    - '[currency_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each seller settlement uses exactly one currency, and a currency may have no settlements.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each seller settlement belongs to exactly one calendar day, and a calendar day may
+        have no settlements.
+- node_id: sf:commerce-marketplace.settlement.fact_settlement_line
+  descriptor:
+    qualified_name: commerce-marketplace.settlement.fact_settlement_line
+    display_name: Settlement line
+    description: Line that builds the net amount of a seller settlement.
+    synonyms: []
+    tags:
+    - fact
+    - settlement
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE_MARKETPLACE
+      schema: SETTLEMENT
+      object: FACT_SETTLEMENT_LINE
+      format: table
+  grain:
+    description: One row is one settlement line.
+    components:
+    - identity_id: settlement_line_identity
+      dataset_columns:
+      - settlement_line_id
+      description: Identifies one settlement line.
+  columns:
+  - name: settlement_line_id
+    description: Identifies one settlement line.
+  - name: seller_settlement_id
+    description: Seller settlement that contains the line.
+  - name: order_line_id
+    description: Order line the settlement line pays.
+  - name: fee_schedule_id
+    description: Fee schedule applied on the settlement line.
+  - name: net_amount
+    description: Net amount of the settlement line.
+  entity_definitions:
+  - identity_id: settlement_line_identity
+    dataset_columns:
+    - settlement_line_id
+    is_entity_universe: true
+    entity_expression:
+    - '[settlement_line_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
+  - identity_id: seller_settlement_identity
+    dataset_columns:
+    - seller_settlement_id
+    is_entity_universe: false
+    entity_expression:
+    - '[seller_settlement_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Every seller settlement includes one or more settlement lines, and each settlement
+        line belongs to exactly one seller settlement.
+  - identity_id: order_line_identity
+    dataset_columns:
+    - order_line_id
+    is_entity_universe: false
+    entity_expression:
+    - '[order_line_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A settlement line may have no order line, and an order line may have no settlement
+        lines.
+  - identity_id: fee_schedule_identity
+    dataset_columns:
+    - fee_schedule_id
+    is_entity_universe: false
+    entity_expression:
+    - '[fee_schedule_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A settlement line may have no fee schedule, and a fee schedule may have no settlement
+        lines.
+- node_id: sf:commerce-marketplace.settlement.fact_commission
+  descriptor:
+    qualified_name: commerce-marketplace.settlement.fact_commission
+    display_name: Commission
+    description: Commission assessed on an order line for a seller.
+    synonyms: []
+    tags:
+    - fact
+    - settlement
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE_MARKETPLACE
+      schema: SETTLEMENT
+      object: FACT_COMMISSION
+      format: table
+  grain:
+    description: One row is one commission.
+    components:
+    - identity_id: commission_identity
+      dataset_columns:
+      - commission_id
+      description: Identifies one commission.
+  columns:
+  - name: commission_id
+    description: Identifies one commission.
+  - name: order_line_id
+    description: Order line the commission is assessed on.
+  - name: seller_id
+    description: Seller charged the commission.
+  - name: fee_schedule_id
+    description: Fee schedule that priced the commission.
+  - name: commission_amount
+    description: Commission amount assessed on the order line.
+  entity_definitions:
+  - identity_id: commission_identity
+    dataset_columns:
+    - commission_id
+    is_entity_universe: true
+    entity_expression:
+    - '[commission_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
+  - identity_id: order_line_identity
+    dataset_columns:
+    - order_line_id
+    is_entity_universe: false
+    entity_expression:
+    - '[order_line_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each commission belongs to exactly one order line, and an order line may have no
+        commissions.
+  - identity_id: seller_identity
+    dataset_columns:
+    - seller_id
+    is_entity_universe: false
+    entity_expression:
+    - '[seller_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each commission belongs to exactly one seller, and a seller may have no commissions.
+  - identity_id: fee_schedule_identity
+    dataset_columns:
+    - fee_schedule_id
+    is_entity_universe: false
+    entity_expression:
+    - '[fee_schedule_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A commission may have no fee schedule, and a fee schedule may have no commissions.
+- node_id: sf:commerce-marketplace.settlement.fact_fee_assessment
+  descriptor:
+    qualified_name: commerce-marketplace.settlement.fact_fee_assessment
+    display_name: Fee assessment
+    description: Fee charged to a seller under a fee schedule.
+    synonyms: []
+    tags:
+    - fact
+    - settlement
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE_MARKETPLACE
+      schema: SETTLEMENT
+      object: FACT_FEE_ASSESSMENT
+      format: table
+  grain:
+    description: One row is one fee assessment.
+    components:
+    - identity_id: fee_assessment_identity
+      dataset_columns:
+      - fee_assessment_id
+      description: Identifies one fee assessment.
+  columns:
+  - name: fee_assessment_id
+    description: Identifies one fee assessment.
+  - name: seller_id
+    description: Seller charged the fee.
+  - name: fee_schedule_id
+    description: Fee schedule that priced the fee.
+  - name: seller_settlement_id
+    description: Settlement that includes the fee.
+  - name: calendar_day_id
+    description: Calendar day of the fee assessment.
+  - name: fee_amount
+    description: Fee amount assessed to the seller.
+  entity_definitions:
+  - identity_id: fee_assessment_identity
+    dataset_columns:
+    - fee_assessment_id
+    is_entity_universe: true
+    entity_expression:
+    - '[fee_assessment_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
+  - identity_id: seller_identity
+    dataset_columns:
+    - seller_id
+    is_entity_universe: false
+    entity_expression:
+    - '[seller_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each fee assessment belongs to exactly one seller, and a seller may have no fee assessments.
+  - identity_id: fee_schedule_identity
+    dataset_columns:
+    - fee_schedule_id
+    is_entity_universe: false
+    entity_expression:
+    - '[fee_schedule_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each fee assessment belongs to exactly one fee schedule, and a fee schedule may have
+        no fee assessments.
+  - identity_id: seller_settlement_identity
+    dataset_columns:
+    - seller_settlement_id
+    is_entity_universe: false
+    entity_expression:
+    - '[seller_settlement_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A fee assessment may have no seller settlement, and a seller settlement may have
+        no fee assessments.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each fee assessment belongs to exactly one calendar day, and a calendar day may have
+        no fee assessments.

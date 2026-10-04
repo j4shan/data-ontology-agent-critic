@@ -1,0 +1,239 @@
+schema_version: '2'
+nodes:
+- node_id: sf:healthcare-payer.eligibility.fact_eligibility_inquiry
+  descriptor:
+    qualified_name: healthcare-payer.eligibility.fact_eligibility_inquiry
+    display_name: Eligibility Inquiry
+    description: One X12 270 eligibility inquiry.
+    synonyms: []
+    tags:
+    - fact
+    - eligibility
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: HEALTHCARE_PAYER
+      schema: ELIGIBILITY
+      object: FACT_ELIGIBILITY_INQUIRY
+      format: table
+  grain:
+    description: One row is one eligibility inquiry.
+    components:
+    - identity_id: eligibility_inquiry_identity
+      dataset_columns:
+      - eligibility_inquiry_id
+      description: Identifier of one eligibility Inquiry.
+  columns:
+  - name: eligibility_inquiry_id
+    description: Identifier of one eligibility Inquiry.
+  - name: member_id
+    description: Reference to the member.
+  - name: coverage_id
+    description: Reference to the coverage.
+  - name: provider_id
+    description: Reference to the provider.
+  - name: trading_partner_id
+    description: Reference to the trading Partner.
+  - name: calendar_day_id
+    description: Reference to the calendar Day.
+  - name: plan_id
+    description: Reference to the plan.
+  - name: jurisdiction_id
+    description: Reference to the jurisdiction.
+  - name: inquiry_type
+    description: Kind of eligibility question.
+    value_description: coverage, benefit, copay, deductible
+  entity_definitions:
+  - identity_id: eligibility_inquiry_identity
+    dataset_columns:
+    - eligibility_inquiry_id
+    is_entity_universe: true
+    entity_expression:
+    - '[eligibility_inquiry_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of eligibility inquiry.
+  - identity_id: member_identity
+    dataset_columns:
+    - member_id
+    is_entity_universe: false
+    entity_expression:
+    - '[member_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many eligibility Inquiries belong to one member, every eligibility Inquiry matches
+        a member, and a member may include no eligibility Inquiry.
+  - identity_id: coverage_identity
+    dataset_columns:
+    - coverage_id
+    is_entity_universe: false
+    entity_expression:
+    - '[coverage_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many eligibility Inquiries belong to one coverage, every eligibility Inquiry matches
+        a coverage, and a coverage may include no eligibility Inquiry.
+  - identity_id: provider_identity
+    dataset_columns:
+    - provider_id
+    is_entity_universe: false
+    entity_expression:
+    - '[provider_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many eligibility Inquiries belong to one provider, every eligibility Inquiry matches
+        a provider, and a provider may include no eligibility Inquiry.
+  - identity_id: trading_partner_identity
+    dataset_columns:
+    - trading_partner_id
+    is_entity_universe: false
+    entity_expression:
+    - '[trading_partner_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many eligibility Inquiries belong to one trading Partner, every eligibility Inquiry
+        matches a trading Partner, and every trading Partner includes at least one eligibility Inquiry.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many eligibility Inquiries belong to one calendar Day, every eligibility Inquiry
+        matches a calendar Day, and every calendar Day includes at least one eligibility Inquiry.
+  - identity_id: plan_identity
+    dataset_columns:
+    - plan_id
+    is_entity_universe: false
+    entity_expression:
+    - '[plan_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many eligibility Inquiries belong to one plan, every eligibility Inquiry matches
+        a plan, and a plan may include no eligibility Inquiry.
+  - identity_id: jurisdiction_identity
+    dataset_columns:
+    - jurisdiction_id
+    is_entity_universe: false
+    entity_expression:
+    - '[jurisdiction_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many eligibility Inquiries belong to one jurisdiction, every eligibility Inquiry
+        matches a jurisdiction, and a jurisdiction may include no eligibility Inquiry.
+- node_id: sf:healthcare-payer.eligibility.fact_eligibility_response
+  descriptor:
+    qualified_name: healthcare-payer.eligibility.fact_eligibility_response
+    display_name: Eligibility Response
+    description: One X12 271 response to an eligibility inquiry.
+    synonyms: []
+    tags:
+    - fact
+    - eligibility
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: HEALTHCARE_PAYER
+      schema: ELIGIBILITY
+      object: FACT_ELIGIBILITY_RESPONSE
+      format: table
+  grain:
+    description: One row is one eligibility response.
+    components:
+    - identity_id: eligibility_response_identity
+      dataset_columns:
+      - eligibility_response_id
+      description: Identifier of one eligibility Response.
+  columns:
+  - name: eligibility_response_id
+    description: Identifier of one eligibility Response.
+  - name: eligibility_inquiry_id
+    description: Each inquiry has one response, and each response has one inquiry.
+  - name: member_id
+    description: Reference to the member.
+  - name: plan_id
+    description: Reference to the plan.
+  - name: calendar_day_id
+    description: Reference to the calendar Day.
+  - name: response_status
+    description: Eligibility response status.
+    value_description: active, inactive, rejected
+  entity_definitions:
+  - identity_id: eligibility_response_identity
+    dataset_columns:
+    - eligibility_response_id
+    is_entity_universe: true
+    entity_expression:
+    - '[eligibility_response_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of eligibility response.
+  - identity_id: eligibility_inquiry_identity
+    dataset_columns:
+    - eligibility_inquiry_id
+    is_entity_universe: false
+    entity_expression:
+    - '[eligibility_inquiry_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: '1:1'
+      business_rule: Each eligibility Response matches exactly one eligibility Inquiry, and each eligibility
+        Inquiry matches exactly one eligibility Response. Each inquiry has one response, and each response
+        has one inquiry.
+  - identity_id: member_identity
+    dataset_columns:
+    - member_id
+    is_entity_universe: false
+    entity_expression:
+    - '[member_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many eligibility Responses belong to one member, every eligibility Response matches
+        a member, and a member may include no eligibility Response.
+  - identity_id: plan_identity
+    dataset_columns:
+    - plan_id
+    is_entity_universe: false
+    entity_expression:
+    - '[plan_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many eligibility Responses belong to one plan, every eligibility Response matches
+        a plan, and a plan may include no eligibility Response.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many eligibility Responses belong to one calendar Day, every eligibility Response
+        matches a calendar Day, and every calendar Day includes at least one eligibility Response.

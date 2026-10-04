@@ -1,0 +1,260 @@
+schema_version: '2'
+nodes:
+- node_id: sf:commerce-marketplace.advertising.dim_campaign
+  descriptor:
+    qualified_name: commerce-marketplace.advertising.dim_campaign
+    display_name: Campaign
+    description: Advertising campaign owned by a seller.
+    synonyms: []
+    tags:
+    - dimension
+    - advertising
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE_MARKETPLACE
+      schema: ADVERTISING
+      object: DIM_CAMPAIGN
+      format: table
+  grain:
+    description: One row is one campaign.
+    components:
+    - identity_id: campaign_identity
+      dataset_columns:
+      - campaign_id
+      description: Identifies one campaign.
+  columns:
+  - name: campaign_id
+    description: Identifies one campaign.
+  - name: seller_id
+    description: Seller that owns the campaign.
+  entity_definitions:
+  - identity_id: campaign_identity
+    dataset_columns:
+    - campaign_id
+    is_entity_universe: true
+    entity_expression:
+    - '[campaign_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
+  - identity_id: seller_identity
+    dataset_columns:
+    - seller_id
+    is_entity_universe: false
+    entity_expression:
+    - '[seller_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each campaign belongs to exactly one seller, and a seller may have no campaigns.
+- node_id: sf:commerce-marketplace.advertising.dim_ad_placement
+  descriptor:
+    qualified_name: commerce-marketplace.advertising.dim_ad_placement
+    display_name: Ad placement
+    description: Placement where a campaign can show an advertisement.
+    synonyms: []
+    tags:
+    - dimension
+    - advertising
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE_MARKETPLACE
+      schema: ADVERTISING
+      object: DIM_AD_PLACEMENT
+      format: table
+  grain:
+    description: One row is one ad placement.
+    components:
+    - identity_id: ad_placement_identity
+      dataset_columns:
+      - ad_placement_id
+      description: Identifies one ad placement.
+  columns:
+  - name: ad_placement_id
+    description: Identifies one ad placement.
+  entity_definitions:
+  - identity_id: ad_placement_identity
+    dataset_columns:
+    - ad_placement_id
+    is_entity_universe: true
+    entity_expression:
+    - '[ad_placement_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
+- node_id: sf:commerce-marketplace.advertising.fact_ad_impression
+  descriptor:
+    qualified_name: commerce-marketplace.advertising.fact_ad_impression
+    display_name: Ad impression
+    description: Impression of a campaign on an ad placement.
+    synonyms: []
+    tags:
+    - fact
+    - advertising
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE_MARKETPLACE
+      schema: ADVERTISING
+      object: FACT_AD_IMPRESSION
+      format: table
+  grain:
+    description: One row is one ad impression.
+    components:
+    - identity_id: impression_identity
+      dataset_columns:
+      - impression_id
+      description: Identifies one ad impression.
+  columns:
+  - name: impression_id
+    description: Identifies one ad impression.
+  - name: campaign_id
+    description: Campaign that was shown.
+  - name: ad_placement_id
+    description: Placement where the impression was shown.
+  - name: calendar_day_id
+    description: Calendar day of the impression.
+  - name: device_id
+    description: Device that received the impression.
+  entity_definitions:
+  - identity_id: impression_identity
+    dataset_columns:
+    - impression_id
+    is_entity_universe: true
+    entity_expression:
+    - '[impression_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
+  - identity_id: campaign_identity
+    dataset_columns:
+    - campaign_id
+    is_entity_universe: false
+    entity_expression:
+    - '[campaign_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each impression belongs to exactly one campaign, and a campaign may have no impressions.
+  - identity_id: ad_placement_identity
+    dataset_columns:
+    - ad_placement_id
+    is_entity_universe: false
+    entity_expression:
+    - '[ad_placement_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each impression belongs to exactly one ad placement, and an ad placement may have
+        no impressions.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each impression belongs to exactly one calendar day, and a calendar day may have
+        no impressions.
+  - identity_id: device_identity
+    dataset_columns:
+    - device_id
+    is_entity_universe: false
+    entity_expression:
+    - '[device_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: An impression may have no device, and a device may have no impressions.
+- node_id: sf:commerce-marketplace.advertising.fact_ad_click
+  descriptor:
+    qualified_name: commerce-marketplace.advertising.fact_ad_click
+    display_name: Ad click
+    description: Click recorded for a campaign.
+    synonyms: []
+    tags:
+    - fact
+    - advertising
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE_MARKETPLACE
+      schema: ADVERTISING
+      object: FACT_AD_CLICK
+      format: table
+  grain:
+    description: One row is one ad click.
+    components:
+    - identity_id: click_identity
+      dataset_columns:
+      - click_id
+      description: Identifies one ad click.
+  columns:
+  - name: click_id
+    description: Identifies one ad click.
+  - name: impression_id
+    description: Impression the click followed.
+  - name: campaign_id
+    description: Campaign that received the click.
+  - name: calendar_day_id
+    description: Calendar day of the click.
+  entity_definitions:
+  - identity_id: click_identity
+    dataset_columns:
+    - click_id
+    is_entity_universe: true
+    entity_expression:
+    - '[click_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
+  - identity_id: impression_identity
+    dataset_columns:
+    - impression_id
+    is_entity_universe: false
+    entity_expression:
+    - '[impression_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A click may have no impression, and an impression may have no clicks.
+  - identity_id: campaign_identity
+    dataset_columns:
+    - campaign_id
+    is_entity_universe: false
+    entity_expression:
+    - '[campaign_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each click belongs to exactly one campaign, and a campaign may have no clicks.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each click belongs to exactly one calendar day, and a calendar day may have no clicks.

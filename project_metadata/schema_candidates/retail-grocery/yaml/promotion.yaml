@@ -1,0 +1,316 @@
+schema_version: '2'
+nodes:
+- node_id: sf:retail-grocery.promotion.dim_promotion
+  descriptor:
+    qualified_name: retail-grocery.promotion.dim_promotion
+    display_name: Promotion
+    description: Merchandising promotion that groups one or more offers.
+    synonyms: []
+    tags:
+    - dimension
+    - promotion
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL_GROCERY
+      schema: PROMOTION
+      object: DIM_PROMOTION
+      format: table
+  grain:
+    description: One row is one promotion.
+    components:
+    - identity_id: promotion_identity
+      dataset_columns:
+      - promotion_id
+      description: Identifies one promotion.
+  columns:
+  - name: promotion_id
+    description: Identifies one promotion.
+  - name: promotion_status
+    description: Lifecycle status of the promotion.
+    value_description: planned, active, expired
+  entity_definitions:
+  - identity_id: promotion_identity
+    dataset_columns:
+    - promotion_id
+    is_entity_universe: true
+    entity_expression:
+    - '[promotion_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of promotion.
+- node_id: sf:retail-grocery.promotion.dim_offer
+  descriptor:
+    qualified_name: retail-grocery.promotion.dim_offer
+    display_name: Offer
+    description: Customer offer that belongs to a promotion.
+    synonyms: []
+    tags:
+    - dimension
+    - promotion
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL_GROCERY
+      schema: PROMOTION
+      object: DIM_OFFER
+      format: table
+  grain:
+    description: One row is one offer.
+    components:
+    - identity_id: offer_identity
+      dataset_columns:
+      - offer_id
+      description: Identifies one promotional offer.
+  columns:
+  - name: offer_id
+    description: Identifies one promotional offer.
+  - name: promotion_id
+    description: Promotion that contains the offer.
+  entity_definitions:
+  - identity_id: offer_identity
+    dataset_columns:
+    - offer_id
+    is_entity_universe: true
+    entity_expression:
+    - '[offer_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of offer.
+  - identity_id: promotion_identity
+    dataset_columns:
+    - promotion_id
+    is_entity_universe: false
+    entity_expression:
+    - '[promotion_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each promotion includes one or more offers, and each offer belongs to exactly one
+        promotion.
+- node_id: sf:retail-grocery.promotion.dim_coupon
+  descriptor:
+    qualified_name: retail-grocery.promotion.dim_coupon
+    display_name: Coupon
+    description: Coupon a shopper can present, optionally tied to an offer.
+    synonyms: []
+    tags:
+    - dimension
+    - promotion
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL_GROCERY
+      schema: PROMOTION
+      object: DIM_COUPON
+      format: table
+  grain:
+    description: One row is one coupon.
+    components:
+    - identity_id: coupon_identity
+      dataset_columns:
+      - coupon_id
+      description: Identifies one coupon.
+  columns:
+  - name: coupon_id
+    description: Identifies one coupon.
+  - name: offer_id
+    description: Offer the coupon redeems when the coupon is linked.
+  entity_definitions:
+  - identity_id: coupon_identity
+    dataset_columns:
+    - coupon_id
+    is_entity_universe: true
+    entity_expression:
+    - '[coupon_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of coupon.
+  - identity_id: offer_identity
+    dataset_columns:
+    - offer_id
+    is_entity_universe: false
+    entity_expression:
+    - '[offer_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A coupon may omit an offer, and an offer may have no coupon.
+- node_id: sf:retail-grocery.promotion.fact_promotion_redemption
+  descriptor:
+    qualified_name: retail-grocery.promotion.fact_promotion_redemption
+    display_name: Promotion redemption
+    description: Use of a promotion at a storefront, optionally against a POS line.
+    synonyms: []
+    tags:
+    - fact
+    - promotion
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL_GROCERY
+      schema: PROMOTION
+      object: FACT_PROMOTION_REDEMPTION
+      format: table
+  grain:
+    description: One row is one promotion redemption.
+    components:
+    - identity_id: redemption_identity
+      dataset_columns:
+      - redemption_id
+      description: Identifies one promotion redemption.
+  columns:
+  - name: redemption_id
+    description: Identifies one promotion redemption.
+  - name: promotion_id
+    description: Promotion that was redeemed.
+  - name: pos_line_id
+    description: POS line the promotion was applied to when the redemption is line-level.
+  - name: store_id
+    description: Storefront where the promotion was redeemed.
+  - name: calendar_day_id
+    description: Day the promotion was redeemed.
+  entity_definitions:
+  - identity_id: redemption_identity
+    dataset_columns:
+    - redemption_id
+    is_entity_universe: true
+    entity_expression:
+    - '[redemption_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of promotion redemption.
+  - identity_id: promotion_identity
+    dataset_columns:
+    - promotion_id
+    is_entity_universe: false
+    entity_expression:
+    - '[promotion_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each redemption names exactly one promotion, and a promotion may have no redemption.
+  - identity_id: pos_line_identity
+    dataset_columns:
+    - pos_line_id
+    is_entity_universe: false
+    entity_expression:
+    - '[pos_line_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A redemption may omit a POS line, and a POS line may have no promotion redemption.
+  - identity_id: store_identity
+    dataset_columns:
+    - store_id
+    is_entity_universe: false
+    entity_expression:
+    - '[store_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each redemption occurs at exactly one storefront, and a storefront may have no promotion
+        redemption.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each redemption occurs on exactly one day, and a day may have no promotion redemption.
+- node_id: sf:retail-grocery.promotion.fact_coupon_redemption
+  descriptor:
+    qualified_name: retail-grocery.promotion.fact_coupon_redemption
+    display_name: Coupon redemption
+    description: Coupon presented on a POS transaction at a storefront.
+    synonyms: []
+    tags:
+    - fact
+    - promotion
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL_GROCERY
+      schema: PROMOTION
+      object: FACT_COUPON_REDEMPTION
+      format: table
+  grain:
+    description: One row is one coupon redemption.
+    components:
+    - identity_id: coupon_redemption_identity
+      dataset_columns:
+      - coupon_redemption_id
+      description: Identifies one coupon redemption.
+  columns:
+  - name: coupon_redemption_id
+    description: Identifies one coupon redemption.
+  - name: coupon_id
+    description: Coupon that was redeemed.
+  - name: pos_transaction_id
+    description: POS transaction the coupon was presented on.
+  - name: store_id
+    description: Storefront where the coupon was redeemed.
+  entity_definitions:
+  - identity_id: coupon_redemption_identity
+    dataset_columns:
+    - coupon_redemption_id
+    is_entity_universe: true
+    entity_expression:
+    - '[coupon_redemption_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of coupon redemption.
+  - identity_id: coupon_identity
+    dataset_columns:
+    - coupon_id
+    is_entity_universe: false
+    entity_expression:
+    - '[coupon_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each redemption names exactly one coupon, and a coupon may have no redemption.
+  - identity_id: pos_transaction_identity
+    dataset_columns:
+    - pos_transaction_id
+    is_entity_universe: false
+    entity_expression:
+    - '[pos_transaction_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each coupon redemption belongs to exactly one POS transaction, and a transaction
+        may have no coupon redemption.
+  - identity_id: store_identity
+    dataset_columns:
+    - store_id
+    is_entity_universe: false
+    entity_expression:
+    - '[store_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each coupon redemption occurs at exactly one storefront, and a storefront may have
+        no coupon redemption.

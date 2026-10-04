@@ -1,0 +1,1223 @@
+schema_version: '2'
+nodes:
+- node_id: sf:telecom-mobile.care.dim_sla
+  descriptor:
+    qualified_name: telecom-mobile.care.dim_sla
+    display_name: SLA
+    description: Care or network service level.
+    synonyms: []
+    tags:
+    - dimension
+    - care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM_MOBILE
+      schema: CARE
+      object: DIM_SLA
+      format: table
+  grain:
+    description: One row is one sla.
+    components:
+    - identity_id: sla_identity
+      dataset_columns:
+      - sla_id
+      description: Identifier of one sLA.
+  columns:
+  - name: sla_id
+    description: Identifier of one sLA.
+  - name: code
+    description: Code for the sla.
+    value_description: care-24h, care-4h, network-critical, network-major
+  entity_definitions:
+  - identity_id: sla_identity
+    dataset_columns:
+    - sla_id
+    is_entity_universe: true
+    entity_expression:
+    - '[sla_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of sla.
+- node_id: sf:telecom-mobile.care.dim_script
+  descriptor:
+    qualified_name: telecom-mobile.care.dim_script
+    display_name: Care Script
+    description: Script a care agent follows.
+    synonyms: []
+    tags:
+    - dimension
+    - care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM_MOBILE
+      schema: CARE
+      object: DIM_SCRIPT
+      format: table
+  grain:
+    description: One row is one care script.
+    components:
+    - identity_id: script_identity
+      dataset_columns:
+      - script_id
+      description: Identifier of one care Script.
+  columns:
+  - name: script_id
+    description: Identifier of one care Script.
+  - name: code
+    description: Code for the care script.
+    value_description: billing, coverage, device, port-in, retention
+  entity_definitions:
+  - identity_id: script_identity
+    dataset_columns:
+    - script_id
+    is_entity_universe: true
+    entity_expression:
+    - '[script_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of care script.
+- node_id: sf:telecom-mobile.care.dim_care_reason
+  descriptor:
+    qualified_name: telecom-mobile.care.dim_care_reason
+    display_name: Care Reason
+    description: Reason recorded on a care interaction.
+    synonyms: []
+    tags:
+    - dimension
+    - care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM_MOBILE
+      schema: CARE
+      object: DIM_CARE_REASON
+      format: table
+  grain:
+    description: One row is one care reason.
+    components:
+    - identity_id: care_reason_identity
+      dataset_columns:
+      - care_reason_id
+      description: Identifier of one care Reason.
+  columns:
+  - name: care_reason_id
+    description: Identifier of one care Reason.
+  - name: code
+    description: Code for the care reason.
+    value_description: bill-explain, payment, coverage, device, complaint, retention
+  entity_definitions:
+  - identity_id: care_reason_identity
+    dataset_columns:
+    - care_reason_id
+    is_entity_universe: true
+    entity_expression:
+    - '[care_reason_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of care reason.
+- node_id: sf:telecom-mobile.care.dim_fraud_rule
+  descriptor:
+    qualified_name: telecom-mobile.care.dim_fraud_rule
+    display_name: Fraud Rule
+    description: Rule that raises a fraud alert.
+    synonyms: []
+    tags:
+    - dimension
+    - care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM_MOBILE
+      schema: CARE
+      object: DIM_FRAUD_RULE
+      format: table
+  grain:
+    description: One row is one fraud rule.
+    components:
+    - identity_id: fraud_rule_identity
+      dataset_columns:
+      - fraud_rule_id
+      description: Identifier of one fraud Rule.
+  columns:
+  - name: fraud_rule_id
+    description: Identifier of one fraud Rule.
+  - name: rule_name
+    description: Name of the fraud rule.
+  entity_definitions:
+  - identity_id: fraud_rule_identity
+    dataset_columns:
+    - fraud_rule_id
+    is_entity_universe: true
+    entity_expression:
+    - '[fraud_rule_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of fraud rule.
+- node_id: sf:telecom-mobile.care.dim_agent
+  descriptor:
+    qualified_name: telecom-mobile.care.dim_agent
+    display_name: Care Agent
+    description: Care employee who handles interactions.
+    synonyms: []
+    tags:
+    - dimension
+    - care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM_MOBILE
+      schema: CARE
+      object: DIM_AGENT
+      format: table
+  grain:
+    description: One row is one care agent.
+    components:
+    - identity_id: agent_identity
+      dataset_columns:
+      - agent_id
+      description: Identifier of one care Agent.
+  columns:
+  - name: agent_id
+    description: Identifier of one care Agent.
+  - name: employee_id
+    description: Each care agent is one employee, and most employees are not agents.
+  - name: department_id
+    description: Reference to the department.
+  - name: agent_name
+    description: Name of the care agent.
+  entity_definitions:
+  - identity_id: agent_identity
+    dataset_columns:
+    - agent_id
+    is_entity_universe: true
+    entity_expression:
+    - '[agent_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of care agent.
+  - identity_id: employee_identity
+    dataset_columns:
+    - employee_id
+    is_entity_universe: false
+    entity_expression:
+    - '[employee_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: '1:1'
+      business_rule: Each care Agent matches exactly one employee, each employee matches at most one care
+        Agent, and not every employee is matched. Each care agent is one employee, and most employees
+        are not agents.
+  - identity_id: department_identity
+    dataset_columns:
+    - department_id
+    is_entity_universe: false
+    entity_expression:
+    - '[department_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many care Agents belong to one department, every care Agent matches a department,
+        and a department may include no care Agent.
+- node_id: sf:telecom-mobile.care.dim_queue
+  descriptor:
+    qualified_name: telecom-mobile.care.dim_queue
+    display_name: Care Queue
+    description: Queue that receives care interactions.
+    synonyms: []
+    tags:
+    - dimension
+    - care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM_MOBILE
+      schema: CARE
+      object: DIM_QUEUE
+      format: table
+  grain:
+    description: One row is one care queue.
+    components:
+    - identity_id: queue_identity
+      dataset_columns:
+      - queue_id
+      description: Identifier of one care Queue.
+  columns:
+  - name: queue_id
+    description: Identifier of one care Queue.
+  - name: department_id
+    description: Reference to the department.
+  - name: queue_name
+    description: Name of the queue.
+  entity_definitions:
+  - identity_id: queue_identity
+    dataset_columns:
+    - queue_id
+    is_entity_universe: true
+    entity_expression:
+    - '[queue_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of care queue.
+  - identity_id: department_identity
+    dataset_columns:
+    - department_id
+    is_entity_universe: false
+    entity_expression:
+    - '[department_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many care Queues belong to one department, every care Queue matches a department,
+        and a department may include no care Queue.
+- node_id: sf:telecom-mobile.care.dim_trouble_code
+  descriptor:
+    qualified_name: telecom-mobile.care.dim_trouble_code
+    display_name: Trouble Code
+    description: Code that classifies a trouble ticket.
+    synonyms: []
+    tags:
+    - dimension
+    - care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM_MOBILE
+      schema: CARE
+      object: DIM_TROUBLE_CODE
+      format: table
+  grain:
+    description: One row is one trouble code.
+    components:
+    - identity_id: trouble_code_identity
+      dataset_columns:
+      - trouble_code_id
+      description: Identifier of one trouble Code.
+  columns:
+  - name: trouble_code_id
+    description: Identifier of one trouble Code.
+  - name: code
+    description: Trouble code.
+  entity_definitions:
+  - identity_id: trouble_code_identity
+    dataset_columns:
+    - trouble_code_id
+    is_entity_universe: true
+    entity_expression:
+    - '[trouble_code_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of trouble code.
+- node_id: sf:telecom-mobile.care.dim_collection_agency
+  descriptor:
+    qualified_name: telecom-mobile.care.dim_collection_agency
+    display_name: Collection Agency
+    description: External agency that can receive a referral.
+    synonyms: []
+    tags:
+    - dimension
+    - care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM_MOBILE
+      schema: CARE
+      object: DIM_COLLECTION_AGENCY
+      format: table
+  grain:
+    description: One row is one collection agency.
+    components:
+    - identity_id: collection_agency_identity
+      dataset_columns:
+      - collection_agency_id
+      description: Identifier of one collection Agency.
+  columns:
+  - name: collection_agency_id
+    description: Identifier of one collection Agency.
+  - name: agency_name
+    description: Name of the collection agency.
+  entity_definitions:
+  - identity_id: collection_agency_identity
+    dataset_columns:
+    - collection_agency_id
+    is_entity_universe: true
+    entity_expression:
+    - '[collection_agency_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of collection agency.
+- node_id: sf:telecom-mobile.care.fact_interaction
+  descriptor:
+    qualified_name: telecom-mobile.care.fact_interaction
+    display_name: Care Interaction
+    description: One care contact with a party.
+    synonyms: []
+    tags:
+    - fact
+    - care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM_MOBILE
+      schema: CARE
+      object: FACT_INTERACTION
+      format: table
+  grain:
+    description: One row is one care interaction.
+    components:
+    - identity_id: interaction_identity
+      dataset_columns:
+      - interaction_id
+      description: Identifier of one care Interaction.
+  columns:
+  - name: interaction_id
+    description: Identifier of one care Interaction.
+  - name: party_id
+    description: Reference to the party.
+  - name: subscriber_id
+    description: Reference to the subscriber.
+  - name: agent_id
+    description: Every care agent handles interactions.
+  - name: queue_id
+    description: Reference to the care Queue.
+  - name: channel_id
+    description: Reference to the channel.
+  - name: calendar_day_id
+    description: Reference to the calendar Day.
+  - name: care_reason_id
+    description: Reference to the care Reason.
+  - name: handle_seconds
+    description: Handle time of the interaction.
+  entity_definitions:
+  - identity_id: interaction_identity
+    dataset_columns:
+    - interaction_id
+    is_entity_universe: true
+    entity_expression:
+    - '[interaction_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of care interaction.
+  - identity_id: party_identity
+    dataset_columns:
+    - party_id
+    is_entity_universe: false
+    entity_expression:
+    - '[party_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many care Interactions belong to one party, every care Interaction matches a party,
+        and a party may include no care Interaction.
+  - identity_id: subscriber_identity
+    dataset_columns:
+    - subscriber_id
+    is_entity_universe: false
+    entity_expression:
+    - '[subscriber_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A care Interaction may match one subscriber, and a subscriber may include no care
+        Interaction.
+  - identity_id: agent_identity
+    dataset_columns:
+    - agent_id
+    is_entity_universe: false
+    entity_expression:
+    - '[agent_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many care Interactions belong to one care Agent, every care Interaction matches a
+        care Agent, and every care Agent includes at least one care Interaction. Every care agent handles
+        interactions.
+  - identity_id: queue_identity
+    dataset_columns:
+    - queue_id
+    is_entity_universe: false
+    entity_expression:
+    - '[queue_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many care Interactions belong to one care Queue, every care Interaction matches a
+        care Queue, and every care Queue includes at least one care Interaction.
+  - identity_id: channel_identity
+    dataset_columns:
+    - channel_id
+    is_entity_universe: false
+    entity_expression:
+    - '[channel_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many care Interactions belong to one channel, every care Interaction matches a channel,
+        and a channel may include no care Interaction.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many care Interactions belong to one calendar Day, every care Interaction matches
+        a calendar Day, and every calendar Day includes at least one care Interaction.
+  - identity_id: care_reason_identity
+    dataset_columns:
+    - care_reason_id
+    is_entity_universe: false
+    entity_expression:
+    - '[care_reason_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many care Interactions belong to one care Reason, every care Interaction matches
+        a care Reason, and every care Reason includes at least one care Interaction.
+- node_id: sf:telecom-mobile.care.fact_trouble_ticket
+  descriptor:
+    qualified_name: telecom-mobile.care.fact_trouble_ticket
+    display_name: Trouble Ticket
+    description: One customer trouble ticket.
+    synonyms: []
+    tags:
+    - fact
+    - care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM_MOBILE
+      schema: CARE
+      object: FACT_TROUBLE_TICKET
+      format: table
+  grain:
+    description: One row is one trouble ticket.
+    components:
+    - identity_id: trouble_ticket_identity
+      dataset_columns:
+      - trouble_ticket_id
+      description: Identifier of one trouble Ticket.
+  columns:
+  - name: trouble_ticket_id
+    description: Identifier of one trouble Ticket.
+  - name: subscriber_id
+    description: Reference to the subscriber.
+  - name: trouble_code_id
+    description: Reference to the trouble Code.
+  - name: channel_id
+    description: Reference to the channel.
+  - name: calendar_day_id
+    description: Reference to the calendar Day.
+  - name: market_id
+    description: Reference to the market.
+  - name: agent_id
+    description: Reference to the care Agent.
+  - name: ticket_status
+    description: Status of the ticket.
+    value_description: open, pending, resolved, closed
+  entity_definitions:
+  - identity_id: trouble_ticket_identity
+    dataset_columns:
+    - trouble_ticket_id
+    is_entity_universe: true
+    entity_expression:
+    - '[trouble_ticket_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of trouble ticket.
+  - identity_id: subscriber_identity
+    dataset_columns:
+    - subscriber_id
+    is_entity_universe: false
+    entity_expression:
+    - '[subscriber_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many trouble Tickets belong to one subscriber, every trouble Ticket matches a subscriber,
+        and a subscriber may include no trouble Ticket.
+  - identity_id: trouble_code_identity
+    dataset_columns:
+    - trouble_code_id
+    is_entity_universe: false
+    entity_expression:
+    - '[trouble_code_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many trouble Tickets belong to one trouble Code, every trouble Ticket matches a trouble
+        Code, and every trouble Code includes at least one trouble Ticket.
+  - identity_id: channel_identity
+    dataset_columns:
+    - channel_id
+    is_entity_universe: false
+    entity_expression:
+    - '[channel_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many trouble Tickets belong to one channel, every trouble Ticket matches a channel,
+        and a channel may include no trouble Ticket.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many trouble Tickets belong to one calendar Day, every trouble Ticket matches a calendar
+        Day, and every calendar Day includes at least one trouble Ticket.
+  - identity_id: market_identity
+    dataset_columns:
+    - market_id
+    is_entity_universe: false
+    entity_expression:
+    - '[market_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many trouble Tickets belong to one market, every trouble Ticket matches a market,
+        and a market may include no trouble Ticket.
+  - identity_id: agent_identity
+    dataset_columns:
+    - agent_id
+    is_entity_universe: false
+    entity_expression:
+    - '[agent_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A trouble Ticket may match one care Agent, and a care Agent may include no trouble
+        Ticket.
+- node_id: sf:telecom-mobile.care.fact_ticket_event
+  descriptor:
+    qualified_name: telecom-mobile.care.fact_ticket_event
+    display_name: Ticket Event
+    description: One status or work event on a trouble ticket.
+    synonyms: []
+    tags:
+    - fact
+    - care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM_MOBILE
+      schema: CARE
+      object: FACT_TICKET_EVENT
+      format: table
+  grain:
+    description: One row is one ticket event.
+    components:
+    - identity_id: ticket_event_identity
+      dataset_columns:
+      - ticket_event_id
+      description: Identifier of one ticket Event.
+  columns:
+  - name: ticket_event_id
+    description: Identifier of one ticket Event.
+  - name: trouble_ticket_id
+    description: Every ticket has events.
+  - name: agent_id
+    description: Reference to the care Agent.
+  - name: calendar_day_id
+    description: Reference to the calendar Day.
+  - name: event_type
+    description: Kind of ticket event.
+    value_description: create, assign, note, resolve, reopen
+  entity_definitions:
+  - identity_id: ticket_event_identity
+    dataset_columns:
+    - ticket_event_id
+    is_entity_universe: true
+    entity_expression:
+    - '[ticket_event_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of ticket event.
+  - identity_id: trouble_ticket_identity
+    dataset_columns:
+    - trouble_ticket_id
+    is_entity_universe: false
+    entity_expression:
+    - '[trouble_ticket_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many ticket Events belong to one trouble Ticket, every ticket Event matches a trouble
+        Ticket, and every trouble Ticket includes at least one ticket Event. Every ticket has events.
+  - identity_id: agent_identity
+    dataset_columns:
+    - agent_id
+    is_entity_universe: false
+    entity_expression:
+    - '[agent_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many ticket Events belong to one care Agent, every ticket Event matches a care Agent,
+        and a care Agent may include no ticket Event.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many ticket Events belong to one calendar Day, every ticket Event matches a calendar
+        Day, and a calendar Day may include no ticket Event.
+- node_id: sf:telecom-mobile.care.fact_dealer_sale
+  descriptor:
+    qualified_name: telecom-mobile.care.fact_dealer_sale
+    display_name: Dealer Sale
+    description: One sale recorded by a dealer.
+    synonyms: []
+    tags:
+    - fact
+    - care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM_MOBILE
+      schema: CARE
+      object: FACT_DEALER_SALE
+      format: table
+  grain:
+    description: One row is one dealer sale.
+    components:
+    - identity_id: dealer_sale_identity
+      dataset_columns:
+      - dealer_sale_id
+      description: Identifier of one dealer Sale.
+  columns:
+  - name: dealer_sale_id
+    description: Identifier of one dealer Sale.
+  - name: dealer_id
+    description: Every dealer records a sale in the window.
+  - name: subscription_id
+    description: Reference to the subscription.
+  - name: rate_plan_id
+    description: Reference to the rate Plan.
+  - name: calendar_day_id
+    description: Reference to the calendar Day.
+  - name: employee_id
+    description: Reference to the employee.
+  - name: sale_type_id
+    description: Reference to the sale Type.
+  - name: sale_amount
+    description: Amount of the sale.
+  entity_definitions:
+  - identity_id: dealer_sale_identity
+    dataset_columns:
+    - dealer_sale_id
+    is_entity_universe: true
+    entity_expression:
+    - '[dealer_sale_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of dealer sale.
+  - identity_id: dealer_identity
+    dataset_columns:
+    - dealer_id
+    is_entity_universe: false
+    entity_expression:
+    - '[dealer_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many dealer Sales belong to one dealer, every dealer Sale matches a dealer, and every
+        dealer includes at least one dealer Sale. Every dealer records a sale in the window.
+  - identity_id: subscription_identity
+    dataset_columns:
+    - subscription_id
+    is_entity_universe: false
+    entity_expression:
+    - '[subscription_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many dealer Sales belong to one subscription, every dealer Sale matches a subscription,
+        and a subscription may include no dealer Sale.
+  - identity_id: rate_plan_identity
+    dataset_columns:
+    - rate_plan_id
+    is_entity_universe: false
+    entity_expression:
+    - '[rate_plan_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many dealer Sales belong to one rate Plan, every dealer Sale matches a rate Plan,
+        and a rate Plan may include no dealer Sale.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many dealer Sales belong to one calendar Day, every dealer Sale matches a calendar
+        Day, and a calendar Day may include no dealer Sale.
+  - identity_id: employee_identity
+    dataset_columns:
+    - employee_id
+    is_entity_universe: false
+    entity_expression:
+    - '[employee_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A dealer Sale may match one employee, and a employee may include no dealer Sale.
+  - identity_id: sale_type_identity
+    dataset_columns:
+    - sale_type_id
+    is_entity_universe: false
+    entity_expression:
+    - '[sale_type_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many dealer Sales belong to one sale Type, every dealer Sale matches a sale Type,
+        and every sale Type includes at least one dealer Sale.
+- node_id: sf:telecom-mobile.care.fact_fraud_alert
+  descriptor:
+    qualified_name: telecom-mobile.care.fact_fraud_alert
+    display_name: Fraud Alert
+    description: One fraud alert on a subscriber.
+    synonyms: []
+    tags:
+    - fact
+    - care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM_MOBILE
+      schema: CARE
+      object: FACT_FRAUD_ALERT
+      format: table
+  grain:
+    description: One row is one fraud alert.
+    components:
+    - identity_id: fraud_alert_identity
+      dataset_columns:
+      - fraud_alert_id
+      description: Identifier of one fraud Alert.
+  columns:
+  - name: fraud_alert_id
+    description: Identifier of one fraud Alert.
+  - name: fraud_rule_id
+    description: Reference to the fraud Rule.
+  - name: subscriber_id
+    description: Reference to the subscriber.
+  - name: calendar_day_id
+    description: Reference to the calendar Day.
+  - name: msisdn_id
+    description: Reference to the public Number.
+  - name: alert_score
+    description: Score of the fraud alert.
+  entity_definitions:
+  - identity_id: fraud_alert_identity
+    dataset_columns:
+    - fraud_alert_id
+    is_entity_universe: true
+    entity_expression:
+    - '[fraud_alert_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of fraud alert.
+  - identity_id: fraud_rule_identity
+    dataset_columns:
+    - fraud_rule_id
+    is_entity_universe: false
+    entity_expression:
+    - '[fraud_rule_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many fraud Alerts belong to one fraud Rule, every fraud Alert matches a fraud Rule,
+        and every fraud Rule includes at least one fraud Alert.
+  - identity_id: subscriber_identity
+    dataset_columns:
+    - subscriber_id
+    is_entity_universe: false
+    entity_expression:
+    - '[subscriber_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many fraud Alerts belong to one subscriber, every fraud Alert matches a subscriber,
+        and a subscriber may include no fraud Alert.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many fraud Alerts belong to one calendar Day, every fraud Alert matches a calendar
+        Day, and a calendar Day may include no fraud Alert.
+  - identity_id: msisdn_identity
+    dataset_columns:
+    - msisdn_id
+    is_entity_universe: false
+    entity_expression:
+    - '[msisdn_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A fraud Alert may match one public Number, and a public Number may include no fraud
+        Alert.
+- node_id: sf:telecom-mobile.care.fact_barring_event
+  descriptor:
+    qualified_name: telecom-mobile.care.fact_barring_event
+    display_name: Barring Event
+    description: One barring change on a subscriber.
+    synonyms: []
+    tags:
+    - fact
+    - care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM_MOBILE
+      schema: CARE
+      object: FACT_BARRING_EVENT
+      format: table
+  grain:
+    description: One row is one barring event.
+    components:
+    - identity_id: barring_event_identity
+      dataset_columns:
+      - barring_event_id
+      description: Identifier of one barring Event.
+  columns:
+  - name: barring_event_id
+    description: Identifier of one barring Event.
+  - name: subscriber_id
+    description: Reference to the subscriber.
+  - name: barring_id
+    description: Reference to the barring Profile.
+  - name: calendar_day_id
+    description: Reference to the calendar Day.
+  - name: employee_id
+    description: Reference to the employee.
+  - name: barring_action
+    description: Action applied.
+    value_description: apply, remove
+  entity_definitions:
+  - identity_id: barring_event_identity
+    dataset_columns:
+    - barring_event_id
+    is_entity_universe: true
+    entity_expression:
+    - '[barring_event_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of barring event.
+  - identity_id: subscriber_identity
+    dataset_columns:
+    - subscriber_id
+    is_entity_universe: false
+    entity_expression:
+    - '[subscriber_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many barring Events belong to one subscriber, every barring Event matches a subscriber,
+        and a subscriber may include no barring Event.
+  - identity_id: barring_identity
+    dataset_columns:
+    - barring_id
+    is_entity_universe: false
+    entity_expression:
+    - '[barring_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many barring Events belong to one barring Profile, every barring Event matches a
+        barring Profile, and every barring Profile includes at least one barring Event.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many barring Events belong to one calendar Day, every barring Event matches a calendar
+        Day, and a calendar Day may include no barring Event.
+  - identity_id: employee_identity
+    dataset_columns:
+    - employee_id
+    is_entity_universe: false
+    entity_expression:
+    - '[employee_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A barring Event may match one employee, and a employee may include no barring Event.
+- node_id: sf:telecom-mobile.care.fact_sla_breach
+  descriptor:
+    qualified_name: telecom-mobile.care.fact_sla_breach
+    display_name: SLA Breach
+    description: One breach of a care or network SLA.
+    synonyms: []
+    tags:
+    - fact
+    - care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM_MOBILE
+      schema: CARE
+      object: FACT_SLA_BREACH
+      format: table
+  grain:
+    description: One row is one sla breach.
+    components:
+    - identity_id: sla_breach_identity
+      dataset_columns:
+      - sla_breach_id
+      description: Identifier of one sLA Breach.
+  columns:
+  - name: sla_breach_id
+    description: Identifier of one sLA Breach.
+  - name: sla_id
+    description: Reference to the sLA.
+  - name: trouble_ticket_id
+    description: Reference to the trouble Ticket.
+  - name: calendar_day_id
+    description: Reference to the calendar Day.
+  - name: breach_minutes
+    description: Minutes past the SLA.
+  entity_definitions:
+  - identity_id: sla_breach_identity
+    dataset_columns:
+    - sla_breach_id
+    is_entity_universe: true
+    entity_expression:
+    - '[sla_breach_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of sla breach.
+  - identity_id: sla_identity
+    dataset_columns:
+    - sla_id
+    is_entity_universe: false
+    entity_expression:
+    - '[sla_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many sLA Breaches belong to one sLA, every sLA Breach matches a sLA, and every sLA
+        includes at least one sLA Breach.
+  - identity_id: trouble_ticket_identity
+    dataset_columns:
+    - trouble_ticket_id
+    is_entity_universe: false
+    entity_expression:
+    - '[trouble_ticket_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A sLA Breach may match one trouble Ticket, and a trouble Ticket may include no sLA
+        Breach.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many sLA Breaches belong to one calendar Day, every sLA Breach matches a calendar
+        Day, and a calendar Day may include no sLA Breach.
+- node_id: sf:telecom-mobile.care.fact_campaign_contact
+  descriptor:
+    qualified_name: telecom-mobile.care.fact_campaign_contact
+    display_name: Campaign Contact
+    description: One outbound campaign contact.
+    synonyms: []
+    tags:
+    - fact
+    - care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM_MOBILE
+      schema: CARE
+      object: FACT_CAMPAIGN_CONTACT
+      format: table
+  grain:
+    description: One row is one campaign contact.
+    components:
+    - identity_id: campaign_contact_identity
+      dataset_columns:
+      - campaign_contact_id
+      description: Identifier of one campaign Contact.
+  columns:
+  - name: campaign_contact_id
+    description: Identifier of one campaign Contact.
+  - name: campaign_id
+    description: Reference to the campaign.
+  - name: party_id
+    description: Reference to the party.
+  - name: channel_id
+    description: Reference to the channel.
+  - name: calendar_day_id
+    description: Reference to the calendar Day.
+  - name: script_id
+    description: Reference to the care Script.
+  - name: contact_result
+    description: Result of the contact.
+    value_description: answered, no-answer, converted, refused
+  entity_definitions:
+  - identity_id: campaign_contact_identity
+    dataset_columns:
+    - campaign_contact_id
+    is_entity_universe: true
+    entity_expression:
+    - '[campaign_contact_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of campaign contact.
+  - identity_id: campaign_identity
+    dataset_columns:
+    - campaign_id
+    is_entity_universe: false
+    entity_expression:
+    - '[campaign_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many campaign Contacts belong to one campaign, every campaign Contact matches a campaign,
+        and every campaign includes at least one campaign Contact.
+  - identity_id: party_identity
+    dataset_columns:
+    - party_id
+    is_entity_universe: false
+    entity_expression:
+    - '[party_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many campaign Contacts belong to one party, every campaign Contact matches a party,
+        and a party may include no campaign Contact.
+  - identity_id: channel_identity
+    dataset_columns:
+    - channel_id
+    is_entity_universe: false
+    entity_expression:
+    - '[channel_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many campaign Contacts belong to one channel, every campaign Contact matches a channel,
+        and a channel may include no campaign Contact.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many campaign Contacts belong to one calendar Day, every campaign Contact matches
+        a calendar Day, and every calendar Day includes at least one campaign Contact.
+  - identity_id: script_identity
+    dataset_columns:
+    - script_id
+    is_entity_universe: false
+    entity_expression:
+    - '[script_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many campaign Contacts belong to one care Script, every campaign Contact matches
+        a care Script, and a care Script may include no campaign Contact.

@@ -1,0 +1,473 @@
+schema_version: '2'
+nodes:
+- node_id: sf:healthcare-payer.um.fact_prior_auth
+  descriptor:
+    qualified_name: healthcare-payer.um.fact_prior_auth
+    display_name: Prior Authorization
+    description: One prior authorization.
+    synonyms: []
+    tags:
+    - fact
+    - um
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: HEALTHCARE_PAYER
+      schema: UM
+      object: FACT_PRIOR_AUTH
+      format: table
+  grain:
+    description: One row is one prior authorization.
+    components:
+    - identity_id: prior_auth_identity
+      dataset_columns:
+      - prior_auth_id
+      description: Identifier of one prior Authorization.
+  columns:
+  - name: prior_auth_id
+    description: Identifier of one prior Authorization.
+  - name: member_id
+    description: Reference to the member.
+  - name: provider_id
+    description: Reference to the provider.
+  - name: auth_type_id
+    description: Reference to the authorization Type.
+  - name: calendar_day_id
+    description: Reference to the calendar Day.
+  - name: plan_id
+    description: Reference to the plan.
+  - name: employee_id
+    description: Reference to the employee.
+  - name: auth_status
+    description: Status of the authorization.
+    value_description: pended, approved, denied, void
+  entity_definitions:
+  - identity_id: prior_auth_identity
+    dataset_columns:
+    - prior_auth_id
+    is_entity_universe: true
+    entity_expression:
+    - '[prior_auth_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of prior authorization.
+  - identity_id: member_identity
+    dataset_columns:
+    - member_id
+    is_entity_universe: false
+    entity_expression:
+    - '[member_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many prior Authorizations belong to one member, every prior Authorization matches
+        a member, and a member may include no prior Authorization.
+  - identity_id: provider_identity
+    dataset_columns:
+    - provider_id
+    is_entity_universe: false
+    entity_expression:
+    - '[provider_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many prior Authorizations belong to one provider, every prior Authorization matches
+        a provider, and a provider may include no prior Authorization.
+  - identity_id: auth_type_identity
+    dataset_columns:
+    - auth_type_id
+    is_entity_universe: false
+    entity_expression:
+    - '[auth_type_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many prior Authorizations belong to one authorization Type, every prior Authorization
+        matches a authorization Type, and every authorization Type includes at least one prior Authorization.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many prior Authorizations belong to one calendar Day, every prior Authorization matches
+        a calendar Day, and a calendar Day may include no prior Authorization.
+  - identity_id: plan_identity
+    dataset_columns:
+    - plan_id
+    is_entity_universe: false
+    entity_expression:
+    - '[plan_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many prior Authorizations belong to one plan, every prior Authorization matches a
+        plan, and a plan may include no prior Authorization.
+  - identity_id: employee_identity
+    dataset_columns:
+    - employee_id
+    is_entity_universe: false
+    entity_expression:
+    - '[employee_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A prior Authorization may match one employee, and a employee may include no prior
+        Authorization.
+- node_id: sf:healthcare-payer.um.fact_auth_line
+  descriptor:
+    qualified_name: healthcare-payer.um.fact_auth_line
+    display_name: Authorization Line
+    description: One service line requested on a prior authorization.
+    synonyms: []
+    tags:
+    - fact
+    - um
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: HEALTHCARE_PAYER
+      schema: UM
+      object: FACT_AUTH_LINE
+      format: table
+  grain:
+    description: One row is one authorization line.
+    components:
+    - identity_id: auth_line_identity
+      dataset_columns:
+      - auth_line_id
+      description: Identifier of one authorization Line.
+  columns:
+  - name: auth_line_id
+    description: Identifier of one authorization Line.
+  - name: prior_auth_id
+    description: Every authorization has lines.
+  - name: procedure_id
+    description: Reference to the procedure.
+  - name: calendar_day_id
+    description: Reference to the calendar Day.
+  - name: requested_units
+    description: Units requested.
+  entity_definitions:
+  - identity_id: auth_line_identity
+    dataset_columns:
+    - auth_line_id
+    is_entity_universe: true
+    entity_expression:
+    - '[auth_line_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of authorization line.
+  - identity_id: prior_auth_identity
+    dataset_columns:
+    - prior_auth_id
+    is_entity_universe: false
+    entity_expression:
+    - '[prior_auth_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many authorization Lines belong to one prior Authorization, every authorization Line
+        matches a prior Authorization, and every prior Authorization includes at least one authorization
+        Line. Every authorization has lines.
+  - identity_id: procedure_identity
+    dataset_columns:
+    - procedure_id
+    is_entity_universe: false
+    entity_expression:
+    - '[procedure_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many authorization Lines belong to one procedure, every authorization Line matches
+        a procedure, and a procedure may include no authorization Line.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many authorization Lines belong to one calendar Day, every authorization Line matches
+        a calendar Day, and a calendar Day may include no authorization Line.
+- node_id: sf:healthcare-payer.um.fact_auth_decision
+  descriptor:
+    qualified_name: healthcare-payer.um.fact_auth_decision
+    display_name: Authorization Decision
+    description: One decision on a prior authorization.
+    synonyms: []
+    tags:
+    - fact
+    - um
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: HEALTHCARE_PAYER
+      schema: UM
+      object: FACT_AUTH_DECISION
+      format: table
+  grain:
+    description: One row is one authorization decision.
+    components:
+    - identity_id: auth_decision_identity
+      dataset_columns:
+      - auth_decision_id
+      description: Identifier of one authorization Decision.
+  columns:
+  - name: auth_decision_id
+    description: Identifier of one authorization Decision.
+  - name: prior_auth_id
+    description: Each authorization has one current decision.
+  - name: employee_id
+    description: Reference to the employee.
+  - name: calendar_day_id
+    description: Reference to the calendar Day.
+  - name: denial_reason_id
+    description: Reference to the denial Reason.
+  - name: decision
+    description: Decision.
+    value_description: approved, denied, partial
+  entity_definitions:
+  - identity_id: auth_decision_identity
+    dataset_columns:
+    - auth_decision_id
+    is_entity_universe: true
+    entity_expression:
+    - '[auth_decision_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of authorization decision.
+  - identity_id: prior_auth_identity
+    dataset_columns:
+    - prior_auth_id
+    is_entity_universe: false
+    entity_expression:
+    - '[prior_auth_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: '1:1'
+      business_rule: Each authorization Decision matches exactly one prior Authorization, and each prior
+        Authorization matches exactly one authorization Decision. Each authorization has one current decision.
+  - identity_id: employee_identity
+    dataset_columns:
+    - employee_id
+    is_entity_universe: false
+    entity_expression:
+    - '[employee_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many authorization Decisions belong to one employee, every authorization Decision
+        matches a employee, and a employee may include no authorization Decision.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many authorization Decisions belong to one calendar Day, every authorization Decision
+        matches a calendar Day, and a calendar Day may include no authorization Decision.
+  - identity_id: denial_reason_identity
+    dataset_columns:
+    - denial_reason_id
+    is_entity_universe: false
+    entity_expression:
+    - '[denial_reason_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A authorization Decision may match one denial Reason, and a denial Reason may include
+        no authorization Decision.
+- node_id: sf:healthcare-payer.um.fact_referral
+  descriptor:
+    qualified_name: healthcare-payer.um.fact_referral
+    display_name: Referral
+    description: One referral from one provider to another.
+    synonyms: []
+    tags:
+    - fact
+    - um
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: HEALTHCARE_PAYER
+      schema: UM
+      object: FACT_REFERRAL
+      format: table
+  grain:
+    description: One row is one referral.
+    components:
+    - identity_id: referral_identity
+      dataset_columns:
+      - referral_id
+      description: Identifier of one referral.
+  columns:
+  - name: referral_id
+    description: Identifier of one referral.
+  - name: member_id
+    description: Reference to the member.
+  - name: referring_provider_id
+    description: Provider who referred.
+  - name: calendar_day_id
+    description: Reference to the calendar Day.
+  - name: plan_id
+    description: Reference to the plan.
+  - name: referral_status
+    description: Status.
+    value_description: open, used, expired, denied
+  entity_definitions:
+  - identity_id: referral_identity
+    dataset_columns:
+    - referral_id
+    is_entity_universe: true
+    entity_expression:
+    - '[referral_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of referral.
+  - identity_id: member_identity
+    dataset_columns:
+    - member_id
+    is_entity_universe: false
+    entity_expression:
+    - '[member_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many referrals belong to one member, every referral matches a member, and a member
+        may include no referral.
+  - identity_id: provider_identity
+    dataset_columns:
+    - referring_provider_id
+    is_entity_universe: false
+    entity_expression:
+    - '[referring_provider_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many referrals belong to one provider, every referral matches a provider, and a provider
+        may include no referral. Provider who referred.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many referrals belong to one calendar Day, every referral matches a calendar Day,
+        and a calendar Day may include no referral.
+  - identity_id: plan_identity
+    dataset_columns:
+    - plan_id
+    is_entity_universe: false
+    entity_expression:
+    - '[plan_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many referrals belong to one plan, every referral matches a plan, and a plan may
+        include no referral.
+- node_id: sf:healthcare-payer.um.fact_referral_target
+  descriptor:
+    qualified_name: healthcare-payer.um.fact_referral_target
+    display_name: Referral Target
+    description: Provider who received one referral.
+    synonyms: []
+    tags:
+    - fact
+    - um
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: HEALTHCARE_PAYER
+      schema: UM
+      object: FACT_REFERRAL_TARGET
+      format: table
+  grain:
+    description: One row is one referral target.
+    components:
+    - identity_id: referral_target_identity
+      dataset_columns:
+      - referral_target_id
+      description: Identifier of one referral Target.
+  columns:
+  - name: referral_target_id
+    description: Identifier of one referral Target.
+  - name: referral_id
+    description: Each referral has one target provider row.
+  - name: referred_provider_id
+    description: Provider who received the referral.
+  - name: target_status
+    description: Whether the target accepted the referral.
+    value_description: pending, accepted, declined
+  entity_definitions:
+  - identity_id: referral_target_identity
+    dataset_columns:
+    - referral_target_id
+    is_entity_universe: true
+    entity_expression:
+    - '[referral_target_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of referral target.
+  - identity_id: referral_identity
+    dataset_columns:
+    - referral_id
+    is_entity_universe: false
+    entity_expression:
+    - '[referral_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: '1:1'
+      business_rule: Each referral Target matches exactly one referral, and each referral matches exactly
+        one referral Target. Each referral has one target provider row.
+  - identity_id: provider_identity
+    dataset_columns:
+    - referred_provider_id
+    is_entity_universe: false
+    entity_expression:
+    - '[referred_provider_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many referral Targets belong to one provider, every referral Target matches a provider,
+        and a provider may include no referral Target. Provider who received the referral.

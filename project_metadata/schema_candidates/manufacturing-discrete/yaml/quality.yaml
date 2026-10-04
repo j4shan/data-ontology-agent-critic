@@ -1,0 +1,640 @@
+schema_version: '2'
+nodes:
+- node_id: sf:manufacturing-discrete.quality.dim_quality_characteristic
+  descriptor:
+    qualified_name: manufacturing-discrete.quality.dim_quality_characteristic
+    display_name: Quality Characteristic
+    description: Measurable characteristic inspected on a pump, part, or tool.
+    synonyms: []
+    tags:
+    - dimension
+    - quality
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: QUALITY
+      object: DIM_QUALITY_CHARACTERISTIC
+      format: table
+  grain:
+    description: One row is one quality characteristic.
+    components:
+    - identity_id: characteristic_identity
+      dataset_columns:
+      - characteristic_id
+      description: Identifier of one quality characteristic.
+  columns:
+  - name: characteristic_id
+    description: Identifier of one quality characteristic.
+  - name: characteristic_name
+    description: Name of the quality characteristic.
+  entity_definitions:
+  - identity_id: characteristic_identity
+    dataset_columns:
+    - characteristic_id
+    is_entity_universe: true
+    entity_expression:
+    - '[characteristic_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of quality characteristic.
+- node_id: sf:manufacturing-discrete.quality.dim_defect_code
+  descriptor:
+    qualified_name: manufacturing-discrete.quality.dim_defect_code
+    display_name: Defect Code
+    description: Coded reason a part or assembly fails to conform.
+    synonyms: []
+    tags:
+    - dimension
+    - quality
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: QUALITY
+      object: DIM_DEFECT_CODE
+      format: table
+  grain:
+    description: One row is one defect code.
+    components:
+    - identity_id: defect_code_identity
+      dataset_columns:
+      - defect_code_id
+      description: Identifier of one defect code.
+  columns:
+  - name: defect_code_id
+    description: Identifier of one defect code.
+  - name: defect_name
+    description: Name of the defect.
+  entity_definitions:
+  - identity_id: defect_code_identity
+    dataset_columns:
+    - defect_code_id
+    is_entity_universe: true
+    entity_expression:
+    - '[defect_code_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of defect code.
+- node_id: sf:manufacturing-discrete.quality.dim_disposition_code
+  descriptor:
+    qualified_name: manufacturing-discrete.quality.dim_disposition_code
+    display_name: Disposition Code
+    description: Coded decision applied to nonconforming material.
+    synonyms: []
+    tags:
+    - dimension
+    - quality
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: QUALITY
+      object: DIM_DISPOSITION_CODE
+      format: table
+  grain:
+    description: One row is one disposition code.
+    components:
+    - identity_id: disposition_code_identity
+      dataset_columns:
+      - disposition_code_id
+      description: Identifier of one disposition code.
+  columns:
+  - name: disposition_code_id
+    description: Identifier of one disposition code.
+  - name: disposition_name
+    description: Name of the disposition.
+  entity_definitions:
+  - identity_id: disposition_code_identity
+    dataset_columns:
+    - disposition_code_id
+    is_entity_universe: true
+    entity_expression:
+    - '[disposition_code_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of disposition code.
+- node_id: sf:manufacturing-discrete.quality.dim_inspection_plan
+  descriptor:
+    qualified_name: manufacturing-discrete.quality.dim_inspection_plan
+    display_name: Inspection Plan
+    description: Plan that states how an item revision is inspected.
+    synonyms: []
+    tags:
+    - dimension
+    - quality
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: QUALITY
+      object: DIM_INSPECTION_PLAN
+      format: table
+  grain:
+    description: One row is one inspection plan.
+    components:
+    - identity_id: inspection_plan_identity
+      dataset_columns:
+      - inspection_plan_id
+      description: Identifier of one inspection plan.
+  columns:
+  - name: inspection_plan_id
+    description: Identifier of one inspection plan.
+  - name: item_revision_id
+    description: Item revision the plan inspects.
+  - name: plan_name
+    description: Name of the inspection plan.
+  entity_definitions:
+  - identity_id: inspection_plan_identity
+    dataset_columns:
+    - inspection_plan_id
+    is_entity_universe: true
+    entity_expression:
+    - '[inspection_plan_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of inspection plan.
+  - identity_id: item_revision_identity
+    dataset_columns:
+    - item_revision_id
+    is_entity_universe: false
+    entity_expression:
+    - '[item_revision_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many inspection plans belong to one item revision, every inspection plan matches
+        an item revision, and an item revision may include no inspection plan.
+- node_id: sf:manufacturing-discrete.quality.fact_inspection_result
+  descriptor:
+    qualified_name: manufacturing-discrete.quality.fact_inspection_result
+    display_name: Inspection Result
+    description: Measured result of a characteristic against an inspection plan.
+    synonyms: []
+    tags:
+    - fact
+    - quality
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: QUALITY
+      object: FACT_INSPECTION_RESULT
+      format: table
+  grain:
+    description: One row is one inspection result.
+    components:
+    - identity_id: inspection_result_identity
+      dataset_columns:
+      - inspection_result_id
+      description: Identifier of one inspection result.
+  columns:
+  - name: inspection_result_id
+    description: Identifier of one inspection result.
+  - name: inspection_plan_id
+    description: Inspection plan that required the result.
+  - name: production_order_operation_id
+    description: Production order operation inspected, when the result is in-process.
+  - name: characteristic_id
+    description: Characteristic that was measured.
+  - name: lot_id
+    description: Lot that was inspected, when the result is lot-based.
+  - name: result_status
+    description: Disposition of the inspection result.
+    value_description: pass, fail, waiver
+  entity_definitions:
+  - identity_id: inspection_result_identity
+    dataset_columns:
+    - inspection_result_id
+    is_entity_universe: true
+    entity_expression:
+    - '[inspection_result_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of inspection result.
+  - identity_id: inspection_plan_identity
+    dataset_columns:
+    - inspection_plan_id
+    is_entity_universe: false
+    entity_expression:
+    - '[inspection_plan_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many inspection results belong to one inspection plan, every result matches an inspection
+        plan, and an inspection plan may include no result.
+  - identity_id: production_order_operation_identity
+    dataset_columns:
+    - production_order_operation_id
+    is_entity_universe: false
+    entity_expression:
+    - '[production_order_operation_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: An inspection result may match one production order operation, and a production order
+        operation may include no inspection result.
+  - identity_id: characteristic_identity
+    dataset_columns:
+    - characteristic_id
+    is_entity_universe: false
+    entity_expression:
+    - '[characteristic_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many inspection results belong to one characteristic, every result matches a characteristic,
+        and a characteristic may include no inspection result.
+  - identity_id: lot_identity
+    dataset_columns:
+    - lot_id
+    is_entity_universe: false
+    entity_expression:
+    - '[lot_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: An inspection result may match one lot, and a lot may include no inspection result.
+- node_id: sf:manufacturing-discrete.quality.fact_nonconformance
+  descriptor:
+    qualified_name: manufacturing-discrete.quality.fact_nonconformance
+    display_name: Nonconformance
+    description: Recorded failure of an item revision to meet requirements at a plant.
+    synonyms: []
+    tags:
+    - fact
+    - quality
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: QUALITY
+      object: FACT_NONCONFORMANCE
+      format: table
+  grain:
+    description: One row is one nonconformance.
+    components:
+    - identity_id: nonconformance_identity
+      dataset_columns:
+      - nonconformance_id
+      description: Identifier of one nonconformance.
+  columns:
+  - name: nonconformance_id
+    description: Identifier of one nonconformance.
+  - name: item_revision_id
+    description: Item revision that failed.
+  - name: plant_id
+    description: Plant where the nonconformance was found.
+  - name: defect_code_id
+    description: Defect that describes the failure.
+  - name: production_order_id
+    description: Production order that made the nonconforming material, when an order is known.
+  - name: lot_id
+    description: Lot that contains the nonconforming material, when a lot is known.
+  - name: ncr_status
+    description: Workflow state of the nonconformance.
+    value_description: open, dispositioned, closed, cancelled
+  entity_definitions:
+  - identity_id: nonconformance_identity
+    dataset_columns:
+    - nonconformance_id
+    is_entity_universe: true
+    entity_expression:
+    - '[nonconformance_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of nonconformance.
+  - identity_id: item_revision_identity
+    dataset_columns:
+    - item_revision_id
+    is_entity_universe: false
+    entity_expression:
+    - '[item_revision_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many nonconformances belong to one item revision, every nonconformance matches an
+        item revision, and an item revision may include no nonconformance.
+  - identity_id: plant_identity
+    dataset_columns:
+    - plant_id
+    is_entity_universe: false
+    entity_expression:
+    - '[plant_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many nonconformances belong to one plant, every nonconformance matches a plant, and
+        a plant may include no nonconformance.
+  - identity_id: defect_code_identity
+    dataset_columns:
+    - defect_code_id
+    is_entity_universe: false
+    entity_expression:
+    - '[defect_code_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many nonconformances belong to one defect code, every nonconformance matches a defect
+        code, and a defect code may include no nonconformance.
+  - identity_id: production_order_identity
+    dataset_columns:
+    - production_order_id
+    is_entity_universe: false
+    entity_expression:
+    - '[production_order_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A nonconformance may match one production order, and a production order may include
+        no nonconformance.
+  - identity_id: lot_identity
+    dataset_columns:
+    - lot_id
+    is_entity_universe: false
+    entity_expression:
+    - '[lot_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A nonconformance may match one lot, and a lot may include no nonconformance.
+- node_id: sf:manufacturing-discrete.quality.fact_ncr_disposition
+  descriptor:
+    qualified_name: manufacturing-discrete.quality.fact_ncr_disposition
+    display_name: Nonconformance Disposition
+    description: Disposition decision recorded against a nonconformance.
+    synonyms: []
+    tags:
+    - fact
+    - quality
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: QUALITY
+      object: FACT_NCR_DISPOSITION
+      format: table
+  grain:
+    description: One row is one nonconformance disposition.
+    components:
+    - identity_id: ncr_disposition_identity
+      dataset_columns:
+      - disposition_id
+      description: Identifier of one nonconformance disposition.
+  columns:
+  - name: disposition_id
+    description: Identifier of one nonconformance disposition.
+  - name: nonconformance_id
+    description: Nonconformance being dispositioned.
+  - name: disposition_code_id
+    description: Disposition chosen for the nonconformance.
+  - name: employee_id
+    description: Employee who decided the disposition.
+  entity_definitions:
+  - identity_id: ncr_disposition_identity
+    dataset_columns:
+    - disposition_id
+    is_entity_universe: true
+    entity_expression:
+    - '[disposition_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of nonconformance disposition.
+  - identity_id: nonconformance_identity
+    dataset_columns:
+    - nonconformance_id
+    is_entity_universe: false
+    entity_expression:
+    - '[nonconformance_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many dispositions belong to one nonconformance, every disposition matches a nonconformance,
+        and every nonconformance includes at least one disposition.
+  - identity_id: disposition_code_identity
+    dataset_columns:
+    - disposition_code_id
+    is_entity_universe: false
+    entity_expression:
+    - '[disposition_code_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many dispositions belong to one disposition code, every disposition matches a disposition
+        code, and a disposition code may include no disposition.
+  - identity_id: employee_identity
+    dataset_columns:
+    - employee_id
+    is_entity_universe: false
+    entity_expression:
+    - '[employee_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many dispositions belong to one employee, every disposition matches an employee,
+        and an employee may include no disposition.
+- node_id: sf:manufacturing-discrete.quality.fact_scrap_event
+  descriptor:
+    qualified_name: manufacturing-discrete.quality.fact_scrap_event
+    display_name: Scrap Event
+    description: Quantity of an item scrapped, optionally from a production order operation.
+    synonyms: []
+    tags:
+    - fact
+    - quality
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: QUALITY
+      object: FACT_SCRAP_EVENT
+      format: table
+  grain:
+    description: One row is one scrap event.
+    components:
+    - identity_id: scrap_event_identity
+      dataset_columns:
+      - scrap_event_id
+      description: Identifier of one scrap event.
+  columns:
+  - name: scrap_event_id
+    description: Identifier of one scrap event.
+  - name: production_order_operation_id
+    description: Production order operation that scrapped the quantity, when the scrap is from an operation.
+  - name: item_id
+    description: Item that was scrapped.
+  - name: defect_code_id
+    description: Defect that caused the scrap, when a defect is known.
+  - name: storage_location_id
+    description: Storage location the scrap left, when a location is named.
+  - name: scrap_quantity
+    description: Quantity scrapped on the event.
+  entity_definitions:
+  - identity_id: scrap_event_identity
+    dataset_columns:
+    - scrap_event_id
+    is_entity_universe: true
+    entity_expression:
+    - '[scrap_event_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of scrap event.
+  - identity_id: production_order_operation_identity
+    dataset_columns:
+    - production_order_operation_id
+    is_entity_universe: false
+    entity_expression:
+    - '[production_order_operation_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A scrap event may match one production order operation, and a production order operation
+        may include no scrap event.
+  - identity_id: item_identity
+    dataset_columns:
+    - item_id
+    is_entity_universe: false
+    entity_expression:
+    - '[item_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many scrap events belong to one item, every scrap event matches an item, and an item
+        may include no scrap event.
+  - identity_id: defect_code_identity
+    dataset_columns:
+    - defect_code_id
+    is_entity_universe: false
+    entity_expression:
+    - '[defect_code_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A scrap event may match one defect code, and a defect code may include no scrap event.
+  - identity_id: storage_location_identity
+    dataset_columns:
+    - storage_location_id
+    is_entity_universe: false
+    entity_expression:
+    - '[storage_location_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A scrap event may match one storage location, and a storage location may include
+        no scrap event.
+- node_id: sf:manufacturing-discrete.quality.fact_calibration_result
+  descriptor:
+    qualified_name: manufacturing-discrete.quality.fact_calibration_result
+    display_name: Calibration Result
+    description: Result of calibrating a tool on a day.
+    synonyms: []
+    tags:
+    - fact
+    - quality
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: QUALITY
+      object: FACT_CALIBRATION_RESULT
+      format: table
+  grain:
+    description: One row is one calibration result.
+    components:
+    - identity_id: calibration_identity
+      dataset_columns:
+      - calibration_id
+      description: Identifier of one calibration result.
+  columns:
+  - name: calibration_id
+    description: Identifier of one calibration result.
+  - name: tool_id
+    description: Tool that was calibrated.
+  - name: characteristic_id
+    description: Characteristic checked during calibration, when one is named.
+  - name: calendar_day_id
+    description: Day the calibration was performed.
+  - name: calibration_status
+    description: Outcome of the calibration.
+    value_description: due, passed, failed
+  entity_definitions:
+  - identity_id: calibration_identity
+    dataset_columns:
+    - calibration_id
+    is_entity_universe: true
+    entity_expression:
+    - '[calibration_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of calibration result.
+  - identity_id: tool_identity
+    dataset_columns:
+    - tool_id
+    is_entity_universe: false
+    entity_expression:
+    - '[tool_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many calibration results belong to one tool, every calibration result matches a tool,
+        and a tool may include no calibration result.
+  - identity_id: characteristic_identity
+    dataset_columns:
+    - characteristic_id
+    is_entity_universe: false
+    entity_expression:
+    - '[characteristic_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A calibration result may match one characteristic, and a characteristic may include
+        no calibration result.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many calibration results belong to one calendar day, every calibration result matches
+        a calendar day, and a calendar day may include no calibration result.
