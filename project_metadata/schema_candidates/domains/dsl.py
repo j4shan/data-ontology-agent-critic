@@ -43,7 +43,17 @@ def status(name: str, description: str, codes: str) -> dict:
     return col(name, description, value_description=codes)
 
 
-def ref(name: str, identity: str, description: str, rule: str, kind: str = "n1") -> dict:
+def ref(
+    name: str,
+    identity: str,
+    description: str,
+    rule: str,
+    kind: str = "n1",
+    *,
+    coverage: float | None = None,
+    match_rate: float | None = None,
+    matched_rows: int | None = None,
+) -> dict:
     if kind not in _KINDS:
         raise ValueError(f"unknown relationship kind {kind!r} on {name}")
     child_mult, child_exist, parent_mult, parent_exist = _KINDS[kind]
@@ -53,7 +63,7 @@ def ref(name: str, identity: str, description: str, rule: str, kind: str = "n1")
         mapping = "1:1"
     else:
         mapping = parent_mult
-    return {
+    column = {
         "name": name,
         "description": description,
         "identity": identity,
@@ -65,6 +75,13 @@ def ref(name: str, identity: str, description: str, rule: str, kind: str = "n1")
         "mapping": mapping,
         "business_rule": rule,
     }
+    if coverage is not None:
+        column["coverage"] = coverage
+    if match_rate is not None:
+        column["match_rate"] = match_rate
+    if matched_rows is not None:
+        column["matched_rows"] = matched_rows
+    return column
 
 
 def table(
@@ -75,10 +92,13 @@ def table(
     description: str,
     columns: list[dict],
     synonyms: list[str] | None = None,
+    *,
+    rows: int | None = None,
+    volume_class: str = "",
 ) -> dict:
     if role not in {"dimension", "fact", "bridge"}:
         raise ValueError(f"{name} has role {role!r}")
-    return {
+    dataset = {
         "subject": subject,
         "name": name,
         "role": role,
@@ -87,3 +107,8 @@ def table(
         "columns": columns,
         "synonyms": list(synonyms or []),
     }
+    if rows is not None:
+        dataset["rows"] = rows
+    if volume_class:
+        dataset["volume_class"] = volume_class
+    return dataset

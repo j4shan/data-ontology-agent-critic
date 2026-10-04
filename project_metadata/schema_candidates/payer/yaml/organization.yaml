@@ -1,0 +1,705 @@
+schema_version: '2'
+nodes:
+- node_id: sf:payer.organization.dim_state
+  descriptor:
+    qualified_name: payer.organization.dim_state
+    display_name: State
+    description: US state or district.
+    synonyms: []
+    tags:
+    - dimension
+    - organization
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: PAYER
+      schema: ORGANIZATION
+      object: DIM_STATE
+      format: table
+  grain:
+    description: One row is one state.
+    components:
+    - identity_id: state_identity
+      dataset_columns:
+      - state_id
+      description: Identifier of one state.
+  columns:
+  - name: state_id
+    description: Identifier of one state.
+  - name: code
+    description: Code for the state.
+    value_description: AL, CA, FL, NY, TX, DC
+  entity_definitions:
+  - identity_id: state_identity
+    dataset_columns:
+    - state_id
+    is_entity_universe: true
+    entity_expression:
+    - '[state_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of state.
+- node_id: sf:payer.organization.dim_bank
+  descriptor:
+    qualified_name: payer.organization.dim_bank
+    display_name: Bank
+    description: Bank used for provider or premium settlement.
+    synonyms: []
+    tags:
+    - dimension
+    - organization
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: PAYER
+      schema: ORGANIZATION
+      object: DIM_BANK
+      format: table
+  grain:
+    description: One row is one bank.
+    components:
+    - identity_id: bank_identity
+      dataset_columns:
+      - bank_id
+      description: Identifier of one bank.
+  columns:
+  - name: bank_id
+    description: Identifier of one bank.
+  - name: code
+    description: Code for the bank.
+    value_description: treasury, commercial
+  entity_definitions:
+  - identity_id: bank_identity
+    dataset_columns:
+    - bank_id
+    is_entity_universe: true
+    entity_expression:
+    - '[bank_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of bank.
+- node_id: sf:payer.organization.dim_enterprise
+  descriptor:
+    qualified_name: payer.organization.dim_enterprise
+    display_name: Enterprise
+    description: The processor as one company.
+    synonyms: []
+    tags:
+    - dimension
+    - organization
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: PAYER
+      schema: ORGANIZATION
+      object: DIM_ENTERPRISE
+      format: table
+  grain:
+    description: One row is one enterprise.
+    components:
+    - identity_id: enterprise_identity
+      dataset_columns:
+      - enterprise_id
+      description: Identifier of one enterprise.
+  columns:
+  - name: enterprise_id
+    description: Identifier of one enterprise.
+  - name: enterprise_name
+    description: Registered name of the processor.
+  entity_definitions:
+  - identity_id: enterprise_identity
+    dataset_columns:
+    - enterprise_id
+    is_entity_universe: true
+    entity_expression:
+    - '[enterprise_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of enterprise.
+- node_id: sf:payer.organization.dim_legal_entity
+  descriptor:
+    qualified_name: payer.organization.dim_legal_entity
+    display_name: Legal Entity
+    description: Legal entity that holds a Medicare contract.
+    synonyms: []
+    tags:
+    - dimension
+    - organization
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: PAYER
+      schema: ORGANIZATION
+      object: DIM_LEGAL_ENTITY
+      format: table
+  grain:
+    description: One row is one legal entity.
+    components:
+    - identity_id: legal_entity_identity
+      dataset_columns:
+      - legal_entity_id
+      description: Identifier of one legal Entity.
+  columns:
+  - name: legal_entity_id
+    description: Identifier of one legal Entity.
+  - name: enterprise_id
+    description: Reference to the enterprise.
+  - name: legal_entity_name
+    description: Registered name.
+  entity_definitions:
+  - identity_id: legal_entity_identity
+    dataset_columns:
+    - legal_entity_id
+    is_entity_universe: true
+    entity_expression:
+    - '[legal_entity_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of legal entity.
+  - identity_id: enterprise_identity
+    dataset_columns:
+    - enterprise_id
+    is_entity_universe: false
+    entity_expression:
+    - '[enterprise_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many legal Entities belong to one enterprise, every legal Entity matches a enterprise,
+        and every enterprise includes at least one legal Entity.
+- node_id: sf:payer.organization.dim_jurisdiction
+  descriptor:
+    qualified_name: payer.organization.dim_jurisdiction
+    display_name: Jurisdiction
+    description: Geographic jurisdiction the processor administers.
+    synonyms: []
+    tags:
+    - dimension
+    - organization
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: PAYER
+      schema: ORGANIZATION
+      object: DIM_JURISDICTION
+      format: table
+  grain:
+    description: One row is one jurisdiction.
+    components:
+    - identity_id: jurisdiction_identity
+      dataset_columns:
+      - jurisdiction_id
+      description: Identifier of one jurisdiction.
+  columns:
+  - name: jurisdiction_id
+    description: Identifier of one jurisdiction.
+  - name: legal_entity_id
+    description: Reference to the legal Entity.
+  - name: jurisdiction_name
+    description: Name of the jurisdiction.
+  entity_definitions:
+  - identity_id: jurisdiction_identity
+    dataset_columns:
+    - jurisdiction_id
+    is_entity_universe: true
+    entity_expression:
+    - '[jurisdiction_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of jurisdiction.
+  - identity_id: legal_entity_identity
+    dataset_columns:
+    - legal_entity_id
+    is_entity_universe: false
+    entity_expression:
+    - '[legal_entity_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many jurisdictions belong to one legal Entity, every jurisdiction matches a legal
+        Entity, and a legal Entity may include no jurisdiction.
+- node_id: sf:payer.organization.dim_department
+  descriptor:
+    qualified_name: payer.organization.dim_department
+    display_name: Department
+    description: Internal department.
+    synonyms: []
+    tags:
+    - dimension
+    - organization
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: PAYER
+      schema: ORGANIZATION
+      object: DIM_DEPARTMENT
+      format: table
+  grain:
+    description: One row is one department.
+    components:
+    - identity_id: department_identity
+      dataset_columns:
+      - department_id
+      description: Identifier of one department.
+  columns:
+  - name: department_id
+    description: Identifier of one department.
+  - name: legal_entity_id
+    description: Reference to the legal Entity.
+  - name: department_name
+    description: Name of the department.
+  entity_definitions:
+  - identity_id: department_identity
+    dataset_columns:
+    - department_id
+    is_entity_universe: true
+    entity_expression:
+    - '[department_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of department.
+  - identity_id: legal_entity_identity
+    dataset_columns:
+    - legal_entity_id
+    is_entity_universe: false
+    entity_expression:
+    - '[legal_entity_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many departments belong to one legal Entity, every department matches a legal Entity,
+        and a legal Entity may include no department.
+- node_id: sf:payer.organization.dim_cost_center
+  descriptor:
+    qualified_name: payer.organization.dim_cost_center
+    display_name: Cost Center
+    description: Cost center inside a department.
+    synonyms: []
+    tags:
+    - dimension
+    - organization
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: PAYER
+      schema: ORGANIZATION
+      object: DIM_COST_CENTER
+      format: table
+  grain:
+    description: One row is one cost center.
+    components:
+    - identity_id: cost_center_identity
+      dataset_columns:
+      - cost_center_id
+      description: Identifier of one cost Center.
+  columns:
+  - name: cost_center_id
+    description: Identifier of one cost Center.
+  - name: department_id
+    description: Reference to the department.
+  - name: cost_center_name
+    description: Name of the cost center.
+  entity_definitions:
+  - identity_id: cost_center_identity
+    dataset_columns:
+    - cost_center_id
+    is_entity_universe: true
+    entity_expression:
+    - '[cost_center_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of cost center.
+  - identity_id: department_identity
+    dataset_columns:
+    - department_id
+    is_entity_universe: false
+    entity_expression:
+    - '[department_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many cost Centers belong to one department, every cost Center matches a department,
+        and every department includes at least one cost Center.
+- node_id: sf:payer.organization.dim_employee
+  descriptor:
+    qualified_name: payer.organization.dim_employee
+    display_name: Employee
+    description: Employee of the processor.
+    synonyms: []
+    tags:
+    - dimension
+    - organization
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: PAYER
+      schema: ORGANIZATION
+      object: DIM_EMPLOYEE
+      format: table
+  grain:
+    description: One row is one employee.
+    components:
+    - identity_id: employee_identity
+      dataset_columns:
+      - employee_id
+      description: Identifier of one employee.
+  columns:
+  - name: employee_id
+    description: Identifier of one employee.
+  - name: department_id
+    description: Reference to the department.
+  - name: cost_center_id
+    description: Reference to the cost Center.
+  - name: jurisdiction_id
+    description: Reference to the jurisdiction.
+  - name: employee_name
+    description: Name of the employee.
+  entity_definitions:
+  - identity_id: employee_identity
+    dataset_columns:
+    - employee_id
+    is_entity_universe: true
+    entity_expression:
+    - '[employee_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of employee.
+  - identity_id: department_identity
+    dataset_columns:
+    - department_id
+    is_entity_universe: false
+    entity_expression:
+    - '[department_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many employees belong to one department, every employee matches a department, and
+        a department may include no employee.
+  - identity_id: cost_center_identity
+    dataset_columns:
+    - cost_center_id
+    is_entity_universe: false
+    entity_expression:
+    - '[cost_center_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many employees belong to one cost Center, every employee matches a cost Center, and
+        a cost Center may include no employee.
+  - identity_id: jurisdiction_identity
+    dataset_columns:
+    - jurisdiction_id
+    is_entity_universe: false
+    entity_expression:
+    - '[jurisdiction_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many employees belong to one jurisdiction, every employee matches a jurisdiction,
+        and a jurisdiction may include no employee.
+- node_id: sf:payer.organization.dim_gl_account
+  descriptor:
+    qualified_name: payer.organization.dim_gl_account
+    display_name: GL Account
+    description: General-ledger account.
+    synonyms: []
+    tags:
+    - dimension
+    - organization
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: PAYER
+      schema: ORGANIZATION
+      object: DIM_GL_ACCOUNT
+      format: table
+  grain:
+    description: One row is one gl account.
+    components:
+    - identity_id: gl_account_identity
+      dataset_columns:
+      - gl_account_id
+      description: Identifier of one gL Account.
+  columns:
+  - name: gl_account_id
+    description: Identifier of one gL Account.
+  - name: legal_entity_id
+    description: Reference to the legal Entity.
+  - name: account_name
+    description: Name of the account.
+  entity_definitions:
+  - identity_id: gl_account_identity
+    dataset_columns:
+    - gl_account_id
+    is_entity_universe: true
+    entity_expression:
+    - '[gl_account_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of gl account.
+  - identity_id: legal_entity_identity
+    dataset_columns:
+    - legal_entity_id
+    is_entity_universe: false
+    entity_expression:
+    - '[legal_entity_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many gL Accounts belong to one legal Entity, every gL Account matches a legal Entity,
+        and a legal Entity may include no gL Account.
+- node_id: sf:payer.organization.dim_accounting_period
+  descriptor:
+    qualified_name: payer.organization.dim_accounting_period
+    display_name: Accounting Period
+    description: Accounting period of the statistics window.
+    synonyms: []
+    tags:
+    - dimension
+    - organization
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: PAYER
+      schema: ORGANIZATION
+      object: DIM_ACCOUNTING_PERIOD
+      format: table
+  grain:
+    description: One row is one accounting period.
+    components:
+    - identity_id: accounting_period_identity
+      dataset_columns:
+      - accounting_period_id
+      description: Identifier of one accounting Period.
+  columns:
+  - name: accounting_period_id
+    description: Identifier of one accounting Period.
+  - name: period_name
+    description: Name of the period.
+  entity_definitions:
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    is_entity_universe: true
+    entity_expression:
+    - '[accounting_period_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of accounting period.
+- node_id: sf:payer.organization.dim_calendar_day
+  descriptor:
+    qualified_name: payer.organization.dim_calendar_day
+    display_name: Calendar Day
+    description: One day inside the 30-day statistics window.
+    synonyms: []
+    tags:
+    - dimension
+    - organization
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: PAYER
+      schema: ORGANIZATION
+      object: DIM_CALENDAR_DAY
+      format: table
+  grain:
+    description: One row is one calendar day.
+    components:
+    - identity_id: calendar_day_identity
+      dataset_columns:
+      - calendar_day_id
+      description: Identifier of one calendar Day.
+  columns:
+  - name: calendar_day_id
+    description: Identifier of one calendar Day.
+  - name: calendar_date
+    description: Civil date.
+  entity_definitions:
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: true
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of calendar day.
+- node_id: sf:payer.organization.dim_locality
+  descriptor:
+    qualified_name: payer.organization.dim_locality
+    display_name: Payment Locality
+    description: Medicare payment locality.
+    synonyms: []
+    tags:
+    - dimension
+    - organization
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: PAYER
+      schema: ORGANIZATION
+      object: DIM_LOCALITY
+      format: table
+  grain:
+    description: One row is one payment locality.
+    components:
+    - identity_id: locality_identity
+      dataset_columns:
+      - locality_id
+      description: Identifier of one payment Locality.
+  columns:
+  - name: locality_id
+    description: Identifier of one payment Locality.
+  - name: state_id
+    description: Reference to the state.
+  - name: locality_code
+    description: Locality code.
+  entity_definitions:
+  - identity_id: locality_identity
+    dataset_columns:
+    - locality_id
+    is_entity_universe: true
+    entity_expression:
+    - '[locality_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of payment locality.
+  - identity_id: state_identity
+    dataset_columns:
+    - state_id
+    is_entity_universe: false
+    entity_expression:
+    - '[state_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many payment Localities belong to one state, every payment Locality matches a state,
+        and every state includes at least one payment Locality.
+- node_id: sf:payer.organization.dim_trading_partner
+  descriptor:
+    qualified_name: payer.organization.dim_trading_partner
+    display_name: Trading Partner
+    description: Clearinghouse or submitter network.
+    synonyms: []
+    tags:
+    - dimension
+    - organization
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: PAYER
+      schema: ORGANIZATION
+      object: DIM_TRADING_PARTNER
+      format: table
+  grain:
+    description: One row is one trading partner.
+    components:
+    - identity_id: trading_partner_identity
+      dataset_columns:
+      - trading_partner_id
+      description: Identifier of one trading Partner.
+  columns:
+  - name: trading_partner_id
+    description: Identifier of one trading Partner.
+  - name: partner_name
+    description: Name of the trading partner.
+  entity_definitions:
+  - identity_id: trading_partner_identity
+    dataset_columns:
+    - trading_partner_id
+    is_entity_universe: true
+    entity_expression:
+    - '[trading_partner_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of trading partner.
+- node_id: sf:payer.organization.dim_submitter
+  descriptor:
+    qualified_name: payer.organization.dim_submitter
+    display_name: Submitter
+    description: EDI submitter that sends claim batches.
+    synonyms: []
+    tags:
+    - dimension
+    - organization
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: PAYER
+      schema: ORGANIZATION
+      object: DIM_SUBMITTER
+      format: table
+  grain:
+    description: One row is one submitter.
+    components:
+    - identity_id: submitter_identity
+      dataset_columns:
+      - submitter_id
+      description: Identifier of one submitter.
+  columns:
+  - name: submitter_id
+    description: Identifier of one submitter.
+  - name: trading_partner_id
+    description: Every trading partner has submitters.
+  - name: submitter_name
+    description: Name of the submitter.
+  entity_definitions:
+  - identity_id: submitter_identity
+    dataset_columns:
+    - submitter_id
+    is_entity_universe: true
+    entity_expression:
+    - '[submitter_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of submitter.
+  - identity_id: trading_partner_identity
+    dataset_columns:
+    - trading_partner_id
+    is_entity_universe: false
+    entity_expression:
+    - '[trading_partner_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many submitters belong to one trading Partner, every submitter matches a trading
+        Partner, and every trading Partner includes at least one submitter. Every trading partner has
+        submitters.

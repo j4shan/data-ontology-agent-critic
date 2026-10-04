@@ -1,0 +1,788 @@
+schema_version: '2'
+nodes:
+- node_id: sf:payer.member.dim_address
+  descriptor:
+    qualified_name: payer.member.dim_address
+    display_name: Address
+    description: Postal address.
+    synonyms: []
+    tags:
+    - dimension
+    - member
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: PAYER
+      schema: MEMBER
+      object: DIM_ADDRESS
+      format: table
+  grain:
+    description: One row is one address.
+    components:
+    - identity_id: address_identity
+      dataset_columns:
+      - address_id
+      description: Identifier of one address.
+  columns:
+  - name: address_id
+    description: Identifier of one address.
+  - name: state_id
+    description: Reference to the state.
+  - name: locality
+    description: City or locality.
+  entity_definitions:
+  - identity_id: address_identity
+    dataset_columns:
+    - address_id
+    is_entity_universe: true
+    entity_expression:
+    - '[address_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of address.
+  - identity_id: state_identity
+    dataset_columns:
+    - state_id
+    is_entity_universe: false
+    entity_expression:
+    - '[state_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many addresses belong to one state, every address matches a state, and a state may
+        include no address.
+- node_id: sf:payer.member.dim_member
+  descriptor:
+    qualified_name: payer.member.dim_member
+    display_name: Member
+    description: Medicare beneficiary in the book of business.
+    synonyms:
+    - member
+    - beneficiary
+    tags:
+    - dimension
+    - member
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: PAYER
+      schema: MEMBER
+      object: DIM_MEMBER
+      format: table
+  grain:
+    description: One row is one member.
+    components:
+    - identity_id: member_identity
+      dataset_columns:
+      - member_id
+      description: Identifier of one member.
+  columns:
+  - name: member_id
+    description: Identifier of one member.
+  - name: state_id
+    description: Every state has members in this national book.
+  - name: gender_id
+    description: Reference to the gender.
+  - name: language_id
+    description: Reference to the language.
+  - name: jurisdiction_id
+    description: Reference to the jurisdiction.
+  - name: member_number
+    description: Medicare beneficiary identifier analogue.
+  entity_definitions:
+  - identity_id: member_identity
+    dataset_columns:
+    - member_id
+    is_entity_universe: true
+    entity_expression:
+    - '[member_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of member.
+  - identity_id: state_identity
+    dataset_columns:
+    - state_id
+    is_entity_universe: false
+    entity_expression:
+    - '[state_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many members belong to one state, every member matches a state, and every state includes
+        at least one member. Every state has members in this national book.
+  - identity_id: gender_identity
+    dataset_columns:
+    - gender_id
+    is_entity_universe: false
+    entity_expression:
+    - '[gender_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many members belong to one gender, every member matches a gender, and every gender
+        includes at least one member.
+  - identity_id: language_identity
+    dataset_columns:
+    - language_id
+    is_entity_universe: false
+    entity_expression:
+    - '[language_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many members belong to one language, every member matches a language, and a language
+        may include no member.
+  - identity_id: jurisdiction_identity
+    dataset_columns:
+    - jurisdiction_id
+    is_entity_universe: false
+    entity_expression:
+    - '[jurisdiction_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many members belong to one jurisdiction, every member matches a jurisdiction, and
+        a jurisdiction may include no member.
+- node_id: sf:payer.member.dim_group
+  descriptor:
+    qualified_name: payer.member.dim_group
+    display_name: Employer Group
+    description: Group that sponsors a subset of coverage.
+    synonyms: []
+    tags:
+    - dimension
+    - member
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: PAYER
+      schema: MEMBER
+      object: DIM_GROUP
+      format: table
+  grain:
+    description: One row is one employer group.
+    components:
+    - identity_id: group_identity
+      dataset_columns:
+      - group_id
+      description: Identifier of one employer Group.
+  columns:
+  - name: group_id
+    description: Identifier of one employer Group.
+  - name: plan_id
+    description: Reference to the plan.
+  - name: group_name
+    description: Name of the group.
+  entity_definitions:
+  - identity_id: group_identity
+    dataset_columns:
+    - group_id
+    is_entity_universe: true
+    entity_expression:
+    - '[group_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of employer group.
+  - identity_id: plan_identity
+    dataset_columns:
+    - plan_id
+    is_entity_universe: false
+    entity_expression:
+    - '[plan_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many employer Groups belong to one plan, every employer Group matches a plan, and
+        a plan may include no employer Group.
+- node_id: sf:payer.member.dim_coverage
+  descriptor:
+    qualified_name: payer.member.dim_coverage
+    display_name: Coverage
+    description: One coverage span key for a member on a plan.
+    synonyms: []
+    tags:
+    - dimension
+    - member
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: PAYER
+      schema: MEMBER
+      object: DIM_COVERAGE
+      format: table
+  grain:
+    description: One row is one coverage.
+    components:
+    - identity_id: coverage_identity
+      dataset_columns:
+      - coverage_id
+      description: Identifier of one coverage.
+  columns:
+  - name: coverage_id
+    description: Identifier of one coverage.
+  - name: member_id
+    description: Every member has at least one coverage.
+  - name: plan_id
+    description: Every plan has coverage.
+  - name: legal_entity_id
+    description: Reference to the legal Entity.
+  - name: group_id
+    description: Individual coverage has no employer group.
+  - name: coverage_status
+    description: Status of the coverage.
+    value_description: active, terminated, pending
+  entity_definitions:
+  - identity_id: coverage_identity
+    dataset_columns:
+    - coverage_id
+    is_entity_universe: true
+    entity_expression:
+    - '[coverage_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of coverage.
+  - identity_id: member_identity
+    dataset_columns:
+    - member_id
+    is_entity_universe: false
+    entity_expression:
+    - '[member_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many coverages belong to one member, every coverage matches a member, and every member
+        includes at least one coverage. Every member has at least one coverage.
+  - identity_id: plan_identity
+    dataset_columns:
+    - plan_id
+    is_entity_universe: false
+    entity_expression:
+    - '[plan_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many coverages belong to one plan, every coverage matches a plan, and every plan
+        includes at least one coverage. Every plan has coverage.
+  - identity_id: legal_entity_identity
+    dataset_columns:
+    - legal_entity_id
+    is_entity_universe: false
+    entity_expression:
+    - '[legal_entity_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many coverages belong to one legal Entity, every coverage matches a legal Entity,
+        and a legal Entity may include no coverage.
+  - identity_id: group_identity
+    dataset_columns:
+    - group_id
+    is_entity_universe: false
+    entity_expression:
+    - '[group_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A coverage may match one employer Group, and a employer Group may include no coverage.
+        Individual coverage has no employer group.
+- node_id: sf:payer.member.fact_pcp_attribution
+  descriptor:
+    qualified_name: payer.member.fact_pcp_attribution
+    display_name: PCP Attribution
+    description: Month-end primary-care attribution of a member.
+    synonyms: []
+    tags:
+    - fact
+    - member
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: PAYER
+      schema: MEMBER
+      object: FACT_PCP_ATTRIBUTION
+      format: table
+  grain:
+    description: One row is one pcp attribution.
+    components:
+    - identity_id: pcp_attribution_identity
+      dataset_columns:
+      - pcp_attribution_id
+      description: Identifier of one pCP Attribution.
+  columns:
+  - name: pcp_attribution_id
+    description: Identifier of one pCP Attribution.
+  - name: member_id
+    description: Each member has one attribution row.
+  - name: provider_id
+    description: Reference to the provider.
+  - name: plan_id
+    description: Reference to the plan.
+  - name: calendar_day_id
+    description: Reference to the calendar Day.
+  - name: attribution_method
+    description: How the PCP was chosen.
+    value_description: election, claims, default
+  entity_definitions:
+  - identity_id: pcp_attribution_identity
+    dataset_columns:
+    - pcp_attribution_id
+    is_entity_universe: true
+    entity_expression:
+    - '[pcp_attribution_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of pcp attribution.
+  - identity_id: member_identity
+    dataset_columns:
+    - member_id
+    is_entity_universe: false
+    entity_expression:
+    - '[member_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: '1:1'
+      business_rule: Each pCP Attribution matches exactly one member, and each member matches exactly
+        one pCP Attribution. Each member has one attribution row.
+  - identity_id: provider_identity
+    dataset_columns:
+    - provider_id
+    is_entity_universe: false
+    entity_expression:
+    - '[provider_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many pCP Attributions belong to one provider, every pCP Attribution matches a provider,
+        and a provider may include no pCP Attribution.
+  - identity_id: plan_identity
+    dataset_columns:
+    - plan_id
+    is_entity_universe: false
+    entity_expression:
+    - '[plan_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many pCP Attributions belong to one plan, every pCP Attribution matches a plan, and
+        a plan may include no pCP Attribution.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many pCP Attributions belong to one calendar Day, every pCP Attribution matches a
+        calendar Day, and a calendar Day may include no pCP Attribution.
+- node_id: sf:payer.member.fact_risk_score
+  descriptor:
+    qualified_name: payer.member.fact_risk_score
+    display_name: Risk Score
+    description: Month-end risk score of a member.
+    synonyms: []
+    tags:
+    - fact
+    - member
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: PAYER
+      schema: MEMBER
+      object: FACT_RISK_SCORE
+      format: table
+  grain:
+    description: One row is one risk score.
+    components:
+    - identity_id: risk_score_identity
+      dataset_columns:
+      - risk_score_id
+      description: Identifier of one risk Score.
+  columns:
+  - name: risk_score_id
+    description: Identifier of one risk Score.
+  - name: member_id
+    description: Each member has one risk score in the window.
+  - name: risk_model_id
+    description: Reference to the risk Model.
+  - name: plan_id
+    description: Reference to the plan.
+  - name: calendar_day_id
+    description: Reference to the calendar Day.
+  - name: risk_score
+    description: Risk score value.
+  entity_definitions:
+  - identity_id: risk_score_identity
+    dataset_columns:
+    - risk_score_id
+    is_entity_universe: true
+    entity_expression:
+    - '[risk_score_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of risk score.
+  - identity_id: member_identity
+    dataset_columns:
+    - member_id
+    is_entity_universe: false
+    entity_expression:
+    - '[member_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: '1:1'
+      business_rule: Each risk Score matches exactly one member, and each member matches exactly one risk
+        Score. Each member has one risk score in the window.
+  - identity_id: risk_model_identity
+    dataset_columns:
+    - risk_model_id
+    is_entity_universe: false
+    entity_expression:
+    - '[risk_model_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many risk Scores belong to one risk Model, every risk Score matches a risk Model,
+        and every risk Model includes at least one risk Score.
+  - identity_id: plan_identity
+    dataset_columns:
+    - plan_id
+    is_entity_universe: false
+    entity_expression:
+    - '[plan_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many risk Scores belong to one plan, every risk Score matches a plan, and a plan
+        may include no risk Score.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many risk Scores belong to one calendar Day, every risk Score matches a calendar
+        Day, and a calendar Day may include no risk Score.
+- node_id: sf:payer.member.fact_hcc_diagnosis
+  descriptor:
+    qualified_name: payer.member.fact_hcc_diagnosis
+    display_name: HCC Diagnosis
+    description: One diagnosis captured for risk adjustment.
+    synonyms: []
+    tags:
+    - fact
+    - member
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: PAYER
+      schema: MEMBER
+      object: FACT_HCC_DIAGNOSIS
+      format: table
+  grain:
+    description: One row is one hcc diagnosis.
+    components:
+    - identity_id: hcc_diagnosis_identity
+      dataset_columns:
+      - hcc_diagnosis_id
+      description: Identifier of one hCC Diagnosis.
+  columns:
+  - name: hcc_diagnosis_id
+    description: Identifier of one hCC Diagnosis.
+  - name: member_id
+    description: Reference to the member.
+  - name: diagnosis_id
+    description: Reference to the diagnosis.
+  - name: hcc_id
+    description: Reference to the hCC.
+  - name: risk_model_id
+    description: Reference to the risk Model.
+  - name: calendar_day_id
+    description: Reference to the calendar Day.
+  - name: source
+    description: Where the diagnosis was captured.
+    value_description: claim, encounter, chart
+  entity_definitions:
+  - identity_id: hcc_diagnosis_identity
+    dataset_columns:
+    - hcc_diagnosis_id
+    is_entity_universe: true
+    entity_expression:
+    - '[hcc_diagnosis_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of hcc diagnosis.
+  - identity_id: member_identity
+    dataset_columns:
+    - member_id
+    is_entity_universe: false
+    entity_expression:
+    - '[member_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many hCC Diagnosises belong to one member, every hCC Diagnosis matches a member,
+        and a member may include no hCC Diagnosis.
+  - identity_id: diagnosis_identity
+    dataset_columns:
+    - diagnosis_id
+    is_entity_universe: false
+    entity_expression:
+    - '[diagnosis_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many hCC Diagnosises belong to one diagnosis, every hCC Diagnosis matches a diagnosis,
+        and a diagnosis may include no hCC Diagnosis.
+  - identity_id: hcc_identity
+    dataset_columns:
+    - hcc_id
+    is_entity_universe: false
+    entity_expression:
+    - '[hcc_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A hCC Diagnosis may match one hCC, and a hCC may include no hCC Diagnosis.
+  - identity_id: risk_model_identity
+    dataset_columns:
+    - risk_model_id
+    is_entity_universe: false
+    entity_expression:
+    - '[risk_model_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many hCC Diagnosises belong to one risk Model, every hCC Diagnosis matches a risk
+        Model, and a risk Model may include no hCC Diagnosis.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many hCC Diagnosises belong to one calendar Day, every hCC Diagnosis matches a calendar
+        Day, and a calendar Day may include no hCC Diagnosis.
+- node_id: sf:payer.member.fact_enrollment_span
+  descriptor:
+    qualified_name: payer.member.fact_enrollment_span
+    display_name: Enrollment Span
+    description: One current enrollment span for a coverage.
+    synonyms: []
+    tags:
+    - fact
+    - member
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: PAYER
+      schema: MEMBER
+      object: FACT_ENROLLMENT_SPAN
+      format: table
+  grain:
+    description: One row is one enrollment span.
+    components:
+    - identity_id: enrollment_span_identity
+      dataset_columns:
+      - enrollment_span_id
+      description: Identifier of one enrollment Span.
+  columns:
+  - name: enrollment_span_id
+    description: Identifier of one enrollment Span.
+  - name: coverage_id
+    description: Each coverage has one current enrollment span.
+  - name: plan_id
+    description: Reference to the plan.
+  - name: start_day_id
+    description: Spans that started before the window have no start day inside it.
+  - name: span_status
+    description: Status of the span.
+    value_description: active, ended
+  entity_definitions:
+  - identity_id: enrollment_span_identity
+    dataset_columns:
+    - enrollment_span_id
+    is_entity_universe: true
+    entity_expression:
+    - '[enrollment_span_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of enrollment span.
+  - identity_id: coverage_identity
+    dataset_columns:
+    - coverage_id
+    is_entity_universe: false
+    entity_expression:
+    - '[coverage_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: '1:1'
+      business_rule: Each enrollment Span matches exactly one coverage, and each coverage matches exactly
+        one enrollment Span. Each coverage has one current enrollment span.
+  - identity_id: plan_identity
+    dataset_columns:
+    - plan_id
+    is_entity_universe: false
+    entity_expression:
+    - '[plan_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many enrollment Spans belong to one plan, every enrollment Span matches a plan, and
+        a plan may include no enrollment Span.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - start_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[start_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A enrollment Span may match one calendar Day, and a calendar Day may include no enrollment
+        Span. Spans that started before the window have no start day inside it.
+- node_id: sf:payer.member.fact_disenrollment
+  descriptor:
+    qualified_name: payer.member.fact_disenrollment
+    display_name: Disenrollment
+    description: One disenrollment event.
+    synonyms: []
+    tags:
+    - fact
+    - member
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: harbor.us-east-1
+      database: PAYER
+      schema: MEMBER
+      object: FACT_DISENROLLMENT
+      format: table
+  grain:
+    description: One row is one disenrollment.
+    components:
+    - identity_id: disenrollment_identity
+      dataset_columns:
+      - disenrollment_id
+      description: Identifier of one disenrollment.
+  columns:
+  - name: disenrollment_id
+    description: Identifier of one disenrollment.
+  - name: member_id
+    description: Reference to the member.
+  - name: coverage_id
+    description: Reference to the coverage.
+  - name: calendar_day_id
+    description: Reference to the calendar Day.
+  - name: plan_id
+    description: Reference to the plan.
+  - name: disenroll_reason
+    description: Reason.
+    value_description: death, move, voluntary, other-coverage
+  entity_definitions:
+  - identity_id: disenrollment_identity
+    dataset_columns:
+    - disenrollment_id
+    is_entity_universe: true
+    entity_expression:
+    - '[disenrollment_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of disenrollment.
+  - identity_id: member_identity
+    dataset_columns:
+    - member_id
+    is_entity_universe: false
+    entity_expression:
+    - '[member_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many disenrollments belong to one member, every disenrollment matches a member, and
+        a member may include no disenrollment.
+  - identity_id: coverage_identity
+    dataset_columns:
+    - coverage_id
+    is_entity_universe: false
+    entity_expression:
+    - '[coverage_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many disenrollments belong to one coverage, every disenrollment matches a coverage,
+        and a coverage may include no disenrollment.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many disenrollments belong to one calendar Day, every disenrollment matches a calendar
+        Day, and a calendar Day may include no disenrollment.
+  - identity_id: plan_identity
+    dataset_columns:
+    - plan_id
+    is_entity_universe: false
+    entity_expression:
+    - '[plan_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many disenrollments belong to one plan, every disenrollment matches a plan, and a
+        plan may include no disenrollment.
