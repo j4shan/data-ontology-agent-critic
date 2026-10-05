@@ -54,7 +54,7 @@ Paths are relative to the YAML directory. The manifest lists every collection fi
 
 ## Builder behavior
 
-Single-file input stays an assembled `IntermediaryDefinition`.
+Single-file input stays an assembled `IntermediaryDefinition` for backward compatibility.
 
 Directory input reads the manifest first, then loads only the listed files:
 
@@ -72,4 +72,5 @@ Manifests for the scratchpad catalogs are in `manifests/`. They match the files 
 
 ## Out of scope
 
-This proposal does not change single-file input, does not add statistics, and does not change entity definitions, multiplicity, or match existence.
+This proposal does not change single-file input, add statistics, or change entity definitions,
+multiplicity, or match existence.

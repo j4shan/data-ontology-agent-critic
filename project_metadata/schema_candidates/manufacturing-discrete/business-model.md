@@ -412,7 +412,7 @@ Each dataset is one ontology node. The grain column is the system of record for 
 | `dim_work_unit` | dimension | `work_unit_id` | Individual machine, bench, or station that reports production. |
 | `dim_department` | dimension | `department_id` | Organizational unit at a plant that employs people and owns work centers. |
 | `dim_cost_center` | dimension | `cost_center_id` | Responsibility center that collects manufacturing cost for a legal entity. |
-| `dim_profit_center` | dimension | `profit_center_id` | Financial unit that reports margin for a legal entity. |
+| `dim_profit_center` | dimension | `profit_center_id` | Organizational unit that reports margin for a legal entity. |
 | `dim_employee` | dimension | `employee_id` | Person employed by Alderford who can be assigned to work, supervision, or buying. |
 | `dim_labor_skill` | dimension | `skill_id` | Named skill that qualifies a person or a work center for an operation. |
 | `dim_shift` | dimension | `shift_id` | Named working shift at a plant. |

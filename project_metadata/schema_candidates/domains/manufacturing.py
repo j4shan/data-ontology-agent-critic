@@ -346,7 +346,7 @@ DOMAIN = {
             "dim_profit_center",
             "dimension",
             "Profit Center",
-            "Financial unit that reports margin for a legal entity.",
+            "Organizational unit that reports margin for a legal entity.",
             [
                 pk("profit_center_id", "profit_center_identity", "Identifier of one profit center."),
                 ref(

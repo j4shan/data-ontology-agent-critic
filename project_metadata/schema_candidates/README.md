@@ -1,7 +1,7 @@
 # Schema candidates
 
 Scratchpad for the five business-domain ontology catalogs used to assess the
-Data Ontology Graph service. `financial` and `student_club` are not part of this set.
+Data Ontology Graph service at realistic schema sizes.
 
 Each candidate is one directory:
 

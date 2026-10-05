@@ -12,7 +12,7 @@ running a machine-learning critic model.
 | Product | Critic |
 | Primary user | An AI agent or human evaluator running a Graph Service benchmark |
 | Assessment target | Data Ontology Graph Service API |
-| Initial open dataset | Five schema-candidate domains: `healthcare-payer`, `telecom-mobile`, `manufacturing-discrete`, `retail-grocery`, `commerce-marketplace` |
+| Initial catalog set | Five schema-candidate domains: `healthcare-payer`, `telecom-mobile`, `manufacturing-discrete`, `retail-grocery`, `commerce-marketplace` |
 
 ## 1. Product Goal
 
@@ -26,17 +26,22 @@ belong in separate runbooks rather than this product requirements document.
 
 ## 2. Evaluation Boundary
 
-Critic evaluates a running Graph Service through its documented API. It also communicates with a
-configurable AI agent gateway so an agent can receive a query task, use the service, and return an
-answer. Both integrations are external dependencies; Critic does not import actor code, host an AI
-model, or prescribe the Graph Service's internal implementation.
+The actor includes both the Graph Service and its preparation toolkit. Its DDL collector reads
+configured source catalogs, verifies recorded hashes when applicable, and drafts YAML for
+schema-owner review. Critic uses the reviewed, actor-generated catalogs as benchmark inputs,
+publishes graph artifacts
+through the actor's CLI, and evaluates the running Graph Service through its documented API. Critic
+is also the factory for agent tools built on that API. The service and any configured AI agent
+gateway remain external integrations; Critic does not import actor code, host an AI model, or
+prescribe the actor's internal implementation.
 
 | Participant | Responsibility |
 | --- | --- |
+| Actor preparation toolkit | The DDL collector verifies recorded source hashes when applicable, drafts catalog YAML, and publishes owner-reviewed catalogs with decisions and provenance. |
 | Graph Service | The API under assessment. Its endpoint and API version are configurable inputs. |
 | AI agent gateway | Runs the selected agent or model and returns its answer and available instrumentation. |
 | Evaluating agent | Interprets a test prompt, interacts with the Graph Service, and returns a task-specific abstract knowledge graph (AKG). |
-| Critic | Supplies test assets, validates configuration and responses, orchestrates requests, scores answers, and persists session results. |
+| Critic | Supplies test assets and agent tools, launches artifact publication through the actor's CLI, validates responses, scores answers, and persists results. |
 
 Gold answers and agent responses use data-source terms—qualified dataset names and column names—
 rather than actor-specific identifiers such as `node_id` or `edge_id`. This keeps the benchmark
@@ -50,20 +55,27 @@ Evaluation covers two distinct concerns:
 - **Service performance:** the runtime and available instrumentation associated with that
   interaction, including tool-call trajectory and token consumption when requested by the case.
 
-Evaluation does not publish, build, or version a graph artifact. Every session targets an existing
-service interface and records the API version that was tested.
+Artifact publication and catalog scoring are part of Critic's benchmark workflow. Graph Service
+evaluation targets a configured service interface and records the API version that was tested.
 
 ## 3. Testing Assets
 
 Critic maintains a curated package of metadata sources spanning five business domains:
 `healthcare-payer`, `telecom-mobile`, `manufacturing-discrete`, `retail-grocery`, and
 `commerce-marketplace`. Each domain keeps its catalog, question sheet, cases, and gold answers
-apart from the others. `financial` and `student_club` are not assessment domains; they are too
-small for ontology assessment.
+apart from the others under [`project_metadata/schema_candidates/`](../schema_candidates/).
+
+The actor's DDL collector publishes each owner-reviewed catalog to
+`resources/data/generated_catalogs/<domain>/`. These committed actor outputs are benchmark inputs.
+Each catalog has a `directory-manifest.yaml`, collection files under `yaml/`, a `decisions.md` log,
+and a `provenance.yaml` record of source file hashes, generating actor version and commit, review
+rounds and decision counts, identity, node, and edge counts, and unknown claims. Human-reviewed
+`reference_catalogs/<domain>/` are separate gold for scoring the generated catalogs. No generated
+or reference catalog has been published under `resources/data/` yet.
 
 | ID | Requirement |
 | --- | --- |
-| 3.1 | Each business domain must keep its source metadata, cases, gold answers, and supporting manifests isolated from the other domains. |
+| 3.1 | Each business domain must keep its source metadata, generated and reference catalogs, cases, gold answers, and supporting manifests isolated from the other domains. |
 | 3.2 | A test suite must be a versioned collection of cases associated with one source catalog and domain. |
 | 3.3 | Each case must be expressed as a prompt template that supplies the query context, required response format, and any optional instrumentation requirements. |
 | 3.4 | Optional instrumentation requirements may request standards-based telemetry such as [OpenTelemetry](https://opentelemetry.io/). |
@@ -71,7 +83,7 @@ small for ontology assessment.
 | 3.6 | A gold answer must support multiple accepted variants when the source permits more than one valid logical plan, such as a direct relationship or a path through a bridge dataset. |
 | 3.7 | The AKG portion of a gold answer must identify the required datasets, the relationships connecting dataset-column-set endpoints, and the attributes needed for filtering, grouping, aggregation, or output. |
 | 3.8 | Critic must provide a machine-readable schema for a simple declarative YAML test configuration. At minimum, the configuration identifies the agent or model, test suite, and Graph Service API version. |
-| 3.9 | Test assets must remain independent of actor-generated output and actor-internal graph identifiers. |
+| 3.9 | Generated catalogs are committed actor output and benchmark inputs kept separate from human-reviewed reference catalogs and gold. No suite, case, or gold AKG may be derived from a generated catalog; suites, gold, and submissions must use data-source terms rather than actor-internal graph identifiers. |
 
 Statistics are excluded from the initial gold AKG until the Graph Service exposes statistics as part
 of its supported evidence contract.
@@ -160,10 +172,10 @@ configured Graph Service API.
 | ID | Exclusion |
 | --- | --- |
 | 8.1 | Critic is not a learned critic model and does not train, fine-tune, or host one. |
-| 8.2 | Critic does not evaluate or generate Data Ontology Graph YAML catalogs, and it does not assess a YAML-generation agent skill. |
-| 8.3 | Critic does not publish, build, or version Graph Service artifacts. |
+| 8.2 | Critic does not generate Data Ontology Graph YAML catalogs; the actor's DDL collector drafts and publishes them after owner review. Critic scores generated catalogs against human-reviewed reference catalogs. |
+| 8.3 | Critic does not implement the actor's graph builder or service; it launches artifact publication through the actor's CLI. |
 | 8.4 | Critic does not build, serve, or correct graph knowledge and does not modify the Data Ontology Graph project. |
 | 8.5 | Critic does not score SQL composition, SQL execution results, dialect correctness, physical query plans, or query efficiency. |
 | 8.6 | Critic does not provide an AI model runtime; it integrates with a configurable external AI agent gateway. |
 | 8.7 | This PRD does not prescribe step-by-step benchmark execution. Operational setup and run instructions belong in separate documentation. |
-| 8.8 | The repository does not version secrets, large vendored data sources, or raw session output. It versions schemas, test definitions, gold answers, scoring code, and supporting instructions. |
+| 8.8 | The repository does not version secrets, large vendored data sources, or raw session output. It versions generated and reference catalogs, schemas, test definitions, gold answers, scoring code, and supporting instructions. |

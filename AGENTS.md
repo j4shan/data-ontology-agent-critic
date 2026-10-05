@@ -13,8 +13,13 @@ Authored assets that belong to one business domain must not share a file with an
 
 - Schema-candidate catalogs live under `project_metadata/schema_candidates/<domain>/`.
 - Each domain's question sheet is `questions.md` in that directory.
+- Reference YAML lives under `resources/data/reference_catalogs/<domain>/`. Each directory contains
+  only that domain's `.yaml` files and is gold for scoring generated catalogs.
+- Generated catalogs live under `resources/data/generated_catalogs/<domain>/`. Each committed
+  directory contains only that domain's `directory-manifest.yaml`, `yaml/` collection files,
+  `decisions.md`, and `provenance.yaml`. Only the actor's DDL collector publish step writes them.
+  No suite, case, or gold AKG is derived from generated output.
 - Suites and gold AKGs are also organized per domain.
 - Current domains are `healthcare-payer`, `telecom-mobile`, `manufacturing-discrete`,
   `retail-grocery`, and `commerce-marketplace`.
-- Do not reintroduce `financial`, `student_club`, `superhero`, or `toxicology` assessment
-  assets. `financial` and `student_club` are too small for ontology assessment.
+- Do not add another assessment domain without explicit direction.
