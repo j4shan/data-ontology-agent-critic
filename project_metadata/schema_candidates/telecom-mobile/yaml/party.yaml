@@ -1,0 +1,1042 @@
+schema_version: '2'
+nodes:
+- node_id: sf:telecom-mobile.party.dim_address
+  descriptor:
+    qualified_name: telecom-mobile.party.dim_address
+    display_name: Address
+    description: Postal or site address.
+    synonyms: []
+    tags:
+    - dimension
+    - party
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM_MOBILE
+      schema: PARTY
+      object: DIM_ADDRESS
+      format: table
+  grain:
+    description: One row is one address.
+    components:
+    - identity_id: address_identity
+      dataset_columns:
+      - address_id
+      description: Identifier of one address.
+  columns:
+  - name: address_id
+    description: Identifier of one address.
+  - name: country_id
+    description: Reference to the country.
+  - name: locality
+    description: City or locality of the address.
+  entity_definitions:
+  - identity_id: address_identity
+    dataset_columns:
+    - address_id
+    is_entity_universe: true
+    entity_expression:
+    - '[address_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of address.
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    is_entity_universe: false
+    entity_expression:
+    - '[country_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many addresses belong to one country, every address matches a country, and a country
+        may include no address.
+- node_id: sf:telecom-mobile.party.dim_party
+  descriptor:
+    qualified_name: telecom-mobile.party.dim_party
+    display_name: Party
+    description: Person or organization that can hold an account.
+    synonyms: []
+    tags:
+    - dimension
+    - party
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM_MOBILE
+      schema: PARTY
+      object: DIM_PARTY
+      format: table
+  grain:
+    description: One row is one party.
+    components:
+    - identity_id: party_identity
+      dataset_columns:
+      - party_id
+      description: Identifier of one party.
+  columns:
+  - name: party_id
+    description: Identifier of one party.
+  - name: country_id
+    description: Reference to the country.
+  - name: address_id
+    description: A party may still be unidentified to a service address.
+  - name: party_name
+    description: Name of the party.
+  entity_definitions:
+  - identity_id: party_identity
+    dataset_columns:
+    - party_id
+    is_entity_universe: true
+    entity_expression:
+    - '[party_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of party.
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    is_entity_universe: false
+    entity_expression:
+    - '[country_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many parties belong to one country, every party matches a country, and a country
+        may include no party.
+  - identity_id: address_identity
+    dataset_columns:
+    - address_id
+    is_entity_universe: false
+    entity_expression:
+    - '[address_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A party may match one address, and a address may include no party. A party may still
+        be unidentified to a service address.
+- node_id: sf:telecom-mobile.party.dim_billing_account
+  descriptor:
+    qualified_name: telecom-mobile.party.dim_billing_account
+    display_name: Billing Account
+    description: Account that receives one invoice in the window.
+    synonyms: []
+    tags:
+    - dimension
+    - party
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM_MOBILE
+      schema: PARTY
+      object: DIM_BILLING_ACCOUNT
+      format: table
+  grain:
+    description: One row is one billing account.
+    components:
+    - identity_id: billing_account_identity
+      dataset_columns:
+      - billing_account_id
+      description: Identifier of one billing Account.
+  columns:
+  - name: billing_account_id
+    description: Identifier of one billing Account.
+  - name: party_id
+    description: Reference to the party.
+  - name: currency_id
+    description: Reference to the currency.
+  - name: bill_cycle_id
+    description: Every bill cycle has accounts.
+  - name: market_id
+    description: Every market has billing accounts.
+  - name: legal_entity_id
+    description: Reference to the legal Entity.
+  - name: segment_id
+    description: Every segment is in use.
+  - name: credit_class_id
+    description: Reference to the credit Class.
+  - name: account_number
+    description: Business number of the billing account.
+  entity_definitions:
+  - identity_id: billing_account_identity
+    dataset_columns:
+    - billing_account_id
+    is_entity_universe: true
+    entity_expression:
+    - '[billing_account_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of billing account.
+  - identity_id: party_identity
+    dataset_columns:
+    - party_id
+    is_entity_universe: false
+    entity_expression:
+    - '[party_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many billing Accounts belong to one party, every billing Account matches a party,
+        and a party may include no billing Account.
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    is_entity_universe: false
+    entity_expression:
+    - '[currency_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many billing Accounts belong to one currency, every billing Account matches a currency,
+        and a currency may include no billing Account.
+  - identity_id: bill_cycle_identity
+    dataset_columns:
+    - bill_cycle_id
+    is_entity_universe: false
+    entity_expression:
+    - '[bill_cycle_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many billing Accounts belong to one bill Cycle, every billing Account matches a bill
+        Cycle, and every bill Cycle includes at least one billing Account. Every bill cycle has accounts.
+  - identity_id: market_identity
+    dataset_columns:
+    - market_id
+    is_entity_universe: false
+    entity_expression:
+    - '[market_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many billing Accounts belong to one market, every billing Account matches a market,
+        and every market includes at least one billing Account. Every market has billing accounts.
+  - identity_id: legal_entity_identity
+    dataset_columns:
+    - legal_entity_id
+    is_entity_universe: false
+    entity_expression:
+    - '[legal_entity_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many billing Accounts belong to one legal Entity, every billing Account matches a
+        legal Entity, and a legal Entity may include no billing Account.
+  - identity_id: segment_identity
+    dataset_columns:
+    - segment_id
+    is_entity_universe: false
+    entity_expression:
+    - '[segment_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many billing Accounts belong to one customer Segment, every billing Account matches
+        a customer Segment, and every customer Segment includes at least one billing Account. Every segment
+        is in use.
+  - identity_id: credit_class_identity
+    dataset_columns:
+    - credit_class_id
+    is_entity_universe: false
+    entity_expression:
+    - '[credit_class_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many billing Accounts belong to one credit Class, every billing Account matches a
+        credit Class, and every credit Class includes at least one billing Account.
+- node_id: sf:telecom-mobile.party.dim_subscriber
+  descriptor:
+    qualified_name: telecom-mobile.party.dim_subscriber
+    display_name: Subscriber
+    description: Person or device identity that uses the network.
+    synonyms:
+    - subscriber
+    - mobile subscriber
+    tags:
+    - dimension
+    - party
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM_MOBILE
+      schema: PARTY
+      object: DIM_SUBSCRIBER
+      format: table
+  grain:
+    description: One row is one subscriber.
+    components:
+    - identity_id: subscriber_identity
+      dataset_columns:
+      - subscriber_id
+      description: Identifier of one subscriber.
+  columns:
+  - name: subscriber_id
+    description: Identifier of one subscriber.
+  - name: billing_account_id
+    description: Every billing account has at least one subscriber.
+  - name: party_id
+    description: Reference to the party.
+  - name: subscriber_name
+    description: Name shown on the subscription.
+  entity_definitions:
+  - identity_id: subscriber_identity
+    dataset_columns:
+    - subscriber_id
+    is_entity_universe: true
+    entity_expression:
+    - '[subscriber_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of subscriber.
+  - identity_id: billing_account_identity
+    dataset_columns:
+    - billing_account_id
+    is_entity_universe: false
+    entity_expression:
+    - '[billing_account_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many subscribers belong to one billing Account, every subscriber matches a billing
+        Account, and every billing Account includes at least one subscriber. Every billing account has
+        at least one subscriber.
+  - identity_id: party_identity
+    dataset_columns:
+    - party_id
+    is_entity_universe: false
+    entity_expression:
+    - '[party_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many subscribers belong to one party, every subscriber matches a party, and a party
+        may include no subscriber.
+- node_id: sf:telecom-mobile.party.dim_msisdn
+  descriptor:
+    qualified_name: telecom-mobile.party.dim_msisdn
+    display_name: Public Number
+    description: MSISDN that can be assigned to a subscription.
+    synonyms: []
+    tags:
+    - dimension
+    - party
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM_MOBILE
+      schema: PARTY
+      object: DIM_MSISDN
+      format: table
+  grain:
+    description: One row is one public number.
+    components:
+    - identity_id: msisdn_identity
+      dataset_columns:
+      - msisdn_id
+      description: Identifier of one public Number.
+  columns:
+  - name: msisdn_id
+    description: Identifier of one public Number.
+  - name: country_id
+    description: Reference to the country.
+  - name: e164
+    description: E.164 rendering of the number.
+  entity_definitions:
+  - identity_id: msisdn_identity
+    dataset_columns:
+    - msisdn_id
+    is_entity_universe: true
+    entity_expression:
+    - '[msisdn_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of public number.
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    is_entity_universe: false
+    entity_expression:
+    - '[country_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many public Numbers belong to one country, every public Number matches a country,
+        and a country may include no public Number.
+- node_id: sf:telecom-mobile.party.dim_subscription
+  descriptor:
+    qualified_name: telecom-mobile.party.dim_subscription
+    display_name: Subscription
+    description: Contracted service that rates usage.
+    synonyms: []
+    tags:
+    - dimension
+    - party
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM_MOBILE
+      schema: PARTY
+      object: DIM_SUBSCRIPTION
+      format: table
+  grain:
+    description: One row is one subscription.
+    components:
+    - identity_id: subscription_identity
+      dataset_columns:
+      - subscription_id
+      description: Identifier of one subscription.
+  columns:
+  - name: subscription_id
+    description: Identifier of one subscription.
+  - name: subscriber_id
+    description: Every subscriber has at least one subscription.
+  - name: rate_plan_id
+    description: Every rate plan has subscriptions.
+  - name: market_id
+    description: Reference to the market.
+  - name: msisdn_id
+    description: Each subscription has one public number, and some numbers are spare.
+  - name: activated_on
+    description: Date the subscription activated.
+  entity_definitions:
+  - identity_id: subscription_identity
+    dataset_columns:
+    - subscription_id
+    is_entity_universe: true
+    entity_expression:
+    - '[subscription_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of subscription.
+  - identity_id: subscriber_identity
+    dataset_columns:
+    - subscriber_id
+    is_entity_universe: false
+    entity_expression:
+    - '[subscriber_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many subscriptions belong to one subscriber, every subscription matches a subscriber,
+        and every subscriber includes at least one subscription. Every subscriber has at least one subscription.
+  - identity_id: rate_plan_identity
+    dataset_columns:
+    - rate_plan_id
+    is_entity_universe: false
+    entity_expression:
+    - '[rate_plan_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many subscriptions belong to one rate Plan, every subscription matches a rate Plan,
+        and every rate Plan includes at least one subscription. Every rate plan has subscriptions.
+  - identity_id: market_identity
+    dataset_columns:
+    - market_id
+    is_entity_universe: false
+    entity_expression:
+    - '[market_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many subscriptions belong to one market, every subscription matches a market, and
+        a market may include no subscription.
+  - identity_id: msisdn_identity
+    dataset_columns:
+    - msisdn_id
+    is_entity_universe: false
+    entity_expression:
+    - '[msisdn_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: '1:1'
+      business_rule: Each subscription matches exactly one public Number, each public Number matches at
+        most one subscription, and not every public Number is matched. Each subscription has one public
+        number, and some numbers are spare.
+- node_id: sf:telecom-mobile.party.dim_sim
+  descriptor:
+    qualified_name: telecom-mobile.party.dim_sim
+    display_name: SIM
+    description: SIM or eSIM profile.
+    synonyms: []
+    tags:
+    - dimension
+    - party
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM_MOBILE
+      schema: PARTY
+      object: DIM_SIM
+      format: table
+  grain:
+    description: One row is one sim.
+    components:
+    - identity_id: sim_identity
+      dataset_columns:
+      - sim_id
+      description: Identifier of one sIM.
+  columns:
+  - name: sim_id
+    description: Identifier of one sIM.
+  - name: imsi_id
+    description: Each SIM carries one IMSI, and some IMSIs are unassigned.
+  - name: subscription_id
+    description: A SIM in stock is not on a subscription.
+  entity_definitions:
+  - identity_id: sim_identity
+    dataset_columns:
+    - sim_id
+    is_entity_universe: true
+    entity_expression:
+    - '[sim_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of sim.
+  - identity_id: imsi_identity
+    dataset_columns:
+    - imsi_id
+    is_entity_universe: false
+    entity_expression:
+    - '[imsi_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: '1:1'
+      business_rule: Each sIM matches exactly one iMSI, each iMSI matches at most one sIM, and not every
+        iMSI is matched. Each SIM carries one IMSI, and some IMSIs are unassigned.
+  - identity_id: subscription_identity
+    dataset_columns:
+    - subscription_id
+    is_entity_universe: false
+    entity_expression:
+    - '[subscription_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A sIM may match one subscription, and a subscription may include no sIM. A SIM in
+        stock is not on a subscription.
+- node_id: sf:telecom-mobile.party.dim_device
+  descriptor:
+    qualified_name: telecom-mobile.party.dim_device
+    display_name: Device
+    description: Handset or module seen on the network.
+    synonyms: []
+    tags:
+    - dimension
+    - party
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM_MOBILE
+      schema: PARTY
+      object: DIM_DEVICE
+      format: table
+  grain:
+    description: One row is one device.
+    components:
+    - identity_id: device_identity
+      dataset_columns:
+      - device_id
+      description: Identifier of one device.
+  columns:
+  - name: device_id
+    description: Identifier of one device.
+  - name: device_model_id
+    description: Every model has devices.
+  - name: subscriber_id
+    description: A device in inventory has no subscriber.
+  entity_definitions:
+  - identity_id: device_identity
+    dataset_columns:
+    - device_id
+    is_entity_universe: true
+    entity_expression:
+    - '[device_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of device.
+  - identity_id: device_model_identity
+    dataset_columns:
+    - device_model_id
+    is_entity_universe: false
+    entity_expression:
+    - '[device_model_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many devices belong to one device Model, every device matches a device Model, and
+        every device Model includes at least one device. Every model has devices.
+  - identity_id: subscriber_identity
+    dataset_columns:
+    - subscriber_id
+    is_entity_universe: false
+    entity_expression:
+    - '[subscriber_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A device may match one subscriber, and a subscriber may include no device. A device
+        in inventory has no subscriber.
+- node_id: sf:telecom-mobile.party.dim_contact
+  descriptor:
+    qualified_name: telecom-mobile.party.dim_contact
+    display_name: Contact
+    description: Phone, email, or postal contact for a party.
+    synonyms: []
+    tags:
+    - dimension
+    - party
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM_MOBILE
+      schema: PARTY
+      object: DIM_CONTACT
+      format: table
+  grain:
+    description: One row is one contact.
+    components:
+    - identity_id: contact_identity
+      dataset_columns:
+      - contact_id
+      description: Identifier of one contact.
+  columns:
+  - name: contact_id
+    description: Identifier of one contact.
+  - name: party_id
+    description: Reference to the party.
+  - name: contact_value
+    description: Contact address or number.
+  entity_definitions:
+  - identity_id: contact_identity
+    dataset_columns:
+    - contact_id
+    is_entity_universe: true
+    entity_expression:
+    - '[contact_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of contact.
+  - identity_id: party_identity
+    dataset_columns:
+    - party_id
+    is_entity_universe: false
+    entity_expression:
+    - '[party_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many contacts belong to one party, every contact matches a party, and a party may
+        include no contact.
+- node_id: sf:telecom-mobile.party.dim_np_operator
+  descriptor:
+    qualified_name: telecom-mobile.party.dim_np_operator
+    display_name: Porting Operator
+    description: Operator on the other side of a number port.
+    synonyms: []
+    tags:
+    - dimension
+    - party
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM_MOBILE
+      schema: PARTY
+      object: DIM_NP_OPERATOR
+      format: table
+  grain:
+    description: One row is one porting operator.
+    components:
+    - identity_id: np_operator_identity
+      dataset_columns:
+      - np_operator_id
+      description: Identifier of one porting Operator.
+  columns:
+  - name: np_operator_id
+    description: Identifier of one porting Operator.
+  - name: country_id
+    description: Reference to the country.
+  - name: operator_name
+    description: Name of the porting operator.
+  entity_definitions:
+  - identity_id: np_operator_identity
+    dataset_columns:
+    - np_operator_id
+    is_entity_universe: true
+    entity_expression:
+    - '[np_operator_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of porting operator.
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    is_entity_universe: false
+    entity_expression:
+    - '[country_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many porting Operators belong to one country, every porting Operator matches a country,
+        and a country may include no porting Operator.
+- node_id: sf:telecom-mobile.party.fact_number_port
+  descriptor:
+    qualified_name: telecom-mobile.party.fact_number_port
+    display_name: Number Port
+    description: One number-portability event.
+    synonyms: []
+    tags:
+    - fact
+    - party
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM_MOBILE
+      schema: PARTY
+      object: FACT_NUMBER_PORT
+      format: table
+  grain:
+    description: One row is one number port.
+    components:
+    - identity_id: number_port_identity
+      dataset_columns:
+      - number_port_id
+      description: Identifier of one number Port.
+  columns:
+  - name: number_port_id
+    description: Identifier of one number Port.
+  - name: msisdn_id
+    description: Reference to the public Number.
+  - name: np_operator_id
+    description: Reference to the porting Operator.
+  - name: subscription_id
+    description: Reference to the subscription.
+  - name: calendar_day_id
+    description: Reference to the calendar Day.
+  - name: port_direction
+    description: Direction of the port.
+    value_description: in, out
+  entity_definitions:
+  - identity_id: number_port_identity
+    dataset_columns:
+    - number_port_id
+    is_entity_universe: true
+    entity_expression:
+    - '[number_port_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of number port.
+  - identity_id: msisdn_identity
+    dataset_columns:
+    - msisdn_id
+    is_entity_universe: false
+    entity_expression:
+    - '[msisdn_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many number Ports belong to one public Number, every number Port matches a public
+        Number, and a public Number may include no number Port.
+  - identity_id: np_operator_identity
+    dataset_columns:
+    - np_operator_id
+    is_entity_universe: false
+    entity_expression:
+    - '[np_operator_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many number Ports belong to one porting Operator, every number Port matches a porting
+        Operator, and every porting Operator includes at least one number Port.
+  - identity_id: subscription_identity
+    dataset_columns:
+    - subscription_id
+    is_entity_universe: false
+    entity_expression:
+    - '[subscription_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A number Port may match one subscription, and a subscription may include no number
+        Port.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many number Ports belong to one calendar Day, every number Port matches a calendar
+        Day, and a calendar Day may include no number Port.
+- node_id: sf:telecom-mobile.party.fact_sim_swap
+  descriptor:
+    qualified_name: telecom-mobile.party.fact_sim_swap
+    display_name: SIM Swap
+    description: One SIM replacement on a subscriber.
+    synonyms: []
+    tags:
+    - fact
+    - party
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM_MOBILE
+      schema: PARTY
+      object: FACT_SIM_SWAP
+      format: table
+  grain:
+    description: One row is one sim swap.
+    components:
+    - identity_id: sim_swap_identity
+      dataset_columns:
+      - sim_swap_id
+      description: Identifier of one sIM Swap.
+  columns:
+  - name: sim_swap_id
+    description: Identifier of one sIM Swap.
+  - name: subscriber_id
+    description: Reference to the subscriber.
+  - name: sim_id
+    description: Reference to the sIM.
+  - name: employee_id
+    description: Reference to the employee.
+  - name: calendar_day_id
+    description: Reference to the calendar Day.
+  - name: dealer_id
+    description: Reference to the dealer.
+  - name: swap_reason
+    description: Reason for the swap.
+    value_description: lost, upgrade, fraud, defect
+  entity_definitions:
+  - identity_id: sim_swap_identity
+    dataset_columns:
+    - sim_swap_id
+    is_entity_universe: true
+    entity_expression:
+    - '[sim_swap_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of sim swap.
+  - identity_id: subscriber_identity
+    dataset_columns:
+    - subscriber_id
+    is_entity_universe: false
+    entity_expression:
+    - '[subscriber_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many sIM Swaps belong to one subscriber, every sIM Swap matches a subscriber, and
+        a subscriber may include no sIM Swap.
+  - identity_id: sim_identity
+    dataset_columns:
+    - sim_id
+    is_entity_universe: false
+    entity_expression:
+    - '[sim_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many sIM Swaps belong to one sIM, every sIM Swap matches a sIM, and a sIM may include
+        no sIM Swap.
+  - identity_id: employee_identity
+    dataset_columns:
+    - employee_id
+    is_entity_universe: false
+    entity_expression:
+    - '[employee_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A sIM Swap may match one employee, and a employee may include no sIM Swap.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many sIM Swaps belong to one calendar Day, every sIM Swap matches a calendar Day,
+        and a calendar Day may include no sIM Swap.
+  - identity_id: dealer_identity
+    dataset_columns:
+    - dealer_id
+    is_entity_universe: false
+    entity_expression:
+    - '[dealer_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A sIM Swap may match one dealer, and a dealer may include no sIM Swap.
+- node_id: sf:telecom-mobile.party.fact_subscriber_snapshot
+  descriptor:
+    qualified_name: telecom-mobile.party.fact_subscriber_snapshot
+    display_name: Subscriber Snapshot
+    description: Month-end status of one subscriber.
+    synonyms: []
+    tags:
+    - fact
+    - party
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM_MOBILE
+      schema: PARTY
+      object: FACT_SUBSCRIBER_SNAPSHOT
+      format: table
+  grain:
+    description: One row is one subscriber snapshot.
+    components:
+    - identity_id: subscriber_snapshot_identity
+      dataset_columns:
+      - subscriber_snapshot_id
+      description: Identifier of one subscriber Snapshot.
+  columns:
+  - name: subscriber_snapshot_id
+    description: Identifier of one subscriber Snapshot.
+  - name: subscriber_id
+    description: Each subscriber has one month-end snapshot.
+  - name: segment_id
+    description: Reference to the customer Segment.
+  - name: credit_class_id
+    description: Reference to the credit Class.
+  - name: market_id
+    description: Reference to the market.
+  - name: calendar_day_id
+    description: Reference to the calendar Day.
+  - name: status_code
+    description: Snapshot status.
+    value_description: active, barred, suspended, closed
+  entity_definitions:
+  - identity_id: subscriber_snapshot_identity
+    dataset_columns:
+    - subscriber_snapshot_id
+    is_entity_universe: true
+    entity_expression:
+    - '[subscriber_snapshot_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of subscriber snapshot.
+  - identity_id: subscriber_identity
+    dataset_columns:
+    - subscriber_id
+    is_entity_universe: false
+    entity_expression:
+    - '[subscriber_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: '1:1'
+      business_rule: Each subscriber Snapshot matches exactly one subscriber, and each subscriber matches
+        exactly one subscriber Snapshot. Each subscriber has one month-end snapshot.
+  - identity_id: segment_identity
+    dataset_columns:
+    - segment_id
+    is_entity_universe: false
+    entity_expression:
+    - '[segment_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many subscriber Snapshots belong to one customer Segment, every subscriber Snapshot
+        matches a customer Segment, and a customer Segment may include no subscriber Snapshot.
+  - identity_id: credit_class_identity
+    dataset_columns:
+    - credit_class_id
+    is_entity_universe: false
+    entity_expression:
+    - '[credit_class_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many subscriber Snapshots belong to one credit Class, every subscriber Snapshot matches
+        a credit Class, and a credit Class may include no subscriber Snapshot.
+  - identity_id: market_identity
+    dataset_columns:
+    - market_id
+    is_entity_universe: false
+    entity_expression:
+    - '[market_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many subscriber Snapshots belong to one market, every subscriber Snapshot matches
+        a market, and a market may include no subscriber Snapshot.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many subscriber Snapshots belong to one calendar Day, every subscriber Snapshot matches
+        a calendar Day, and a calendar Day may include no subscriber Snapshot.

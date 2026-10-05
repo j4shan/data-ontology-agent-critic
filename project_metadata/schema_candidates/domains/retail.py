@@ -32,11 +32,11 @@ PROVENANCE = (
 )
 
 DOMAIN = {
-    "key": "retail",
+    "key": "retail-grocery",
     "business_name": "Greenbasket Markets",
-    "database": "RETAIL",
+    "database": "RETAIL_GROCERY",
     "account": "greenbasket.us-central-1",
-    "root": "retail",
+    "root": "retail-grocery",
     "narrative": NARRATIVE,
     "provenance": PROVENANCE,
     "identity_synonyms": {

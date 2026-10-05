@@ -1,0 +1,216 @@
+schema_version: '2'
+nodes:
+- node_id: sf:commerce-marketplace.subscription.dim_subscription_plan
+  descriptor:
+    qualified_name: commerce-marketplace.subscription.dim_subscription_plan
+    display_name: Subscription plan
+    description: Plan a buyer account may subscribe to, optionally from a seller.
+    synonyms: []
+    tags:
+    - dimension
+    - subscription
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE_MARKETPLACE
+      schema: SUBSCRIPTION
+      object: DIM_SUBSCRIPTION_PLAN
+      format: table
+  grain:
+    description: One row is one subscription plan.
+    components:
+    - identity_id: subscription_plan_identity
+      dataset_columns:
+      - plan_id
+      description: Identifies one subscription plan.
+  columns:
+  - name: plan_id
+    description: Identifies one subscription plan.
+  - name: seller_id
+    description: Seller that offers the subscription plan.
+  entity_definitions:
+  - identity_id: subscription_plan_identity
+    dataset_columns:
+    - plan_id
+    is_entity_universe: true
+    entity_expression:
+    - '[plan_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
+  - identity_id: seller_identity
+    dataset_columns:
+    - seller_id
+    is_entity_universe: false
+    entity_expression:
+    - '[seller_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A subscription plan may have no seller, and a seller may have no subscription plans.
+- node_id: sf:commerce-marketplace.subscription.fact_subscription
+  descriptor:
+    qualified_name: commerce-marketplace.subscription.fact_subscription
+    display_name: Subscription
+    description: Subscription a buyer account holds to a plan.
+    synonyms: []
+    tags:
+    - fact
+    - subscription
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE_MARKETPLACE
+      schema: SUBSCRIPTION
+      object: FACT_SUBSCRIPTION
+      format: table
+  grain:
+    description: One row is one subscription.
+    components:
+    - identity_id: subscription_identity
+      dataset_columns:
+      - subscription_id
+      description: Identifies one subscription.
+  columns:
+  - name: subscription_id
+    description: Identifies one subscription.
+  - name: buyer_account_id
+    description: Buyer account that holds the subscription.
+  - name: plan_id
+    description: Plan the buyer account subscribed to.
+  - name: variant_id
+    description: Variant supplied under the subscription.
+  - name: subscription_status
+    description: Lifecycle standing of the subscription.
+    value_description: trial, active, paused, cancelled
+  entity_definitions:
+  - identity_id: subscription_identity
+    dataset_columns:
+    - subscription_id
+    is_entity_universe: true
+    entity_expression:
+    - '[subscription_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
+  - identity_id: buyer_account_identity
+    dataset_columns:
+    - buyer_account_id
+    is_entity_universe: false
+    entity_expression:
+    - '[buyer_account_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each subscription belongs to exactly one buyer account, and a buyer account may have
+        no subscriptions.
+  - identity_id: subscription_plan_identity
+    dataset_columns:
+    - plan_id
+    is_entity_universe: false
+    entity_expression:
+    - '[plan_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each subscription belongs to exactly one plan, and a plan may have no subscriptions.
+  - identity_id: variant_identity
+    dataset_columns:
+    - variant_id
+    is_entity_universe: false
+    entity_expression:
+    - '[variant_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A subscription may have no variant, and a variant may have no subscriptions.
+- node_id: sf:commerce-marketplace.subscription.fact_subscription_invoice
+  descriptor:
+    qualified_name: commerce-marketplace.subscription.fact_subscription_invoice
+    display_name: Subscription invoice
+    description: Invoice generated for a subscription.
+    synonyms: []
+    tags:
+    - fact
+    - subscription
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE_MARKETPLACE
+      schema: SUBSCRIPTION
+      object: FACT_SUBSCRIPTION_INVOICE
+      format: table
+  grain:
+    description: One row is one subscription invoice.
+    components:
+    - identity_id: subscription_invoice_identity
+      dataset_columns:
+      - subscription_invoice_id
+      description: Identifies one subscription invoice.
+  columns:
+  - name: subscription_invoice_id
+    description: Identifies one subscription invoice.
+  - name: subscription_id
+    description: Subscription that was billed.
+  - name: currency_id
+    description: Currency of the subscription invoice.
+  - name: calendar_day_id
+    description: Calendar day of the subscription invoice.
+  - name: billed_amount
+    description: Amount billed on the subscription invoice.
+  entity_definitions:
+  - identity_id: subscription_invoice_identity
+    dataset_columns:
+    - subscription_invoice_id
+    is_entity_universe: true
+    entity_expression:
+    - '[subscription_invoice_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
+  - identity_id: subscription_identity
+    dataset_columns:
+    - subscription_id
+    is_entity_universe: false
+    entity_expression:
+    - '[subscription_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Every subscription includes one or more subscription invoices, and each subscription
+        invoice belongs to exactly one subscription.
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    is_entity_universe: false
+    entity_expression:
+    - '[currency_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each subscription invoice uses exactly one currency, and a currency may have no subscription
+        invoices.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each subscription invoice belongs to exactly one calendar day, and a calendar day
+        may have no subscription invoices.

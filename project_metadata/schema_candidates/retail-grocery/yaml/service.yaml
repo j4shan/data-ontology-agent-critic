@@ -1,0 +1,172 @@
+schema_version: '2'
+nodes:
+- node_id: sf:retail-grocery.service.fact_service_level
+  descriptor:
+    qualified_name: retail-grocery.service.fact_service_level
+    display_name: Service level
+    description: In-stock observation for an item at a storefront on a day.
+    synonyms: []
+    tags:
+    - fact
+    - service
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL_GROCERY
+      schema: SERVICE
+      object: FACT_SERVICE_LEVEL
+      format: table
+  grain:
+    description: One row is one service level.
+    components:
+    - identity_id: service_level_identity
+      dataset_columns:
+      - service_level_id
+      description: Identifies one service-level observation.
+  columns:
+  - name: service_level_id
+    description: Identifies one service-level observation.
+  - name: item_id
+    description: Item that was observed.
+  - name: store_id
+    description: Storefront where the item was observed.
+  - name: calendar_day_id
+    description: Day of the observation.
+  - name: in_stock_flag
+    description: Indicates whether the item was in stock at the storefront on that day.
+  entity_definitions:
+  - identity_id: service_level_identity
+    dataset_columns:
+    - service_level_id
+    is_entity_universe: true
+    entity_expression:
+    - '[service_level_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of service level.
+  - identity_id: item_identity
+    dataset_columns:
+    - item_id
+    is_entity_universe: false
+    entity_expression:
+    - '[item_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each observation names exactly one item, and an item may have no service-level observation.
+  - identity_id: store_identity
+    dataset_columns:
+    - store_id
+    is_entity_universe: false
+    entity_expression:
+    - '[store_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each observation names exactly one storefront, and a storefront may have no service-level
+        observation.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each observation occurs on exactly one day, and a day may have no service-level observation.
+- node_id: sf:retail-grocery.service.fact_customer_complaint
+  descriptor:
+    qualified_name: retail-grocery.service.fact_customer_complaint
+    display_name: Customer complaint
+    description: Complaint recorded against a storefront.
+    synonyms: []
+    tags:
+    - fact
+    - service
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: greenbasket.us-central-1
+      database: RETAIL_GROCERY
+      schema: SERVICE
+      object: FACT_CUSTOMER_COMPLAINT
+      format: table
+  grain:
+    description: One row is one customer complaint.
+    components:
+    - identity_id: complaint_identity
+      dataset_columns:
+      - complaint_id
+      description: Identifies one customer complaint.
+  columns:
+  - name: complaint_id
+    description: Identifies one customer complaint.
+  - name: store_id
+    description: Storefront the complaint concerns.
+  - name: customer_id
+    description: Customer who complained when the shopper is known.
+  - name: reason_code_id
+    description: Reason coded for the complaint.
+  - name: calendar_day_id
+    description: Day the complaint was recorded.
+  entity_definitions:
+  - identity_id: complaint_identity
+    dataset_columns:
+    - complaint_id
+    is_entity_universe: true
+    entity_expression:
+    - '[complaint_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of customer complaint.
+  - identity_id: store_identity
+    dataset_columns:
+    - store_id
+    is_entity_universe: false
+    entity_expression:
+    - '[store_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each complaint concerns exactly one storefront, and a storefront may have no complaint.
+  - identity_id: customer_identity
+    dataset_columns:
+    - customer_id
+    is_entity_universe: false
+    entity_expression:
+    - '[customer_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A complaint may omit a customer, and a customer may file no complaint.
+  - identity_id: reason_code_identity
+    dataset_columns:
+    - reason_code_id
+    is_entity_universe: false
+    entity_expression:
+    - '[reason_code_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each complaint names exactly one reason code, and a reason code may explain no complaint.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each complaint is recorded on exactly one day, and a day may have no complaint.

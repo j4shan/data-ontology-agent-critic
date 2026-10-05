@@ -1,0 +1,425 @@
+schema_version: '2'
+nodes:
+- node_id: sf:telecom-mobile.finance.dim_gl_account
+  descriptor:
+    qualified_name: telecom-mobile.finance.dim_gl_account
+    display_name: GL Account
+    description: General-ledger account.
+    synonyms: []
+    tags:
+    - dimension
+    - finance
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM_MOBILE
+      schema: FINANCE
+      object: DIM_GL_ACCOUNT
+      format: table
+  grain:
+    description: One row is one gl account.
+    components:
+    - identity_id: gl_account_identity
+      dataset_columns:
+      - gl_account_id
+      description: Identifier of one gL Account.
+  columns:
+  - name: gl_account_id
+    description: Identifier of one gL Account.
+  - name: legal_entity_id
+    description: Reference to the legal Entity.
+  - name: account_name
+    description: Name of the ledger account.
+  entity_definitions:
+  - identity_id: gl_account_identity
+    dataset_columns:
+    - gl_account_id
+    is_entity_universe: true
+    entity_expression:
+    - '[gl_account_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of gl account.
+  - identity_id: legal_entity_identity
+    dataset_columns:
+    - legal_entity_id
+    is_entity_universe: false
+    entity_expression:
+    - '[legal_entity_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many gL Accounts belong to one legal Entity, every gL Account matches a legal Entity,
+        and a legal Entity may include no gL Account.
+- node_id: sf:telecom-mobile.finance.dim_accounting_period
+  descriptor:
+    qualified_name: telecom-mobile.finance.dim_accounting_period
+    display_name: Accounting Period
+    description: Open accounting period covering the statistics window.
+    synonyms: []
+    tags:
+    - dimension
+    - finance
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM_MOBILE
+      schema: FINANCE
+      object: DIM_ACCOUNTING_PERIOD
+      format: table
+  grain:
+    description: One row is one accounting period.
+    components:
+    - identity_id: accounting_period_identity
+      dataset_columns:
+      - accounting_period_id
+      description: Identifier of one accounting Period.
+  columns:
+  - name: accounting_period_id
+    description: Identifier of one accounting Period.
+  - name: legal_entity_id
+    description: Reference to the legal Entity.
+  - name: period_name
+    description: Name of the accounting period.
+  entity_definitions:
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    is_entity_universe: true
+    entity_expression:
+    - '[accounting_period_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of accounting period.
+  - identity_id: legal_entity_identity
+    dataset_columns:
+    - legal_entity_id
+    is_entity_universe: false
+    entity_expression:
+    - '[legal_entity_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many accounting Periods belong to one legal Entity, every accounting Period matches
+        a legal Entity, and a legal Entity may include no accounting Period.
+- node_id: sf:telecom-mobile.finance.dim_tax_jurisdiction
+  descriptor:
+    qualified_name: telecom-mobile.finance.dim_tax_jurisdiction
+    display_name: Tax Jurisdiction
+    description: Tax authority that can apply to a charge.
+    synonyms: []
+    tags:
+    - dimension
+    - finance
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM_MOBILE
+      schema: FINANCE
+      object: DIM_TAX_JURISDICTION
+      format: table
+  grain:
+    description: One row is one tax jurisdiction.
+    components:
+    - identity_id: tax_jurisdiction_identity
+      dataset_columns:
+      - tax_jurisdiction_id
+      description: Identifier of one tax Jurisdiction.
+  columns:
+  - name: tax_jurisdiction_id
+    description: Identifier of one tax Jurisdiction.
+  - name: country_id
+    description: Reference to the country.
+  - name: jurisdiction_name
+    description: Name of the tax jurisdiction.
+  entity_definitions:
+  - identity_id: tax_jurisdiction_identity
+    dataset_columns:
+    - tax_jurisdiction_id
+    is_entity_universe: true
+    entity_expression:
+    - '[tax_jurisdiction_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of tax jurisdiction.
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    is_entity_universe: false
+    entity_expression:
+    - '[country_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many tax Jurisdictions belong to one country, every tax Jurisdiction matches a country,
+        and a country may include no tax Jurisdiction.
+- node_id: sf:telecom-mobile.finance.dim_bank
+  descriptor:
+    qualified_name: telecom-mobile.finance.dim_bank
+    display_name: Bank
+    description: Bank that settles a payment or interconnect invoice.
+    synonyms: []
+    tags:
+    - dimension
+    - finance
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM_MOBILE
+      schema: FINANCE
+      object: DIM_BANK
+      format: table
+  grain:
+    description: One row is one bank.
+    components:
+    - identity_id: bank_identity
+      dataset_columns:
+      - bank_id
+      description: Identifier of one bank.
+  columns:
+  - name: bank_id
+    description: Identifier of one bank.
+  - name: country_id
+    description: Reference to the country.
+  - name: bank_name
+    description: Name of the bank.
+  entity_definitions:
+  - identity_id: bank_identity
+    dataset_columns:
+    - bank_id
+    is_entity_universe: true
+    entity_expression:
+    - '[bank_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of bank.
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    is_entity_universe: false
+    entity_expression:
+    - '[country_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many banks belong to one country, every bank matches a country, and a country may
+        include no bank.
+- node_id: sf:telecom-mobile.finance.dim_cost_element
+  descriptor:
+    qualified_name: telecom-mobile.finance.dim_cost_element
+    display_name: Cost Element
+    description: Cost element inside a cost center.
+    synonyms: []
+    tags:
+    - dimension
+    - finance
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM_MOBILE
+      schema: FINANCE
+      object: DIM_COST_ELEMENT
+      format: table
+  grain:
+    description: One row is one cost element.
+    components:
+    - identity_id: cost_element_identity
+      dataset_columns:
+      - cost_element_id
+      description: Identifier of one cost Element.
+  columns:
+  - name: cost_element_id
+    description: Identifier of one cost Element.
+  - name: gl_account_id
+    description: Reference to the gL Account.
+  - name: element_name
+    description: Name of the cost element.
+  entity_definitions:
+  - identity_id: cost_element_identity
+    dataset_columns:
+    - cost_element_id
+    is_entity_universe: true
+    entity_expression:
+    - '[cost_element_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of cost element.
+  - identity_id: gl_account_identity
+    dataset_columns:
+    - gl_account_id
+    is_entity_universe: false
+    entity_expression:
+    - '[gl_account_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many cost Elements belong to one gL Account, every cost Element matches a gL Account,
+        and a gL Account may include no cost Element.
+- node_id: sf:telecom-mobile.finance.fact_journal_line
+  descriptor:
+    qualified_name: telecom-mobile.finance.fact_journal_line
+    display_name: Journal Line
+    description: One subledger journal line.
+    synonyms: []
+    tags:
+    - fact
+    - finance
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM_MOBILE
+      schema: FINANCE
+      object: FACT_JOURNAL_LINE
+      format: table
+  grain:
+    description: One row is one journal line.
+    components:
+    - identity_id: journal_line_identity
+      dataset_columns:
+      - journal_line_id
+      description: Identifier of one journal Line.
+  columns:
+  - name: journal_line_id
+    description: Identifier of one journal Line.
+  - name: gl_account_id
+    description: Every ledger account used by the operator is posted.
+  - name: accounting_period_id
+    description: Reference to the accounting Period.
+  - name: currency_id
+    description: Reference to the currency.
+  - name: legal_entity_id
+    description: Reference to the legal Entity.
+  - name: cost_center_id
+    description: Reference to the cost Center.
+  - name: calendar_day_id
+    description: Reference to the calendar Day.
+  - name: journal_source_id
+    description: Reference to the journal Source.
+  - name: cost_element_id
+    description: Reference to the cost Element.
+  - name: entered_amount
+    description: Entered amount of the journal line.
+  entity_definitions:
+  - identity_id: journal_line_identity
+    dataset_columns:
+    - journal_line_id
+    is_entity_universe: true
+    entity_expression:
+    - '[journal_line_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of journal line.
+  - identity_id: gl_account_identity
+    dataset_columns:
+    - gl_account_id
+    is_entity_universe: false
+    entity_expression:
+    - '[gl_account_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many journal Lines belong to one gL Account, every journal Line matches a gL Account,
+        and every gL Account includes at least one journal Line. Every ledger account used by the operator
+        is posted.
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    is_entity_universe: false
+    entity_expression:
+    - '[accounting_period_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many journal Lines belong to one accounting Period, every journal Line matches a
+        accounting Period, and every accounting Period includes at least one journal Line.
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    is_entity_universe: false
+    entity_expression:
+    - '[currency_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many journal Lines belong to one currency, every journal Line matches a currency,
+        and a currency may include no journal Line.
+  - identity_id: legal_entity_identity
+    dataset_columns:
+    - legal_entity_id
+    is_entity_universe: false
+    entity_expression:
+    - '[legal_entity_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many journal Lines belong to one legal Entity, every journal Line matches a legal
+        Entity, and a legal Entity may include no journal Line.
+  - identity_id: cost_center_identity
+    dataset_columns:
+    - cost_center_id
+    is_entity_universe: false
+    entity_expression:
+    - '[cost_center_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A journal Line may match one cost Center, and a cost Center may include no journal
+        Line.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many journal Lines belong to one calendar Day, every journal Line matches a calendar
+        Day, and every calendar Day includes at least one journal Line.
+  - identity_id: journal_source_identity
+    dataset_columns:
+    - journal_source_id
+    is_entity_universe: false
+    entity_expression:
+    - '[journal_source_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many journal Lines belong to one journal Source, every journal Line matches a journal
+        Source, and every journal Source includes at least one journal Line.
+  - identity_id: cost_element_identity
+    dataset_columns:
+    - cost_element_id
+    is_entity_universe: false
+    entity_expression:
+    - '[cost_element_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A journal Line may match one cost Element, and a cost Element may include no journal
+        Line.

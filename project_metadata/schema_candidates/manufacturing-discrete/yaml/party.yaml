@@ -1,0 +1,314 @@
+schema_version: '2'
+nodes:
+- node_id: sf:manufacturing-discrete.party.dim_currency
+  descriptor:
+    qualified_name: manufacturing-discrete.party.dim_currency
+    display_name: Currency
+    description: Currency used to price purchases, sales, and freight.
+    synonyms: []
+    tags:
+    - dimension
+    - party
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: PARTY
+      object: DIM_CURRENCY
+      format: table
+  grain:
+    description: One row is one currency.
+    components:
+    - identity_id: currency_identity
+      dataset_columns:
+      - currency_id
+      description: Identifier of one currency.
+  columns:
+  - name: currency_id
+    description: Identifier of one currency.
+  - name: currency_code
+    description: ISO-style code of the currency.
+  entity_definitions:
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    is_entity_universe: true
+    entity_expression:
+    - '[currency_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of currency.
+- node_id: sf:manufacturing-discrete.party.dim_supplier
+  descriptor:
+    qualified_name: manufacturing-discrete.party.dim_supplier
+    display_name: Supplier
+    description: External party that sells materials or services to Alderford.
+    synonyms: []
+    tags:
+    - dimension
+    - party
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: PARTY
+      object: DIM_SUPPLIER
+      format: table
+  grain:
+    description: One row is one supplier.
+    components:
+    - identity_id: supplier_identity
+      dataset_columns:
+      - supplier_id
+      description: Identifier of one supplier.
+  columns:
+  - name: supplier_id
+    description: Identifier of one supplier.
+  - name: currency_id
+    description: Default currency of the supplier.
+  - name: supplier_name
+    description: Name of the supplier.
+  - name: supplier_status
+    description: Approval state of the supplier.
+    value_description: prospect, approved, blocked
+  entity_definitions:
+  - identity_id: supplier_identity
+    dataset_columns:
+    - supplier_id
+    is_entity_universe: true
+    entity_expression:
+    - '[supplier_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of supplier.
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    is_entity_universe: false
+    entity_expression:
+    - '[currency_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many suppliers share one default currency, every supplier matches a currency, and
+        a currency may include no supplier.
+- node_id: sf:manufacturing-discrete.party.dim_supplier_site
+  descriptor:
+    qualified_name: manufacturing-discrete.party.dim_supplier_site
+    display_name: Supplier Site
+    description: Order or ship-from location of a supplier.
+    synonyms: []
+    tags:
+    - dimension
+    - party
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: PARTY
+      object: DIM_SUPPLIER_SITE
+      format: table
+  grain:
+    description: One row is one supplier site.
+    components:
+    - identity_id: supplier_site_identity
+      dataset_columns:
+      - supplier_site_id
+      description: Identifier of one supplier site.
+  columns:
+  - name: supplier_site_id
+    description: Identifier of one supplier site.
+  - name: supplier_id
+    description: Supplier that owns the site.
+  - name: site_name
+    description: Name of the supplier site.
+  entity_definitions:
+  - identity_id: supplier_site_identity
+    dataset_columns:
+    - supplier_site_id
+    is_entity_universe: true
+    entity_expression:
+    - '[supplier_site_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of supplier site.
+  - identity_id: supplier_identity
+    dataset_columns:
+    - supplier_id
+    is_entity_universe: false
+    entity_expression:
+    - '[supplier_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many supplier sites belong to one supplier, every supplier site matches a supplier,
+        and every supplier includes at least one supplier site.
+- node_id: sf:manufacturing-discrete.party.dim_customer
+  descriptor:
+    qualified_name: manufacturing-discrete.party.dim_customer
+    display_name: Customer
+    description: External party that buys pumps or spare parts from Alderford.
+    synonyms: []
+    tags:
+    - dimension
+    - party
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: PARTY
+      object: DIM_CUSTOMER
+      format: table
+  grain:
+    description: One row is one customer.
+    components:
+    - identity_id: customer_identity
+      dataset_columns:
+      - customer_id
+      description: Identifier of one customer.
+  columns:
+  - name: customer_id
+    description: Identifier of one customer.
+  - name: currency_id
+    description: Default currency of the customer.
+  - name: sales_channel_id
+    description: Sales channel that acquired the customer, when one is assigned.
+  - name: customer_name
+    description: Name of the customer.
+  entity_definitions:
+  - identity_id: customer_identity
+    dataset_columns:
+    - customer_id
+    is_entity_universe: true
+    entity_expression:
+    - '[customer_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of customer.
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    is_entity_universe: false
+    entity_expression:
+    - '[currency_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many customers share one default currency, every customer matches a currency, and
+        a currency may include no customer.
+  - identity_id: sales_channel_identity
+    dataset_columns:
+    - sales_channel_id
+    is_entity_universe: false
+    entity_expression:
+    - '[sales_channel_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A customer may match one sales channel, and a sales channel may include no customer.
+- node_id: sf:manufacturing-discrete.party.dim_customer_ship_to
+  descriptor:
+    qualified_name: manufacturing-discrete.party.dim_customer_ship_to
+    display_name: Customer Ship To
+    description: Destination address that can receive a customer shipment.
+    synonyms: []
+    tags:
+    - dimension
+    - party
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: PARTY
+      object: DIM_CUSTOMER_SHIP_TO
+      format: table
+  grain:
+    description: One row is one customer ship to.
+    components:
+    - identity_id: ship_to_identity
+      dataset_columns:
+      - ship_to_id
+      description: Identifier of one customer ship-to.
+  columns:
+  - name: ship_to_id
+    description: Identifier of one customer ship-to.
+  - name: customer_id
+    description: Customer that owns the ship-to.
+  - name: ship_to_name
+    description: Name of the ship-to location.
+  entity_definitions:
+  - identity_id: ship_to_identity
+    dataset_columns:
+    - ship_to_id
+    is_entity_universe: true
+    entity_expression:
+    - '[ship_to_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of customer ship to.
+  - identity_id: customer_identity
+    dataset_columns:
+    - customer_id
+    is_entity_universe: false
+    entity_expression:
+    - '[customer_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many ship-to addresses belong to one customer, every ship-to matches a customer,
+        and every customer includes at least one ship-to.
+- node_id: sf:manufacturing-discrete.party.dim_carrier
+  descriptor:
+    qualified_name: manufacturing-discrete.party.dim_carrier
+    display_name: Carrier
+    description: Transportation company that can haul a shipment.
+    synonyms: []
+    tags:
+    - dimension
+    - party
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: PARTY
+      object: DIM_CARRIER
+      format: table
+  grain:
+    description: One row is one carrier.
+    components:
+    - identity_id: carrier_identity
+      dataset_columns:
+      - carrier_id
+      description: Identifier of one carrier.
+  columns:
+  - name: carrier_id
+    description: Identifier of one carrier.
+  - name: carrier_name
+    description: Name of the carrier.
+  entity_definitions:
+  - identity_id: carrier_identity
+    dataset_columns:
+    - carrier_id
+    is_entity_universe: true
+    entity_expression:
+    - '[carrier_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of carrier.

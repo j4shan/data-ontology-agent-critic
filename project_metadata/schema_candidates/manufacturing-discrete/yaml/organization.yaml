@@ -1,0 +1,926 @@
+schema_version: '2'
+nodes:
+- node_id: sf:manufacturing-discrete.organization.dim_enterprise
+  descriptor:
+    qualified_name: manufacturing-discrete.organization.dim_enterprise
+    display_name: Enterprise
+    description: The company that owns every legal entity and plant.
+    synonyms: []
+    tags:
+    - dimension
+    - organization
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: ORGANIZATION
+      object: DIM_ENTERPRISE
+      format: table
+  grain:
+    description: One row is one enterprise.
+    components:
+    - identity_id: enterprise_identity
+      dataset_columns:
+      - enterprise_id
+      description: Identifier of the Alderford enterprise.
+  columns:
+  - name: enterprise_id
+    description: Identifier of the Alderford enterprise.
+  - name: enterprise_name
+    description: Registered name of the enterprise.
+  entity_definitions:
+  - identity_id: enterprise_identity
+    dataset_columns:
+    - enterprise_id
+    is_entity_universe: true
+    entity_expression:
+    - '[enterprise_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of enterprise.
+- node_id: sf:manufacturing-discrete.organization.dim_legal_entity
+  descriptor:
+    qualified_name: manufacturing-discrete.organization.dim_legal_entity
+    display_name: Legal Entity
+    description: Incorporated owner of plants, cost centers, and ledger accounts.
+    synonyms: []
+    tags:
+    - dimension
+    - organization
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: ORGANIZATION
+      object: DIM_LEGAL_ENTITY
+      format: table
+  grain:
+    description: One row is one legal entity.
+    components:
+    - identity_id: legal_entity_identity
+      dataset_columns:
+      - legal_entity_id
+      description: Identifier of one legal entity.
+  columns:
+  - name: legal_entity_id
+    description: Identifier of one legal entity.
+  - name: enterprise_id
+    description: Enterprise that owns the legal entity.
+  - name: legal_entity_name
+    description: Registered name of the legal entity.
+  entity_definitions:
+  - identity_id: legal_entity_identity
+    dataset_columns:
+    - legal_entity_id
+    is_entity_universe: true
+    entity_expression:
+    - '[legal_entity_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of legal entity.
+  - identity_id: enterprise_identity
+    dataset_columns:
+    - enterprise_id
+    is_entity_universe: false
+    entity_expression:
+    - '[enterprise_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many legal entities belong to one enterprise, every legal entity matches an enterprise,
+        and every enterprise includes at least one legal entity.
+- node_id: sf:manufacturing-discrete.organization.dim_plant
+  descriptor:
+    qualified_name: manufacturing-discrete.organization.dim_plant
+    display_name: Plant
+    description: Manufacturing site where product is planned, made, stored, and shipped.
+    synonyms:
+    - site
+    - factory
+    tags:
+    - dimension
+    - organization
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: ORGANIZATION
+      object: DIM_PLANT
+      format: table
+  grain:
+    description: One row is one plant.
+    components:
+    - identity_id: plant_identity
+      dataset_columns:
+      - plant_id
+      description: Identifier of one plant.
+  columns:
+  - name: plant_id
+    description: Identifier of one plant.
+  - name: legal_entity_id
+    description: Legal entity that owns the plant.
+  - name: plant_manager_employee_id
+    description: Employee who manages the plant.
+  - name: plant_name
+    description: Name of the plant site.
+  entity_definitions:
+  - identity_id: plant_identity
+    dataset_columns:
+    - plant_id
+    is_entity_universe: true
+    entity_expression:
+    - '[plant_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of plant.
+  - identity_id: legal_entity_identity
+    dataset_columns:
+    - legal_entity_id
+    is_entity_universe: false
+    entity_expression:
+    - '[legal_entity_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many plants belong to one legal entity, every plant matches a legal entity, and a
+        legal entity may include no plant.
+  - identity_id: employee_identity
+    dataset_columns:
+    - plant_manager_employee_id
+    is_entity_universe: false
+    entity_expression:
+    - '[plant_manager_employee_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: '1:1'
+      business_rule: Each plant matches exactly one plant manager, each employee manages at most one plant,
+        and not every employee is a plant manager.
+- node_id: sf:manufacturing-discrete.organization.dim_area
+  descriptor:
+    qualified_name: manufacturing-discrete.organization.dim_area
+    display_name: Area
+    description: Production area inside a plant, such as machining, assembly, or test.
+    synonyms: []
+    tags:
+    - dimension
+    - organization
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: ORGANIZATION
+      object: DIM_AREA
+      format: table
+  grain:
+    description: One row is one area.
+    components:
+    - identity_id: area_identity
+      dataset_columns:
+      - area_id
+      description: Identifier of one plant area.
+  columns:
+  - name: area_id
+    description: Identifier of one plant area.
+  - name: plant_id
+    description: Plant that contains the area.
+  - name: area_name
+    description: Name of the area.
+  entity_definitions:
+  - identity_id: area_identity
+    dataset_columns:
+    - area_id
+    is_entity_universe: true
+    entity_expression:
+    - '[area_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of area.
+  - identity_id: plant_identity
+    dataset_columns:
+    - plant_id
+    is_entity_universe: false
+    entity_expression:
+    - '[plant_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many areas belong to one plant, every area matches a plant, and every plant includes
+        at least one area.
+- node_id: sf:manufacturing-discrete.organization.dim_production_line
+  descriptor:
+    qualified_name: manufacturing-discrete.organization.dim_production_line
+    display_name: Production Line
+    description: Line of resources that performs a stage of work inside an area.
+    synonyms: []
+    tags:
+    - dimension
+    - organization
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: ORGANIZATION
+      object: DIM_PRODUCTION_LINE
+      format: table
+  grain:
+    description: One row is one production line.
+    components:
+    - identity_id: production_line_identity
+      dataset_columns:
+      - production_line_id
+      description: Identifier of one production line.
+  columns:
+  - name: production_line_id
+    description: Identifier of one production line.
+  - name: area_id
+    description: Area that contains the production line.
+  - name: supervisor_employee_id
+    description: Employee who supervises the production line.
+  - name: line_name
+    description: Name of the production line.
+  entity_definitions:
+  - identity_id: production_line_identity
+    dataset_columns:
+    - production_line_id
+    is_entity_universe: true
+    entity_expression:
+    - '[production_line_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of production line.
+  - identity_id: area_identity
+    dataset_columns:
+    - area_id
+    is_entity_universe: false
+    entity_expression:
+    - '[area_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many production lines belong to one area, every production line matches an area,
+        and every area includes at least one production line.
+  - identity_id: employee_identity
+    dataset_columns:
+    - supervisor_employee_id
+    is_entity_universe: false
+    entity_expression:
+    - '[supervisor_employee_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: '1:1'
+      business_rule: Each production line matches exactly one supervisor, each employee supervises at
+        most one production line, and not every employee is a line supervisor.
+- node_id: sf:manufacturing-discrete.organization.dim_work_center
+  descriptor:
+    qualified_name: manufacturing-discrete.organization.dim_work_center
+    display_name: Work Center
+    description: Resource that provides a class of capacity on a production line.
+    synonyms:
+    - resource
+    tags:
+    - dimension
+    - organization
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: ORGANIZATION
+      object: DIM_WORK_CENTER
+      format: table
+  grain:
+    description: One row is one work center.
+    components:
+    - identity_id: work_center_identity
+      dataset_columns:
+      - work_center_id
+      description: Identifier of one work center.
+  columns:
+  - name: work_center_id
+    description: Identifier of one work center.
+  - name: production_line_id
+    description: Production line that contains the work center.
+  - name: department_id
+    description: Department responsible for the work center.
+  - name: cost_center_id
+    description: Cost center that absorbs the work center.
+  - name: work_center_name
+    description: Name of the work center.
+  entity_definitions:
+  - identity_id: work_center_identity
+    dataset_columns:
+    - work_center_id
+    is_entity_universe: true
+    entity_expression:
+    - '[work_center_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of work center.
+  - identity_id: production_line_identity
+    dataset_columns:
+    - production_line_id
+    is_entity_universe: false
+    entity_expression:
+    - '[production_line_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many work centers belong to one production line, every work center matches a production
+        line, and every production line includes at least one work center.
+  - identity_id: department_identity
+    dataset_columns:
+    - department_id
+    is_entity_universe: false
+    entity_expression:
+    - '[department_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many work centers belong to one department, every work center matches a department,
+        and a department may include no work center.
+  - identity_id: cost_center_identity
+    dataset_columns:
+    - cost_center_id
+    is_entity_universe: false
+    entity_expression:
+    - '[cost_center_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many work centers belong to one cost center, every work center matches a cost center,
+        and a cost center may include no work center.
+- node_id: sf:manufacturing-discrete.organization.dim_work_unit
+  descriptor:
+    qualified_name: manufacturing-discrete.organization.dim_work_unit
+    display_name: Work Unit
+    description: Individual machine, bench, or station that reports production.
+    synonyms: []
+    tags:
+    - dimension
+    - organization
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: ORGANIZATION
+      object: DIM_WORK_UNIT
+      format: table
+  grain:
+    description: One row is one work unit.
+    components:
+    - identity_id: work_unit_identity
+      dataset_columns:
+      - work_unit_id
+      description: Identifier of one work unit.
+  columns:
+  - name: work_unit_id
+    description: Identifier of one work unit.
+  - name: work_center_id
+    description: Work center that contains the work unit.
+  - name: work_unit_name
+    description: Name of the work unit.
+  entity_definitions:
+  - identity_id: work_unit_identity
+    dataset_columns:
+    - work_unit_id
+    is_entity_universe: true
+    entity_expression:
+    - '[work_unit_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of work unit.
+  - identity_id: work_center_identity
+    dataset_columns:
+    - work_center_id
+    is_entity_universe: false
+    entity_expression:
+    - '[work_center_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many work units belong to one work center, every work unit matches a work center,
+        and every work center includes at least one work unit.
+- node_id: sf:manufacturing-discrete.organization.dim_department
+  descriptor:
+    qualified_name: manufacturing-discrete.organization.dim_department
+    display_name: Department
+    description: Organizational unit at a plant that employs people and owns work centers.
+    synonyms: []
+    tags:
+    - dimension
+    - organization
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: ORGANIZATION
+      object: DIM_DEPARTMENT
+      format: table
+  grain:
+    description: One row is one department.
+    components:
+    - identity_id: department_identity
+      dataset_columns:
+      - department_id
+      description: Identifier of one department.
+  columns:
+  - name: department_id
+    description: Identifier of one department.
+  - name: plant_id
+    description: Plant that contains the department.
+  - name: department_name
+    description: Name of the department.
+  entity_definitions:
+  - identity_id: department_identity
+    dataset_columns:
+    - department_id
+    is_entity_universe: true
+    entity_expression:
+    - '[department_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of department.
+  - identity_id: plant_identity
+    dataset_columns:
+    - plant_id
+    is_entity_universe: false
+    entity_expression:
+    - '[plant_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many departments belong to one plant, every department matches a plant, and every
+        plant includes at least one department.
+- node_id: sf:manufacturing-discrete.organization.dim_cost_center
+  descriptor:
+    qualified_name: manufacturing-discrete.organization.dim_cost_center
+    display_name: Cost Center
+    description: Responsibility center that collects manufacturing cost for a legal entity.
+    synonyms: []
+    tags:
+    - dimension
+    - organization
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: ORGANIZATION
+      object: DIM_COST_CENTER
+      format: table
+  grain:
+    description: One row is one cost center.
+    components:
+    - identity_id: cost_center_identity
+      dataset_columns:
+      - cost_center_id
+      description: Identifier of one cost center.
+  columns:
+  - name: cost_center_id
+    description: Identifier of one cost center.
+  - name: legal_entity_id
+    description: Legal entity that owns the cost center.
+  - name: profit_center_id
+    description: Profit center that rolls up the cost center.
+  - name: cost_center_name
+    description: Name of the cost center.
+  entity_definitions:
+  - identity_id: cost_center_identity
+    dataset_columns:
+    - cost_center_id
+    is_entity_universe: true
+    entity_expression:
+    - '[cost_center_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of cost center.
+  - identity_id: legal_entity_identity
+    dataset_columns:
+    - legal_entity_id
+    is_entity_universe: false
+    entity_expression:
+    - '[legal_entity_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many cost centers belong to one legal entity, every cost center matches a legal entity,
+        and a legal entity may include no cost center.
+  - identity_id: profit_center_identity
+    dataset_columns:
+    - profit_center_id
+    is_entity_universe: false
+    entity_expression:
+    - '[profit_center_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many cost centers belong to one profit center, every cost center matches a profit
+        center, and a profit center may include no cost center.
+- node_id: sf:manufacturing-discrete.organization.dim_profit_center
+  descriptor:
+    qualified_name: manufacturing-discrete.organization.dim_profit_center
+    display_name: Profit Center
+    description: Financial unit that reports margin for a legal entity.
+    synonyms: []
+    tags:
+    - dimension
+    - organization
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: ORGANIZATION
+      object: DIM_PROFIT_CENTER
+      format: table
+  grain:
+    description: One row is one profit center.
+    components:
+    - identity_id: profit_center_identity
+      dataset_columns:
+      - profit_center_id
+      description: Identifier of one profit center.
+  columns:
+  - name: profit_center_id
+    description: Identifier of one profit center.
+  - name: legal_entity_id
+    description: Legal entity that owns the profit center.
+  - name: profit_center_name
+    description: Name of the profit center.
+  entity_definitions:
+  - identity_id: profit_center_identity
+    dataset_columns:
+    - profit_center_id
+    is_entity_universe: true
+    entity_expression:
+    - '[profit_center_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of profit center.
+  - identity_id: legal_entity_identity
+    dataset_columns:
+    - legal_entity_id
+    is_entity_universe: false
+    entity_expression:
+    - '[legal_entity_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many profit centers belong to one legal entity, every profit center matches a legal
+        entity, and a legal entity may include no profit center.
+- node_id: sf:manufacturing-discrete.organization.dim_employee
+  descriptor:
+    qualified_name: manufacturing-discrete.organization.dim_employee
+    display_name: Employee
+    description: Person employed by Alderford who can be assigned to work, supervision, or buying.
+    synonyms:
+    - worker
+    - associate
+    tags:
+    - dimension
+    - organization
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: ORGANIZATION
+      object: DIM_EMPLOYEE
+      format: table
+  grain:
+    description: One row is one employee.
+    components:
+    - identity_id: employee_identity
+      dataset_columns:
+      - employee_id
+      description: Identifier of one employee.
+  columns:
+  - name: employee_id
+    description: Identifier of one employee.
+  - name: department_id
+    description: Department that employs the person.
+  - name: home_plant_id
+    description: Plant where the employee is based.
+  - name: employee_name
+    description: Name of the employee.
+  - name: employment_status
+    description: Current employment state of the person.
+    value_description: active, leave, terminated
+  entity_definitions:
+  - identity_id: employee_identity
+    dataset_columns:
+    - employee_id
+    is_entity_universe: true
+    entity_expression:
+    - '[employee_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of employee.
+  - identity_id: department_identity
+    dataset_columns:
+    - department_id
+    is_entity_universe: false
+    entity_expression:
+    - '[department_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many employees belong to one department, every employee matches a department, and
+        a department may include no employee.
+  - identity_id: plant_identity
+    dataset_columns:
+    - home_plant_id
+    is_entity_universe: false
+    entity_expression:
+    - '[home_plant_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many employees belong to one home plant, every employee matches a home plant, and
+        a plant may include no employee.
+- node_id: sf:manufacturing-discrete.organization.dim_labor_skill
+  descriptor:
+    qualified_name: manufacturing-discrete.organization.dim_labor_skill
+    display_name: Labor Skill
+    description: Named skill that qualifies a person or a work center for an operation.
+    synonyms: []
+    tags:
+    - dimension
+    - organization
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: ORGANIZATION
+      object: DIM_LABOR_SKILL
+      format: table
+  grain:
+    description: One row is one labor skill.
+    components:
+    - identity_id: labor_skill_identity
+      dataset_columns:
+      - skill_id
+      description: Identifier of one labor skill.
+  columns:
+  - name: skill_id
+    description: Identifier of one labor skill.
+  - name: skill_name
+    description: Name of the labor skill.
+  entity_definitions:
+  - identity_id: labor_skill_identity
+    dataset_columns:
+    - skill_id
+    is_entity_universe: true
+    entity_expression:
+    - '[skill_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of labor skill.
+- node_id: sf:manufacturing-discrete.organization.dim_shift
+  descriptor:
+    qualified_name: manufacturing-discrete.organization.dim_shift
+    display_name: Shift
+    description: Named working shift at a plant.
+    synonyms: []
+    tags:
+    - dimension
+    - organization
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: ORGANIZATION
+      object: DIM_SHIFT
+      format: table
+  grain:
+    description: One row is one shift.
+    components:
+    - identity_id: shift_identity
+      dataset_columns:
+      - shift_id
+      description: Identifier of one shift.
+  columns:
+  - name: shift_id
+    description: Identifier of one shift.
+  - name: plant_id
+    description: Plant that operates the shift.
+  - name: shift_name
+    description: Name of the shift.
+  entity_definitions:
+  - identity_id: shift_identity
+    dataset_columns:
+    - shift_id
+    is_entity_universe: true
+    entity_expression:
+    - '[shift_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of shift.
+  - identity_id: plant_identity
+    dataset_columns:
+    - plant_id
+    is_entity_universe: false
+    entity_expression:
+    - '[plant_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many shifts belong to one plant, every shift matches a plant, and a plant may include
+        no shift.
+- node_id: sf:manufacturing-discrete.organization.dim_calendar_day
+  descriptor:
+    qualified_name: manufacturing-discrete.organization.dim_calendar_day
+    display_name: Calendar Day
+    description: Civil day used to date plans, orders, movements, and cost postings.
+    synonyms: []
+    tags:
+    - dimension
+    - organization
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: ORGANIZATION
+      object: DIM_CALENDAR_DAY
+      format: table
+  grain:
+    description: One row is one calendar day.
+    components:
+    - identity_id: calendar_day_identity
+      dataset_columns:
+      - calendar_day_id
+      description: Identifier of one calendar day.
+  columns:
+  - name: calendar_day_id
+    description: Identifier of one calendar day.
+  - name: calendar_date
+    description: Civil date represented by the calendar day.
+  entity_definitions:
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: true
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of calendar day.
+- node_id: sf:manufacturing-discrete.organization.dim_planner
+  descriptor:
+    qualified_name: manufacturing-discrete.organization.dim_planner
+    display_name: Planner
+    description: Employee authorized to plan supply for a plant.
+    synonyms: []
+    tags:
+    - dimension
+    - organization
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: ORGANIZATION
+      object: DIM_PLANNER
+      format: table
+  grain:
+    description: One row is one planner.
+    components:
+    - identity_id: planner_identity
+      dataset_columns:
+      - planner_id
+      description: Identifier of one planner assignment.
+  columns:
+  - name: planner_id
+    description: Identifier of one planner assignment.
+  - name: employee_id
+    description: Employee who holds the planner assignment.
+  - name: plant_id
+    description: Plant the planner covers.
+  entity_definitions:
+  - identity_id: planner_identity
+    dataset_columns:
+    - planner_id
+    is_entity_universe: true
+    entity_expression:
+    - '[planner_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of planner.
+  - identity_id: employee_identity
+    dataset_columns:
+    - employee_id
+    is_entity_universe: false
+    entity_expression:
+    - '[employee_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: '1:1'
+      business_rule: Each planner matches exactly one employee, each employee holds at most one planner
+        assignment, and not every employee is a planner.
+  - identity_id: plant_identity
+    dataset_columns:
+    - plant_id
+    is_entity_universe: false
+    entity_expression:
+    - '[plant_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many planners belong to one plant, every planner matches a plant, and a plant may
+        include no planner.
+- node_id: sf:manufacturing-discrete.organization.dim_reporting_manager
+  descriptor:
+    qualified_name: manufacturing-discrete.organization.dim_reporting_manager
+    display_name: Reporting Manager
+    description: Employee designated as the manager on reporting lines.
+    synonyms: []
+    tags:
+    - dimension
+    - organization
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: alderford.us-east-1
+      database: MANUFACTURING_DISCRETE
+      schema: ORGANIZATION
+      object: DIM_REPORTING_MANAGER
+      format: table
+  grain:
+    description: One row is one reporting manager.
+    components:
+    - identity_id: reporting_manager_identity
+      dataset_columns:
+      - reporting_manager_id
+      description: Identifier of one reporting-manager role.
+  columns:
+  - name: reporting_manager_id
+    description: Identifier of one reporting-manager role.
+  - name: employee_id
+    description: Employee who holds the reporting-manager role.
+  entity_definitions:
+  - identity_id: reporting_manager_identity
+    dataset_columns:
+    - reporting_manager_id
+    is_entity_universe: true
+    entity_expression:
+    - '[reporting_manager_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of reporting manager.
+  - identity_id: employee_identity
+    dataset_columns:
+    - employee_id
+    is_entity_universe: false
+    entity_expression:
+    - '[employee_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: '1:1'
+      business_rule: Each reporting-manager role matches exactly one employee, an employee holds at most
+        one reporting-manager role, and not every employee is a reporting manager.

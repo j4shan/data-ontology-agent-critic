@@ -16,7 +16,7 @@ Harbor Medicare Services is fictional. CMS reported in its fiscal year 2025 fina
 
 _QUESTIONS = """
 1. What did a member claim, on which plan and coverage, and which billing provider submitted it?
-   `payer.claim.fact_claim_header` joins `dim_member`, `dim_coverage`, `dim_plan`, and `dim_provider` through `billing_provider_id`. Every header has service lines on `fact_claim_line`.
+   `healthcare-payer.claim.fact_claim_header` joins `dim_member`, `dim_coverage`, `dim_plan`, and `dim_provider` through `billing_provider_id`. Every header has service lines on `fact_claim_line`.
 
 2. Which procedure, rendering provider, and charge apply to each service line?
    `fact_claim_line` joins `fact_claim_header` as `1:many` with a required match both ways. `procedure_id` joins `dim_procedure`. `rendering_provider_id` joins `dim_provider`. `charge_amount` is a measure of the line.
@@ -34,7 +34,7 @@ _QUESTIONS = """
    `fact_accumulator_entry` joins `dim_member`, `dim_accumulator_type`, and `fact_claim_line`. `fact_accumulator_snapshot` is the month-end position, `1:many` from both the member and the accumulator type with a required match both ways.
 
 7. Which pharmacy claim filled which NDC for a member, and which prescriber ordered it?
-   `payer.pharmacy.fact_pharmacy_claim` joins `dim_member`, `dim_pharmacy`, `dim_ndc`, and `dim_prescriber`.
+   `healthcare-payer.pharmacy.fact_pharmacy_claim` joins `dim_member`, `dim_pharmacy`, `dim_ndc`, and `dim_prescriber`.
 
 8. Which coverage spans does a member have, and which plan do they sit on?
    `dim_coverage` joins `dim_member` as `1:many` with a required match both ways, and joins `dim_plan`. `fact_enrollment_span` joins `dim_coverage` one-to-one in both directions.
@@ -454,7 +454,7 @@ def _datasets() -> list[dict]:
             _fact("care", "fact_grievance", "Grievance", "One member grievance.", 90_000, [L("member_id", "dim_member", "n1"), L("plan_id", "dim_plan", "n1"), L("calendar_day_id", "dim_calendar_day", "n1")], [M("grievance_category", "Category.", "access, quality, billing, privacy")]),
             _fact("benefit", "fact_fee_schedule_rate", "Fee Schedule Rate", "One procedure rate on a fee schedule.", 2_000_000, [L("fee_schedule_id", "dim_fee_schedule", "n1!"), L("procedure_id", "dim_procedure", "n1", coverage=0.5), L("locality_id", "dim_locality", "n1")], [M("rate_amount", "Allowed rate.")]),
             _bridge("bridge_plan_benefit", "Plan Benefit", "Benefit packaged on a plan.", 600, [L("plan_id", "dim_plan", "n1!"), L("benefit_id", "dim_benefit", "11!")]),
-            _bridge("bridge_provider_network", "Provider Network", "Network participation of a provider.", 2_000_000, [L("provider_id", "dim_provider", "n1", coverage=0.8), L("network_id", "dim_network", "n1!")]),
+            _bridge("bridge_provider_network", "Provider Network Participation", "Network participation of a provider.", 2_000_000, [L("provider_id", "dim_provider", "n1", coverage=0.8), L("network_id", "dim_network", "n1!")]),
             _bridge("bridge_provider_specialty", "Provider Specialty", "Specialty attested by a provider.", 1_500_000, [L("provider_id", "dim_provider", "n1", coverage=0.9), L("specialty_id", "dim_specialty", "n1!")]),
             _bridge("bridge_facility_network", "Facility Network", "Network participation of a facility.", 200_000, [L("facility_id", "dim_facility", "n1"), L("network_id", "dim_network", "n1!")]),
             _bridge("bridge_member_language", "Member Language", "Preferred language of a member.", 68_000_000, [L("member_id", "dim_member", "11!"), L("language_id", "dim_language", "n1!")]),
@@ -487,11 +487,11 @@ def _datasets() -> list[dict]:
 DATASETS = _datasets()
 
 DOMAIN = {
-    "key": "payer",
+    "key": "healthcare-payer",
     "business_name": "Harbor Medicare Services",
-    "database": "PAYER",
+    "database": "HEALTHCARE_PAYER",
     "account": "harbor.us-east-1",
-    "root": "payer",
+    "root": "healthcare-payer",
     "narrative": _NARRATIVE.strip(),
     "provenance": _PROVENANCE.strip(),
     "statistics_window_days": 30,
@@ -502,7 +502,7 @@ DOMAIN = {
         "claim_line_identity": ["service line"],
     },
     "readme_intro": """
-Harbor Medicare Services processes Medicare-scale claims. The catalog `payer` is the ontology of eligibility, 837 submission, adjudication, 835 remittance, pharmacy, premium billing, and benefit accumulation: datasets in the Snowflake database `PAYER`.
+Harbor Medicare Services processes Medicare-scale claims. The catalog `healthcare-payer` is the ontology of eligibility, 837 submission, adjudication, 835 remittance, pharmacy, premium billing, and benefit accumulation: datasets in the Snowflake database `HEALTHCARE_PAYER`.
 
 A claim header and a claim line are different facts. A remittance advice, a remit line, and a remit adjustment are different facts. An eligibility inquiry has one response. Members, coverage, providers, plans, and code sets are the populations those facts join. The questions below use the authored identities and joins. Synthetic row counts and fan-out for a 30-day window are listed with the major fact tables.
 """.strip(),

@@ -1,0 +1,286 @@
+schema_version: '2'
+nodes:
+- node_id: sf:commerce-marketplace.service.fact_support_case
+  descriptor:
+    qualified_name: commerce-marketplace.service.fact_support_case
+    display_name: Support case
+    description: Support case routed to a marketplace queue.
+    synonyms: []
+    tags:
+    - fact
+    - service
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE_MARKETPLACE
+      schema: SERVICE
+      object: FACT_SUPPORT_CASE
+      format: table
+  grain:
+    description: One row is one support case.
+    components:
+    - identity_id: support_case_identity
+      dataset_columns:
+      - support_case_id
+      description: Identifies one support case.
+  columns:
+  - name: support_case_id
+    description: Identifies one support case.
+  - name: buyer_account_id
+    description: Buyer account that opened the case.
+  - name: seller_id
+    description: Seller involved in the case.
+  - name: support_queue_id
+    description: Queue that owns the case.
+  - name: order_id
+    description: Order the case concerns.
+  - name: reason_code_id
+    description: Reason cited on the case.
+  - name: case_status
+    description: Handling standing of the support case.
+    value_description: open, pending, resolved, closed
+  entity_definitions:
+  - identity_id: support_case_identity
+    dataset_columns:
+    - support_case_id
+    is_entity_universe: true
+    entity_expression:
+    - '[support_case_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
+  - identity_id: buyer_account_identity
+    dataset_columns:
+    - buyer_account_id
+    is_entity_universe: false
+    entity_expression:
+    - '[buyer_account_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A support case may have no buyer account, and a buyer account may have no support
+        cases.
+  - identity_id: seller_identity
+    dataset_columns:
+    - seller_id
+    is_entity_universe: false
+    entity_expression:
+    - '[seller_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A support case may have no seller, and a seller may have no support cases.
+  - identity_id: support_queue_identity
+    dataset_columns:
+    - support_queue_id
+    is_entity_universe: false
+    entity_expression:
+    - '[support_queue_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each support case belongs to exactly one support queue, and a support queue may have
+        no cases.
+  - identity_id: order_identity
+    dataset_columns:
+    - order_id
+    is_entity_universe: false
+    entity_expression:
+    - '[order_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A support case may have no order, and an order may have no support cases.
+  - identity_id: reason_code_identity
+    dataset_columns:
+    - reason_code_id
+    is_entity_universe: false
+    entity_expression:
+    - '[reason_code_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A support case may have no reason code, and a reason code may have no support cases.
+- node_id: sf:commerce-marketplace.service.fact_support_message
+  descriptor:
+    qualified_name: commerce-marketplace.service.fact_support_message
+    display_name: Support message
+    description: Message posted on a support case.
+    synonyms: []
+    tags:
+    - fact
+    - service
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE_MARKETPLACE
+      schema: SERVICE
+      object: FACT_SUPPORT_MESSAGE
+      format: table
+  grain:
+    description: One row is one support message.
+    components:
+    - identity_id: support_message_identity
+      dataset_columns:
+      - support_message_id
+      description: Identifies one support message.
+  columns:
+  - name: support_message_id
+    description: Identifies one support message.
+  - name: support_case_id
+    description: Support case that contains the message.
+  - name: employee_id
+    description: Employee who sent the message.
+  - name: buyer_user_id
+    description: Buyer user who sent the message.
+  - name: message_direction
+    description: Whether the support message is inbound or outbound.
+    value_description: inbound, outbound
+  entity_definitions:
+  - identity_id: support_message_identity
+    dataset_columns:
+    - support_message_id
+    is_entity_universe: true
+    entity_expression:
+    - '[support_message_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
+  - identity_id: support_case_identity
+    dataset_columns:
+    - support_case_id
+    is_entity_universe: false
+    entity_expression:
+    - '[support_case_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Every support case includes one or more messages, and each message belongs to exactly
+        one support case.
+  - identity_id: employee_identity
+    dataset_columns:
+    - employee_id
+    is_entity_universe: false
+    entity_expression:
+    - '[employee_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A support message may have no employee, and an employee may have no support messages.
+  - identity_id: buyer_user_identity
+    dataset_columns:
+    - buyer_user_id
+    is_entity_universe: false
+    entity_expression:
+    - '[buyer_user_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A support message may have no buyer user, and a buyer user may have no support messages.
+- node_id: sf:commerce-marketplace.service.fact_sla_breach
+  descriptor:
+    qualified_name: commerce-marketplace.service.fact_sla_breach
+    display_name: SLA breach
+    description: Service breach recorded against a seller.
+    synonyms: []
+    tags:
+    - fact
+    - service
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE_MARKETPLACE
+      schema: SERVICE
+      object: FACT_SLA_BREACH
+      format: table
+  grain:
+    description: One row is one sla breach.
+    components:
+    - identity_id: sla_breach_identity
+      dataset_columns:
+      - sla_breach_id
+      description: Identifies one service breach.
+  columns:
+  - name: sla_breach_id
+    description: Identifies one service breach.
+  - name: order_id
+    description: Order the breach concerns.
+  - name: shipment_id
+    description: Shipment the breach concerns.
+  - name: seller_id
+    description: Seller accountable for the breach.
+  - name: calendar_day_id
+    description: Calendar day of the breach.
+  - name: breach_type
+    description: Kind of service commitment that was missed.
+    value_description: ship_late, deliver_late, response_late
+  entity_definitions:
+  - identity_id: sla_breach_identity
+    dataset_columns:
+    - sla_breach_id
+    is_entity_universe: true
+    entity_expression:
+    - '[sla_breach_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
+  - identity_id: order_identity
+    dataset_columns:
+    - order_id
+    is_entity_universe: false
+    entity_expression:
+    - '[order_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A service breach may have no order, and an order may have no service breaches.
+  - identity_id: shipment_identity
+    dataset_columns:
+    - shipment_id
+    is_entity_universe: false
+    entity_expression:
+    - '[shipment_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A service breach may have no shipment, and a shipment may have no service breaches.
+  - identity_id: seller_identity
+    dataset_columns:
+    - seller_id
+    is_entity_universe: false
+    entity_expression:
+    - '[seller_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each service breach belongs to exactly one seller, and a seller may have no service
+        breaches.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each service breach belongs to exactly one calendar day, and a calendar day may have
+        no service breaches.

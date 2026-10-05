@@ -16,13 +16,13 @@ Northline Mobile is a fictional operator. The mediated-CDR total of 2.1 billion 
 
 _QUESTIONS = """
 1. Which subscription, subscriber, cell, and rate plan produced each data CDR, and how much volume did it carry?
-   `telecom.usage.fact_data_cdr` joins `dim_subscription`, `dim_subscriber`, `dim_cell`, `dim_rate_plan`, and `dim_calendar_day`. `uplink_bytes` and `downlink_bytes` are measures of that CDR row.
+   `telecom-mobile.usage.fact_data_cdr` joins `dim_subscription`, `dim_subscriber`, `dim_cell`, `dim_rate_plan`, and `dim_calendar_day`. `uplink_bytes` and `downlink_bytes` are measures of that CDR row.
 
 2. Which voice CDRs were roaming, and which roaming partner and visited PLMN applied?
    `fact_voice_cdr.roaming_partner_id` is optional. When it is present it joins `dim_roaming_partner`. `visited_plmn_id` joins `dim_plmn`. Home usage leaves the roaming partner empty.
 
 3. How many online charging events, reservations, and debits did a subscription generate?
-   `telecom.charging.fact_charging_event` joins `dim_subscription`. `fact_balance_reservation` joins one charging event, one-to-one, and not every charging event has a reservation. `fact_balance_debit` joins one reservation the same way.
+   `telecom-mobile.charging.fact_charging_event` joins `dim_subscription`. `fact_balance_reservation` joins one charging event, one-to-one, and not every charging event has a reservation. `fact_balance_debit` joins one reservation the same way.
 
 4. What rated charge was produced from a mediated CDR, and which invoice line billed it?
    `fact_rated_charge` may join `fact_data_cdr`, `fact_voice_cdr`, `fact_sms_cdr`, or `fact_content_cdr` one-to-one. `fact_invoice_line.rated_charge_id` may join that rated charge. Every invoice line joins `fact_invoice`.
@@ -37,7 +37,7 @@ _QUESTIONS = """
    `fact_invoice` joins `dim_billing_account` one-to-one in both directions: every account has one invoice, and every invoice has one account. `fact_invoice_line` is `1:many` from that invoice with a required match both ways. `fact_document` joins the invoice one-to-one as the bill document.
 
 8. Which TAP-out records were raised for roaming usage?
-   `telecom.roaming.fact_tap_out` joins `dim_roaming_partner` with a required match both ways, and may join the voice CDR or the data CDR that was outcollected.
+   `telecom-mobile.roaming.fact_tap_out` joins `dim_roaming_partner` with a required match both ways, and may join the voice CDR or the data CDR that was outcollected.
 
 9. What allowance did a subscription draw, and which rated charge caused the draw?
    `fact_allowance_draw` joins `dim_subscription` and `dim_allowance_bucket`. The rated charge is optional.
@@ -644,11 +644,11 @@ def _datasets() -> list[dict]:
 DATASETS = _datasets()
 
 DOMAIN = {
-    "key": "telecom",
+    "key": "telecom-mobile",
     "business_name": "Northline Mobile",
-    "database": "TELECOM",
+    "database": "TELECOM_MOBILE",
     "account": "northline.us-east-1",
-    "root": "telecom",
+    "root": "telecom-mobile",
     "narrative": _NARRATIVE.strip(),
     "provenance": _PROVENANCE.strip(),
     "statistics_window_days": 30,
@@ -659,7 +659,7 @@ DOMAIN = {
         "billing_account_identity": ["account"],
     },
     "readme_intro": """
-Northline Mobile operates a national mobile network. The catalog `telecom` is the ontology of usage mediation, online charging, roaming interchange, and retail billing: datasets in the Snowflake database `TELECOM`.
+Northline Mobile operates a national mobile network. The catalog `telecom-mobile` is the ontology of usage mediation, online charging, roaming interchange, and retail billing: datasets in the Snowflake database `TELECOM_MOBILE`.
 
 A subscription belongs to a subscriber and a billing account. Packet, voice, message, and content usage land as separate CDR facts. Online charging events, reservations, and debits are finer than a closed CDR. TAP-out and TAP-in hold roaming interchange. Cell counters are one row per cell per 15-minute interval. The questions below use the authored identities and joins. Synthetic row counts and fan-out for a 30-day window are listed with the major fact tables.
 """.strip(),

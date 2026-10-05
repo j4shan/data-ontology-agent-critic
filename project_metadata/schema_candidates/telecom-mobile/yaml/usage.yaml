@@ -1,0 +1,1439 @@
+schema_version: '2'
+nodes:
+- node_id: sf:telecom-mobile.usage.fact_data_cdr
+  descriptor:
+    qualified_name: telecom-mobile.usage.fact_data_cdr
+    display_name: Data CDR
+    description: One closed or partial packet-data CDR transferred to billing.
+    synonyms:
+    - PGW CDR
+    - SMF CDR
+    - data record
+    tags:
+    - fact
+    - usage
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM_MOBILE
+      schema: USAGE
+      object: FACT_DATA_CDR
+      format: table
+  grain:
+    description: One row is one data cdr.
+    components:
+    - identity_id: data_cdr_identity
+      dataset_columns:
+      - data_cdr_id
+      description: Identifier of one data CDR.
+  columns:
+  - name: data_cdr_id
+    description: Identifier of one data CDR.
+  - name: subscription_id
+    description: Usage is rated on the subscription.
+  - name: subscriber_id
+    description: Reference to the subscriber.
+  - name: cell_id
+    description: Reference to the cell.
+  - name: cell_site_id
+    description: Reference to the cell Site.
+  - name: technology_id
+    description: Reference to the technology.
+  - name: apn_id
+    description: Reference to the aPN DNN.
+  - name: qos_id
+    description: Reference to the qoS Profile.
+  - name: rating_group_id
+    description: Reference to the rating Group.
+  - name: record_type_id
+    description: Reference to the record Type.
+  - name: plmn_id
+    description: Reference to the pLMN.
+  - name: roaming_partner_id
+    description: Home data has no roaming partner.
+  - name: network_element_id
+    description: Reference to the network Element.
+  - name: recording_entity_id
+    description: Reference to the recording Entity.
+  - name: calendar_day_id
+    description: Every day in the window has data CDRs.
+  - name: release_cause_id
+    description: Reference to the release Cause.
+  - name: rate_plan_id
+    description: Reference to the rate Plan.
+  - name: imsi_id
+    description: Reference to the iMSI.
+  - name: msisdn_id
+    description: Reference to the public Number.
+  - name: slice_id
+    description: 4G sessions have no slice.
+  - name: mediation_file_id
+    description: Every mediation file in the window contains data CDRs.
+  - name: uplink_bytes
+    description: Uplink volume on the CDR.
+  - name: downlink_bytes
+    description: Downlink volume on the CDR.
+  - name: duration_seconds
+    description: Recorded duration of the CDR.
+  entity_definitions:
+  - identity_id: data_cdr_identity
+    dataset_columns:
+    - data_cdr_id
+    is_entity_universe: true
+    entity_expression:
+    - '[data_cdr_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of data cdr.
+  - identity_id: subscription_identity
+    dataset_columns:
+    - subscription_id
+    is_entity_universe: false
+    entity_expression:
+    - '[subscription_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many data CDRs belong to one subscription, every data CDR matches a subscription,
+        and a subscription may include no data CDR. Usage is rated on the subscription.
+  - identity_id: subscriber_identity
+    dataset_columns:
+    - subscriber_id
+    is_entity_universe: false
+    entity_expression:
+    - '[subscriber_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many data CDRs belong to one subscriber, every data CDR matches a subscriber, and
+        a subscriber may include no data CDR.
+  - identity_id: cell_identity
+    dataset_columns:
+    - cell_id
+    is_entity_universe: false
+    entity_expression:
+    - '[cell_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many data CDRs belong to one cell, every data CDR matches a cell, and a cell may
+        include no data CDR.
+  - identity_id: cell_site_identity
+    dataset_columns:
+    - cell_site_id
+    is_entity_universe: false
+    entity_expression:
+    - '[cell_site_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many data CDRs belong to one cell Site, every data CDR matches a cell Site, and a
+        cell Site may include no data CDR.
+  - identity_id: technology_identity
+    dataset_columns:
+    - technology_id
+    is_entity_universe: false
+    entity_expression:
+    - '[technology_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many data CDRs belong to one technology, every data CDR matches a technology, and
+        every technology includes at least one data CDR.
+  - identity_id: apn_identity
+    dataset_columns:
+    - apn_id
+    is_entity_universe: false
+    entity_expression:
+    - '[apn_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many data CDRs belong to one aPN DNN, every data CDR matches a aPN DNN, and every
+        aPN DNN includes at least one data CDR.
+  - identity_id: qos_identity
+    dataset_columns:
+    - qos_id
+    is_entity_universe: false
+    entity_expression:
+    - '[qos_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many data CDRs belong to one qoS Profile, every data CDR matches a qoS Profile, and
+        a qoS Profile may include no data CDR.
+  - identity_id: rating_group_identity
+    dataset_columns:
+    - rating_group_id
+    is_entity_universe: false
+    entity_expression:
+    - '[rating_group_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many data CDRs belong to one rating Group, every data CDR matches a rating Group,
+        and a rating Group may include no data CDR.
+  - identity_id: record_type_identity
+    dataset_columns:
+    - record_type_id
+    is_entity_universe: false
+    entity_expression:
+    - '[record_type_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many data CDRs belong to one record Type, every data CDR matches a record Type, and
+        every record Type includes at least one data CDR.
+  - identity_id: plmn_identity
+    dataset_columns:
+    - plmn_id
+    is_entity_universe: false
+    entity_expression:
+    - '[plmn_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many data CDRs belong to one pLMN, every data CDR matches a pLMN, and a pLMN may
+        include no data CDR.
+  - identity_id: roaming_partner_identity
+    dataset_columns:
+    - roaming_partner_id
+    is_entity_universe: false
+    entity_expression:
+    - '[roaming_partner_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A data CDR may match one roaming Partner, and a roaming Partner may include no data
+        CDR. Home data has no roaming partner.
+  - identity_id: network_element_identity
+    dataset_columns:
+    - network_element_id
+    is_entity_universe: false
+    entity_expression:
+    - '[network_element_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many data CDRs belong to one network Element, every data CDR matches a network Element,
+        and a network Element may include no data CDR.
+  - identity_id: recording_entity_identity
+    dataset_columns:
+    - recording_entity_id
+    is_entity_universe: false
+    entity_expression:
+    - '[recording_entity_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many data CDRs belong to one recording Entity, every data CDR matches a recording
+        Entity, and every recording Entity includes at least one data CDR.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many data CDRs belong to one calendar Day, every data CDR matches a calendar Day,
+        and every calendar Day includes at least one data CDR. Every day in the window has data CDRs.
+  - identity_id: release_cause_identity
+    dataset_columns:
+    - release_cause_id
+    is_entity_universe: false
+    entity_expression:
+    - '[release_cause_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A data CDR may match one release Cause, and a release Cause may include no data CDR.
+  - identity_id: rate_plan_identity
+    dataset_columns:
+    - rate_plan_id
+    is_entity_universe: false
+    entity_expression:
+    - '[rate_plan_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many data CDRs belong to one rate Plan, every data CDR matches a rate Plan, and a
+        rate Plan may include no data CDR.
+  - identity_id: imsi_identity
+    dataset_columns:
+    - imsi_id
+    is_entity_universe: false
+    entity_expression:
+    - '[imsi_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many data CDRs belong to one iMSI, every data CDR matches a iMSI, and a iMSI may
+        include no data CDR.
+  - identity_id: msisdn_identity
+    dataset_columns:
+    - msisdn_id
+    is_entity_universe: false
+    entity_expression:
+    - '[msisdn_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many data CDRs belong to one public Number, every data CDR matches a public Number,
+        and a public Number may include no data CDR.
+  - identity_id: slice_identity
+    dataset_columns:
+    - slice_id
+    is_entity_universe: false
+    entity_expression:
+    - '[slice_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A data CDR may match one network Slice, and a network Slice may include no data CDR.
+        4G sessions have no slice.
+  - identity_id: mediation_file_identity
+    dataset_columns:
+    - mediation_file_id
+    is_entity_universe: false
+    entity_expression:
+    - '[mediation_file_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many data CDRs belong to one mediation File, every data CDR matches a mediation File,
+        and every mediation File includes at least one data CDR. Every mediation file in the window contains
+        data CDRs.
+- node_id: sf:telecom-mobile.usage.fact_voice_cdr
+  descriptor:
+    qualified_name: telecom-mobile.usage.fact_voice_cdr
+    display_name: Voice CDR
+    description: One voice call detail record.
+    synonyms: []
+    tags:
+    - fact
+    - usage
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM_MOBILE
+      schema: USAGE
+      object: FACT_VOICE_CDR
+      format: table
+  grain:
+    description: One row is one voice cdr.
+    components:
+    - identity_id: voice_cdr_identity
+      dataset_columns:
+      - voice_cdr_id
+      description: Identifier of one voice CDR.
+  columns:
+  - name: voice_cdr_id
+    description: Identifier of one voice CDR.
+  - name: subscription_id
+    description: Reference to the subscription.
+  - name: subscriber_id
+    description: Reference to the subscriber.
+  - name: cell_id
+    description: Reference to the cell.
+  - name: technology_id
+    description: Reference to the technology.
+  - name: call_type_id
+    description: Reference to the call Type.
+  - name: record_type_id
+    description: Reference to the record Type.
+  - name: plmn_id
+    description: Reference to the pLMN.
+  - name: roaming_partner_id
+    description: Home voice has no roaming partner.
+  - name: network_element_id
+    description: Reference to the network Element.
+  - name: calendar_day_id
+    description: Reference to the calendar Day.
+  - name: release_cause_id
+    description: Reference to the release Cause.
+  - name: rate_plan_id
+    description: Reference to the rate Plan.
+  - name: msisdn_id
+    description: Reference to the public Number.
+  - name: destination_zone_id
+    description: Reference to the destination Zone.
+  - name: number_prefix_id
+    description: Reference to the number Prefix.
+  - name: time_band_id
+    description: Reference to the time Band.
+  - name: duration_seconds
+    description: Conversation duration.
+  - name: setup_seconds
+    description: Setup time before answer.
+  entity_definitions:
+  - identity_id: voice_cdr_identity
+    dataset_columns:
+    - voice_cdr_id
+    is_entity_universe: true
+    entity_expression:
+    - '[voice_cdr_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of voice cdr.
+  - identity_id: subscription_identity
+    dataset_columns:
+    - subscription_id
+    is_entity_universe: false
+    entity_expression:
+    - '[subscription_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many voice CDRs belong to one subscription, every voice CDR matches a subscription,
+        and a subscription may include no voice CDR.
+  - identity_id: subscriber_identity
+    dataset_columns:
+    - subscriber_id
+    is_entity_universe: false
+    entity_expression:
+    - '[subscriber_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many voice CDRs belong to one subscriber, every voice CDR matches a subscriber, and
+        a subscriber may include no voice CDR.
+  - identity_id: cell_identity
+    dataset_columns:
+    - cell_id
+    is_entity_universe: false
+    entity_expression:
+    - '[cell_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many voice CDRs belong to one cell, every voice CDR matches a cell, and a cell may
+        include no voice CDR.
+  - identity_id: technology_identity
+    dataset_columns:
+    - technology_id
+    is_entity_universe: false
+    entity_expression:
+    - '[technology_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many voice CDRs belong to one technology, every voice CDR matches a technology, and
+        a technology may include no voice CDR.
+  - identity_id: call_type_identity
+    dataset_columns:
+    - call_type_id
+    is_entity_universe: false
+    entity_expression:
+    - '[call_type_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many voice CDRs belong to one call Type, every voice CDR matches a call Type, and
+        every call Type includes at least one voice CDR.
+  - identity_id: record_type_identity
+    dataset_columns:
+    - record_type_id
+    is_entity_universe: false
+    entity_expression:
+    - '[record_type_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many voice CDRs belong to one record Type, every voice CDR matches a record Type,
+        and every record Type includes at least one voice CDR.
+  - identity_id: plmn_identity
+    dataset_columns:
+    - plmn_id
+    is_entity_universe: false
+    entity_expression:
+    - '[plmn_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many voice CDRs belong to one pLMN, every voice CDR matches a pLMN, and a pLMN may
+        include no voice CDR.
+  - identity_id: roaming_partner_identity
+    dataset_columns:
+    - roaming_partner_id
+    is_entity_universe: false
+    entity_expression:
+    - '[roaming_partner_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A voice CDR may match one roaming Partner, and a roaming Partner may include no voice
+        CDR. Home voice has no roaming partner.
+  - identity_id: network_element_identity
+    dataset_columns:
+    - network_element_id
+    is_entity_universe: false
+    entity_expression:
+    - '[network_element_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many voice CDRs belong to one network Element, every voice CDR matches a network
+        Element, and a network Element may include no voice CDR.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many voice CDRs belong to one calendar Day, every voice CDR matches a calendar Day,
+        and every calendar Day includes at least one voice CDR.
+  - identity_id: release_cause_identity
+    dataset_columns:
+    - release_cause_id
+    is_entity_universe: false
+    entity_expression:
+    - '[release_cause_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many voice CDRs belong to one release Cause, every voice CDR matches a release Cause,
+        and a release Cause may include no voice CDR.
+  - identity_id: rate_plan_identity
+    dataset_columns:
+    - rate_plan_id
+    is_entity_universe: false
+    entity_expression:
+    - '[rate_plan_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many voice CDRs belong to one rate Plan, every voice CDR matches a rate Plan, and
+        a rate Plan may include no voice CDR.
+  - identity_id: msisdn_identity
+    dataset_columns:
+    - msisdn_id
+    is_entity_universe: false
+    entity_expression:
+    - '[msisdn_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many voice CDRs belong to one public Number, every voice CDR matches a public Number,
+        and a public Number may include no voice CDR.
+  - identity_id: destination_zone_identity
+    dataset_columns:
+    - destination_zone_id
+    is_entity_universe: false
+    entity_expression:
+    - '[destination_zone_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many voice CDRs belong to one destination Zone, every voice CDR matches a destination
+        Zone, and a destination Zone may include no voice CDR.
+  - identity_id: number_prefix_identity
+    dataset_columns:
+    - number_prefix_id
+    is_entity_universe: false
+    entity_expression:
+    - '[number_prefix_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A voice CDR may match one number Prefix, and a number Prefix may include no voice
+        CDR.
+  - identity_id: time_band_identity
+    dataset_columns:
+    - time_band_id
+    is_entity_universe: false
+    entity_expression:
+    - '[time_band_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many voice CDRs belong to one time Band, every voice CDR matches a time Band, and
+        every time Band includes at least one voice CDR.
+- node_id: sf:telecom-mobile.usage.fact_sms_cdr
+  descriptor:
+    qualified_name: telecom-mobile.usage.fact_sms_cdr
+    display_name: SMS CDR
+    description: One short-message CDR.
+    synonyms: []
+    tags:
+    - fact
+    - usage
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM_MOBILE
+      schema: USAGE
+      object: FACT_SMS_CDR
+      format: table
+  grain:
+    description: One row is one sms cdr.
+    components:
+    - identity_id: sms_cdr_identity
+      dataset_columns:
+      - sms_cdr_id
+      description: Identifier of one sMS CDR.
+  columns:
+  - name: sms_cdr_id
+    description: Identifier of one sMS CDR.
+  - name: subscription_id
+    description: Reference to the subscription.
+  - name: subscriber_id
+    description: Reference to the subscriber.
+  - name: call_type_id
+    description: Reference to the call Type.
+  - name: record_type_id
+    description: Reference to the record Type.
+  - name: calendar_day_id
+    description: Reference to the calendar Day.
+  - name: rate_plan_id
+    description: Reference to the rate Plan.
+  - name: msisdn_id
+    description: Reference to the public Number.
+  - name: destination_zone_id
+    description: Reference to the destination Zone.
+  - name: plmn_id
+    description: Reference to the pLMN.
+  - name: message_count
+    description: Messages represented by the CDR, usually one.
+  entity_definitions:
+  - identity_id: sms_cdr_identity
+    dataset_columns:
+    - sms_cdr_id
+    is_entity_universe: true
+    entity_expression:
+    - '[sms_cdr_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of sms cdr.
+  - identity_id: subscription_identity
+    dataset_columns:
+    - subscription_id
+    is_entity_universe: false
+    entity_expression:
+    - '[subscription_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many sMS CDRs belong to one subscription, every sMS CDR matches a subscription, and
+        a subscription may include no sMS CDR.
+  - identity_id: subscriber_identity
+    dataset_columns:
+    - subscriber_id
+    is_entity_universe: false
+    entity_expression:
+    - '[subscriber_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many sMS CDRs belong to one subscriber, every sMS CDR matches a subscriber, and a
+        subscriber may include no sMS CDR.
+  - identity_id: call_type_identity
+    dataset_columns:
+    - call_type_id
+    is_entity_universe: false
+    entity_expression:
+    - '[call_type_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many sMS CDRs belong to one call Type, every sMS CDR matches a call Type, and a call
+        Type may include no sMS CDR.
+  - identity_id: record_type_identity
+    dataset_columns:
+    - record_type_id
+    is_entity_universe: false
+    entity_expression:
+    - '[record_type_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many sMS CDRs belong to one record Type, every sMS CDR matches a record Type, and
+        every record Type includes at least one sMS CDR.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many sMS CDRs belong to one calendar Day, every sMS CDR matches a calendar Day, and
+        every calendar Day includes at least one sMS CDR.
+  - identity_id: rate_plan_identity
+    dataset_columns:
+    - rate_plan_id
+    is_entity_universe: false
+    entity_expression:
+    - '[rate_plan_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many sMS CDRs belong to one rate Plan, every sMS CDR matches a rate Plan, and a rate
+        Plan may include no sMS CDR.
+  - identity_id: msisdn_identity
+    dataset_columns:
+    - msisdn_id
+    is_entity_universe: false
+    entity_expression:
+    - '[msisdn_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many sMS CDRs belong to one public Number, every sMS CDR matches a public Number,
+        and a public Number may include no sMS CDR.
+  - identity_id: destination_zone_identity
+    dataset_columns:
+    - destination_zone_id
+    is_entity_universe: false
+    entity_expression:
+    - '[destination_zone_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many sMS CDRs belong to one destination Zone, every sMS CDR matches a destination
+        Zone, and a destination Zone may include no sMS CDR.
+  - identity_id: plmn_identity
+    dataset_columns:
+    - plmn_id
+    is_entity_universe: false
+    entity_expression:
+    - '[plmn_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many sMS CDRs belong to one pLMN, every sMS CDR matches a pLMN, and a pLMN may include
+        no sMS CDR.
+- node_id: sf:telecom-mobile.usage.fact_content_cdr
+  descriptor:
+    qualified_name: telecom-mobile.usage.fact_content_cdr
+    display_name: Content CDR
+    description: One content or premium event CDR.
+    synonyms: []
+    tags:
+    - fact
+    - usage
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM_MOBILE
+      schema: USAGE
+      object: FACT_CONTENT_CDR
+      format: table
+  grain:
+    description: One row is one content cdr.
+    components:
+    - identity_id: content_cdr_identity
+      dataset_columns:
+      - content_cdr_id
+      description: Identifier of one content CDR.
+  columns:
+  - name: content_cdr_id
+    description: Identifier of one content CDR.
+  - name: content_provider_id
+    description: Every content provider has events in the window.
+  - name: subscription_id
+    description: Reference to the subscription.
+  - name: calendar_day_id
+    description: Reference to the calendar Day.
+  - name: charge_type_id
+    description: Reference to the charge Type.
+  - name: currency_id
+    description: Reference to the currency.
+  - name: content_amount
+    description: Gross content charge.
+  entity_definitions:
+  - identity_id: content_cdr_identity
+    dataset_columns:
+    - content_cdr_id
+    is_entity_universe: true
+    entity_expression:
+    - '[content_cdr_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of content cdr.
+  - identity_id: content_provider_identity
+    dataset_columns:
+    - content_provider_id
+    is_entity_universe: false
+    entity_expression:
+    - '[content_provider_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many content CDRs belong to one content Provider, every content CDR matches a content
+        Provider, and every content Provider includes at least one content CDR. Every content provider
+        has events in the window.
+  - identity_id: subscription_identity
+    dataset_columns:
+    - subscription_id
+    is_entity_universe: false
+    entity_expression:
+    - '[subscription_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many content CDRs belong to one subscription, every content CDR matches a subscription,
+        and a subscription may include no content CDR.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many content CDRs belong to one calendar Day, every content CDR matches a calendar
+        Day, and every calendar Day includes at least one content CDR.
+  - identity_id: charge_type_identity
+    dataset_columns:
+    - charge_type_id
+    is_entity_universe: false
+    entity_expression:
+    - '[charge_type_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many content CDRs belong to one charge Type, every content CDR matches a charge Type,
+        and a charge Type may include no content CDR.
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    is_entity_universe: false
+    entity_expression:
+    - '[currency_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many content CDRs belong to one currency, every content CDR matches a currency, and
+        a currency may include no content CDR.
+- node_id: sf:telecom-mobile.usage.fact_attach
+  descriptor:
+    qualified_name: telecom-mobile.usage.fact_attach
+    display_name: Attach Event
+    description: One registration or attach of a subscriber to the network.
+    synonyms: []
+    tags:
+    - fact
+    - usage
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM_MOBILE
+      schema: USAGE
+      object: FACT_ATTACH
+      format: table
+  grain:
+    description: One row is one attach event.
+    components:
+    - identity_id: attach_identity
+      dataset_columns:
+      - attach_id
+      description: Identifier of one attach Event.
+  columns:
+  - name: attach_id
+    description: Identifier of one attach Event.
+  - name: subscriber_id
+    description: Reference to the subscriber.
+  - name: cell_id
+    description: Reference to the cell.
+  - name: technology_id
+    description: Reference to the technology.
+  - name: plmn_id
+    description: Reference to the pLMN.
+  - name: calendar_day_id
+    description: Reference to the calendar Day.
+  - name: network_element_id
+    description: Reference to the network Element.
+  - name: imsi_id
+    description: Reference to the iMSI.
+  - name: msisdn_id
+    description: Reference to the public Number.
+  - name: attach_result
+    description: Result of the attach.
+    value_description: success, reject, timeout
+  entity_definitions:
+  - identity_id: attach_identity
+    dataset_columns:
+    - attach_id
+    is_entity_universe: true
+    entity_expression:
+    - '[attach_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of attach event.
+  - identity_id: subscriber_identity
+    dataset_columns:
+    - subscriber_id
+    is_entity_universe: false
+    entity_expression:
+    - '[subscriber_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many attach Events belong to one subscriber, every attach Event matches a subscriber,
+        and a subscriber may include no attach Event.
+  - identity_id: cell_identity
+    dataset_columns:
+    - cell_id
+    is_entity_universe: false
+    entity_expression:
+    - '[cell_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many attach Events belong to one cell, every attach Event matches a cell, and a cell
+        may include no attach Event.
+  - identity_id: technology_identity
+    dataset_columns:
+    - technology_id
+    is_entity_universe: false
+    entity_expression:
+    - '[technology_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many attach Events belong to one technology, every attach Event matches a technology,
+        and every technology includes at least one attach Event.
+  - identity_id: plmn_identity
+    dataset_columns:
+    - plmn_id
+    is_entity_universe: false
+    entity_expression:
+    - '[plmn_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many attach Events belong to one pLMN, every attach Event matches a pLMN, and a pLMN
+        may include no attach Event.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many attach Events belong to one calendar Day, every attach Event matches a calendar
+        Day, and every calendar Day includes at least one attach Event.
+  - identity_id: network_element_identity
+    dataset_columns:
+    - network_element_id
+    is_entity_universe: false
+    entity_expression:
+    - '[network_element_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many attach Events belong to one network Element, every attach Event matches a network
+        Element, and a network Element may include no attach Event.
+  - identity_id: imsi_identity
+    dataset_columns:
+    - imsi_id
+    is_entity_universe: false
+    entity_expression:
+    - '[imsi_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many attach Events belong to one iMSI, every attach Event matches a iMSI, and a iMSI
+        may include no attach Event.
+  - identity_id: msisdn_identity
+    dataset_columns:
+    - msisdn_id
+    is_entity_universe: false
+    entity_expression:
+    - '[msisdn_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many attach Events belong to one public Number, every attach Event matches a public
+        Number, and a public Number may include no attach Event.
+- node_id: sf:telecom-mobile.usage.fact_handover
+  descriptor:
+    qualified_name: telecom-mobile.usage.fact_handover
+    display_name: Handover
+    description: One mobility handover between cells.
+    synonyms: []
+    tags:
+    - fact
+    - usage
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM_MOBILE
+      schema: USAGE
+      object: FACT_HANDOVER
+      format: table
+  grain:
+    description: One row is one handover.
+    components:
+    - identity_id: handover_identity
+      dataset_columns:
+      - handover_id
+      description: Identifier of one handover.
+  columns:
+  - name: handover_id
+    description: Identifier of one handover.
+  - name: subscriber_id
+    description: Reference to the subscriber.
+  - name: source_cell_id
+    description: Cell the session left.
+  - name: handover_type_id
+    description: Reference to the handover Type.
+  - name: technology_id
+    description: Reference to the technology.
+  - name: calendar_day_id
+    description: Reference to the calendar Day.
+  - name: network_element_id
+    description: Reference to the network Element.
+  - name: success_flag
+    description: Whether the handover completed.
+    value_description: success, failure
+  entity_definitions:
+  - identity_id: handover_identity
+    dataset_columns:
+    - handover_id
+    is_entity_universe: true
+    entity_expression:
+    - '[handover_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of handover.
+  - identity_id: subscriber_identity
+    dataset_columns:
+    - subscriber_id
+    is_entity_universe: false
+    entity_expression:
+    - '[subscriber_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many handovers belong to one subscriber, every handover matches a subscriber, and
+        a subscriber may include no handover.
+  - identity_id: cell_identity
+    dataset_columns:
+    - source_cell_id
+    is_entity_universe: false
+    entity_expression:
+    - '[source_cell_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many handovers belong to one cell, every handover matches a cell, and a cell may
+        include no handover. Cell the session left.
+  - identity_id: handover_type_identity
+    dataset_columns:
+    - handover_type_id
+    is_entity_universe: false
+    entity_expression:
+    - '[handover_type_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many handovers belong to one handover Type, every handover matches a handover Type,
+        and every handover Type includes at least one handover.
+  - identity_id: technology_identity
+    dataset_columns:
+    - technology_id
+    is_entity_universe: false
+    entity_expression:
+    - '[technology_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many handovers belong to one technology, every handover matches a technology, and
+        a technology may include no handover.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many handovers belong to one calendar Day, every handover matches a calendar Day,
+        and every calendar Day includes at least one handover.
+  - identity_id: network_element_identity
+    dataset_columns:
+    - network_element_id
+    is_entity_universe: false
+    entity_expression:
+    - '[network_element_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many handovers belong to one network Element, every handover matches a network Element,
+        and a network Element may include no handover.
+- node_id: sf:telecom-mobile.usage.fact_handover_target
+  descriptor:
+    qualified_name: telecom-mobile.usage.fact_handover_target
+    display_name: Handover Target
+    description: Target cell of one handover. Kept as its own dataset so source and target do not share
+      one join to the cell population.
+    synonyms: []
+    tags:
+    - fact
+    - usage
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM_MOBILE
+      schema: USAGE
+      object: FACT_HANDOVER_TARGET
+      format: table
+  grain:
+    description: One row is one handover target.
+    components:
+    - identity_id: handover_target_identity
+      dataset_columns:
+      - handover_target_id
+      description: Identifier of one handover Target.
+  columns:
+  - name: handover_target_id
+    description: Identifier of one handover Target.
+  - name: handover_id
+    description: Each handover has one target-cell row, and each target row has one handover.
+  - name: target_cell_id
+    description: Cell the session entered.
+  - name: target_technology
+    description: Technology of the target cell.
+    value_description: 2G, 3G, 4G, 5G
+  entity_definitions:
+  - identity_id: handover_target_identity
+    dataset_columns:
+    - handover_target_id
+    is_entity_universe: true
+    entity_expression:
+    - '[handover_target_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of handover target.
+  - identity_id: handover_identity
+    dataset_columns:
+    - handover_id
+    is_entity_universe: false
+    entity_expression:
+    - '[handover_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: '1:1'
+      business_rule: Each handover Target matches exactly one handover, and each handover matches exactly
+        one handover Target. Each handover has one target-cell row, and each target row has one handover.
+  - identity_id: cell_identity
+    dataset_columns:
+    - target_cell_id
+    is_entity_universe: false
+    entity_expression:
+    - '[target_cell_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many handover Targets belong to one cell, every handover Target matches a cell, and
+        a cell may include no handover Target. Cell the session entered.
+- node_id: sf:telecom-mobile.usage.fact_location_update
+  descriptor:
+    qualified_name: telecom-mobile.usage.fact_location_update
+    display_name: Location Update
+    description: One location-update or tracking-area update.
+    synonyms: []
+    tags:
+    - fact
+    - usage
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM_MOBILE
+      schema: USAGE
+      object: FACT_LOCATION_UPDATE
+      format: table
+  grain:
+    description: One row is one location update.
+    components:
+    - identity_id: location_update_identity
+      dataset_columns:
+      - location_update_id
+      description: Identifier of one location Update.
+  columns:
+  - name: location_update_id
+    description: Identifier of one location Update.
+  - name: subscriber_id
+    description: Reference to the subscriber.
+  - name: location_area_id
+    description: Reference to the location Area.
+  - name: cell_id
+    description: Reference to the cell.
+  - name: calendar_day_id
+    description: Reference to the calendar Day.
+  - name: technology_id
+    description: Reference to the technology.
+  - name: update_result
+    description: Result of the update.
+    value_description: success, reject
+  entity_definitions:
+  - identity_id: location_update_identity
+    dataset_columns:
+    - location_update_id
+    is_entity_universe: true
+    entity_expression:
+    - '[location_update_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of location update.
+  - identity_id: subscriber_identity
+    dataset_columns:
+    - subscriber_id
+    is_entity_universe: false
+    entity_expression:
+    - '[subscriber_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many location Updates belong to one subscriber, every location Update matches a subscriber,
+        and a subscriber may include no location Update.
+  - identity_id: location_area_identity
+    dataset_columns:
+    - location_area_id
+    is_entity_universe: false
+    entity_expression:
+    - '[location_area_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many location Updates belong to one location Area, every location Update matches
+        a location Area, and every location Area includes at least one location Update.
+  - identity_id: cell_identity
+    dataset_columns:
+    - cell_id
+    is_entity_universe: false
+    entity_expression:
+    - '[cell_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A location Update may match one cell, and a cell may include no location Update.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many location Updates belong to one calendar Day, every location Update matches a
+        calendar Day, and every calendar Day includes at least one location Update.
+  - identity_id: technology_identity
+    dataset_columns:
+    - technology_id
+    is_entity_universe: false
+    entity_expression:
+    - '[technology_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many location Updates belong to one technology, every location Update matches a technology,
+        and a technology may include no location Update.
+- node_id: sf:telecom-mobile.usage.fact_qos_change
+  descriptor:
+    qualified_name: telecom-mobile.usage.fact_qos_change
+    display_name: QoS Change
+    description: One mid-session QoS change.
+    synonyms: []
+    tags:
+    - fact
+    - usage
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: northline.us-east-1
+      database: TELECOM_MOBILE
+      schema: USAGE
+      object: FACT_QOS_CHANGE
+      format: table
+  grain:
+    description: One row is one qos change.
+    components:
+    - identity_id: qos_change_identity
+      dataset_columns:
+      - qos_change_id
+      description: Identifier of one qoS Change.
+  columns:
+  - name: qos_change_id
+    description: Identifier of one qoS Change.
+  - name: subscription_id
+    description: Reference to the subscription.
+  - name: qos_id
+    description: Reference to the qoS Profile.
+  - name: cell_id
+    description: Reference to the cell.
+  - name: calendar_day_id
+    description: Reference to the calendar Day.
+  - name: policy_rule_id
+    description: Reference to the policy Rule.
+  - name: bitrate_kbps
+    description: Granted bitrate after the change.
+  entity_definitions:
+  - identity_id: qos_change_identity
+    dataset_columns:
+    - qos_change_id
+    is_entity_universe: true
+    entity_expression:
+    - '[qos_change_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Complete authored population of qos change.
+  - identity_id: subscription_identity
+    dataset_columns:
+    - subscription_id
+    is_entity_universe: false
+    entity_expression:
+    - '[subscription_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many qoS Changes belong to one subscription, every qoS Change matches a subscription,
+        and a subscription may include no qoS Change.
+  - identity_id: qos_identity
+    dataset_columns:
+    - qos_id
+    is_entity_universe: false
+    entity_expression:
+    - '[qos_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many qoS Changes belong to one qoS Profile, every qoS Change matches a qoS Profile,
+        and every qoS Profile includes at least one qoS Change.
+  - identity_id: cell_identity
+    dataset_columns:
+    - cell_id
+    is_entity_universe: false
+    entity_expression:
+    - '[cell_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many qoS Changes belong to one cell, every qoS Change matches a cell, and a cell
+        may include no qoS Change.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Many qoS Changes belong to one calendar Day, every qoS Change matches a calendar
+        Day, and every calendar Day includes at least one qoS Change.
+  - identity_id: policy_rule_identity
+    dataset_columns:
+    - policy_rule_id
+    is_entity_universe: false
+    entity_expression:
+    - '[policy_rule_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A qoS Change may match one policy Rule, and a policy Rule may include no qoS Change.

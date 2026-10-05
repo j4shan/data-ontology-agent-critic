@@ -1,0 +1,272 @@
+schema_version: '2'
+nodes:
+- node_id: sf:commerce-marketplace.invoice.fact_invoice
+  descriptor:
+    qualified_name: commerce-marketplace.invoice.fact_invoice
+    display_name: Invoice
+    description: Invoice issued to a buyer account.
+    synonyms: []
+    tags:
+    - fact
+    - invoice
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE_MARKETPLACE
+      schema: INVOICE
+      object: FACT_INVOICE
+      format: table
+  grain:
+    description: One row is one invoice.
+    components:
+    - identity_id: invoice_identity
+      dataset_columns:
+      - invoice_id
+      description: Identifies one invoice.
+  columns:
+  - name: invoice_id
+    description: Identifies one invoice.
+  - name: buyer_account_id
+    description: Buyer account billed by the invoice.
+  - name: order_id
+    description: Order the invoice bills.
+  - name: currency_id
+    description: Currency of the invoice.
+  - name: calendar_day_id
+    description: Calendar day of the invoice.
+  - name: invoice_status
+    description: Collection standing of the invoice.
+    value_description: issued, partial, paid, void
+  entity_definitions:
+  - identity_id: invoice_identity
+    dataset_columns:
+    - invoice_id
+    is_entity_universe: true
+    entity_expression:
+    - '[invoice_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
+  - identity_id: buyer_account_identity
+    dataset_columns:
+    - buyer_account_id
+    is_entity_universe: false
+    entity_expression:
+    - '[buyer_account_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each invoice belongs to exactly one buyer account, and a buyer account may have no
+        invoices.
+  - identity_id: order_identity
+    dataset_columns:
+    - order_id
+    is_entity_universe: false
+    entity_expression:
+    - '[order_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: An invoice may have no order, and an order may have no invoices.
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    is_entity_universe: false
+    entity_expression:
+    - '[currency_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each invoice uses exactly one currency, and a currency may have no invoices.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each invoice belongs to exactly one calendar day, and a calendar day may have no
+        invoices.
+- node_id: sf:commerce-marketplace.invoice.fact_invoice_line
+  descriptor:
+    qualified_name: commerce-marketplace.invoice.fact_invoice_line
+    display_name: Invoice line
+    description: Line on a buyer invoice posted to a ledger account.
+    synonyms: []
+    tags:
+    - fact
+    - invoice
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE_MARKETPLACE
+      schema: INVOICE
+      object: FACT_INVOICE_LINE
+      format: table
+  grain:
+    description: One row is one invoice line.
+    components:
+    - identity_id: invoice_line_identity
+      dataset_columns:
+      - invoice_line_id
+      description: Identifies one invoice line.
+  columns:
+  - name: invoice_line_id
+    description: Identifies one invoice line.
+  - name: invoice_id
+    description: Invoice that contains the line.
+  - name: order_line_id
+    description: Order line the invoice line bills.
+  - name: gl_account_id
+    description: Ledger account that receives the line.
+  - name: extended_amount
+    description: Extended amount billed on the invoice line.
+  entity_definitions:
+  - identity_id: invoice_line_identity
+    dataset_columns:
+    - invoice_line_id
+    is_entity_universe: true
+    entity_expression:
+    - '[invoice_line_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
+  - identity_id: invoice_identity
+    dataset_columns:
+    - invoice_id
+    is_entity_universe: false
+    entity_expression:
+    - '[invoice_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Every invoice includes one or more invoice lines, and each invoice line belongs to
+        exactly one invoice.
+  - identity_id: order_line_identity
+    dataset_columns:
+    - order_line_id
+    is_entity_universe: false
+    entity_expression:
+    - '[order_line_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: An invoice line may have no order line, and an order line may have no invoice lines.
+  - identity_id: gl_account_identity
+    dataset_columns:
+    - gl_account_id
+    is_entity_universe: false
+    entity_expression:
+    - '[gl_account_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each invoice line belongs to exactly one ledger account, and a ledger account may
+        have no invoice lines.
+- node_id: sf:commerce-marketplace.invoice.fact_buyer_payment
+  descriptor:
+    qualified_name: commerce-marketplace.invoice.fact_buyer_payment
+    display_name: Buyer payment
+    description: Payment received from a buyer account.
+    synonyms: []
+    tags:
+    - fact
+    - invoice
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE_MARKETPLACE
+      schema: INVOICE
+      object: FACT_BUYER_PAYMENT
+      format: table
+  grain:
+    description: One row is one buyer payment.
+    components:
+    - identity_id: buyer_payment_identity
+      dataset_columns:
+      - buyer_payment_id
+      description: Identifies one buyer payment.
+  columns:
+  - name: buyer_payment_id
+    description: Identifies one buyer payment.
+  - name: buyer_account_id
+    description: Buyer account that paid.
+  - name: invoice_id
+    description: Invoice the payment applies to.
+  - name: currency_id
+    description: Currency of the buyer payment.
+  - name: calendar_day_id
+    description: Calendar day of the buyer payment.
+  - name: payment_amount
+    description: Amount received from the buyer.
+  entity_definitions:
+  - identity_id: buyer_payment_identity
+    dataset_columns:
+    - buyer_payment_id
+    is_entity_universe: true
+    entity_expression:
+    - '[buyer_payment_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
+  - identity_id: buyer_account_identity
+    dataset_columns:
+    - buyer_account_id
+    is_entity_universe: false
+    entity_expression:
+    - '[buyer_account_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each buyer payment belongs to exactly one buyer account, and a buyer account may
+        have no buyer payments.
+  - identity_id: invoice_identity
+    dataset_columns:
+    - invoice_id
+    is_entity_universe: false
+    entity_expression:
+    - '[invoice_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: A buyer payment may have no invoice, and an invoice may have no buyer payments.
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    is_entity_universe: false
+    entity_expression:
+    - '[currency_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each buyer payment uses exactly one currency, and a currency may have no buyer payments.
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    is_entity_universe: false
+    entity_expression:
+    - '[calendar_day_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each buyer payment belongs to exactly one calendar day, and a calendar day may have
+        no buyer payments.

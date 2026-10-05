@@ -1,0 +1,327 @@
+schema_version: '2'
+nodes:
+- node_id: sf:commerce-marketplace.commercial.dim_price_list
+  descriptor:
+    qualified_name: commerce-marketplace.commercial.dim_price_list
+    display_name: Price list
+    description: Seller schedule of variant prices in one currency.
+    synonyms: []
+    tags:
+    - dimension
+    - commercial
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE_MARKETPLACE
+      schema: COMMERCIAL
+      object: DIM_PRICE_LIST
+      format: table
+  grain:
+    description: One row is one price list.
+    components:
+    - identity_id: price_list_identity
+      dataset_columns:
+      - price_list_id
+      description: Identifies one price list.
+  columns:
+  - name: price_list_id
+    description: Identifies one price list.
+  - name: seller_id
+    description: Seller that owns the price list.
+  - name: currency_id
+    description: Currency of the prices on the list.
+  entity_definitions:
+  - identity_id: price_list_identity
+    dataset_columns:
+    - price_list_id
+    is_entity_universe: true
+    entity_expression:
+    - '[price_list_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
+  - identity_id: seller_identity
+    dataset_columns:
+    - seller_id
+    is_entity_universe: false
+    entity_expression:
+    - '[seller_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each price list belongs to exactly one seller, and a seller may have no price lists.
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    is_entity_universe: false
+    entity_expression:
+    - '[currency_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each price list uses exactly one currency, and a currency may have no price lists.
+- node_id: sf:commerce-marketplace.commercial.dim_contract
+  descriptor:
+    qualified_name: commerce-marketplace.commercial.dim_contract
+    display_name: Contract
+    description: Negotiated agreement between one seller and one buyer account.
+    synonyms: []
+    tags:
+    - dimension
+    - commercial
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE_MARKETPLACE
+      schema: COMMERCIAL
+      object: DIM_CONTRACT
+      format: table
+  grain:
+    description: One row is one contract.
+    components:
+    - identity_id: contract_identity
+      dataset_columns:
+      - contract_id
+      description: Identifies one contract.
+  columns:
+  - name: contract_id
+    description: Identifies one contract.
+  - name: seller_id
+    description: Seller bound by the contract.
+  - name: buyer_account_id
+    description: Buyer account bound by the contract.
+  - name: currency_id
+    description: Currency of the contract prices.
+  - name: contract_status
+    description: Lifecycle standing of the contract.
+    value_description: draft, active, expired, terminated
+  entity_definitions:
+  - identity_id: contract_identity
+    dataset_columns:
+    - contract_id
+    is_entity_universe: true
+    entity_expression:
+    - '[contract_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
+  - identity_id: seller_identity
+    dataset_columns:
+    - seller_id
+    is_entity_universe: false
+    entity_expression:
+    - '[seller_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each contract belongs to exactly one seller, and a seller may have no contracts.
+  - identity_id: buyer_account_identity
+    dataset_columns:
+    - buyer_account_id
+    is_entity_universe: false
+    entity_expression:
+    - '[buyer_account_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each contract belongs to exactly one buyer account, and a buyer account may have
+        no contracts.
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    is_entity_universe: false
+    entity_expression:
+    - '[currency_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each contract uses exactly one currency, and a currency may have no contracts.
+- node_id: sf:commerce-marketplace.commercial.dim_currency
+  descriptor:
+    qualified_name: commerce-marketplace.commercial.dim_currency
+    display_name: Currency
+    description: Currency used to price and settle commerce documents.
+    synonyms: []
+    tags:
+    - dimension
+    - commercial
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE_MARKETPLACE
+      schema: COMMERCIAL
+      object: DIM_CURRENCY
+      format: table
+  grain:
+    description: One row is one currency.
+    components:
+    - identity_id: currency_identity
+      dataset_columns:
+      - currency_id
+      description: Identifies one currency.
+  columns:
+  - name: currency_id
+    description: Identifies one currency.
+  entity_definitions:
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    is_entity_universe: true
+    entity_expression:
+    - '[currency_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
+- node_id: sf:commerce-marketplace.commercial.dim_payment_method
+  descriptor:
+    qualified_name: commerce-marketplace.commercial.dim_payment_method
+    display_name: Payment method
+    description: Instrument a buyer account uses to pay through a provider.
+    synonyms: []
+    tags:
+    - dimension
+    - commercial
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE_MARKETPLACE
+      schema: COMMERCIAL
+      object: DIM_PAYMENT_METHOD
+      format: table
+  grain:
+    description: One row is one payment method.
+    components:
+    - identity_id: payment_method_identity
+      dataset_columns:
+      - payment_method_id
+      description: Identifies one payment method.
+  columns:
+  - name: payment_method_id
+    description: Identifies one payment method.
+  - name: buyer_account_id
+    description: Buyer account that owns the payment method.
+  - name: payment_provider_id
+    description: Provider that processes the payment method.
+  entity_definitions:
+  - identity_id: payment_method_identity
+    dataset_columns:
+    - payment_method_id
+    is_entity_universe: true
+    entity_expression:
+    - '[payment_method_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
+  - identity_id: buyer_account_identity
+    dataset_columns:
+    - buyer_account_id
+    is_entity_universe: false
+    entity_expression:
+    - '[buyer_account_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each payment method belongs to exactly one buyer account, and a buyer account may
+        have no payment methods.
+  - identity_id: payment_provider_identity
+    dataset_columns:
+    - payment_provider_id
+    is_entity_universe: false
+    entity_expression:
+    - '[payment_provider_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: reference
+      mapping: 1:N
+      business_rule: Each payment method uses exactly one payment provider, and a payment provider may
+        have no payment methods.
+- node_id: sf:commerce-marketplace.commercial.dim_payment_provider
+  descriptor:
+    qualified_name: commerce-marketplace.commercial.dim_payment_provider
+    display_name: Payment provider
+    description: Provider that processes buyer payment methods.
+    synonyms: []
+    tags:
+    - dimension
+    - commercial
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE_MARKETPLACE
+      schema: COMMERCIAL
+      object: DIM_PAYMENT_PROVIDER
+      format: table
+  grain:
+    description: One row is one payment provider.
+    components:
+    - identity_id: payment_provider_identity
+      dataset_columns:
+      - payment_provider_id
+      description: Identifies one payment provider.
+  columns:
+  - name: payment_provider_id
+    description: Identifies one payment provider.
+  entity_definitions:
+  - identity_id: payment_provider_identity
+    dataset_columns:
+    - payment_provider_id
+    is_entity_universe: true
+    entity_expression:
+    - '[payment_provider_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
+- node_id: sf:commerce-marketplace.commercial.dim_incoterm
+  descriptor:
+    qualified_name: commerce-marketplace.commercial.dim_incoterm
+    display_name: Incoterm
+    description: Trade term available for cross-border commerce.
+    synonyms: []
+    tags:
+    - dimension
+    - commercial
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: meridian.us-west-2
+      database: COMMERCE_MARKETPLACE
+      schema: COMMERCIAL
+      object: DIM_INCOTERM
+      format: table
+  grain:
+    description: One row is one incoterm.
+    components:
+    - identity_id: incoterm_identity
+      dataset_columns:
+      - incoterm_id
+      description: Identifies one incoterm.
+  columns:
+  - name: incoterm_id
+    description: Identifies one incoterm.
+  entity_definitions:
+  - identity_id: incoterm_identity
+    dataset_columns:
+    - incoterm_id
+    is_entity_universe: true
+    entity_expression:
+    - '[incoterm_id]'
+    entity_metadata:
+      expression_context: SQL column reference
+      population_role: universe
+      business_rule: Authoritative population of this identity.
