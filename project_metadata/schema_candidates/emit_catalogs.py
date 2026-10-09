@@ -137,6 +137,28 @@ def _validate(domain: dict) -> dict:
         if not matches:
             raise CatalogError(f"{domain['key']} missing signature relationship {signature}")
 
+    for item in domain.get("composite_identities", []):
+        identity = item["identity"]
+        if identity in universe:
+            raise CatalogError(f"{identity} is both a universe and a composite identity")
+        if len(item["members"]) < 2:
+            raise CatalogError(f"{identity} needs at least two member datasets")
+        for dataset_name, columns in item["members"].items():
+            dataset = next((d for d in datasets if d["name"] == dataset_name), None)
+            if dataset is None:
+                raise CatalogError(f"{identity} names unknown dataset {dataset_name}")
+            names = {column["name"] for column in dataset["columns"]}
+            if len(columns) < 2 or not set(columns) <= names:
+                raise CatalogError(f"{identity} needs two or more existing columns on {dataset_name}")
+        for pair in item["links"]:
+            if pair["a"] not in item["members"] or pair["b"] not in item["members"]:
+                raise CatalogError(f"{identity} link {pair['a']}-{pair['b']} names a non-member")
+            for multiplicity, existence in (pair["a_to_b"], pair["b_to_a"]):
+                if multiplicity not in _MULTIPLICITY or existence not in _EXISTENCE:
+                    raise CatalogError(f"{identity} link {pair['a']}-{pair['b']} bad direction")
+            if not pair.get("rule"):
+                raise CatalogError(f"{identity} link {pair['a']}-{pair['b']} missing rule")
+
     return {"universe": universe, "edges": edges}
 
 
@@ -171,6 +193,23 @@ def _node(domain: dict, dataset: dict) -> dict:
                 "is_entity_universe": bool(column.get("universe")),
                 "entity_expression": [f"[{column['name']}]"],
                 "entity_metadata": metadata,
+            }
+        )
+    for item in domain.get("composite_identities", []):
+        key_columns = item["members"].get(dataset["name"])
+        if key_columns is None:
+            continue
+        entity_definitions.append(
+            {
+                "identity_id": item["identity"],
+                "dataset_columns": list(key_columns),
+                "is_entity_universe": False,
+                "entity_expression": [f"[{', '.join(key_columns)}]"],
+                "entity_metadata": {
+                    "expression_context": "SQL column reference",
+                    "population_role": "composite",
+                    "business_rule": item["description"],
+                },
             }
         )
     node = {
@@ -234,6 +273,38 @@ def _edge(domain: dict, edge: dict) -> dict:
             "match_existence": column["from_universe_existence"],
         },
     }
+
+
+def _composite_edges(domain: dict) -> list[dict]:
+    by_name = {dataset["name"]: dataset for dataset in domain["datasets"]}
+    edges = []
+    for item in domain.get("composite_identities", []):
+        for pair in item["links"]:
+            endpoints = []
+            for name in (pair["a"], pair["b"]):
+                dataset = by_name[name]
+                endpoints.append(
+                    {
+                        "node_id": f"sf:{domain['root']}.{dataset['subject']}.{name}",
+                        "identity_id": item["identity"],
+                        "dataset_columns": list(item["members"][name]),
+                    }
+                )
+            edges.append(
+                {
+                    "endpoint_a": endpoints[0],
+                    "endpoint_b": endpoints[1],
+                    "a_to_b": {
+                        "multiplicity": pair["a_to_b"][0],
+                        "match_existence": pair["a_to_b"][1],
+                    },
+                    "b_to_a": {
+                        "multiplicity": pair["b_to_a"][0],
+                        "match_existence": pair["b_to_a"][1],
+                    },
+                }
+            )
+    return edges
 
 
 def _business_markdown(domain: dict, edges: list[dict]) -> str:
@@ -305,6 +376,26 @@ def _business_markdown(domain: dict, edges: list[dict]) -> str:
             f"{column['from_universe_existence']} | {column['to_universe_multiplicity']} / "
             f"{column['to_universe_existence']} | {rule} |"
         )
+    if domain.get("composite_identities"):
+        lines.extend(["", "## Composite identities", ""])
+        lines.append(
+            "These business entities are identified by columns that also realize other "
+            "identities. No dataset holds their complete population, so every realization is "
+            "partial. Edges join only the datasets the business compares at that key."
+        )
+        lines.append("")
+        lines.append("| Identity | Datasets and columns | Compared pair | A to B | B to A | Rule |")
+        lines.append("| --- | --- | --- | --- | --- | --- |")
+        for item in domain["composite_identities"]:
+            members = "; ".join(
+                f"`{name}` ({', '.join(columns)})" for name, columns in item["members"].items()
+            )
+            for pair in item["links"]:
+                lines.append(
+                    f"| `{item['identity']}` | {members} | `{pair['a']}` to `{pair['b']}` | "
+                    f"{pair['a_to_b'][0]} ({pair['a_to_b'][1]}) | "
+                    f"{pair['b_to_a'][0]} ({pair['b_to_a'][1]}) | {pair['rule']} |"
+                )
     lines.extend(["", "## Dataset inventory", ""])
     for subject in sorted(by_subject):
         lines.append(f"### {subject}")
@@ -345,6 +436,9 @@ def emit(domain: dict) -> dict:
         if identity in synonyms:
             payload["synonyms"] = synonyms[identity]
         identities[identity] = payload
+    for item in domain.get("composite_identities", []):
+        identities[item["identity"]] = {"name": item["name"], "description": item["description"]}
+    identities = dict(sorted(identities.items()))
     (yaml_dir / "00_logical_identities.yaml").write_text(
         _dump({"schema_version": "2", "logical_identities": identities}),
         encoding="utf-8",
@@ -362,7 +456,7 @@ def emit(domain: dict) -> dict:
 
     edge_document = {
         "schema_version": "2",
-        "edges": [_edge(domain, edge) for edge in checked["edges"]],
+        "edges": [_edge(domain, edge) for edge in checked["edges"]] + _composite_edges(domain),
     }
     (yaml_dir / "99_relationships.yaml").write_text(_dump(edge_document), encoding="utf-8")
     (target / "business-model.md").write_text(
@@ -401,8 +495,8 @@ def emit(domain: dict) -> dict:
     return {
         "key": domain["key"],
         "datasets": len(domain["datasets"]),
-        "edges": len(checked["edges"]),
-        "identities": len(checked["universe"]),
+        "edges": len(checked["edges"]) + len(_composite_edges(domain)),
+        "identities": len(checked["universe"]) + len(domain.get("composite_identities", [])),
         "yaml_dir": str(yaml_dir),
     }
 

@@ -112,3 +112,36 @@ def table(
     if volume_class:
         dataset["volume_class"] = volume_class
     return dataset
+
+
+def composite(
+    identity: str,
+    name: str,
+    description: str,
+    members: dict[str, list[str]],
+    links: list[dict],
+) -> dict:
+    """A business entity identified by a set of columns that also realize other identities.
+
+    No dataset holds the entity's complete population, so every member realization is partial.
+    ``members`` maps each dataset to its key columns; ``links`` are the member pairs the business
+    compares at this key.
+    """
+    return {
+        "identity": identity,
+        "name": name,
+        "description": description,
+        "members": {dataset: sorted(columns) for dataset, columns in members.items()},
+        "links": links,
+    }
+
+
+def link(
+    a: str,
+    b: str,
+    a_to_b: tuple[str, str],
+    b_to_a: tuple[str, str],
+    rule: str,
+) -> dict:
+    """One compared pair of composite members with directional (multiplicity, existence)."""
+    return {"a": a, "b": b, "a_to_b": a_to_b, "b_to_a": b_to_a, "rule": rule}
