@@ -212,8 +212,14 @@ def exercise(domain: str) -> dict:
         "publish_stdout": publish.stdout.strip(),
         "snapshot_info": info["result"],
         "search_query": spec["search"],
-        "search_hit_count": len(search["result"]["hits"]),
-        "search_labels": [hit["subject"]["label"] for hit in search["result"]["hits"][:8]],
+        "search_subject_count": sum(
+            len(group["subject_rows"]) for group in search["result"]["groups"]
+        ),
+        "search_subjects": [
+            f'{group["kind"]}:{row[0]}'
+            for group in search["result"]["groups"]
+            for row in group["subject_rows"]
+        ][:8],
         "dataset_node": dataset["result"]["node_id"],
         "universe_flags": [
             {
@@ -286,7 +292,7 @@ def main() -> None:
             failures.append(result["domain"] + " snapshot")
         if any(result["errors"]):
             failures.append(result["domain"] + " rpc")
-        if result["search_hit_count"] < 1 or result["path_count"] < 1:
+        if result["search_subject_count"] < 1 or result["path_count"] < 1:
             failures.append(result["domain"] + " navigation")
         for hop in result["hop_checks"]:
             if (

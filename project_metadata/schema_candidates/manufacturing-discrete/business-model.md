@@ -304,6 +304,16 @@ Each dataset is one ontology node. The grain column is the system of record for 
 | `fact_freight_charge` | `gl_account_id` | `dim_gl_account` | 1:N | 1:many / optional | many:1 / always | Many freight charges belong to one general-ledger account, every freight charge matches an account, and an account may include no freight charge. |
 | `fact_freight_charge` | `currency_id` | `dim_currency` | 1:N | 1:many / optional | many:1 / always | Many freight charges share one currency, every freight charge matches a currency, and a currency may include no freight charge. |
 
+## Composite identities
+
+These business entities are identified by columns that also realize other identities. No dataset holds their complete population, so every realization is partial. Edges join only the datasets the business compares at that key.
+
+| Identity | Datasets and columns | Compared pair | A to B | B to A | Rule |
+| --- | --- | --- | --- | --- | --- |
+| `planning_slot_identity` | `fact_demand_forecast` (calendar_day_id, item_id, plant_id); `fact_master_production_schedule` (calendar_day_id, item_id, plant_id) | `fact_demand_forecast` to `fact_master_production_schedule` | unknown (optional) | unknown (optional) | A forecast slot may have no scheduled build quantity, and a scheduled slot may have no forecast. Records per slot are not authored on either side. |
+| `revision_plant_identity` | `dim_bom_header` (parent_item_revision_id, plant_id); `dim_routing_header` (item_revision_id, plant_id); `fact_production_order` (item_revision_id, plant_id); `fact_standard_cost` (item_revision_id, plant_id) | `dim_bom_header` to `dim_routing_header` | unknown (unknown) | unknown (unknown) | A bill and a routing for the same parent revision and plant are compared operation by operation. How many of each exist per revision and plant is not authored. |
+| `revision_plant_identity` | `dim_bom_header` (parent_item_revision_id, plant_id); `dim_routing_header` (item_revision_id, plant_id); `fact_production_order` (item_revision_id, plant_id); `fact_standard_cost` (item_revision_id, plant_id) | `fact_production_order` to `fact_standard_cost` | unknown (optional) | unknown (optional) | Cost absorbed to production orders is compared with the standard cost of the same revision and plant; either side may exist without the other. |
+
 ## Dataset inventory
 
 ### bridge
