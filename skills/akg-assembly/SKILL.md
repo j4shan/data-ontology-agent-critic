@@ -28,8 +28,8 @@ projection. Add `--full` only when a field you need is missing from the compact 
 | --- | --- | --- |
 | `search` | `{"query": str, "kind": [str, ...] (optional), "limit": int}` | Find candidate datasets, columns, identities. Kinds are `identity`, `dataset`, `entity_definition`, and `column`. |
 | `get_dataset` | `{"node_id": str}` | Grain, columns, entity definitions of one dataset. |
-| `get_identity` | `{"identity_id": str}` | Every dataset that realizes one logical identity. |
-| `get_hops` | `{"node_id": str}` | Every relationship touching one dataset, directed outward. |
+| `get_identity` | `{"identity_id": str, "entity_universe"?: [str], "limit"?: int}` | Datasets that realize one logical identity; `truncated` reports whether `limit` cut the list. |
+| `get_hops` | `{"node_id": str, "limit"?: int}` | Relationships touching one dataset, directed outward; `truncated` reports whether `limit` cut the list. |
 | `find_paths` | `{"from_node_id", "to_node_id", "max_hops", "limit"}` | Ranked join paths between two datasets. |
 | `get_relationship` | `{"edge_id": str, "from_node_id": str (optional)}` | Canonical endpoints and directions; with `from_node_id`, also directions relative to that endpoint. |
 | `expand_subgraph` | `{"seed_node_ids": [..], "max_depth", "max_nodes", "max_edges"}` | Neighborhood listing. Use `max_depth` 1 only. |

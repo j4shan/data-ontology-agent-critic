@@ -62,7 +62,7 @@ def compact(method: str, result):
             "groups": result["groups"],
         }
     if method == "graph.get_hops":
-        return [
+        hops = [
             {
                 "edge_id": h["edge_id"],
                 "to_node_id": h["to_node_id"],
@@ -73,8 +73,9 @@ def compact(method: str, result):
                 "reverse_direction": h["reverse_direction"],
                 **({"unknown_fields": h["unknown_fields"]} if h["unknown_fields"] else {}),
             }
-            for h in result
+            for h in result["hops"]
         ]
+        return {"truncated": result["truncated"], "hops": hops}
     if method == "graph.get_relationship":
         return {**result, "endpoint_a": _endpoint(result["endpoint_a"]),
                 "endpoint_b": _endpoint(result["endpoint_b"])}
