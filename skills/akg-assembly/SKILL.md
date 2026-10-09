@@ -118,8 +118,9 @@ For every relationship in the AKG, copy from the tool response:
 
 - both endpoints as `qualified_name` plus `dataset_columns`,
 - `direction` (multiplicity, match_existence) as traversed from the anchor side,
-- `reverse_direction` from `get_hops`, or call `get_relationship` with the traversal origin as
-  `from_node_id` and copy its relative `direction` and `reverse_direction`.
+- `reverse_direction` from the same `find_paths` or `get_hops` hop, or call `get_relationship`
+  with the traversal origin as `from_node_id` and copy its relative `direction` and
+  `reverse_direction`.
 
 `get_relationship` always retains canonical `endpoint_a`/`endpoint_b` and `a_to_b`/`b_to_a`
 evidence. Do not manually invert those fields. Supplying `from_node_id` makes the relative fields
