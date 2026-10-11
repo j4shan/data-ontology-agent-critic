@@ -1,0 +1,481 @@
+schema_version: '3'
+nodes:
+- node_id: sf:mcdonalds.development.dim_development_project
+  descriptor:
+    qualified_name: mcdonalds.development.dim_development_project
+    display_name: Development project
+    description: Every new-restaurant and remodel project in the development plan, including the margin
+      rate assumed when the project was approved.
+    tags:
+    - dimension
+    - development
+    synonyms:
+    - new unit project
+    - remodel project
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: mcdonalds.us-east-1
+      database: MCDONALDS
+      schema: DEVELOPMENT
+      object: DIM_DEVELOPMENT_PROJECT
+      format: table
+  grain:
+    description: One row is one development project.
+    components:
+    - dataset_columns:
+      - development_project_id
+      identity_id: development_project_identity
+  columns:
+  - name: development_project_id
+    description: Identifier of the development project.
+  - name: project_name
+    description: Name of the development project.
+  - name: project_type
+    description: Whether the project opens a restaurant or remodels one.
+    value_description: new_restaurant or remodel.
+  - name: country_id
+    description: Country of the project.
+  - name: segment_id
+    description: Reporting segment of the project.
+  - name: calendar_day_id
+    description: Planned open date for a new restaurant, or planned start date for a remodel.
+  - name: plan_margin_rate
+    description: Restaurant margin rate assumed when the project was approved.
+  entity_definitions:
+  - identity_id: development_project_identity
+    dataset_columns:
+    - development_project_id
+    entity_universe: complete
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: segment_identity
+    dataset_columns:
+    - segment_id
+    entity_universe: partial
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    entity_universe: partial
+- node_id: sf:mcdonalds.development.dim_kitchen_asset
+  descriptor:
+    qualified_name: mcdonalds.development.dim_kitchen_asset
+    display_name: Kitchen asset
+    description: Kitchen equipment and layout standards used for taste, quality, and experience remodels,
+      including standards used in France.
+    tags:
+    - dimension
+    - development
+    synonyms:
+    - kitchen equipment
+    - layout standard
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: mcdonalds.us-east-1
+      database: MCDONALDS
+      schema: DEVELOPMENT
+      object: DIM_KITCHEN_ASSET
+      format: table
+  grain:
+    description: One row is one kitchen equipment or layout standard.
+    components:
+    - dataset_columns:
+      - kitchen_asset_id
+      identity_id: kitchen_asset_identity
+  columns:
+  - name: kitchen_asset_id
+    description: Identifier of the kitchen asset.
+  - name: asset_name
+    description: Name of the equipment or layout standard.
+  - name: equipment_family
+    description: Family of kitchen equipment or layout.
+    value_description: grill, fryer, holding, beverage, or layout_module.
+  - name: layout_role
+    description: Role of a layout change. Empty when the asset is equipment rather than a layout change.
+    value_description: production_line, service_counter, or back_of_house.
+  - name: supports_taste_quality_flag
+    description: Whether the asset is required for a taste or quality goal.
+    value_description: true or false.
+  - name: experience_program_flag
+    description: Whether the asset is part of an experience remodel.
+    value_description: true or false.
+  - name: reference_country_id
+    description: Country whose restaurants use this equipment or layout standard, including equipment
+      used in France.
+  entity_definitions:
+  - identity_id: kitchen_asset_identity
+    dataset_columns:
+    - kitchen_asset_id
+    entity_universe: complete
+  - identity_id: country_identity
+    dataset_columns:
+    - reference_country_id
+    entity_universe: partial
+- node_id: sf:mcdonalds.development.fact_restaurant_opening
+  descriptor:
+    qualified_name: mcdonalds.development.fact_restaurant_opening
+    display_name: Restaurant opening
+    description: One row is one new restaurant opening, with the open date, country, segment, build cost,
+      whether the opening cannibalizes nearby restaurants, and hours pulled off existing operations.
+    tags:
+    - fact
+    - development
+    synonyms:
+    - new restaurant opening
+    - unit opening
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: mcdonalds.us-east-1
+      database: MCDONALDS
+      schema: DEVELOPMENT
+      object: FACT_RESTAURANT_OPENING
+      format: table
+  grain:
+    description: One row is one new-restaurant opening, identified by the restaurant, and carries the
+      open date, country, and segment.
+    components:
+    - dataset_columns:
+      - restaurant_id
+      identity_id: restaurant_identity
+  columns:
+  - name: restaurant_id
+    description: Restaurant that opened.
+  - name: development_project_id
+    description: Development project that produced the opening.
+  - name: country_id
+    description: Country of the opening.
+  - name: segment_id
+    description: Reporting segment of the opening.
+  - name: calendar_day_id
+    description: Calendar day the restaurant opened.
+  - name: currency_id
+    description: Currency of the build cost.
+  - name: cannibalizes_nearby_flag
+    description: Whether the opening draws guests from nearby existing restaurants.
+    value_description: true or false.
+  - name: build_cost_amount
+    description: 'Measure: cost to build and open the restaurant.'
+  - name: nearby_comparable_sales_change_rate
+    description: 'Measure: change in comparable sales at nearby existing restaurants after the opening.'
+  - name: cannibalized_guest_count
+    description: 'Measure: guest count drawn from nearby existing restaurants.'
+  - name: operations_hours_diverted
+    description: 'Measure: operating hours pulled off existing restaurants to open this restaurant.'
+  entity_definitions:
+  - identity_id: restaurant_identity
+    dataset_columns:
+    - restaurant_id
+    entity_universe: partial
+  - identity_id: development_project_identity
+    dataset_columns:
+    - development_project_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: segment_identity
+    dataset_columns:
+    - segment_id
+    entity_universe: partial
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    entity_universe: partial
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: partial
+- node_id: sf:mcdonalds.development.fact_restaurant_remodel
+  descriptor:
+    qualified_name: mcdonalds.development.fact_restaurant_remodel
+    display_name: Restaurant remodel
+    description: One row is one restaurant remodel, with cost, kitchen equipment and layout scope, experience
+      scope, and the company versus franchisee funding split.
+    tags:
+    - fact
+    - development
+    synonyms:
+    - experience remodel
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: mcdonalds.us-east-1
+      database: MCDONALDS
+      schema: DEVELOPMENT
+      object: FACT_RESTAURANT_REMODEL
+      format: table
+  grain:
+    description: One row is one remodel, identified by remodel_id.
+    components:
+    - dataset_columns:
+      - remodel_id
+      identity_id: remodel_identity
+  columns:
+  - name: remodel_id
+    description: Identifier of the remodel.
+  - name: restaurant_id
+    description: Restaurant that is remodeled.
+  - name: development_project_id
+    description: Development project for the remodel.
+  - name: franchisee_id
+    description: Franchisee that operates the restaurant. Empty when the restaurant is company-operated.
+  - name: country_id
+    description: Country of the remodel.
+  - name: segment_id
+    description: Reporting segment of the remodel.
+  - name: calendar_day_id
+    description: Calendar day the remodel starts.
+  - name: currency_id
+    description: Currency of the remodel amounts.
+  - name: experience_scope
+    description: Experience and kitchen scope of the remodel.
+    value_description: experience_of_the_future, kitchen_equipment, layout, or standard.
+  - name: funding_party
+    description: Who funds the remodel.
+    value_description: company, franchisee, or shared.
+  - name: kitchen_equipment_change_flag
+    description: Whether the remodel changes kitchen equipment.
+    value_description: true or false.
+  - name: layout_change_flag
+    description: Whether the remodel changes the kitchen or service layout.
+    value_description: true or false.
+  - name: taste_quality_program_flag
+    description: Whether the remodel is required for a taste or quality goal.
+    value_description: true or false.
+  - name: remodel_cost_amount
+    description: 'Measure: total cost of the remodel.'
+  - name: company_funded_amount
+    description: 'Measure: company capital funding the remodel.'
+  - name: franchisee_funded_amount
+    description: 'Measure: franchisee capital required to fund the remodel.'
+  entity_definitions:
+  - identity_id: remodel_identity
+    dataset_columns:
+    - remodel_id
+    entity_universe: complete
+  - identity_id: restaurant_identity
+    dataset_columns:
+    - restaurant_id
+    entity_universe: partial
+  - identity_id: development_project_identity
+    dataset_columns:
+    - development_project_id
+    entity_universe: partial
+  - identity_id: franchisee_identity
+    dataset_columns:
+    - franchisee_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: segment_identity
+    dataset_columns:
+    - segment_id
+    entity_universe: partial
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    entity_universe: partial
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: partial
+- node_id: sf:mcdonalds.development.fact_remodel_kitchen_equipment
+  descriptor:
+    qualified_name: mcdonalds.development.fact_remodel_kitchen_equipment
+    display_name: Remodel kitchen equipment
+    description: Kitchen equipment and layout assets installed on a remodel, with the equipment cost and
+      the company versus franchisee funding of that line.
+    tags:
+    - fact
+    - development
+    synonyms:
+    - kitchen equipment line
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: mcdonalds.us-east-1
+      database: MCDONALDS
+      schema: DEVELOPMENT
+      object: FACT_REMODEL_KITCHEN_EQUIPMENT
+      format: table
+  grain:
+    description: One row is one kitchen asset on one remodel.
+    components:
+    - dataset_columns:
+      - kitchen_asset_id
+      identity_id: kitchen_asset_identity
+    - dataset_columns:
+      - remodel_id
+      identity_id: remodel_identity
+  columns:
+  - name: remodel_id
+    description: Remodel that installs the kitchen asset.
+  - name: kitchen_asset_id
+    description: Kitchen equipment or layout asset installed.
+  - name: currency_id
+    description: Currency of the equipment amounts.
+  - name: equipment_cost_amount
+    description: 'Measure: cost of this kitchen equipment or layout line.'
+  - name: company_funded_amount
+    description: 'Measure: company capital funding this kitchen line.'
+  - name: franchisee_funded_amount
+    description: 'Measure: franchisee capital required for this kitchen line.'
+  entity_definitions:
+  - identity_id: remodel_identity
+    dataset_columns:
+    - remodel_id
+    entity_universe: partial
+  - identity_id: kitchen_asset_identity
+    dataset_columns:
+    - kitchen_asset_id
+    entity_universe: partial
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: partial
+- node_id: sf:mcdonalds.development.fact_segment_development_result
+  descriptor:
+    qualified_name: mcdonalds.development.fact_segment_development_result
+    display_name: Segment development result
+    description: Development target versus actual openings for one reporting segment and accounting period,
+      with plan margin versus actual margin, the refranchise case, and the segment's share of the path
+      to 50,000 restaurants.
+    tags:
+    - fact
+    - development
+    synonyms:
+    - development target
+    - opening target
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: mcdonalds.us-east-1
+      database: MCDONALDS
+      schema: DEVELOPMENT
+      object: FACT_SEGMENT_DEVELOPMENT_RESULT
+      format: table
+  grain:
+    description: One row is one reporting segment in one accounting period.
+    components:
+    - dataset_columns:
+      - segment_id
+      identity_id: segment_identity
+    - dataset_columns:
+      - accounting_period_id
+      identity_id: accounting_period_identity
+  columns:
+  - name: segment_id
+    description: Reporting segment of the development result.
+  - name: accounting_period_id
+    description: Accounting period of the development result.
+  - name: target_opening_count
+    description: 'Measure: new-restaurant opening target for the segment and period.'
+  - name: actual_opening_count
+    description: 'Measure: new restaurants actually opened in the segment and period.'
+  - name: plan_margin_rate
+    description: 'Measure: restaurant margin rate assumed when the opening target was set.'
+  - name: actual_margin_rate
+    description: 'Measure: restaurant margin rate realized in the segment and period.'
+  - name: refranchise_case_target_opening_count
+    description: 'Measure: opening target restated for the case where company-operated restaurants are
+      refranchised and margins stay below the original plan.'
+  - name: ending_restaurant_count
+    description: 'Measure: restaurants open in the segment at the end of the period.'
+  - name: system_goal_restaurant_count
+    description: 'Measure: system restaurant goal used to judge the path to 50,000 restaurants.'
+  - name: remaining_openings_to_goal_count
+    description: 'Measure: openings still required, across all segments, to reach the system restaurant
+      goal.'
+  - name: segment_share_of_remaining_openings_rate
+    description: 'Measure: share of the remaining openings to the system goal that this segment is planned
+      to deliver.'
+  - name: cash_funded_opening_capacity_count
+    description: 'Measure: openings the segment can fund from available franchisee and company cash flow.'
+  entity_definitions:
+  - identity_id: segment_identity
+    dataset_columns:
+    - segment_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+- node_id: sf:mcdonalds.development.fact_development_capex
+  descriptor:
+    qualified_name: mcdonalds.development.fact_development_capex
+    display_name: Development capital expenditure
+    description: Capital expenditure for one country and accounting period, split between new-restaurant
+      construction, remodels, kitchen equipment, and other uses, with openings and the change in market
+      share.
+    tags:
+    - fact
+    - development
+    synonyms:
+    - capex
+    - construction capital
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: mcdonalds.us-east-1
+      database: MCDONALDS
+      schema: DEVELOPMENT
+      object: FACT_DEVELOPMENT_CAPEX
+      format: table
+  grain:
+    description: One row is one country in one accounting period. segment_id is the reporting segment
+      of that country.
+    components:
+    - dataset_columns:
+      - country_id
+      identity_id: country_identity
+    - dataset_columns:
+      - accounting_period_id
+      identity_id: accounting_period_identity
+  columns:
+  - name: country_id
+    description: Country of the capital expenditure.
+  - name: segment_id
+    description: Reporting segment of the country.
+  - name: accounting_period_id
+    description: Accounting period of the capital expenditure.
+  - name: currency_id
+    description: Currency of the capital amounts.
+  - name: new_construction_capex_amount
+    description: 'Measure: capital spent to construct new restaurants.'
+  - name: remodel_capex_amount
+    description: 'Measure: capital spent on remodels.'
+  - name: kitchen_equipment_capex_amount
+    description: 'Measure: capital spent on kitchen equipment.'
+  - name: other_capex_amount
+    description: 'Measure: capital spent on uses other than new construction, remodels, and kitchen equipment.'
+  - name: opening_count
+    description: 'Measure: new restaurants opened in the country and period.'
+  - name: market_share_rate
+    description: 'Measure: McDonald''s share of restaurant visits in the country for the period.'
+  - name: market_share_change_rate
+    description: 'Measure: change in the country''s restaurant-visit share. Read with the country''s population-growth
+      band to see whether openings in a slow-population market are a share grab.'
+  entity_definitions:
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: segment_identity
+    dataset_columns:
+    - segment_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: partial

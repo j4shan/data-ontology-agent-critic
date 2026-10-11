@@ -1,0 +1,740 @@
+schema_version: '3'
+nodes:
+- node_id: sf:mcdonalds.restaurant.dim_restaurant
+  descriptor:
+    qualified_name: mcdonalds.restaurant.dim_restaurant
+    display_name: Restaurant
+    description: Every McDonald's restaurant, including open, closed, and planned restaurants.
+    tags:
+    - dimension
+    - restaurant
+    synonyms:
+    - store
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: mcdonalds.us-east-1
+      database: MCDONALDS
+      schema: RESTAURANT
+      object: DIM_RESTAURANT
+      format: table
+  grain:
+    description: One row is one restaurant.
+    components:
+    - dataset_columns:
+      - restaurant_id
+      identity_id: restaurant_identity
+  columns:
+  - name: restaurant_id
+    description: Identifier of the restaurant.
+  - name: restaurant_number
+    description: Public restaurant number.
+  - name: restaurant_name
+    description: Name of the restaurant.
+  - name: country_id
+    description: Country in which the restaurant sits.
+  - name: segment_id
+    description: Reporting segment of the restaurant.
+  - name: calendar_day_id
+    description: Calendar day the restaurant opened. Empty while the restaurant is still planned.
+  - name: restaurant_status
+    description: Lifecycle status of the restaurant.
+    value_description: open, closed, or planned.
+  entity_definitions:
+  - identity_id: restaurant_identity
+    dataset_columns:
+    - restaurant_id
+    entity_universe: complete
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: segment_identity
+    dataset_columns:
+    - segment_id
+    entity_universe: partial
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    entity_universe: partial
+- node_id: sf:mcdonalds.restaurant.dim_franchisee
+  descriptor:
+    qualified_name: mcdonalds.restaurant.dim_franchisee
+    display_name: Franchisee
+    description: Every franchisee, including conventional franchisees and developmental licensees.
+    tags:
+    - dimension
+    - restaurant
+    synonyms:
+    - franchise owner
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: mcdonalds.us-east-1
+      database: MCDONALDS
+      schema: RESTAURANT
+      object: DIM_FRANCHISEE
+      format: table
+  grain:
+    description: One row is one franchisee.
+    components:
+    - dataset_columns:
+      - franchisee_id
+      identity_id: franchisee_identity
+  columns:
+  - name: franchisee_id
+    description: Identifier of the franchisee.
+  - name: franchisee_name
+    description: Name of the franchisee.
+  - name: franchisee_structure
+    description: Legal structure of the franchisee.
+    value_description: conventional_franchisee or developmental_licensee.
+  - name: country_id
+    description: Home country of the franchisee.
+  - name: segment_id
+    description: Reporting segment of the franchisee.
+  entity_definitions:
+  - identity_id: franchisee_identity
+    dataset_columns:
+    - franchisee_id
+    entity_universe: complete
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: segment_identity
+    dataset_columns:
+    - segment_id
+    entity_universe: partial
+- node_id: sf:mcdonalds.restaurant.dim_operator
+  descriptor:
+    qualified_name: mcdonalds.restaurant.dim_operator
+    display_name: Operator
+    description: Every restaurant operator, including company operators and franchise operators. Strength
+      tier separates operators who can take over a weak restaurant from operators who are the source of
+      that move.
+    tags:
+    - dimension
+    - restaurant
+    synonyms:
+    - store operator
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: mcdonalds.us-east-1
+      database: MCDONALDS
+      schema: RESTAURANT
+      object: DIM_OPERATOR
+      format: table
+  grain:
+    description: One row is one operator.
+    components:
+    - dataset_columns:
+      - operator_id
+      identity_id: operator_identity
+  columns:
+  - name: operator_id
+    description: Identifier of the operator.
+  - name: operator_name
+    description: Name of the operator.
+  - name: franchisee_id
+    description: Franchisee that employs the operator. Empty for a company operator.
+  - name: country_id
+    description: Country in which the operator works.
+  - name: operator_strength_tier
+    description: Whether the operator is a stronger operator or a weak operator.
+    value_description: strong or weak.
+  entity_definitions:
+  - identity_id: operator_identity
+    dataset_columns:
+    - operator_id
+    entity_universe: complete
+  - identity_id: franchisee_identity
+    dataset_columns:
+    - franchisee_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+- node_id: sf:mcdonalds.restaurant.fact_restaurant_ownership_spell
+  descriptor:
+    qualified_name: mcdonalds.restaurant.fact_restaurant_ownership_spell
+    display_name: Restaurant ownership spell
+    description: One row is one continuous ownership spell for one restaurant. The spell records whether
+      the restaurant is company-operated or franchisee-operated, the operator, and the start and end dates.
+    tags:
+    - fact
+    - restaurant
+    synonyms:
+    - ownership history
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: mcdonalds.us-east-1
+      database: MCDONALDS
+      schema: RESTAURANT
+      object: FACT_RESTAURANT_OWNERSHIP_SPELL
+      format: table
+  grain:
+    description: One row is one ownership spell, identified by ownership_spell_id, covering company-operated
+      or franchisee ownership from a start date through an end date.
+    components:
+    - dataset_columns:
+      - ownership_spell_id
+      identity_id: ownership_spell_identity
+  columns:
+  - name: ownership_spell_id
+    description: Identifier of the ownership spell.
+  - name: restaurant_id
+    description: Restaurant whose ownership this spell records.
+  - name: franchisee_id
+    description: Franchisee that holds the restaurant during the spell. Empty when the spell is company-operated.
+  - name: operator_id
+    description: Operator accountable for the restaurant during the spell.
+  - name: country_id
+    description: Country of the restaurant during the spell.
+  - name: segment_id
+    description: Reporting segment of the restaurant during the spell.
+  - name: ownership_type
+    description: Whether the restaurant is company-operated or franchisee-operated during the spell.
+    value_description: company_operated or franchisee.
+  - name: start_calendar_day_id
+    description: Calendar day the ownership spell starts.
+  - name: end_calendar_day_id
+    description: Calendar day the ownership spell ends. Empty while the spell is current. Values are calendar_day_id
+      values. The spell's calendar relationship is start_calendar_day_id.
+  - name: currency_id
+    description: Currency of the spell amounts.
+  - name: refranchise_flag
+    description: Whether the spell starts by transferring a company-operated restaurant to a franchisee.
+    value_description: true or false.
+  - name: transfer_consideration_amount
+    description: 'Measure: consideration paid when the spell begins by refranchising or acquiring the
+      restaurant. Zero when the spell is not a transfer.'
+  - name: annual_rent_and_royalty_amount
+    description: 'Measure: annual rent and royalty contracted at the start of the spell. Zero on a company-operated
+      spell.'
+  entity_definitions:
+  - identity_id: ownership_spell_identity
+    dataset_columns:
+    - ownership_spell_id
+    entity_universe: complete
+  - identity_id: restaurant_identity
+    dataset_columns:
+    - restaurant_id
+    entity_universe: partial
+  - identity_id: franchisee_identity
+    dataset_columns:
+    - franchisee_id
+    entity_universe: partial
+  - identity_id: operator_identity
+    dataset_columns:
+    - operator_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: segment_identity
+    dataset_columns:
+    - segment_id
+    entity_universe: partial
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - start_calendar_day_id
+    entity_universe: partial
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: partial
+- node_id: sf:mcdonalds.restaurant.fact_franchisee_period_cash_flow
+  descriptor:
+    qualified_name: mcdonalds.restaurant.fact_franchisee_period_cash_flow
+    display_name: Franchisee period cash flow
+    description: Franchisee cash flow and profit for one franchisee, country, and accounting period. Amounts
+      are comparable to company-operated margin on country, segment, period, and currency.
+    tags:
+    - fact
+    - restaurant
+    synonyms:
+    - franchisee profit
+    - franchisee cash flow
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: mcdonalds.us-east-1
+      database: MCDONALDS
+      schema: RESTAURANT
+      object: FACT_FRANCHISEE_PERIOD_CASH_FLOW
+      format: table
+  grain:
+    description: One row is one franchisee in one country and accounting period.
+    components:
+    - dataset_columns:
+      - franchisee_id
+      identity_id: franchisee_identity
+    - dataset_columns:
+      - country_id
+      identity_id: country_identity
+    - dataset_columns:
+      - accounting_period_id
+      identity_id: accounting_period_identity
+  columns:
+  - name: franchisee_id
+    description: Franchisee whose cash flow this row records.
+  - name: country_id
+    description: Country of the franchisee's restaurants in this row.
+  - name: segment_id
+    description: Reporting segment of that country.
+  - name: accounting_period_id
+    description: Accounting period of the cash flow.
+  - name: currency_id
+    description: Currency of the cash-flow amounts.
+  - name: operating_cash_flow_amount
+    description: 'Measure: cash flow from restaurant operations for the franchisee, country, and period.'
+  - name: franchisee_profit_amount
+    description: 'Measure: franchisee profit for the country and period, held so it can be compared with
+      company-operated margin.'
+  - name: franchisee_restaurant_margin_amount
+    description: 'Measure: restaurant margin earned by the franchisee for the country and period.'
+  - name: average_restaurant_profit_amount
+    description: 'Measure: franchisee profit per restaurant for the country and period, comparable to
+      company-operated margin per restaurant.'
+  - name: operated_restaurant_count
+    description: 'Measure: restaurants the franchisee operates in the country and period.'
+  - name: operations_funding_need_amount
+    description: 'Measure: cash the operations program requires from the franchisee in the period.'
+  - name: value_funding_need_amount
+    description: 'Measure: cash the value program requires from the franchisee in the period.'
+  - name: experience_funding_need_amount
+    description: 'Measure: cash the experience and remodel program requires from the franchisee in the
+      period.'
+  - name: funding_shortfall_amount
+    description: 'Measure: amount by which operations, value, and experience funding needs exceed operating
+      cash flow. Zero when cash flow covers the programs.'
+  - name: company_support_amount
+    description: 'Measure: company financial support received by the franchisee in the period.'
+  entity_definitions:
+  - identity_id: franchisee_identity
+    dataset_columns:
+    - franchisee_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: segment_identity
+    dataset_columns:
+    - segment_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: partial
+- node_id: sf:mcdonalds.restaurant.fact_company_operated_period_margin
+  descriptor:
+    qualified_name: mcdonalds.restaurant.fact_company_operated_period_margin
+    display_name: Company-operated period margin
+    description: Margin of one company-operated restaurant for one accounting period. The margin is comparable
+      to franchisee profit per restaurant in the franchisee cash-flow fact on country, segment, period,
+      and currency.
+    tags:
+    - fact
+    - restaurant
+    synonyms:
+    - company store margin
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: mcdonalds.us-east-1
+      database: MCDONALDS
+      schema: RESTAURANT
+      object: FACT_COMPANY_OPERATED_PERIOD_MARGIN
+      format: table
+  grain:
+    description: One row is one company-operated restaurant in one accounting period.
+    components:
+    - dataset_columns:
+      - restaurant_id
+      identity_id: restaurant_identity
+    - dataset_columns:
+      - accounting_period_id
+      identity_id: accounting_period_identity
+  columns:
+  - name: restaurant_id
+    description: Company-operated restaurant.
+  - name: country_id
+    description: Country of the restaurant.
+  - name: segment_id
+    description: Reporting segment of the restaurant.
+  - name: accounting_period_id
+    description: Accounting period of the margin.
+  - name: currency_id
+    description: Currency of the margin amounts.
+  - name: ownership_type
+    description: Ownership of every row in this fact.
+    value_description: company_operated.
+  - name: company_operated_margin_amount
+    description: 'Measure: company-operated restaurant margin for the period, comparable to franchisee
+      profit per restaurant.'
+  - name: company_operated_margin_rate
+    description: 'Measure: company-operated restaurant margin as a rate of sales for the period.'
+  - name: sales_amount
+    description: 'Measure: restaurant sales for the period.'
+  entity_definitions:
+  - identity_id: restaurant_identity
+    dataset_columns:
+    - restaurant_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: segment_identity
+    dataset_columns:
+    - segment_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: partial
+- node_id: sf:mcdonalds.restaurant.fact_restaurant_period_performance
+  descriptor:
+    qualified_name: mcdonalds.restaurant.fact_restaurant_period_performance
+    display_name: Restaurant period performance
+    description: Comparable sales, guest counts, service score, and value score for one restaurant and
+      accounting period. Ownership type and operator are the values in effect for that period.
+    tags:
+    - fact
+    - restaurant
+    synonyms:
+    - same-store sales
+    - service score
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: mcdonalds.us-east-1
+      database: MCDONALDS
+      schema: RESTAURANT
+      object: FACT_RESTAURANT_PERIOD_PERFORMANCE
+      format: table
+  grain:
+    description: One row is one restaurant in one accounting period.
+    components:
+    - dataset_columns:
+      - restaurant_id
+      identity_id: restaurant_identity
+    - dataset_columns:
+      - accounting_period_id
+      identity_id: accounting_period_identity
+  columns:
+  - name: restaurant_id
+    description: Restaurant measured in the period.
+  - name: operator_id
+    description: Operator accountable for the restaurant in the period.
+  - name: franchisee_id
+    description: Franchisee that operates the restaurant in the period. Empty when the restaurant is company-operated.
+  - name: country_id
+    description: Country of the restaurant.
+  - name: segment_id
+    description: Reporting segment of the restaurant.
+  - name: accounting_period_id
+    description: Accounting period of the performance.
+  - name: currency_id
+    description: Currency of the sales amount.
+  - name: ownership_type
+    description: Whether the restaurant is company-operated or franchisee-operated in the period.
+    value_description: company_operated or franchisee.
+  - name: comparable_sales_amount
+    description: 'Measure: comparable sales for the restaurant and period.'
+  - name: comparable_sales_change_rate
+    description: 'Measure: change in comparable, or same-store, sales for the restaurant and period.'
+  - name: guest_count
+    description: 'Measure: guest count for the restaurant and period.'
+  - name: same_store_guest_count
+    description: 'Measure: guest count counted in the same-store comparison.'
+  - name: service_score
+    description: 'Measure: customer service score for the restaurant and period. Higher is stronger service.'
+  - name: value_score
+    description: 'Measure: guest value score for the restaurant and period. Higher means guests rate value
+      more favorably.'
+  - name: operations_score
+    description: 'Measure: store operations score for the restaurant and period. Lower means execution
+      was pulled off the restaurant.'
+  entity_definitions:
+  - identity_id: restaurant_identity
+    dataset_columns:
+    - restaurant_id
+    entity_universe: partial
+  - identity_id: operator_identity
+    dataset_columns:
+    - operator_id
+    entity_universe: partial
+  - identity_id: franchisee_identity
+    dataset_columns:
+    - franchisee_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: segment_identity
+    dataset_columns:
+    - segment_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: partial
+- node_id: sf:mcdonalds.restaurant.fact_value_program_participation
+  descriptor:
+    qualified_name: mcdonalds.restaurant.fact_value_program_participation
+    display_name: Value program participation
+    description: Whether a franchisee restaurant participated in the value program for an accounting period,
+      why it opted out, and whether it kept the program after company support ended.
+    tags:
+    - fact
+    - restaurant
+    synonyms:
+    - value offer opt-in
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: mcdonalds.us-east-1
+      database: MCDONALDS
+      schema: RESTAURANT
+      object: FACT_VALUE_PROGRAM_PARTICIPATION
+      format: table
+  grain:
+    description: One row is one franchisee restaurant in one accounting period.
+    components:
+    - dataset_columns:
+      - restaurant_id
+      identity_id: restaurant_identity
+    - dataset_columns:
+      - accounting_period_id
+      identity_id: accounting_period_identity
+  columns:
+  - name: restaurant_id
+    description: Franchisee restaurant in the value program.
+  - name: franchisee_id
+    description: Franchisee that chose whether to participate.
+  - name: country_id
+    description: Country of the restaurant.
+  - name: segment_id
+    description: Reporting segment of the restaurant.
+  - name: accounting_period_id
+    description: Accounting period of the participation decision.
+  - name: currency_id
+    description: Currency of the offer cost and company support.
+  - name: participation_status
+    description: Whether the franchisee restaurant participated in the value program.
+    value_description: participating or opted_out.
+  - name: opt_out_reason
+    description: Why the franchisee opted out. Empty when the restaurant is participating.
+    value_description: traffic_driver_disagreement or cost_pressure.
+  - name: continued_after_support_flag
+    description: Whether the franchisee keeps the value strategy after company financial support ends.
+    value_description: true or false.
+  - name: offer_cost_amount
+    description: 'Measure: cost of the value offer borne by the franchisee restaurant in the period.'
+  - name: traffic_count
+    description: 'Measure: guest traffic counted for the value offer in the period.'
+  - name: company_support_amount
+    description: 'Measure: company financial support applied to this restaurant''s value program in the
+      period.'
+  entity_definitions:
+  - identity_id: restaurant_identity
+    dataset_columns:
+    - restaurant_id
+    entity_universe: partial
+  - identity_id: franchisee_identity
+    dataset_columns:
+    - franchisee_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: segment_identity
+    dataset_columns:
+    - segment_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: partial
+- node_id: sf:mcdonalds.restaurant.fact_operator_reassignment
+  descriptor:
+    qualified_name: mcdonalds.restaurant.fact_operator_reassignment
+    display_name: Operator reassignment
+    description: A move of one restaurant from one operator to another, with service before and after
+      the move and the cost of making the move.
+    tags:
+    - fact
+    - restaurant
+    synonyms:
+    - operator change
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: mcdonalds.us-east-1
+      database: MCDONALDS
+      schema: RESTAURANT
+      object: FACT_OPERATOR_REASSIGNMENT
+      format: table
+  grain:
+    description: One row is one operator reassignment of one restaurant on one calendar day.
+    components:
+    - dataset_columns:
+      - restaurant_id
+      identity_id: restaurant_identity
+    - dataset_columns:
+      - calendar_day_id
+      identity_id: calendar_day_identity
+  columns:
+  - name: restaurant_id
+    description: Restaurant moved from one operator to another.
+  - name: from_operator_id
+    description: Operator who gave up the restaurant. Values identify the same operators as operator_id.
+  - name: to_operator_id
+    description: Operator who received the restaurant.
+  - name: from_operator_strength_tier
+    description: Strength of the operator who gave up the restaurant.
+    value_description: strong or weak.
+  - name: to_operator_strength_tier
+    description: Strength of the operator who received the restaurant.
+    value_description: strong or weak.
+  - name: calendar_day_id
+    description: Calendar day the reassignment takes effect.
+  - name: country_id
+    description: Country of the restaurant.
+  - name: segment_id
+    description: Reporting segment of the restaurant.
+  - name: currency_id
+    description: Currency of the reassignment cost.
+  - name: service_score_before
+    description: 'Measure: service score of the restaurant before the operator change.'
+  - name: service_score_after
+    description: 'Measure: service score of the restaurant after the operator change.'
+  - name: reassignment_cost_amount
+    description: 'Measure: cost required to move the restaurant to the receiving operator.'
+  entity_definitions:
+  - identity_id: restaurant_identity
+    dataset_columns:
+    - restaurant_id
+    entity_universe: partial
+  - identity_id: operator_identity
+    dataset_columns:
+    - to_operator_id
+    entity_universe: partial
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: segment_identity
+    dataset_columns:
+    - segment_id
+    entity_universe: partial
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: partial
+- node_id: sf:mcdonalds.restaurant.fact_value_strategy_coinvestment
+  descriptor:
+    qualified_name: mcdonalds.restaurant.fact_value_strategy_coinvestment
+    display_name: Value strategy co-investment
+    description: Company co-investment in the value strategy for one country and segment in one accounting
+      period, with the traffic and value-score results at which franchisees can continue without that
+      support.
+    tags:
+    - fact
+    - restaurant
+    synonyms:
+    - value strategy subsidy
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: mcdonalds.us-east-1
+      database: MCDONALDS
+      schema: RESTAURANT
+      object: FACT_VALUE_STRATEGY_COINVESTMENT
+      format: table
+  grain:
+    description: One row is one country and reporting segment in one accounting period. The segment is
+      the reporting segment of the country.
+    components:
+    - dataset_columns:
+      - country_id
+      identity_id: country_identity
+    - dataset_columns:
+      - segment_id
+      identity_id: segment_identity
+    - dataset_columns:
+      - accounting_period_id
+      identity_id: accounting_period_identity
+  columns:
+  - name: country_id
+    description: Country covered by the value-strategy support.
+  - name: segment_id
+    description: Reporting segment of the country.
+  - name: accounting_period_id
+    description: Accounting period of the co-investment.
+  - name: currency_id
+    description: Currency of the co-investment amounts.
+  - name: company_coinvestment_amount
+    description: 'Measure: company cash invested in the value strategy for the country, segment, and period.'
+  - name: franchisee_investment_amount
+    description: 'Measure: franchisee cash invested in the value strategy for the country, segment, and
+      period.'
+  - name: observed_traffic_count
+    description: 'Measure: traffic result observed while support is in force.'
+  - name: observed_value_score
+    description: 'Measure: value-score result observed while support is in force.'
+  - name: continuation_traffic_threshold
+    description: 'Measure: traffic result at which franchisees can continue the value strategy without
+      company support.'
+  - name: continuation_value_score_threshold
+    description: 'Measure: value-score result at which franchisees can continue the value strategy without
+      company support.'
+  - name: support_in_force_flag
+    description: Whether company financial support for the value strategy is still in force.
+    value_description: true or false.
+  entity_definitions:
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: segment_identity
+    dataset_columns:
+    - segment_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: partial

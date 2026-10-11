@@ -1,0 +1,499 @@
+schema_version: '3'
+nodes:
+- node_id: sf:starbucks.rewards.dim_rewards_member
+  descriptor:
+    qualified_name: starbucks.rewards.dim_rewards_member
+    display_name: Rewards member
+    description: Starbucks Rewards members. Non-Rewards guests are not rows of this dataset.
+    synonyms:
+    - member
+    - loyalty member
+    tags:
+    - starbucks
+    - rewards
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: starbucks.us-west-2
+      database: STARBUCKS
+      schema: REWARDS
+      object: DIM_REWARDS_MEMBER
+      format: table
+  grain:
+    description: One Rewards member.
+    components:
+    - dataset_columns:
+      - rewards_member_id
+      description: One Rewards member.
+      identity_id: rewards_member_identity
+  columns:
+  - name: rewards_member_id
+    description: Identifier of one Rewards member.
+  - name: country_id
+    description: Home country of the member.
+  - name: member_status_code
+    description: Current membership status.
+    value_description: active or inactive.
+  entity_definitions:
+  - identity_id: rewards_member_identity
+    dataset_columns:
+    - rewards_member_id
+    entity_universe: complete
+    entity_expression:
+    - '[rewards_member_id]'
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+    entity_expression:
+    - '[country_id]'
+- node_id: sf:starbucks.rewards.fact_rewards_member_day
+  descriptor:
+    qualified_name: starbucks.rewards.fact_rewards_member_day
+    display_name: Rewards member day
+    description: One Rewards member on one calendar day, including days after the March program change.
+    synonyms:
+    - member activity
+    - visit frequency
+    tags:
+    - starbucks
+    - rewards
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: starbucks.us-west-2
+      database: STARBUCKS
+      schema: REWARDS
+      object: FACT_REWARDS_MEMBER_DAY
+      format: table
+  grain:
+    description: One Rewards member on one calendar day.
+    components:
+    - dataset_columns:
+      - rewards_member_id
+      description: Rewards member.
+      identity_id: rewards_member_identity
+    - dataset_columns:
+      - calendar_day_id
+      description: Calendar day.
+      identity_id: calendar_day_identity
+  columns:
+  - name: rewards_member_id
+    description: Rewards member.
+  - name: calendar_day_id
+    description: Calendar day of the member's activity.
+  - name: fiscal_period_id
+    description: Fiscal period that contains the day.
+  - name: country_id
+    description: Country of the activity.
+  - name: program_phase_code
+    description: Position of the day relative to the March Rewards program change.
+    value_description: before_march_program_change or after_march_program_change. April days use after_march_program_change.
+  - name: transaction_count
+    description: Guest checks in this row's grain.
+    synonyms:
+    - transactions
+    - traffic
+    - checks
+  - name: net_sales_amount
+    description: Net sales dollars after discounts in this row's grain.
+    synonyms:
+    - net sales
+    - sales
+  - name: ticket_amount
+    description: Average guest check in this row's grain.
+    synonyms:
+    - ticket
+    - average ticket
+    - check
+  - name: unit_count
+    description: Menu units in this row's grain.
+    synonyms:
+    - units
+  - name: discount_amount
+    description: Discount dollars in this row's grain.
+    synonyms:
+    - discount
+  entity_definitions:
+  - identity_id: rewards_member_identity
+    dataset_columns:
+    - rewards_member_id
+    entity_universe: partial
+    entity_expression:
+    - '[rewards_member_id]'
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    entity_universe: partial
+    entity_expression:
+    - '[calendar_day_id]'
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+    entity_expression:
+    - '[fiscal_period_id]'
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+    entity_expression:
+    - '[country_id]'
+- node_id: sf:starbucks.rewards.fact_rewards_membership_census
+  descriptor:
+    qualified_name: starbucks.rewards.fact_rewards_membership_census
+    display_name: Rewards membership census
+    description: Daily Rewards membership counts and check activity for a country. April rows sit after
+      the March program change.
+    synonyms:
+    - member count
+    - program change
+    tags:
+    - starbucks
+    - rewards
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: starbucks.us-west-2
+      database: STARBUCKS
+      schema: REWARDS
+      object: FACT_REWARDS_MEMBERSHIP_CENSUS
+      format: table
+  grain:
+    description: One country on one calendar day.
+    components:
+    - dataset_columns:
+      - country_id
+      description: Country.
+      identity_id: country_identity
+    - dataset_columns:
+      - calendar_day_id
+      description: Calendar day.
+      identity_id: calendar_day_identity
+  columns:
+  - name: country_id
+    description: Country of the census.
+  - name: calendar_day_id
+    description: Census day.
+  - name: fiscal_period_id
+    description: Fiscal period that contains the census day.
+  - name: program_phase_code
+    description: Position of the census day relative to the March Rewards program change.
+    value_description: before_march_program_change or after_march_program_change.
+  - name: active_member_count
+    description: Rewards members active on the census day.
+  - name: enrolled_member_count
+    description: Rewards members enrolled as of the census day.
+  - name: visit_frequency
+    description: Average guest checks per active member on the census day.
+  - name: transaction_count
+    description: Guest checks in this row's grain.
+    synonyms:
+    - transactions
+    - traffic
+    - checks
+  - name: net_sales_amount
+    description: Net sales dollars after discounts in this row's grain.
+    synonyms:
+    - net sales
+    - sales
+  - name: ticket_amount
+    description: Average guest check in this row's grain.
+    synonyms:
+    - ticket
+    - average ticket
+    - check
+  - name: unit_count
+    description: Menu units in this row's grain.
+    synonyms:
+    - units
+  - name: discount_amount
+    description: Discount dollars in this row's grain.
+    synonyms:
+    - discount
+  entity_definitions:
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+    entity_expression:
+    - '[country_id]'
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    entity_universe: partial
+    entity_expression:
+    - '[calendar_day_id]'
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+    entity_expression:
+    - '[fiscal_period_id]'
+- node_id: sf:starbucks.rewards.fact_rewards_participation_sales
+  descriptor:
+    qualified_name: starbucks.rewards.fact_rewards_participation_sales
+    display_name: Rewards participation sales
+    description: Guest checks and sales by Rewards participation, daypart, and channel. Non-Rewards guests
+      are a participation row, not members.
+    synonyms:
+    - non-Rewards
+    - member sales
+    tags:
+    - starbucks
+    - rewards
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: starbucks.us-west-2
+      database: STARBUCKS
+      schema: REWARDS
+      object: FACT_REWARDS_PARTICIPATION_SALES
+      format: table
+  grain:
+    description: One participation, daypart, and channel in one country on one day.
+    components:
+    - dataset_columns:
+      - country_id
+      description: Country.
+      identity_id: country_identity
+    - dataset_columns:
+      - calendar_day_id
+      description: Calendar day.
+      identity_id: calendar_day_identity
+    - dataset_columns:
+      - daypart_id
+      description: Daypart.
+      identity_id: daypart_identity
+    - dataset_columns:
+      - order_channel_id
+      description: Order channel.
+      identity_id: order_channel_identity
+    - dataset_columns:
+      - rewards_participation_code
+      description: Rewards participation.
+  columns:
+  - name: country_id
+    description: Country of the sales.
+  - name: calendar_day_id
+    description: Calendar day of the sales.
+  - name: fiscal_period_id
+    description: Fiscal period that contains the day.
+  - name: daypart_id
+    description: Daypart of the sales.
+  - name: order_channel_id
+    description: Order channel of the sales.
+  - name: rewards_participation_code
+    description: Whether the checks are from Rewards members or non-Rewards guests.
+    value_description: rewards_member or non_rewards.
+  - name: transaction_growth_rate
+    description: Change in guest checks versus the comparable prior period for this participation, daypart,
+      and channel.
+    value_description: A rate.
+  - name: transaction_count
+    description: Guest checks in this row's grain.
+    synonyms:
+    - transactions
+    - traffic
+    - checks
+  - name: net_sales_amount
+    description: Net sales dollars after discounts in this row's grain.
+    synonyms:
+    - net sales
+    - sales
+  - name: ticket_amount
+    description: Average guest check in this row's grain.
+    synonyms:
+    - ticket
+    - average ticket
+    - check
+  - name: unit_count
+    description: Menu units in this row's grain.
+    synonyms:
+    - units
+  - name: discount_amount
+    description: Discount dollars in this row's grain.
+    synonyms:
+    - discount
+  entity_definitions:
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+    entity_expression:
+    - '[country_id]'
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    entity_universe: partial
+    entity_expression:
+    - '[calendar_day_id]'
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+    entity_expression:
+    - '[fiscal_period_id]'
+  - identity_id: daypart_identity
+    dataset_columns:
+    - daypart_id
+    entity_universe: partial
+    entity_expression:
+    - '[daypart_id]'
+  - identity_id: order_channel_identity
+    dataset_columns:
+    - order_channel_id
+    entity_universe: partial
+    entity_expression:
+    - '[order_channel_id]'
+- node_id: sf:starbucks.customer.dim_age_cohort
+  descriptor:
+    qualified_name: starbucks.customer.dim_age_cohort
+    display_name: Age cohort
+    description: Guest age cohorts. Guests under 35 are a row, and guests 35 and older are a row.
+    synonyms:
+    - under 35
+    - younger guests
+    tags:
+    - starbucks
+    - customer
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: starbucks.us-west-2
+      database: STARBUCKS
+      schema: CUSTOMER
+      object: DIM_AGE_COHORT
+      format: table
+  grain:
+    description: One age cohort.
+    components:
+    - dataset_columns:
+      - age_cohort_id
+      description: One age cohort.
+      identity_id: age_cohort_identity
+  columns:
+  - name: age_cohort_id
+    description: Identifier of one age cohort.
+  - name: cohort_code
+    description: Stable age-cohort code.
+    value_description: under_35 or age_35_and_over.
+  - name: cohort_name
+    description: Business name of the age cohort.
+  entity_definitions:
+  - identity_id: age_cohort_identity
+    dataset_columns:
+    - age_cohort_id
+    entity_universe: complete
+    entity_expression:
+    - '[age_cohort_id]'
+- node_id: sf:starbucks.customer.fact_age_cohort_spend
+  descriptor:
+    qualified_name: starbucks.customer.fact_age_cohort_spend
+    display_name: Age cohort spend
+    description: Spending, checks, and units by age cohort, beverage platform, country, and day.
+    synonyms:
+    - under 35 spend
+    tags:
+    - starbucks
+    - customer
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: starbucks.us-west-2
+      database: STARBUCKS
+      schema: CUSTOMER
+      object: FACT_AGE_COHORT_SPEND
+      format: table
+  grain:
+    description: One age cohort, platform, and country on one day.
+    components:
+    - dataset_columns:
+      - age_cohort_id
+      description: Age cohort.
+      identity_id: age_cohort_identity
+    - dataset_columns:
+      - country_id
+      description: Country.
+      identity_id: country_identity
+    - dataset_columns:
+      - calendar_day_id
+      description: Calendar day.
+      identity_id: calendar_day_identity
+    - dataset_columns:
+      - beverage_platform_id
+      description: Beverage platform.
+      identity_id: beverage_platform_identity
+  columns:
+  - name: age_cohort_id
+    description: Age cohort of the guests.
+  - name: country_id
+    description: Country of the spend.
+  - name: calendar_day_id
+    description: Calendar day of the spend.
+  - name: fiscal_period_id
+    description: Fiscal period that contains the day.
+  - name: beverage_platform_id
+    description: Beverage platform of the spend.
+  - name: transaction_count
+    description: Guest checks in this row's grain.
+    synonyms:
+    - transactions
+    - traffic
+    - checks
+  - name: net_sales_amount
+    description: Net sales dollars after discounts in this row's grain.
+    synonyms:
+    - net sales
+    - sales
+  - name: ticket_amount
+    description: Average guest check in this row's grain.
+    synonyms:
+    - ticket
+    - average ticket
+    - check
+  - name: unit_count
+    description: Menu units in this row's grain.
+    synonyms:
+    - units
+  - name: discount_amount
+    description: Discount dollars in this row's grain.
+    synonyms:
+    - discount
+  entity_definitions:
+  - identity_id: age_cohort_identity
+    dataset_columns:
+    - age_cohort_id
+    entity_universe: partial
+    entity_expression:
+    - '[age_cohort_id]'
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+    entity_expression:
+    - '[country_id]'
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    entity_universe: partial
+    entity_expression:
+    - '[calendar_day_id]'
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+    entity_expression:
+    - '[fiscal_period_id]'
+  - identity_id: beverage_platform_identity
+    dataset_columns:
+    - beverage_platform_id
+    entity_universe: partial
+    entity_expression:
+    - '[beverage_platform_id]'

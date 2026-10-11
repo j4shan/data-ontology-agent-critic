@@ -166,6 +166,17 @@ share an entity chain rather than a single KPI.
    specialty-chemicals or airline sheets, which are large but more often a price-volume-region
    triangle than a multi-entity product graph.
 
+## Warehouse catalogs built for the restaurant pair
+
+Two loadable schema version 3 catalogs now sit beside the question files. Each was assembled only from that company's slices. Both build as graphs with no unknown claims and no contradictory edges.
+
+| Company | Catalog | Datasets | Relationships | Identities |
+| --- | --- | ---: | ---: | ---: |
+| McDonald's | `restaurants/mcd/warehouse/` | 71 | 283 | 38 |
+| Starbucks | `restaurants/sbux/warehouse/` | 76 | 203 | 35 |
+
+McDonald's finance slice separates company-operated margin, franchisee cash flow, royalty, rent, capex, and the inflation-versus-mix bridge. Starbucks finance slice separates tariff refunds, coffee and distribution inflation, marketing rebase versus turnaround spend, and guidance scenarios. See each `warehouse/MODEL.md`.
+
 ## Pairs to defer
 
 - **Specialty chemicals (113), managed care (106), airlines (104), and packaged foods (96)**

@@ -1,0 +1,196 @@
+schema_version: '3'
+nodes:
+- node_id: sf:starbucks.store.dim_coffeehouse
+  descriptor:
+    qualified_name: starbucks.store.dim_coffeehouse
+    display_name: Coffeehouse
+    description: Every Starbucks coffeehouse, including pipeline sites, open coffeehouses, coffeehouses
+      identified to close, and closed coffeehouses. Green Apron wave and install date are recorded on
+      the labor-model cohort dimension and the cohort-assignment fact.
+    tags:
+    - store
+    - operations
+    synonyms:
+    - store
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: starbucks.us-west-2
+      database: STARBUCKS
+      schema: STORE
+      object: DIM_COFFEEHOUSE
+      format: table
+  grain:
+    description: One row is one Starbucks coffeehouse.
+    components:
+    - dataset_columns:
+      - coffeehouse_id
+      identity_id: coffeehouse_identity
+  columns:
+  - name: coffeehouse_id
+    description: Surrogate key of one Starbucks coffeehouse.
+  - name: coffeehouse_name
+    description: Name of the coffeehouse.
+  - name: country_id
+    description: Country of the coffeehouse. Foreign key to country_id on starbucks.organization.dim_country.
+  - name: ownership_type_id
+    description: Company-operated or licensed ownership. Foreign key to ownership_type_id on starbucks.store.dim_ownership_type.
+  - name: licensee_id
+    description: Licensee that operates the coffeehouse when ownership is licensed. Empty for company-operated
+      coffeehouses. Foreign key to licensee_id on starbucks.organization.dim_licensee.
+  - name: open_status_code
+    description: Lifecycle status of the coffeehouse.
+    value_description: pipeline, open, identified_to_close, or closed. identified_to_close marks coffeehouses
+      that may still close.
+  - name: open_calendar_day_id
+    description: Calendar day the coffeehouse opened. Foreign key to calendar_day_id on starbucks.calendar.dim_calendar_day.
+      Coffeehouse operations does not hold the complete calendar.
+  - name: open_date
+    description: Civil date for open_calendar_day_id.
+    value_description: YYYY-MM-DD. Empty while the coffeehouse is still in the pipeline.
+  entity_definitions:
+  - identity_id: coffeehouse_identity
+    dataset_columns:
+    - coffeehouse_id
+    entity_universe: complete
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: ownership_type_identity
+    dataset_columns:
+    - ownership_type_id
+    entity_universe: partial
+  - identity_id: licensee_identity
+    dataset_columns:
+    - licensee_id
+    entity_universe: partial
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - open_calendar_day_id
+    entity_universe: partial
+- node_id: sf:starbucks.store.dim_ownership_type
+  descriptor:
+    qualified_name: starbucks.store.dim_ownership_type
+    display_name: Ownership type
+    description: 'The two Starbucks coffeehouse ownership types: company-operated and licensed.'
+    tags:
+    - store
+    - operations
+    synonyms:
+    - company-operated
+    - licensed
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: starbucks.us-west-2
+      database: STARBUCKS
+      schema: STORE
+      object: DIM_OWNERSHIP_TYPE
+      format: table
+  grain:
+    description: One row is one ownership type.
+    components:
+    - dataset_columns:
+      - ownership_type_id
+      identity_id: ownership_type_identity
+  columns:
+  - name: ownership_type_id
+    description: Surrogate key of one ownership type.
+  - name: ownership_type_code
+    description: Stable code of the ownership type.
+    value_description: company_operated or licensed.
+  - name: ownership_type_name
+    description: Display name of the ownership type.
+  entity_definitions:
+  - identity_id: ownership_type_identity
+    dataset_columns:
+    - ownership_type_id
+    entity_universe: complete
+- node_id: sf:starbucks.store.fact_ownership_operating_comparison
+  descriptor:
+    qualified_name: starbucks.store.fact_ownership_operating_comparison
+    display_name: Ownership operating comparison
+    description: Company-operated and licensed operating results for one country and one operating week.
+      Amounts are totals for coffeehouses of that ownership type. Comparable sales, ticket time, hours,
+      labor, and the sales effect on the other ownership type sit on this grain.
+    tags:
+    - store
+    - operations
+    - fact
+    synonyms:
+    - company-operated versus licensed
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: starbucks.us-west-2
+      database: STARBUCKS
+      schema: STORE
+      object: FACT_OWNERSHIP_OPERATING_COMPARISON
+      format: table
+  grain:
+    description: One row is one ownership type in one country in one operating week.
+    components:
+    - dataset_columns:
+      - ownership_type_id
+      identity_id: ownership_type_identity
+    - dataset_columns:
+      - country_id
+      identity_id: country_identity
+    - dataset_columns:
+      - operating_week_id
+      identity_id: operating_week_identity
+  columns:
+  - name: ownership_type_id
+    description: Ownership type of the row. Foreign key to ownership_type_id on starbucks.store.dim_ownership_type.
+  - name: country_id
+    description: Country of the comparison. Foreign key to country_id on starbucks.organization.dim_country.
+  - name: operating_week_id
+    description: Operating week of the comparison. Foreign key to operating_week_id on starbucks.labor.dim_operating_week.
+  - name: comparable_sales_percent
+    description: Comparable sales for coffeehouses of this ownership type in this country and week.
+    synonyms:
+    - comps
+  - name: transaction_count
+    description: Transactions at coffeehouses of this ownership type in this country and week.
+  - name: labor_hours
+    description: Labor hours at coffeehouses of this ownership type in this country and week.
+    synonyms:
+    - labor hours
+  - name: labor_dollars
+    description: Coffeehouse labor dollars for this ownership type in this country and week.
+    synonyms:
+    - labor dollars
+  - name: transactions_per_labor_hour
+    description: Transactions divided by labor hours for this ownership type, country, and week.
+    synonyms:
+    - transactions per labor hour
+  - name: average_ticket_time_seconds
+    description: Average ticket time in seconds for this ownership type, country, and week.
+    synonyms:
+    - ticket time seconds
+    - average ticket time
+  - name: hours_open
+    description: Hours open for coffeehouses of this ownership type in this country and week.
+    synonyms:
+    - hours open
+  - name: applicable_operations_action_code
+    description: Operating action available to this ownership type in the week. Company-operated rows
+      carry actions such as Green Apron staffing, hours, and remodels. Licensed rows carry the licensed
+      operating model.
+  - name: cross_ownership_sales_effect_amount
+    description: Store sales effect on the other ownership type in the same country and week. On a licensed
+      row this is the sales effect on company-operated coffeehouses.
+  entity_definitions:
+  - identity_id: ownership_type_identity
+    dataset_columns:
+    - ownership_type_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: operating_week_identity
+    dataset_columns:
+    - operating_week_id
+    entity_universe: partial
