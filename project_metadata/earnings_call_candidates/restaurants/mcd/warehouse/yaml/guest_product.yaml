@@ -1,0 +1,342 @@
+schema_version: '3'
+nodes:
+- node_id: sf:mcdonalds.menu.dim_product
+  descriptor:
+    qualified_name: mcdonalds.menu.dim_product
+    display_name: Product
+    description: Complete population of sellable McDonald's menu items, including food, beverages, and
+      limited-time items.
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: mcdonalds.us-east-1
+      database: MCDONALDS
+      schema: MENU
+      object: DIM_PRODUCT
+      format: table
+  grain:
+    description: One row is one menu item.
+    components:
+    - identity_id: product_identity
+      dataset_columns:
+      - product_id
+      description: One sellable menu item.
+  columns:
+  - name: product_id
+    description: Identifier of the sellable menu item. This dataset holds the complete product population.
+  - name: product_category_id
+    description: Category that contains the item.
+  - name: protein_id
+    description: Primary protein of the item. Absent for items that are not protein foods, including beverages.
+  - name: beverage_platform_id
+    description: Beverage platform of the item. Absent when the item is not a beverage.
+  - name: launch_calendar_day_id
+    description: Calendar day the item launched. Absent when the item is not tracked as a launch.
+  - name: product_name
+    description: Guest-facing name of the menu item.
+  - name: menu_tier
+    description: Where the item sits on the value-to-premium barbell.
+    value_description: premium, value, or core. Premium is the high end of the barbell and value is the
+      value-menu end.
+  - name: chicken_quality_index
+    description: Quality score for items on the chicken-quality program. Empty when the item is not part
+      of that program.
+  - name: is_value_menu_item
+    description: Whether the item is on the value menu.
+    value_description: true when the item is on the value menu; false otherwise.
+  - name: glp1_menu_role
+    description: How the item is positioned for guests using GLP-1 medicines.
+    value_description: smaller_portion, protein_forward, lower_calorie, or not_positioned.
+  - name: suits_glp1_guest_flag
+    description: Whether operators are offering the item for GLP-1 guest occasions.
+    value_description: true when the item is positioned for that guest; false otherwise.
+  entity_definitions:
+  - identity_id: product_identity
+    dataset_columns:
+    - product_id
+    entity_universe: complete
+  - identity_id: product_category_identity
+    dataset_columns:
+    - product_category_id
+    entity_universe: partial
+  - identity_id: protein_identity
+    dataset_columns:
+    - protein_id
+    entity_universe: partial
+  - identity_id: beverage_platform_identity
+    dataset_columns:
+    - beverage_platform_id
+    entity_universe: partial
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - launch_calendar_day_id
+    entity_universe: partial
+- node_id: sf:mcdonalds.menu.dim_product_category
+  descriptor:
+    qualified_name: mcdonalds.menu.dim_product_category
+    display_name: Product category
+    description: Complete population of menu categories used to read chicken, beef, beverage, and other
+      mix.
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: mcdonalds.us-east-1
+      database: MCDONALDS
+      schema: MENU
+      object: DIM_PRODUCT_CATEGORY
+      format: table
+  grain:
+    description: One row is one menu category.
+    components:
+    - identity_id: product_category_identity
+      dataset_columns:
+      - product_category_id
+      description: One menu category.
+  columns:
+  - name: product_category_id
+    description: Identifier of the menu category. This dataset holds the complete category population.
+  - name: category_name
+    description: Name of the menu category.
+  - name: category_family
+    description: Family used for mix questions.
+    value_description: chicken, beef, beverage, or other.
+  entity_definitions:
+  - identity_id: product_category_identity
+    dataset_columns:
+    - product_category_id
+    entity_universe: complete
+- node_id: sf:mcdonalds.menu.dim_protein
+  descriptor:
+    qualified_name: mcdonalds.menu.dim_protein
+    display_name: Protein
+    description: Complete population of primary proteins, including chicken and beef.
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: mcdonalds.us-east-1
+      database: MCDONALDS
+      schema: MENU
+      object: DIM_PROTEIN
+      format: table
+  grain:
+    description: One row is one protein.
+    components:
+    - identity_id: protein_identity
+      dataset_columns:
+      - protein_id
+      description: One primary protein.
+  columns:
+  - name: protein_id
+    description: Identifier of the protein. This dataset holds the complete protein population.
+  - name: protein_name
+    description: Name of the protein.
+    value_description: chicken, beef, or other.
+  - name: is_chicken
+    description: Whether this protein is chicken.
+    value_description: true for chicken; false otherwise.
+  - name: is_beef
+    description: Whether this protein is beef.
+    value_description: true for beef; false otherwise.
+  entity_definitions:
+  - identity_id: protein_identity
+    dataset_columns:
+    - protein_id
+    entity_universe: complete
+- node_id: sf:mcdonalds.menu.dim_beverage_platform
+  descriptor:
+    qualified_name: mcdonalds.menu.dim_beverage_platform
+    display_name: Beverage platform
+    description: Complete population of beverage platforms, including energy brands and the rest of the
+      lineup.
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: mcdonalds.us-east-1
+      database: MCDONALDS
+      schema: MENU
+      object: DIM_BEVERAGE_PLATFORM
+      format: table
+  grain:
+    description: One row is one beverage platform.
+    components:
+    - identity_id: beverage_platform_identity
+      dataset_columns:
+      - beverage_platform_id
+      description: One beverage platform.
+  columns:
+  - name: beverage_platform_id
+    description: Identifier of the beverage platform. This dataset holds the complete platform population.
+  - name: platform_name
+    description: Name of the beverage platform or brand.
+  - name: is_energy_drink
+    description: Whether the platform is an energy drink.
+    value_description: true for an energy drink; false otherwise.
+  - name: is_energy_brand
+    description: Whether the platform is an energy brand considered for the beverage launch.
+    value_description: true for an energy brand; false otherwise.
+  - name: excluded_from_initial_us_launch_flag
+    description: Whether the platform was held out of the initial U.S. beverage launch.
+    value_description: true when it was held out; false when it was in the initial assortment.
+  - name: exclusion_reason
+    description: Reason recorded for holding the platform out of a launch. Empty when the platform was
+      included.
+  - name: rollout_wave_name
+    description: Named wave in which the platform is scheduled to reach restaurants. Empty when no wave
+      is assigned.
+  entity_definitions:
+  - identity_id: beverage_platform_identity
+    dataset_columns:
+    - beverage_platform_id
+    entity_universe: complete
+- node_id: sf:mcdonalds.menu.fact_protein_mix_period
+  descriptor:
+    qualified_name: mcdonalds.menu.fact_protein_mix_period
+    display_name: Protein mix by period
+    description: Commercial mix and protein cost by protein, country, segment, and accounting period.
+      This is the share population, not the check-line population.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: mcdonalds.us-east-1
+      database: MCDONALDS
+      schema: MENU
+      object: FACT_PROTEIN_MIX_PERIOD
+      format: table
+  grain:
+    description: One row is one protein in one country and segment for one accounting period.
+    components:
+    - identity_id: protein_identity
+      dataset_columns:
+      - protein_id
+    - identity_id: country_identity
+      dataset_columns:
+      - country_id
+    - identity_id: segment_identity
+      dataset_columns:
+      - segment_id
+    - identity_id: accounting_period_identity
+      dataset_columns:
+      - accounting_period_id
+  columns:
+  - name: protein_id
+    description: Protein whose mix is measured. This fact holds a partial protein population.
+  - name: country_id
+    description: Country identifier. The country population is owned outside this slice.
+  - name: segment_id
+    description: Segment identifier for the U.S., international operated markets, and developmental license.
+      The segment population is owned outside this slice.
+  - name: accounting_period_id
+    description: Accounting period identifier. The period population is owned outside this slice.
+  - name: quantity_sold
+    description: Units sold for this protein in the period.
+  - name: sales_amount
+    description: Net sales amount for this protein in the period.
+  - name: quantity_share_rate
+    description: This protein's share of food units sold in the country and segment.
+  - name: sales_share_rate
+    description: This protein's share of food sales amount in the country and segment.
+  - name: protein_cost_index
+    description: Input-cost index for the protein. Beef rows carry the beef-cost move used to read mix
+      shift.
+  - name: mix_shift_rate
+    description: Change in quantity share versus the prior comparable period.
+  entity_definitions:
+  - identity_id: protein_identity
+    dataset_columns:
+    - protein_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: segment_identity
+    dataset_columns:
+    - segment_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+- node_id: sf:mcdonalds.menu.fact_menu_daypart
+  descriptor:
+    qualified_name: mcdonalds.menu.fact_menu_daypart
+    display_name: Menu sales by daypart
+    description: Item sales and GLP-1 guest mix by product, daypart, country, and accounting period.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: mcdonalds.us-east-1
+      database: MCDONALDS
+      schema: MENU
+      object: FACT_MENU_DAYPART
+      format: table
+  grain:
+    description: One row is one menu item in one daypart, country, and accounting period.
+    components:
+    - identity_id: product_identity
+      dataset_columns:
+      - product_id
+    - identity_id: daypart_identity
+      dataset_columns:
+      - daypart_id
+    - identity_id: country_identity
+      dataset_columns:
+      - country_id
+    - identity_id: accounting_period_identity
+      dataset_columns:
+      - accounting_period_id
+  columns:
+  - name: product_id
+    description: Menu item being measured. This fact holds a partial product population.
+  - name: daypart_id
+    description: Daypart of the item sales.
+  - name: country_id
+    description: Country identifier. The country population is owned outside this slice.
+  - name: segment_id
+    description: Segment identifier for the U.S., international operated markets, and developmental license.
+      The segment population is owned outside this slice.
+  - name: accounting_period_id
+    description: Accounting period identifier. The period population is owned outside this slice.
+  - name: quantity_sold
+    description: Units of the item sold in the daypart and period.
+  - name: sales_amount
+    description: Net sales amount of the item in the daypart and period.
+  - name: glp1_guest_share_rate
+    description: Share of this item's guest occasions attributed to guests using GLP-1 medicines.
+  - name: operator_request_count
+    description: Count of operator requests asking for this item in this daypart.
+  - name: consumption_index
+    description: Index of expected consumption for this item and daypart versus the prior menu.
+  entity_definitions:
+  - identity_id: product_identity
+    dataset_columns:
+    - product_id
+    entity_universe: partial
+  - identity_id: daypart_identity
+    dataset_columns:
+    - daypart_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: segment_identity
+    dataset_columns:
+    - segment_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial

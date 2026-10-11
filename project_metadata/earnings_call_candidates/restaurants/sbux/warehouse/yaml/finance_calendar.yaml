@@ -1,0 +1,129 @@
+schema_version: '3'
+nodes:
+- node_id: sf:starbucks.calendar.dim_calendar_day
+  descriptor:
+    qualified_name: starbucks.calendar.dim_calendar_day
+    display_name: Calendar day
+    description: One civil date on the Starbucks fiscal calendar. Each day belongs to one Starbucks fiscal
+      period. The fiscal year ends on the Sunday closest to September 30.
+    tags:
+    - calendar
+    - finance
+    synonyms:
+    - Starbucks fiscal calendar day
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: starbucks.us-west-2
+      database: STARBUCKS
+      schema: CALENDAR
+      object: DIM_CALENDAR_DAY
+      format: table
+  grain:
+    description: One row is one calendar date.
+    components:
+    - dataset_columns:
+      - calendar_day_id
+      identity_id: calendar_day_identity
+  columns:
+  - name: calendar_day_id
+    description: Surrogate key of one calendar date.
+  - name: calendar_date
+    description: Civil date represented by the row.
+  - name: fiscal_period_id
+    description: Starbucks fiscal period that contains this date. Partial reference to the fiscal-period
+      dimension.
+  - name: day_name
+    description: Weekday name of the date.
+  - name: is_fiscal_year_end_code
+    description: Marks the Sunday closest to September 30 that closes a Starbucks fiscal year.
+    value_description: fiscal_year_end or not_fiscal_year_end
+  entity_definitions:
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    entity_universe: complete
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+- node_id: sf:starbucks.finance.dim_fiscal_period
+  descriptor:
+    qualified_name: starbucks.finance.dim_fiscal_period
+    display_name: Fiscal period
+    description: Starbucks fiscal period. The fiscal year ends on the Sunday closest to September 30.
+      Four fiscal quarters are 13 weeks, and the fourth quarter is 14 weeks in a 53-week year. Each quarter
+      contains three periods in a 4-week, 4-week, 5-week pattern, with the extra week of a 53-week year
+      in the last period. Fiscal half 1 is quarters 1 and 2. Fiscal half 2 is quarters 3 and 4. Period
+      labels use the Starbucks fiscal-period form, such as FY2026-P03.
+    tags:
+    - calendar
+    - finance
+    synonyms:
+    - Starbucks fiscal period
+    - 4-4-5 period
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: starbucks.us-west-2
+      database: STARBUCKS
+      schema: FINANCE
+      object: DIM_FISCAL_PERIOD
+      format: table
+  grain:
+    description: One row is one Starbucks fiscal period.
+    components:
+    - dataset_columns:
+      - fiscal_period_id
+      identity_id: fiscal_period_identity
+  columns:
+  - name: fiscal_period_id
+    description: Surrogate key of one Starbucks fiscal period.
+  - name: fiscal_year
+    description: Starbucks fiscal year that contains the period. The year ends on the Sunday closest to
+      September 30.
+  - name: fiscal_quarter_number
+    description: Starbucks fiscal quarter of the period. Quarter 4 is the fourth quarter.
+    value_description: 1, 2, 3, or 4
+  - name: fiscal_half_number
+    description: Starbucks fiscal half used to compare first-half and second-half rows that share a fact
+      grain and differ by fiscal period.
+    value_description: 1 is the first half (quarters 1 and 2). 2 is the second half (quarters 3 and 4).
+  - name: fiscal_period_in_year
+    description: Position of the period inside the Starbucks fiscal year.
+    value_description: 1 through 12
+  - name: period_in_quarter
+    description: Position of the period inside its 13-week Starbucks fiscal quarter.
+    value_description: 1, 2, or 3
+  - name: period_week_count
+    description: Weeks in this Starbucks fiscal period under the 4-4-5 pattern. The last period of a 53-week
+      year has the extra week.
+    value_description: 4, 5, or 6
+  - name: quarter_week_count
+    description: Weeks in the Starbucks fiscal quarter that contains this period.
+    value_description: 13, or 14 when the fourth quarter of a 53-week year contains the extra week
+  - name: period_label
+    description: Starbucks fiscal-period label, such as FY2026-P03.
+  - name: period_start_calendar_day_id
+    description: First calendar day of the Starbucks fiscal period.
+  - name: period_end_calendar_day_id
+    description: Last calendar day of the Starbucks fiscal period.
+  - name: fiscal_year_end_calendar_day_id
+    description: Sunday closest to September 30 that closes the Starbucks fiscal year of this period.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: complete
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - period_start_calendar_day_id
+    entity_universe: partial
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - period_end_calendar_day_id
+    entity_universe: partial
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - fiscal_year_end_calendar_day_id
+    entity_universe: partial
