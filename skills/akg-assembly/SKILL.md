@@ -34,6 +34,14 @@ projection. Add `--full` only when a field you need is missing from the compact 
 | `get_relationship` | `{"edge_id": str, "from_node_id": str (optional)}` | Canonical endpoints and directions; with `from_node_id`, also directions relative to that endpoint. |
 | `expand_subgraph` | `{"seed_node_ids": [..], "max_depth", "max_nodes", "max_edges"}` | Neighborhood listing. Use `max_depth` 1 only. |
 
+Responses list each relationship, dataset, and entity definition once, as `{"header", "rows"}`
+tables in `relationships`, `datasets`, and `entity_definitions`. A dotted column name such as
+`direction.multiplicity` is a nested field. Hop and path-step rows name their relationship by
+`edge_id` and carry `direction` and `reverse_direction` oriented to the step; `find_paths` rows
+start with the path's rank in `path`. The compact projection joins each step with its
+relationship's identity and endpoint columns. To read a raw response as keyed objects, use
+`--full --records`, or pass `"response_format": "records"` to the service.
+
 ## 1. Decompose the question
 
 Before any call, write these lists in your scratch notes:

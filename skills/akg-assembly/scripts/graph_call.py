@@ -3,12 +3,14 @@
 
 Standard library only; does not import actor code.
 
-    graph_call.py METHOD [PARAMS_JSON] [--socket PATH] [--full]
+    graph_call.py METHOD [PARAMS_JSON] [--socket PATH] [--full [--records]]
 
 The socket comes from --socket or $DOG_SOCKET. The client changes into the socket's directory and
 connects by basename, so socket paths longer than the platform sun_path limit still work.
-By default the result is printed in a compact projection that drops repeated snapshot headers and
-nested dataset copies; --full prints the raw JSON-RPC result. In the compact projection,
+The service returns graph-object collections as {"header", "rows"} tables. By default the result
+is printed in a compact projection that joins hop and path steps with their relationships and drops
+dataset metadata; --full prints the raw JSON-RPC result, and --full --records converts each table
+to a list of records (dotted column names become nested objects). In the compact projection,
 find_paths results are re-sorted: paths with no fan-out hop (1:many or many:many) first, then
 fewer hops with unknown claims, then shorter paths. Each path carries its direction `shape`.
 """
@@ -41,15 +43,70 @@ def call(socket_path: Path, method: str, params: dict) -> dict:
     return json.loads(buf.split(b"\n", 1)[0])
 
 
-def _endpoint(ep: dict) -> dict:
+def to_records(table: dict) -> list[dict]:
+    """Convert one {"header", "rows"} table to records, nesting dotted column names."""
+    records = []
+    for row in table["rows"]:
+        if len(row) != len(table["header"]):
+            raise ValueError(f"row has {len(row)} values for {len(table['header'])} columns")
+        record: dict = {}
+        for column, value in zip(table["header"], row):
+            *parents, leaf = column.split(".")
+            target = record
+            for parent in parents:
+                target = target.setdefault(parent, {})
+            target[leaf] = value
+        records.append(record)
+    return records
+
+
+def expand_tables(result):
+    """Replace every table in a result with its records; other values are unchanged."""
+    if isinstance(result, dict):
+        if set(result) == {"header", "rows"}:
+            return to_records(result)
+        return {key: expand_tables(value) for key, value in result.items()}
+    if isinstance(result, list):
+        return [expand_tables(value) for value in result]
+    return result
+
+
+def _endpoint(result: dict, ref: dict, identity_id: str) -> dict:
+    """Resolve an endpoint against the response's datasets and entity definitions."""
+    dataset = next(d for d in result["datasets"] if d["node_id"] == ref["node_id"])
+    definition = next(
+        d for d in result["entity_definitions"]
+        if (d["node_id"], d["identity_id"], d["dataset_columns"])
+        == (ref["node_id"], identity_id, ref["dataset_columns"])
+    )
     return {
-        "node_id": ep.get("node_id"),
-        "qualified_name": ep.get("dataset", {}).get("descriptor", {}).get("qualified_name"),
-        "identity_id": ep.get("identity_id"),
-        "dataset_columns": ep.get("dataset_columns"),
-        "entity_universe": ep.get("entity_universe"),
-        "entity_expression": ep.get("entity_expression"),
-        "entity_metadata": ep.get("entity_metadata"),
+        "node_id": ref["node_id"],
+        "qualified_name": dataset["descriptor"]["qualified_name"],
+        "dataset_columns": ref["dataset_columns"],
+        "entity_universe": definition["entity_universe"],
+        "entity_expression": definition["entity_expression"],
+        "entity_metadata": definition["entity_metadata"],
+    }
+
+
+def _columns(relationship: dict, node_id: str) -> list[str]:
+    for side in ("endpoint_a", "endpoint_b"):
+        if relationship[side]["node_id"] == node_id:
+            return relationship[side]["dataset_columns"]
+    raise KeyError(node_id)
+
+
+def _hop(relationships: dict, step: dict) -> dict:
+    """A step joined with its relationship's identity and endpoint columns."""
+    relationship = relationships[step["edge_id"]]
+    return {
+        "edge_id": step["edge_id"],
+        "from": f'{step["from_node_id"]}[{",".join(_columns(relationship, step["from_node_id"]))}]',
+        "to": f'{step["to_node_id"]}[{",".join(_columns(relationship, step["to_node_id"]))}]',
+        "identity_id": relationship["identity_id"],
+        "direction": step["direction"],
+        "reverse_direction": step["reverse_direction"],
+        **({"unknown_fields": step["unknown_fields"]} if step["unknown_fields"] else {}),
     }
 
 
@@ -61,46 +118,33 @@ def compact(method: str, result):
             "truncated": result["truncated"],
             "groups": result["groups"],
         }
+    result = expand_tables(result)
+    relationships = {r["edge_id"]: r for r in result.get("relationships", [])}
     if method == "graph.get_hops":
-        hops = [
-            {
-                "edge_id": h["edge_id"],
-                "to_node_id": h["to_node_id"],
-                "identity_id": h["identity_id"],
-                "from_columns": h["from_endpoint"]["dataset_columns"],
-                "to_columns": h["to_endpoint"]["dataset_columns"],
-                "direction": h["direction"],
-                "reverse_direction": h["reverse_direction"],
-                **({"unknown_fields": h["unknown_fields"]} if h["unknown_fields"] else {}),
-            }
-            for h in result["hops"]
-        ]
-        return {"truncated": result["truncated"], "hops": hops}
+        return {"truncated": result["truncated"],
+                "hops": [_hop(relationships, step) for step in result["hops"]]}
     if method == "graph.get_relationship":
-        return {**result, "endpoint_a": _endpoint(result["endpoint_a"]),
-                "endpoint_b": _endpoint(result["endpoint_b"])}
+        compacted = {key: value for key, value in result.items()
+                     if key not in ("datasets", "entity_definitions")}
+        for side in ("endpoint_a", "endpoint_b"):
+            compacted[side] = _endpoint(result, result[side], result["identity_id"])
+        return compacted
     if method == "graph.find_paths":
-        paths = [
-                {
-                    "length": p["length"],
-                    "shape": " > ".join(h["direction"]["multiplicity"] for h in p["hops"]),
-                    "fan_out_hops": sum(
-                        h["direction"]["multiplicity"] in ("1:many", "many:many") for h in p["hops"]
-                    ),
-                    "unknown_hops": sum(bool(h["unknown_fields"]) for h in p["hops"]),
-                    "hops": [
-                        {
-                            "edge_id": h["edge_id"],
-                            "from": f'{h["from_node_id"]}[{",".join(h["from_endpoint"]["dataset_columns"])}]',
-                            "to": f'{h["to_node_id"]}[{",".join(h["to_endpoint"]["dataset_columns"])}]',
-                            "identity_id": h["identity_id"],
-                            "direction": h["direction"],
-                        }
-                        for h in p["hops"]
-                    ],
-                }
-                for p in result["paths"]
-            ]
+        grouped: list[list[dict]] = []
+        for step in result["hops"]:
+            if step["path"] == len(grouped):
+                grouped.append([])
+            grouped[step["path"]].append(step)
+        paths = []
+        for steps in grouped:
+            directions = [step["direction"]["multiplicity"] for step in steps]
+            paths.append({
+                "length": len(steps),
+                "shape": " > ".join(directions),
+                "fan_out_hops": sum(m in ("1:many", "many:many") for m in directions),
+                "unknown_hops": sum(bool(step["unknown_fields"]) for step in steps),
+                "hops": [_hop(relationships, step) for step in steps],
+            })
         # Fan-out-free chains first, then fewer unknown hops, then the service order.
         paths.sort(key=lambda p: (p["fan_out_hops"], p["unknown_hops"], p["length"]))
         return {"truncated": result["truncated"], "path_count": len(paths), "paths": paths}
@@ -108,25 +152,27 @@ def compact(method: str, result):
         return {
             "truncated": result["truncated"],
             "nodes": [
-                {"distance": n["distance"], "node_id": n["dataset"]["node_id"],
-                 "display_name": n["dataset"]["descriptor"]["display_name"],
-                 "description": n["dataset"]["descriptor"]["description"]}
-                for n in result["nodes"]
+                {"distance": d["distance"], "node_id": d["node_id"],
+                 "display_name": d["descriptor"]["display_name"],
+                 "description": d["descriptor"]["description"]}
+                for d in result["datasets"]
             ],
             "edges": [
-                {"edge_id": e["edge_id"], "identity_id": e["identity_id"],
+                {"edge_id": edge_id, "identity_id": e["identity_id"],
                  "a": f'{e["endpoint_a"]["node_id"]}[{",".join(e["endpoint_a"]["dataset_columns"])}]',
                  "b": f'{e["endpoint_b"]["node_id"]}[{",".join(e["endpoint_b"]["dataset_columns"])}]',
                  "a_to_b": e["a_to_b"], "b_to_a": e["b_to_a"]}
-                for e in result["edges"]
+                for edge_id, e in relationships.items()
             ],
         }
     if method == "graph.get_identity":
-        return {**result, "definitions": [
-            {"node_id": d["node_id"],
-             "qualified_name": d["dataset"]["descriptor"]["qualified_name"],
-             "dataset_columns": d["dataset_columns"], "entity_universe": d["entity_universe"]}
-            for d in result["definitions"]]}
+        names = {d["node_id"]: d["descriptor"]["qualified_name"] for d in result["datasets"]}
+        return {**{k: v for k, v in result.items() if k not in ("datasets", "entity_definitions")},
+                "definitions": [
+                    {"node_id": d["node_id"], "qualified_name": names[d["node_id"]],
+                     "dataset_columns": d["dataset_columns"],
+                     "entity_universe": d["entity_universe"]}
+                    for d in result["entity_definitions"]]}
     return result
 
 
@@ -136,6 +182,8 @@ def main() -> None:
     parser.add_argument("params", nargs="?", default="{}")
     parser.add_argument("--socket", default=os.environ.get("DOG_SOCKET"))
     parser.add_argument("--full", action="store_true")
+    parser.add_argument("--records", action="store_true",
+                        help="with --full, convert each table to a list of records")
     args = parser.parse_args()
     if not args.socket:
         parser.error("set --socket or DOG_SOCKET")
@@ -145,7 +193,11 @@ def main() -> None:
         print(json.dumps(response["error"], indent=1))
         sys.exit(1)
     result = response["result"]
-    print(json.dumps(result if args.full else compact(method, result), indent=1))
+    if args.full:
+        output = expand_tables(result) if args.records else result
+    else:
+        output = compact(method, result)
+    print(json.dumps(output, indent=1))
 
 
 if __name__ == "__main__":
