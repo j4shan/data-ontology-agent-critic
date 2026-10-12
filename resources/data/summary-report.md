@@ -1,6 +1,6 @@
 # Earnings-call question summary
 
-Extraction date: 2026-10-05. Five industries now have one warehouse each. This report is the
+Extraction date: 2026-10-05. Eleven industries now have one warehouse each. This report is the
 gate before any ontology simulation.
 
 ## Sources
@@ -177,14 +177,17 @@ Each industry directory keeps one schema version 3 warehouse, owned by a naive i
 | Device Inc | Technology hardware | `technology-hardware/warehouse/` | 78 | 180 | 78 |
 | Surgical Supply Inc | Health care equipment | `health-care-equipment/warehouse/` | 74 | 200 | 74 |
 | Machinery Inc | Construction machinery | `construction-machinery/warehouse/` | 74 | 177 | 74 |
+| Chemical Inc | Specialty chemicals | `specialty-chemicals/warehouse/` | 103 | 247 | 103 |
+| Airline Inc | Passenger airlines | `passenger-airlines/warehouse/` | 97 | 213 | 97 |
+| Food Inc | Packaged foods | `packaged-foods/warehouse/` | 94 | 235 | 94 |
+| Health Plan Inc | Managed care | `managed-care/warehouse/` | 116 | 297 | 116 |
+| Beverage Inc | Soft drinks | `soft-drinks/warehouse/` | 105 | 312 | 105 |
+| Automaker Inc | Automobile manufacturers | `automobile-manufacturers/warehouse/` | 113 | 303 | 113 |
 
-Burger Inc finance separates company-operated margin, franchisee cash flow, royalty, rent, capex, and the inflation-versus-mix bridge. Colocation Inc separates a booking from quarterly occupancy, planned megawatts from power actually available, and a cross-connect from a lease line. Device Inc keeps demand quantity, component supply, and the price file as separate facts. Surgical Supply Inc keeps procedure volume, capital backlog, and the reimbursement context as separate facts. It is a device-maker graph, separate from the healthcare-payer claims catalog. Machinery Inc keeps dealer inventory, the power-versus-construction mix, and price, volume, and backlog as separate facts. Colocation Inc, Device Inc, Surgical Supply Inc, and Machinery Inc build with no unknown claims and no contradictory edges. Burger Inc builds with no unknown claims. See each `warehouse/MODEL.md`.
+Burger Inc finance separates company-operated margin, franchisee cash flow, royalty, rent, capex, and the inflation-versus-mix bridge. Colocation Inc separates a booking from quarterly occupancy, planned megawatts from power actually available, and a cross-connect from a lease line. Device Inc keeps demand quantity, component supply, and the price file as separate facts. Surgical Supply Inc keeps procedure volume, capital backlog, and the reimbursement context as separate facts. It is a device-maker graph, separate from the healthcare-payer claims catalog. Machinery Inc keeps dealer inventory, the power-versus-construction mix, and price, volume, and backlog as separate facts. Chemical Inc, Airline Inc, Food Inc, Health Plan Inc, Beverage Inc, and Automaker Inc each keep demand, supply or capacity, and price or margin as separate facts. Health Plan Inc is a membership and medical-cost graph, separate from the healthcare-payer claims catalog. Colocation Inc, Device Inc, Surgical Supply Inc, Machinery Inc, and these six build with no unknown claims and no contradictory edges. Burger Inc builds with no unknown claims. See each `warehouse/MODEL.md`.
 
 ## Pairs to defer
 
-- **Specialty chemicals (113), managed care (106), airlines (104), and packaged foods (96)**
-  have the largest counts. Managed care overlaps the existing payer assessment domain. The
-  others are mostly price, volume, and geography, with fewer distinct entities to join.
 - **Application software (43) and property & casualty insurance (44)** are the thinnest sheets.
   Salesforce kept only 19 questions across four calls, and two of those calls came from the
   fallback source.

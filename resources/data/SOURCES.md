@@ -21,24 +21,24 @@ directory has `references.md`, which names the companies and earnings calls with
 | `integrated-telecom/` | AT&T, Verizon | — |
 | `broadline-retail/` | Amazon, eBay | — |
 | `home-improvement-retail/` | Home Depot, Lowe's | — |
-| `automobile-manufacturers/` | General Motors, Tesla | — |
+| `automobile-manufacturers/` | General Motors, Tesla | `automobile-manufacturers/warehouse/` (Automaker Inc) |
 | `restaurants/` | McDonald's, Starbucks | `restaurants/warehouse/` (Burger Inc) |
 | `merchandise-retail/` | Costco, Walmart | — |
-| `soft-drinks/` | Coca-Cola, PepsiCo | — |
-| `packaged-foods/` | General Mills, Mondelez | — |
+| `soft-drinks/` | Coca-Cola, PepsiCo | `soft-drinks/warehouse/` (Beverage Inc) |
+| `packaged-foods/` | General Mills, Mondelez | `packaged-foods/warehouse/` (Food Inc) |
 | `diversified-banks/` | Bank of America, JPMorgan Chase | — |
 | `investment-banking/` | Goldman Sachs, Morgan Stanley | — |
 | `payments/` | Mastercard, Visa | — |
 | `pc-insurance/` | Chubb, Progressive | — |
 | `pharmaceuticals/` | Eli Lilly, Merck | — |
-| `managed-care/` | Elevance Health, UnitedHealth Group | — |
+| `managed-care/` | Elevance Health, UnitedHealth Group | `managed-care/warehouse/` (Health Plan Inc) |
 | `health-care-equipment/` | Intuitive Surgical, Stryker | `health-care-equipment/warehouse/` (Surgical Supply Inc) |
 | `aerospace-defense/` | Lockheed Martin, RTX | — |
 | `construction-machinery/` | Caterpillar, PACCAR | `construction-machinery/warehouse/` (Machinery Inc) |
 | `rail-transportation/` | CSX, Union Pacific | — |
-| `passenger-airlines/` | Delta Air Lines, United Airlines | — |
+| `passenger-airlines/` | Delta Air Lines, United Airlines | `passenger-airlines/warehouse/` (Airline Inc) |
 | `integrated-oil-gas/` | Chevron, Exxon Mobil | — |
-| `specialty-chemicals/` | Ecolab, Sherwin-Williams | — |
+| `specialty-chemicals/` | Ecolab, Sherwin-Williams | `specialty-chemicals/warehouse/` (Chemical Inc) |
 | `data-center-reits/` | Digital Realty, Equinix | `data-center-reits/warehouse/` (Colocation Inc) |
 | `electric-utilities/` | Duke Energy, Southern Company | — |
 
