@@ -11,8 +11,9 @@ Status values: `selected` (pair locked, transcripts not read), `extracting`, `qu
 `partial` (fewer than four calls or a thin Q&A), `blocked`.
 
 Every pair below is `questions-ready`: four recent calls were read and analyst questions were
-paraphrased into `{slug}/{ticker}/questions.md`. Schema YAML has not been started. See
-`summary-report.md` for counts and the simulation shortlist.
+paraphrased into `{slug}/{ticker}/questions.md`. Each industry directory has `references.md`
+naming those companies and calls. Five industries have one schema version 3 warehouse at
+`{slug}/warehouse/`. See `summary-report.md` for counts and the simulation shortlist.
 
 | # | GICS sector | GICS sub-industry | Ticker | Company | Status |
 | --- | --- | --- | --- | --- | --- |
@@ -77,5 +78,9 @@ paraphrased into `{slug}/{ticker}/questions.md`. Schema YAML has not been starte
 | 30 | Utilities | Electric Utilities | SO | Southern Company | questions-ready |
 | 30 | Utilities | Electric Utilities | DUK | Duke Energy | questions-ready |
 
-Question files, once extracted, live at `{sub-industry-slug}/{ticker}/questions.md` under this
-directory. Slugs are lowercase hyphenated sub-industry names.
+Question files live at `{sub-industry-slug}/{ticker}/questions.md`. `references.md` in the
+industry directory names the companies and earnings calls, without links. A warehouse, when
+present, is the single model for that industry: `restaurants/warehouse/` (Burger Inc),
+`data-center-reits/warehouse/` (Colocation Inc), `technology-hardware/warehouse/` (Device Inc),
+`health-care-equipment/warehouse/` (Surgical Supply Inc), and
+`construction-machinery/warehouse/` (Machinery Inc).
