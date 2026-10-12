@@ -1,0 +1,981 @@
+schema_version: '3'
+nodes:
+- node_id: sf:apple.component.dim_component_class
+  descriptor:
+    qualified_name: apple.component.dim_component_class
+    display_name: Component Class
+    description: Whether a purchased commodity is memory or silicon. Apple buys both. This is not a fabrication
+      class.
+    synonyms: []
+    tags:
+    - dimension
+    - supply
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: apple.us-west-1
+      database: APPLE
+      schema: COMPONENT
+      object: DIM_COMPONENT_CLASS
+      format: table
+  grain:
+    description: One row is one component class.
+    components:
+    - identity_id: component_class_identity
+      dataset_columns:
+      - component_class_id
+      description: Identifier of the component class.
+  columns:
+  - name: component_class_id
+    description: Identifier of the component class.
+  - name: class_name
+    description: Name of the class.
+  - name: class_code
+    description: Class code.
+    value_description: memory, silicon
+  entity_definitions:
+  - identity_id: component_class_identity
+    dataset_columns:
+    - component_class_id
+    entity_universe: complete
+- node_id: sf:apple.component.dim_component_commodity
+  descriptor:
+    qualified_name: apple.component.dim_component_commodity
+    display_name: Component Commodity
+    description: A purchased commodity such as DRAM, NAND, or a system-on-chip.
+    synonyms:
+    - commodity
+    tags:
+    - dimension
+    - supply
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: apple.us-west-1
+      database: APPLE
+      schema: COMPONENT
+      object: DIM_COMPONENT_COMMODITY
+      format: table
+  grain:
+    description: One row is one component commodity.
+    components:
+    - identity_id: component_commodity_identity
+      dataset_columns:
+      - component_commodity_id
+      description: Identifier of the commodity.
+  columns:
+  - name: component_commodity_id
+    description: Identifier of the commodity.
+  - name: component_class_id
+    description: Class of the commodity.
+  - name: commodity_name
+    description: Name of the commodity.
+  - name: commodity_code
+    description: Commodity code.
+    value_description: dram, nand, soc, other_memory, other_silicon
+  entity_definitions:
+  - identity_id: component_commodity_identity
+    dataset_columns:
+    - component_commodity_id
+    entity_universe: complete
+  - identity_id: component_class_identity
+    dataset_columns:
+    - component_class_id
+    entity_universe: partial
+- node_id: sf:apple.supply.dim_silicon_source
+  descriptor:
+    qualified_name: apple.supply.dim_silicon_source
+    display_name: Silicon Source
+    description: A commercial source Apple can buy finished silicon from. The source is a supply option,
+      not a wafer fab.
+    synonyms: []
+    tags:
+    - dimension
+    - supply
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: apple.us-west-1
+      database: APPLE
+      schema: SUPPLY
+      object: DIM_SILICON_SOURCE
+      format: table
+  grain:
+    description: One row is one silicon source.
+    components:
+    - identity_id: silicon_source_identity
+      dataset_columns:
+      - silicon_source_id
+      description: Identifier of the silicon source.
+  columns:
+  - name: silicon_source_id
+    description: Identifier of the silicon source.
+  - name: source_name
+    description: Name of the silicon source.
+  - name: source_role
+    description: Whether the source is the usual source or an additional source.
+    value_description: usual, additional
+  entity_definitions:
+  - identity_id: silicon_source_identity
+    dataset_columns:
+    - silicon_source_id
+    entity_universe: complete
+- node_id: sf:apple.supplier.dim_supplier
+  descriptor:
+    qualified_name: apple.supplier.dim_supplier
+    display_name: Supplier
+    description: A vendor that sells memory or silicon components to Apple.
+    synonyms: []
+    tags:
+    - dimension
+    - supply
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: apple.us-west-1
+      database: APPLE
+      schema: SUPPLIER
+      object: DIM_SUPPLIER
+      format: table
+  grain:
+    description: One row is one supplier.
+    components:
+    - identity_id: supplier_identity
+      dataset_columns:
+      - supplier_id
+      description: Identifier of the supplier.
+  columns:
+  - name: supplier_id
+    description: Identifier of the supplier.
+  - name: supplier_name
+    description: Name of the supplier.
+  - name: usual_partner_flag
+    description: Whether the supplier is one of the usual partners.
+    value_description: true or false.
+  entity_definitions:
+  - identity_id: supplier_identity
+    dataset_columns:
+    - supplier_id
+    entity_universe: complete
+- node_id: sf:apple.supplier.dim_supplier_site
+  descriptor:
+    qualified_name: apple.supplier.dim_supplier_site
+    display_name: Supplier Site
+    description: A site a supplier ships purchased components from.
+    synonyms: []
+    tags:
+    - dimension
+    - supply
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: apple.us-west-1
+      database: APPLE
+      schema: SUPPLIER
+      object: DIM_SUPPLIER_SITE
+      format: table
+  grain:
+    description: One row is one supplier site.
+    components:
+    - identity_id: supplier_site_identity
+      dataset_columns:
+      - supplier_site_id
+      description: Identifier of the supplier site.
+  columns:
+  - name: supplier_site_id
+    description: Identifier of the supplier site.
+  - name: supplier_id
+    description: Supplier that operates the site.
+  - name: country_id
+    description: Country of the supplier site.
+  - name: site_name
+    description: Name of the supplier site.
+  entity_definitions:
+  - identity_id: supplier_site_identity
+    dataset_columns:
+    - supplier_site_id
+    entity_universe: complete
+  - identity_id: supplier_identity
+    dataset_columns:
+    - supplier_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+- node_id: sf:apple.supply.dim_sourcing_mode
+  descriptor:
+    qualified_name: apple.supply.dim_sourcing_mode
+    display_name: Sourcing Mode
+    description: 'How Apple buys a component: a multi-year agreement or the spot market.'
+    synonyms: []
+    tags:
+    - dimension
+    - supply
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: apple.us-west-1
+      database: APPLE
+      schema: SUPPLY
+      object: DIM_SOURCING_MODE
+      format: table
+  grain:
+    description: One row is one sourcing mode.
+    components:
+    - identity_id: sourcing_mode_identity
+      dataset_columns:
+      - sourcing_mode_id
+      description: Identifier of the sourcing mode.
+  columns:
+  - name: sourcing_mode_id
+    description: Identifier of the sourcing mode.
+  - name: mode_name
+    description: Name of the sourcing mode.
+  - name: mode_code
+    description: Mode code.
+    value_description: multi_year_agreement, spot
+  entity_definitions:
+  - identity_id: sourcing_mode_identity
+    dataset_columns:
+    - sourcing_mode_id
+    entity_universe: complete
+- node_id: sf:apple.component.dim_component
+  descriptor:
+    qualified_name: apple.component.dim_component
+    display_name: Component
+    description: A purchased memory or silicon part, including the M5 silicon used in devices and in the
+      data center.
+    synonyms:
+    - purchased part
+    tags:
+    - dimension
+    - supply
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: apple.us-west-1
+      database: APPLE
+      schema: COMPONENT
+      object: DIM_COMPONENT
+      format: table
+  grain:
+    description: One row is one component.
+    components:
+    - identity_id: component_identity
+      dataset_columns:
+      - component_id
+      description: Identifier of the component.
+  columns:
+  - name: component_id
+    description: Identifier of the component.
+  - name: component_commodity_id
+    description: Commodity of the component.
+  - name: component_name
+    description: Name of the component.
+  - name: component_code
+    description: Component code.
+    value_description: m5, iphone_soc, dram_part, nand_part, other
+  entity_definitions:
+  - identity_id: component_identity
+    dataset_columns:
+    - component_id
+    entity_universe: complete
+  - identity_id: component_commodity_identity
+    dataset_columns:
+    - component_commodity_id
+    entity_universe: partial
+- node_id: sf:apple.supply.fact_constraint_spread
+  descriptor:
+    qualified_name: apple.supply.fact_constraint_spread
+    display_name: Constraint Spread
+    description: Which component constraints are spreading or easing. This is a supply status, not a demand
+      quantity and not a price.
+    synonyms: []
+    tags:
+    - fact
+    - supply
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: apple.us-west-1
+      database: APPLE
+      schema: SUPPLY
+      object: FACT_CONSTRAINT_SPREAD
+      format: table
+  grain:
+    description: One row is one constraint spread.
+    components:
+    - identity_id: constraint_spread_identity
+      dataset_columns:
+      - constraint_spread_id
+      description: Identifier of the constraint-spread row.
+  columns:
+  - name: constraint_spread_id
+    description: Identifier of the constraint-spread row.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: component_commodity_id
+    description: Commodity whose constraint is being read.
+  - name: device_family_id
+    description: Device family the constraint affects.
+  - name: spreading_flag
+    description: Whether the constraint is spreading.
+    value_description: true or false.
+  - name: versus_prior_quarter_code
+    description: Change versus the prior quarter.
+    value_description: tightened, eased, unchanged
+  entity_definitions:
+  - identity_id: constraint_spread_identity
+    dataset_columns:
+    - constraint_spread_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: component_commodity_identity
+    dataset_columns:
+    - component_commodity_id
+    entity_universe: partial
+  - identity_id: device_family_identity
+    dataset_columns:
+    - device_family_id
+    entity_universe: partial
+- node_id: sf:apple.supply.fact_memory_coverage
+  descriptor:
+    qualified_name: apple.supply.fact_memory_coverage
+    display_name: Memory Coverage
+    description: How memory, and the main chip, are covered for a family and quarter, including sources
+      outside the usual partners.
+    synonyms: []
+    tags:
+    - fact
+    - supply
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: apple.us-west-1
+      database: APPLE
+      schema: SUPPLY
+      object: FACT_MEMORY_COVERAGE
+      format: table
+  grain:
+    description: One row is one memory coverage.
+    components:
+    - identity_id: memory_coverage_identity
+      dataset_columns:
+      - memory_coverage_id
+      description: Identifier of the memory-coverage row.
+  columns:
+  - name: memory_coverage_id
+    description: Identifier of the memory-coverage row.
+  - name: device_family_id
+    description: Device family, including iPhone.
+  - name: product_generation_id
+    description: Generation covered.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: component_commodity_id
+    description: Memory or silicon commodity covered.
+  - name: sourcing_mode_id
+    description: How this coverage is sourced.
+  - name: silicon_source_id
+    description: Silicon source when the commodity is silicon.
+  - name: supplier_id
+    description: Supplier providing the coverage.
+  - name: coverage_sufficient_flag
+    description: Whether coverage is sufficient for the quarter.
+    value_description: true or false.
+  - name: outside_usual_partner_flag
+    description: Whether the source is outside the usual partners.
+    value_description: true or false.
+  - name: quarter_constraint_expected_flag
+    description: Whether the family is expected to be constrained in this quarter.
+    value_description: true or false.
+  - name: wider_sourcing_flag
+    description: Whether sourcing has been widened.
+    value_description: true or false.
+  - name: cost_in_range_flag
+    description: Whether the wider sourcing keeps cost in range.
+    value_description: true or false.
+  - name: capability_holds_flag
+    description: Whether product capability holds without a disproportionate response.
+    value_description: true or false.
+  entity_definitions:
+  - identity_id: memory_coverage_identity
+    dataset_columns:
+    - memory_coverage_id
+    entity_universe: complete
+  - identity_id: device_family_identity
+    dataset_columns:
+    - device_family_id
+    entity_universe: partial
+  - identity_id: product_generation_identity
+    dataset_columns:
+    - product_generation_id
+    entity_universe: partial
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: component_commodity_identity
+    dataset_columns:
+    - component_commodity_id
+    entity_universe: partial
+  - identity_id: sourcing_mode_identity
+    dataset_columns:
+    - sourcing_mode_id
+    entity_universe: partial
+  - identity_id: silicon_source_identity
+    dataset_columns:
+    - silicon_source_id
+    entity_universe: partial
+  - identity_id: supplier_identity
+    dataset_columns:
+    - supplier_id
+    entity_universe: partial
+- node_id: sf:apple.supply.fact_supply_agreement
+  descriptor:
+    qualified_name: apple.supply.fact_supply_agreement
+    display_name: Supply Agreement
+    description: A supply agreement for memory or silicon, including multi-year locks and spot exposure.
+      The agreed component price is not the device price file.
+    synonyms: []
+    tags:
+    - fact
+    - supply
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: apple.us-west-1
+      database: APPLE
+      schema: SUPPLY
+      object: FACT_SUPPLY_AGREEMENT
+      format: table
+  grain:
+    description: One row is one supply agreement.
+    components:
+    - identity_id: supply_agreement_identity
+      dataset_columns:
+      - supply_agreement_id
+      description: Identifier of the supply agreement.
+  columns:
+  - name: supply_agreement_id
+    description: Identifier of the supply agreement.
+  - name: supplier_id
+    description: Supplier on the agreement.
+  - name: component_commodity_id
+    description: Commodity covered.
+  - name: sourcing_mode_id
+    description: Agreement or spot.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: multi_year_flag
+    description: Whether the intent is a multi-year lock.
+    value_description: true or false.
+  - name: agreed_unit_cost
+    description: Agreed unit cost of the component.
+  - name: spot_exposure_share
+    description: Share of the buy still on the spot market.
+  - name: contract_coverage_share
+    description: Share of need covered by agreement.
+  entity_definitions:
+  - identity_id: supply_agreement_identity
+    dataset_columns:
+    - supply_agreement_id
+    entity_universe: complete
+  - identity_id: supplier_identity
+    dataset_columns:
+    - supplier_id
+    entity_universe: partial
+  - identity_id: component_commodity_identity
+    dataset_columns:
+    - component_commodity_id
+    entity_universe: partial
+  - identity_id: sourcing_mode_identity
+    dataset_columns:
+    - sourcing_mode_id
+    entity_universe: partial
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+- node_id: sf:apple.supply.fact_component_cost
+  descriptor:
+    qualified_name: apple.supply.fact_component_cost
+    display_name: Component Cost
+    description: Change in what Apple pays for a memory or silicon commodity. This cost is not the device
+      price.
+    synonyms: []
+    tags:
+    - fact
+    - supply
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: apple.us-west-1
+      database: APPLE
+      schema: SUPPLY
+      object: FACT_COMPONENT_COST
+      format: table
+  grain:
+    description: One row is one component cost.
+    components:
+    - identity_id: component_cost_identity
+      dataset_columns:
+      - component_cost_id
+      description: Identifier of the component-cost row.
+  columns:
+  - name: component_cost_id
+    description: Identifier of the component-cost row.
+  - name: component_commodity_id
+    description: Commodity whose cost moved.
+  - name: supplier_id
+    description: Supplier the cost is quoted from.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: currency_id
+    description: Currency of the cost.
+  - name: cost_change_amount
+    description: Change in unit cost.
+  - name: inflation_rate
+    description: Inflation rate of the commodity.
+  - name: dislocated_flag
+    description: Whether the cost is dislocated from its usual range.
+    value_description: true or false.
+  entity_definitions:
+  - identity_id: component_cost_identity
+    dataset_columns:
+    - component_cost_id
+    entity_universe: complete
+  - identity_id: component_commodity_identity
+    dataset_columns:
+    - component_commodity_id
+    entity_universe: partial
+  - identity_id: supplier_identity
+    dataset_columns:
+    - supplier_id
+    entity_universe: partial
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: partial
+- node_id: sf:apple.supply.fact_silicon_capacity
+  descriptor:
+    qualified_name: apple.supply.fact_silicon_capacity
+    display_name: Silicon Capacity
+    description: Whether an additional silicon source eases a constraint in a useful time. The source
+      is purchased silicon, not a fab schedule.
+    synonyms: []
+    tags:
+    - fact
+    - supply
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: apple.us-west-1
+      database: APPLE
+      schema: SUPPLY
+      object: FACT_SILICON_CAPACITY
+      format: table
+  grain:
+    description: One row is one silicon capacity.
+    components:
+    - identity_id: silicon_capacity_identity
+      dataset_columns:
+      - silicon_capacity_id
+      description: Identifier of the silicon-capacity row.
+  columns:
+  - name: silicon_capacity_id
+    description: Identifier of the silicon-capacity row.
+  - name: silicon_source_id
+    description: Silicon source being evaluated.
+  - name: component_id
+    description: Silicon component the source would supply.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: additional_source_flag
+    description: Whether this is an additional source.
+    value_description: true or false.
+  - name: eases_constraint_flag
+    description: Whether the source eases the constraint.
+    value_description: true or false.
+  - name: relief_timing_days
+    description: Days until the source can ease the constraint.
+  - name: useful_timeframe_flag
+    description: Whether that timing is useful.
+    value_description: true or false.
+  entity_definitions:
+  - identity_id: silicon_capacity_identity
+    dataset_columns:
+    - silicon_capacity_id
+    entity_universe: complete
+  - identity_id: silicon_source_identity
+    dataset_columns:
+    - silicon_source_id
+    entity_universe: partial
+  - identity_id: component_identity
+    dataset_columns:
+    - component_id
+    entity_universe: partial
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+- node_id: sf:apple.supply.fact_device_shipment
+  descriptor:
+    qualified_name: apple.supply.fact_device_shipment
+    display_name: Device Shipment
+    description: A shipment of one device family through one channel to one country on one day. Shipment
+      quantity is supply, not demand and not a service attachment.
+    synonyms: []
+    tags:
+    - fact
+    - supply
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: apple.us-west-1
+      database: APPLE
+      schema: SUPPLY
+      object: FACT_DEVICE_SHIPMENT
+      format: table
+  grain:
+    description: One row is one device shipment.
+    components:
+    - identity_id: device_shipment_identity
+      dataset_columns:
+      - device_shipment_id
+      description: Identifier of the device shipment.
+  columns:
+  - name: device_shipment_id
+    description: Identifier of the device shipment.
+  - name: device_family_id
+    description: Device family for this row.
+  - name: channel_id
+    description: Route to market for this row.
+  - name: country_id
+    description: Selling country for this row.
+  - name: calendar_day_id
+    description: Calendar day for this row.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: shipment_quantity
+    description: Supply quantity on the shipment.
+  entity_definitions:
+  - identity_id: device_shipment_identity
+    dataset_columns:
+    - device_shipment_id
+    entity_universe: complete
+  - identity_id: device_family_identity
+    dataset_columns:
+    - device_family_id
+    entity_universe: partial
+  - identity_id: channel_identity
+    dataset_columns:
+    - channel_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    entity_universe: partial
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+- node_id: sf:apple.supply.fact_shipment_line
+  descriptor:
+    qualified_name: apple.supply.fact_shipment_line
+    display_name: Shipment Line
+    description: SKU quantity on a device shipment.
+    synonyms: []
+    tags:
+    - fact
+    - supply
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: apple.us-west-1
+      database: APPLE
+      schema: SUPPLY
+      object: FACT_SHIPMENT_LINE
+      format: table
+  grain:
+    description: One row is one shipment line.
+    components:
+    - identity_id: shipment_line_identity
+      dataset_columns:
+      - shipment_line_id
+      description: Identifier of the shipment line.
+  columns:
+  - name: shipment_line_id
+    description: Identifier of the shipment line.
+  - name: device_shipment_id
+    description: Shipment that contains the line.
+  - name: sku_id
+    description: SKU shipped.
+  - name: shipped_quantity
+    description: Quantity shipped on the line.
+  entity_definitions:
+  - identity_id: shipment_line_identity
+    dataset_columns:
+    - shipment_line_id
+    entity_universe: complete
+  - identity_id: device_shipment_identity
+    dataset_columns:
+    - device_shipment_id
+    entity_universe: partial
+  - identity_id: sku_identity
+    dataset_columns:
+    - sku_id
+    entity_universe: partial
+- node_id: sf:apple.supply.fact_channel_inventory
+  descriptor:
+    qualified_name: apple.supply.fact_channel_inventory
+    display_name: Channel Inventory
+    description: On-hand supply of a device family in a channel and country on a day. Inventory is not
+      sell-through and not a price.
+    synonyms: []
+    tags:
+    - fact
+    - supply
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: apple.us-west-1
+      database: APPLE
+      schema: SUPPLY
+      object: FACT_CHANNEL_INVENTORY
+      format: table
+  grain:
+    description: One row is one channel inventory.
+    components:
+    - identity_id: channel_inventory_identity
+      dataset_columns:
+      - channel_inventory_id
+      description: Identifier of the channel-inventory row.
+  columns:
+  - name: channel_inventory_id
+    description: Identifier of the channel-inventory row.
+  - name: device_family_id
+    description: Device family for this row.
+  - name: channel_id
+    description: Route to market for this row.
+  - name: country_id
+    description: Selling country for this row.
+  - name: calendar_day_id
+    description: Calendar day for this row.
+  - name: on_hand_quantity
+    description: Quantity on hand in the channel.
+  entity_definitions:
+  - identity_id: channel_inventory_identity
+    dataset_columns:
+    - channel_inventory_id
+    entity_universe: complete
+  - identity_id: device_family_identity
+    dataset_columns:
+    - device_family_id
+    entity_universe: partial
+  - identity_id: channel_identity
+    dataset_columns:
+    - channel_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    entity_universe: partial
+- node_id: sf:apple.supply.fact_production
+  descriptor:
+    qualified_name: apple.supply.fact_production
+    display_name: Production
+    description: Device production quantity in a fiscal quarter, including the step-up from one quarter
+      to the next.
+    synonyms: []
+    tags:
+    - fact
+    - supply
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: apple.us-west-1
+      database: APPLE
+      schema: SUPPLY
+      object: FACT_PRODUCTION
+      format: table
+  grain:
+    description: One row is one production.
+    components:
+    - identity_id: production_identity
+      dataset_columns:
+      - production_id
+      description: Identifier of the production row.
+  columns:
+  - name: production_id
+    description: Identifier of the production row.
+  - name: device_family_id
+    description: Device family produced.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: production_quantity
+    description: Units produced in the quarter.
+  - name: sequential_step_up_quantity
+    description: Increase in production versus the prior quarter.
+  entity_definitions:
+  - identity_id: production_identity
+    dataset_columns:
+    - production_id
+    entity_universe: complete
+  - identity_id: device_family_identity
+    dataset_columns:
+    - device_family_id
+    entity_universe: partial
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+- node_id: sf:apple.supply.fact_tariff_accrual
+  descriptor:
+    qualified_name: apple.supply.fact_tariff_accrual
+    display_name: Tariff Accrual
+    description: Tariff cost in a quarter, timed against production. The accrual is not the device price.
+    synonyms: []
+    tags:
+    - fact
+    - supply
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: apple.us-west-1
+      database: APPLE
+      schema: SUPPLY
+      object: FACT_TARIFF_ACCRUAL
+      format: table
+  grain:
+    description: One row is one tariff accrual.
+    components:
+    - identity_id: tariff_accrual_identity
+      dataset_columns:
+      - tariff_accrual_id
+      description: Identifier of the tariff-accrual row.
+  columns:
+  - name: tariff_accrual_id
+    description: Identifier of the tariff-accrual row.
+  - name: device_family_id
+    description: Device family the tariff applies to.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: currency_id
+    description: Currency of the tariff cost.
+  - name: tariff_cost_amount
+    description: Tariff cost accrued in the quarter.
+  - name: prior_quarter_tariff_cost_amount
+    description: Tariff cost in the prior quarter.
+  - name: lags_production_flag
+    description: Whether the tariff cost rises by less than the production step-up because of timing.
+    value_description: true or false.
+  entity_definitions:
+  - identity_id: tariff_accrual_identity
+    dataset_columns:
+    - tariff_accrual_id
+    entity_universe: complete
+  - identity_id: device_family_identity
+    dataset_columns:
+    - device_family_id
+    entity_universe: partial
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: partial
+- node_id: sf:apple.supply.fact_custom_silicon
+  descriptor:
+    qualified_name: apple.supply.fact_custom_silicon
+    display_name: Custom Silicon
+    description: Where in-house silicon content stands, and where further internalization goes. This is
+      content Apple designs and buys as silicon, not a fab.
+    synonyms: []
+    tags:
+    - fact
+    - supply
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: apple.us-west-1
+      database: APPLE
+      schema: SUPPLY
+      object: FACT_CUSTOM_SILICON
+      format: table
+  grain:
+    description: One row is one custom silicon.
+    components:
+    - identity_id: custom_silicon_identity
+      dataset_columns:
+      - custom_silicon_id
+      description: Identifier of the custom-silicon row.
+  columns:
+  - name: custom_silicon_id
+    description: Identifier of the custom-silicon row.
+  - name: component_id
+    description: Silicon component, including M5.
+  - name: device_family_id
+    description: Device family the silicon supports.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: internal_content_share
+    description: Share of silicon content that is Apple's own design.
+  - name: supports_margin_flag
+    description: Whether that content is already supporting gross margin.
+    value_description: true or false.
+  - name: next_internalization_area
+    description: Where more internalization goes next.
+  entity_definitions:
+  - identity_id: custom_silicon_identity
+    dataset_columns:
+    - custom_silicon_id
+    entity_universe: complete
+  - identity_id: component_identity
+    dataset_columns:
+    - component_id
+    entity_universe: partial
+  - identity_id: device_family_identity
+    dataset_columns:
+    - device_family_id
+    entity_universe: partial
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial

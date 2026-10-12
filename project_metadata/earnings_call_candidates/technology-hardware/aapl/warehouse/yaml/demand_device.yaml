@@ -1,0 +1,1782 @@
+schema_version: '3'
+nodes:
+- node_id: sf:apple.geography.dim_region
+  descriptor:
+    qualified_name: apple.geography.dim_region
+    display_name: Region
+    description: Commercial region in which Apple sells.
+    synonyms: []
+    tags:
+    - dimension
+    - demand
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: apple.us-west-1
+      database: APPLE
+      schema: GEOGRAPHY
+      object: DIM_REGION
+      format: table
+  grain:
+    description: One row is one region.
+    components:
+    - identity_id: region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+  columns:
+  - name: region_id
+    description: Identifier of the region.
+  - name: region_name
+    description: Name of the region.
+  - name: region_code
+    description: Region code.
+    value_description: americas, greater_china, europe, rest_of_asia_pacific
+  entity_definitions:
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: complete
+- node_id: sf:apple.geography.dim_fiscal_quarter
+  descriptor:
+    qualified_name: apple.geography.dim_fiscal_quarter
+    display_name: Fiscal Quarter
+    description: Apple fiscal quarter, the reporting period on the calls.
+    synonyms: []
+    tags:
+    - dimension
+    - demand
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: apple.us-west-1
+      database: APPLE
+      schema: GEOGRAPHY
+      object: DIM_FISCAL_QUARTER
+      format: table
+  grain:
+    description: One row is one fiscal quarter.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: quarter_label
+    description: Label of the fiscal quarter.
+  - name: quarter_code
+    description: Quarter code.
+    value_description: FY2025Q4, FY2026Q1, FY2026Q2, FY2026Q3, FY2026Q4
+  - name: guidance_horizon
+    description: Whether the quarter is the reported quarter or the guided next quarter.
+    value_description: reported, guided_next
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: complete
+- node_id: sf:apple.geography.dim_country
+  descriptor:
+    qualified_name: apple.geography.dim_country
+    display_name: Country
+    description: Selling country, including China, India, and the United States.
+    synonyms: []
+    tags:
+    - dimension
+    - demand
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: apple.us-west-1
+      database: APPLE
+      schema: GEOGRAPHY
+      object: DIM_COUNTRY
+      format: table
+  grain:
+    description: One row is one country.
+    components:
+    - identity_id: country_identity
+      dataset_columns:
+      - country_id
+      description: Identifier of the country.
+  columns:
+  - name: country_id
+    description: Identifier of the country.
+  - name: region_id
+    description: Region that contains the country.
+  - name: country_name
+    description: Name of the country.
+  - name: country_code
+    description: Country code.
+    value_description: china, india, united_states, and other selling countries
+  entity_definitions:
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: complete
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:apple.geography.dim_calendar_day
+  descriptor:
+    qualified_name: apple.geography.dim_calendar_day
+    display_name: Calendar Day
+    description: Calendar day used to place demand, supply, and price on a common time axis.
+    synonyms: []
+    tags:
+    - dimension
+    - demand
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: apple.us-west-1
+      database: APPLE
+      schema: GEOGRAPHY
+      object: DIM_CALENDAR_DAY
+      format: table
+  grain:
+    description: One row is one calendar day.
+    components:
+    - identity_id: calendar_day_identity
+      dataset_columns:
+      - calendar_day_id
+      description: Identifier of the calendar day.
+  columns:
+  - name: calendar_day_id
+    description: Identifier of the calendar day.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter that contains the day.
+  - name: calendar_date
+    description: Civil date of the day.
+  entity_definitions:
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+- node_id: sf:apple.channel.dim_channel
+  descriptor:
+    qualified_name: apple.channel.dim_channel
+    display_name: Channel
+    description: How an Apple device reaches a buyer.
+    synonyms:
+    - route to market
+    tags:
+    - dimension
+    - demand
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: apple.us-west-1
+      database: APPLE
+      schema: CHANNEL
+      object: DIM_CHANNEL
+      format: table
+  grain:
+    description: One row is one channel.
+    components:
+    - identity_id: channel_identity
+      dataset_columns:
+      - channel_id
+      description: Identifier of the channel.
+  columns:
+  - name: channel_id
+    description: Identifier of the channel.
+  - name: channel_name
+    description: Name of the channel.
+  - name: channel_code
+    description: Channel code.
+    value_description: direct, carrier, retail, online, education, enterprise
+  entity_definitions:
+  - identity_id: channel_identity
+    dataset_columns:
+    - channel_id
+    entity_universe: complete
+- node_id: sf:apple.channel.dim_carrier_promotion
+  descriptor:
+    qualified_name: apple.channel.dim_carrier_promotion
+    display_name: Carrier Promotion
+    description: A U.S. carrier promotion that can support iPhone sell-through.
+    synonyms: []
+    tags:
+    - dimension
+    - demand
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: apple.us-west-1
+      database: APPLE
+      schema: CHANNEL
+      object: DIM_CARRIER_PROMOTION
+      format: table
+  grain:
+    description: One row is one carrier promotion.
+    components:
+    - identity_id: carrier_promotion_identity
+      dataset_columns:
+      - carrier_promotion_id
+      description: Identifier of the carrier promotion.
+  columns:
+  - name: carrier_promotion_id
+    description: Identifier of the carrier promotion.
+  - name: channel_id
+    description: Carrier channel the promotion runs on.
+  - name: promotion_name
+    description: Name of the carrier promotion.
+  entity_definitions:
+  - identity_id: carrier_promotion_identity
+    dataset_columns:
+    - carrier_promotion_id
+    entity_universe: complete
+  - identity_id: channel_identity
+    dataset_columns:
+    - channel_id
+    entity_universe: partial
+- node_id: sf:apple.product.dim_device_family
+  descriptor:
+    qualified_name: apple.product.dim_device_family
+    display_name: Device Family
+    description: 'A family Apple sells: iPhone, Mac, iPad, or Wearables.'
+    synonyms:
+    - product line
+    tags:
+    - dimension
+    - demand
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: apple.us-west-1
+      database: APPLE
+      schema: PRODUCT
+      object: DIM_DEVICE_FAMILY
+      format: table
+  grain:
+    description: One row is one device family.
+    components:
+    - identity_id: device_family_identity
+      dataset_columns:
+      - device_family_id
+      description: Identifier of the device family.
+  columns:
+  - name: device_family_id
+    description: Identifier of the device family.
+  - name: family_name
+    description: Name of the device family.
+  - name: family_code
+    description: Family code.
+    value_description: iphone, mac, ipad, wearables
+  entity_definitions:
+  - identity_id: device_family_identity
+    dataset_columns:
+    - device_family_id
+    entity_universe: complete
+- node_id: sf:apple.product.dim_form_factor
+  descriptor:
+    qualified_name: apple.product.dim_form_factor
+    display_name: Form Factor
+    description: A hardware form, including the current iPhone, iPhone Air, and a foldable.
+    synonyms: []
+    tags:
+    - dimension
+    - demand
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: apple.us-west-1
+      database: APPLE
+      schema: PRODUCT
+      object: DIM_FORM_FACTOR
+      format: table
+  grain:
+    description: One row is one form factor.
+    components:
+    - identity_id: form_factor_identity
+      dataset_columns:
+      - form_factor_id
+      description: Identifier of the form factor.
+  columns:
+  - name: form_factor_id
+    description: Identifier of the form factor.
+  - name: form_factor_name
+    description: Name of the form factor.
+  - name: form_factor_code
+    description: Form factor code.
+    value_description: current_iphone, air, foldable, notebook
+  entity_definitions:
+  - identity_id: form_factor_identity
+    dataset_columns:
+    - form_factor_id
+    entity_universe: complete
+- node_id: sf:apple.product.dim_customer_segment
+  descriptor:
+    qualified_name: apple.product.dim_customer_segment
+    display_name: Customer Segment
+    description: A buyer segment such as education, value, or emerging markets.
+    synonyms: []
+    tags:
+    - dimension
+    - demand
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: apple.us-west-1
+      database: APPLE
+      schema: PRODUCT
+      object: DIM_CUSTOMER_SEGMENT
+      format: table
+  grain:
+    description: One row is one customer segment.
+    components:
+    - identity_id: customer_segment_identity
+      dataset_columns:
+      - customer_segment_id
+      description: Identifier of the customer segment.
+  columns:
+  - name: customer_segment_id
+    description: Identifier of the customer segment.
+  - name: segment_name
+    description: Name of the segment.
+  - name: segment_code
+    description: Segment code.
+    value_description: education, value, emerging_market, premium
+  entity_definitions:
+  - identity_id: customer_segment_identity
+    dataset_columns:
+    - customer_segment_id
+    entity_universe: complete
+- node_id: sf:apple.product.dim_feature
+  descriptor:
+    qualified_name: apple.product.dim_feature
+    display_name: Feature
+    description: A product feature, including Siri, Apple Intelligence, and on-device agents.
+    synonyms: []
+    tags:
+    - dimension
+    - demand
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: apple.us-west-1
+      database: APPLE
+      schema: PRODUCT
+      object: DIM_FEATURE
+      format: table
+  grain:
+    description: One row is one feature.
+    components:
+    - identity_id: feature_identity
+      dataset_columns:
+      - feature_id
+      description: Identifier of the feature.
+  columns:
+  - name: feature_id
+    description: Identifier of the feature.
+  - name: feature_name
+    description: Name of the feature.
+  - name: feature_code
+    description: Feature code.
+    value_description: siri, apple_intelligence, on_device_agent, other
+  entity_definitions:
+  - identity_id: feature_identity
+    dataset_columns:
+    - feature_id
+    entity_universe: complete
+- node_id: sf:apple.product.dim_demand_driver
+  descriptor:
+    qualified_name: apple.product.dim_demand_driver
+    display_name: Demand Driver
+    description: A named driver of iPhone demand on a call.
+    synonyms: []
+    tags:
+    - dimension
+    - demand
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: apple.us-west-1
+      database: APPLE
+      schema: PRODUCT
+      object: DIM_DEMAND_DRIVER
+      format: table
+  grain:
+    description: One row is one demand driver.
+    components:
+    - identity_id: demand_driver_identity
+      dataset_columns:
+      - demand_driver_id
+      description: Identifier of the demand driver.
+  columns:
+  - name: demand_driver_id
+    description: Identifier of the demand driver.
+  - name: driver_name
+    description: Name of the demand driver.
+  - name: driver_code
+    description: Driver code.
+    value_description: installed_base_refresh, feature, supply_relief, regional, other
+  entity_definitions:
+  - identity_id: demand_driver_identity
+    dataset_columns:
+    - demand_driver_id
+    entity_universe: complete
+- node_id: sf:apple.product.dim_product_generation
+  descriptor:
+    qualified_name: apple.product.dim_product_generation
+    display_name: Product Generation
+    description: A generation inside a device family, including iPhone 17, iPhone Air, and MacBook Neo.
+    synonyms: []
+    tags:
+    - dimension
+    - demand
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: apple.us-west-1
+      database: APPLE
+      schema: PRODUCT
+      object: DIM_PRODUCT_GENERATION
+      format: table
+  grain:
+    description: One row is one product generation.
+    components:
+    - identity_id: product_generation_identity
+      dataset_columns:
+      - product_generation_id
+      description: Identifier of the product generation.
+  columns:
+  - name: product_generation_id
+    description: Identifier of the product generation.
+  - name: device_family_id
+    description: Device family of the generation.
+  - name: generation_name
+    description: Name of the generation.
+  - name: generation_code
+    description: Generation code.
+    value_description: iphone_17, iphone_17_pro, iphone_17_pro_max, iphone_air, macbook_neo
+  entity_definitions:
+  - identity_id: product_generation_identity
+    dataset_columns:
+    - product_generation_id
+    entity_universe: complete
+  - identity_id: device_family_identity
+    dataset_columns:
+    - device_family_id
+    entity_universe: partial
+- node_id: sf:apple.product.dim_sku
+  descriptor:
+    qualified_name: apple.product.dim_sku
+    display_name: SKU
+    description: A sellable configuration of a product generation.
+    synonyms:
+    - finished good
+    tags:
+    - dimension
+    - demand
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: apple.us-west-1
+      database: APPLE
+      schema: PRODUCT
+      object: DIM_SKU
+      format: table
+  grain:
+    description: One row is one sku.
+    components:
+    - identity_id: sku_identity
+      dataset_columns:
+      - sku_id
+      description: Identifier of the SKU.
+  columns:
+  - name: sku_id
+    description: Identifier of the SKU.
+  - name: product_generation_id
+    description: Generation of the SKU.
+  - name: device_family_id
+    description: Device family of the SKU.
+  - name: form_factor_id
+    description: Form factor of the SKU.
+  - name: sku_name
+    description: Name of the SKU.
+  entity_definitions:
+  - identity_id: sku_identity
+    dataset_columns:
+    - sku_id
+    entity_universe: complete
+  - identity_id: product_generation_identity
+    dataset_columns:
+    - product_generation_id
+    entity_universe: partial
+  - identity_id: device_family_identity
+    dataset_columns:
+    - device_family_id
+    entity_universe: partial
+  - identity_id: form_factor_identity
+    dataset_columns:
+    - form_factor_id
+    entity_universe: partial
+- node_id: sf:apple.demand.fact_guided_growth
+  descriptor:
+    qualified_name: apple.demand.fact_guided_growth
+    display_name: Guided Growth
+    description: Company growth guide split into a supply-constraint effect and a currency effect. This
+      fact stores neither a shipment quantity nor a price.
+    synonyms: []
+    tags:
+    - fact
+    - demand
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: apple.us-west-1
+      database: APPLE
+      schema: DEMAND
+      object: FACT_GUIDED_GROWTH
+      format: table
+  grain:
+    description: One row is one guided growth.
+    components:
+    - identity_id: guided_growth_identity
+      dataset_columns:
+      - guided_growth_id
+      description: Identifier of the guided-growth row.
+  columns:
+  - name: guided_growth_id
+    description: Identifier of the guided-growth row.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: comparison_quarter_code
+    description: Reported quarter the guide is compared with.
+    value_description: FY2026Q2, FY2026Q3, FY2026Q4
+  - name: guided_growth_rate
+    description: Guided growth rate.
+  - name: prior_period_growth_rate
+    description: Growth rate of the comparison quarter.
+  - name: supply_constraint_effect_amount
+    description: Portion of the growth change attributed to supply constraints.
+  - name: fx_effect_amount
+    description: Portion of the growth change attributed to foreign exchange.
+  entity_definitions:
+  - identity_id: guided_growth_identity
+    dataset_columns:
+    - guided_growth_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+- node_id: sf:apple.demand.fact_device_demand
+  descriptor:
+    qualified_name: apple.demand.fact_device_demand
+    display_name: Device Demand
+    description: Demand quantity for a device family, channel, country, and day. This is not a shipment
+      and not a price.
+    synonyms: []
+    tags:
+    - fact
+    - demand
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: apple.us-west-1
+      database: APPLE
+      schema: DEMAND
+      object: FACT_DEVICE_DEMAND
+      format: table
+  grain:
+    description: One row is one device demand.
+    components:
+    - identity_id: device_demand_identity
+      dataset_columns:
+      - device_demand_id
+      description: Identifier of the device-demand row.
+  columns:
+  - name: device_demand_id
+    description: Identifier of the device-demand row.
+  - name: device_family_id
+    description: Device family for this row.
+  - name: channel_id
+    description: Route to market for this row.
+  - name: country_id
+    description: Selling country for this row.
+  - name: calendar_day_id
+    description: Calendar day for this row.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: demand_quantity
+    description: Demand quantity.
+  entity_definitions:
+  - identity_id: device_demand_identity
+    dataset_columns:
+    - device_demand_id
+    entity_universe: complete
+  - identity_id: device_family_identity
+    dataset_columns:
+    - device_family_id
+    entity_universe: partial
+  - identity_id: channel_identity
+    dataset_columns:
+    - channel_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    entity_universe: partial
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+- node_id: sf:apple.demand.fact_sell_through
+  descriptor:
+    qualified_name: apple.demand.fact_sell_through
+    display_name: Sell-Through
+    description: Units moving through to end customers. Sell-through is demand, not channel inventory
+      and not a price.
+    synonyms: []
+    tags:
+    - fact
+    - demand
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: apple.us-west-1
+      database: APPLE
+      schema: DEMAND
+      object: FACT_SELL_THROUGH
+      format: table
+  grain:
+    description: One row is one sell-through.
+    components:
+    - identity_id: sell_through_identity
+      dataset_columns:
+      - sell_through_id
+      description: Identifier of the sell-through row.
+  columns:
+  - name: sell_through_id
+    description: Identifier of the sell-through row.
+  - name: device_family_id
+    description: Device family for this row.
+  - name: channel_id
+    description: Route to market for this row.
+  - name: country_id
+    description: Selling country for this row.
+  - name: calendar_day_id
+    description: Calendar day for this row.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: sell_through_quantity
+    description: Sell-through quantity.
+  entity_definitions:
+  - identity_id: sell_through_identity
+    dataset_columns:
+    - sell_through_id
+    entity_universe: complete
+  - identity_id: device_family_identity
+    dataset_columns:
+    - device_family_id
+    entity_universe: partial
+  - identity_id: channel_identity
+    dataset_columns:
+    - channel_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    entity_universe: partial
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+- node_id: sf:apple.demand.fact_installed_base
+  descriptor:
+    qualified_name: apple.demand.fact_installed_base
+    display_name: Installed Base
+    description: Devices already in use in a country. The base is not a shipment and not a service attachment.
+    synonyms: []
+    tags:
+    - fact
+    - demand
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: apple.us-west-1
+      database: APPLE
+      schema: DEMAND
+      object: FACT_INSTALLED_BASE
+      format: table
+  grain:
+    description: One row is one installed base.
+    components:
+    - identity_id: installed_base_identity
+      dataset_columns:
+      - installed_base_id
+      description: Identifier of the installed-base snapshot.
+  columns:
+  - name: installed_base_id
+    description: Identifier of the installed-base snapshot.
+  - name: device_family_id
+    description: Device family in the field.
+  - name: country_id
+    description: Country of the base.
+  - name: calendar_day_id
+    description: Day of the snapshot.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: installed_quantity
+    description: Devices in the installed base.
+  - name: ai_capable_quantity
+    description: Devices in the base that can run Apple Intelligence.
+  - name: ai_capable_share
+    description: Share of the base that can run Apple Intelligence.
+  - name: aging_base_share
+    description: Share of the base that is old enough to be a replacement pool.
+  entity_definitions:
+  - identity_id: installed_base_identity
+    dataset_columns:
+    - installed_base_id
+    entity_universe: complete
+  - identity_id: device_family_identity
+    dataset_columns:
+    - device_family_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    entity_universe: partial
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+- node_id: sf:apple.demand.fact_upgrade_program
+  descriptor:
+    qualified_name: apple.demand.fact_upgrade_program
+    display_name: Upgrade Program
+    description: Adoption of the Apple Upgrade Program and the replacement interval it implies, by device
+      family.
+    synonyms: []
+    tags:
+    - fact
+    - demand
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: apple.us-west-1
+      database: APPLE
+      schema: DEMAND
+      object: FACT_UPGRADE_PROGRAM
+      format: table
+  grain:
+    description: One row is one upgrade program.
+    components:
+    - identity_id: upgrade_program_identity
+      dataset_columns:
+      - upgrade_program_id
+      description: Identifier of the upgrade-program row.
+  columns:
+  - name: upgrade_program_id
+    description: Identifier of the upgrade-program row.
+  - name: device_family_id
+    description: Device family covered by the program reading.
+  - name: country_id
+    description: Country of the reading.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: adoption_rate
+    description: Expected adoption of the Apple Upgrade Program in the installed base.
+  - name: replacement_interval_months
+    description: Replacement interval in months for this family.
+  - name: shortens_replacement_flag
+    description: Whether the program shortens replacement for this family.
+    value_description: true or false.
+  entity_definitions:
+  - identity_id: upgrade_program_identity
+    dataset_columns:
+    - upgrade_program_id
+    entity_universe: complete
+  - identity_id: device_family_identity
+    dataset_columns:
+    - device_family_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+- node_id: sf:apple.demand.fact_replacement_cycle
+  descriptor:
+    qualified_name: apple.demand.fact_replacement_cycle
+    display_name: Replacement Cycle
+    description: How much of a generation's demand is the aging installed base versus feature-driven replacement.
+    synonyms: []
+    tags:
+    - fact
+    - demand
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: apple.us-west-1
+      database: APPLE
+      schema: DEMAND
+      object: FACT_REPLACEMENT_CYCLE
+      format: table
+  grain:
+    description: One row is one replacement cycle.
+    components:
+    - identity_id: replacement_cycle_identity
+      dataset_columns:
+      - replacement_cycle_id
+      description: Identifier of the replacement-cycle row.
+  columns:
+  - name: replacement_cycle_id
+    description: Identifier of the replacement-cycle row.
+  - name: device_family_id
+    description: Device family.
+  - name: product_generation_id
+    description: Generation being read, such as iPhone 17.
+  - name: country_id
+    description: Country of the reading.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: upgrade_pool_share
+    description: Share of demand from the aging installed base.
+  - name: feature_driven_share
+    description: Share of demand from features versus the prior cycle.
+  - name: prior_cycle_feature_share
+    description: Feature-driven share in the prior cycle.
+  entity_definitions:
+  - identity_id: replacement_cycle_identity
+    dataset_columns:
+    - replacement_cycle_id
+    entity_universe: complete
+  - identity_id: device_family_identity
+    dataset_columns:
+    - device_family_id
+    entity_universe: partial
+  - identity_id: product_generation_identity
+    dataset_columns:
+    - product_generation_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+- node_id: sf:apple.demand.fact_buyer_mix
+  descriptor:
+    qualified_name: apple.demand.fact_buyer_mix
+    display_name: Buyer Mix
+    description: Upgraders and switchers as separate counts. Carrier promotion is optional. Channel inventory
+      is not stored here.
+    synonyms: []
+    tags:
+    - fact
+    - demand
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: apple.us-west-1
+      database: APPLE
+      schema: DEMAND
+      object: FACT_BUYER_MIX
+      format: table
+  grain:
+    description: One row is one buyer mix.
+    components:
+    - identity_id: buyer_mix_identity
+      dataset_columns:
+      - buyer_mix_id
+      description: Identifier of the buyer-mix row.
+  columns:
+  - name: buyer_mix_id
+    description: Identifier of the buyer-mix row.
+  - name: device_family_id
+    description: Device family for this row.
+  - name: channel_id
+    description: Route to market for this row.
+  - name: country_id
+    description: Selling country for this row.
+  - name: calendar_day_id
+    description: Calendar day for this row.
+  - name: carrier_promotion_id
+    description: Carrier promotion supporting the mix, when one applies.
+  - name: upgrader_quantity
+    description: Sell-through quantity from upgraders.
+  - name: switcher_quantity
+    description: Sell-through quantity from switchers.
+  entity_definitions:
+  - identity_id: buyer_mix_identity
+    dataset_columns:
+    - buyer_mix_id
+    entity_universe: complete
+  - identity_id: device_family_identity
+    dataset_columns:
+    - device_family_id
+    entity_universe: partial
+  - identity_id: channel_identity
+    dataset_columns:
+    - channel_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    entity_universe: partial
+  - identity_id: carrier_promotion_identity
+    dataset_columns:
+    - carrier_promotion_id
+    entity_universe: partial
+- node_id: sf:apple.demand.fact_unmet_demand
+  descriptor:
+    qualified_name: apple.demand.fact_unmet_demand
+    display_name: Unmet Demand
+    description: Revenue demand that supply constraints held back. The held-back amount is demand, not
+      a shipment.
+    synonyms: []
+    tags:
+    - fact
+    - demand
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: apple.us-west-1
+      database: APPLE
+      schema: DEMAND
+      object: FACT_UNMET_DEMAND
+      format: table
+  grain:
+    description: One row is one unmet demand.
+    components:
+    - identity_id: unmet_demand_identity
+      dataset_columns:
+      - unmet_demand_id
+      description: Identifier of the unmet-demand row.
+  columns:
+  - name: unmet_demand_id
+    description: Identifier of the unmet-demand row.
+  - name: device_family_id
+    description: Device family whose demand was unmet.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: constrained_revenue_amount
+    description: Revenue the constraint held back in the quarter.
+  - name: still_constrained_at_exit_flag
+    description: Whether supply is still constrained exiting the quarter.
+    value_description: true or false.
+  entity_definitions:
+  - identity_id: unmet_demand_identity
+    dataset_columns:
+    - unmet_demand_id
+    entity_universe: complete
+  - identity_id: device_family_identity
+    dataset_columns:
+    - device_family_id
+    entity_universe: partial
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+- node_id: sf:apple.demand.fact_iphone_driver
+  descriptor:
+    qualified_name: apple.demand.fact_iphone_driver
+    display_name: iPhone Driver
+    description: Contribution of one demand driver to iPhone growth, and whether that contribution is
+      durable.
+    synonyms: []
+    tags:
+    - fact
+    - demand
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: apple.us-west-1
+      database: APPLE
+      schema: DEMAND
+      object: FACT_IPHONE_DRIVER
+      format: table
+  grain:
+    description: One row is one iphone driver.
+    components:
+    - identity_id: iphone_driver_identity
+      dataset_columns:
+      - iphone_driver_id
+      description: Identifier of the iPhone-driver row.
+  columns:
+  - name: iphone_driver_id
+    description: Identifier of the iPhone-driver row.
+  - name: demand_driver_id
+    description: Demand driver.
+  - name: device_family_id
+    description: Device family, used for iPhone.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: contribution_amount
+    description: Growth contribution of the driver.
+  - name: growth_rate
+    description: iPhone growth rate in the quarter.
+  - name: durable_flag
+    description: Whether the driver is expected to last.
+    value_description: true or false.
+  - name: above_twenty_percent_flag
+    description: Whether iPhone growth is above 20 percent.
+    value_description: true or false.
+  entity_definitions:
+  - identity_id: iphone_driver_identity
+    dataset_columns:
+    - iphone_driver_id
+    entity_universe: complete
+  - identity_id: demand_driver_identity
+    dataset_columns:
+    - demand_driver_id
+    entity_universe: partial
+  - identity_id: device_family_identity
+    dataset_columns:
+    - device_family_id
+    entity_universe: partial
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+- node_id: sf:apple.demand.fact_segment_penetration
+  descriptor:
+    qualified_name: apple.demand.fact_segment_penetration
+    display_name: Segment Penetration
+    description: Where a generation such as MacBook Neo reaches education, value, or emerging markets,
+      and whether the roadmap covers other gaps.
+    synonyms: []
+    tags:
+    - fact
+    - demand
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: apple.us-west-1
+      database: APPLE
+      schema: DEMAND
+      object: FACT_SEGMENT_PENETRATION
+      format: table
+  grain:
+    description: One row is one segment penetration.
+    components:
+    - identity_id: segment_penetration_identity
+      dataset_columns:
+      - segment_penetration_id
+      description: Identifier of the penetration row.
+  columns:
+  - name: segment_penetration_id
+    description: Identifier of the penetration row.
+  - name: device_family_id
+    description: Device family.
+  - name: product_generation_id
+    description: Generation, including MacBook Neo.
+  - name: customer_segment_id
+    description: Customer segment.
+  - name: country_id
+    description: Country of the reading.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: mix_share
+    description: Share of the generation's mix in this segment.
+  - name: penetration_rate
+    description: Penetration of the segment.
+  - name: roadmap_addresses_flag
+    description: Whether the roadmap addresses this underpenetrated market.
+    value_description: true or false.
+  entity_definitions:
+  - identity_id: segment_penetration_identity
+    dataset_columns:
+    - segment_penetration_id
+    entity_universe: complete
+  - identity_id: device_family_identity
+    dataset_columns:
+    - device_family_id
+    entity_universe: partial
+  - identity_id: product_generation_identity
+    dataset_columns:
+    - product_generation_id
+    entity_universe: partial
+  - identity_id: customer_segment_identity
+    dataset_columns:
+    - customer_segment_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+- node_id: sf:apple.demand.fact_competitive_position
+  descriptor:
+    qualified_name: apple.demand.fact_competitive_position
+    display_name: Competitive Position
+    description: Apple's share movement where competitors are supply-constrained. The pricing priority
+      is a code; the price itself is on the price file.
+    synonyms: []
+    tags:
+    - fact
+    - demand
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: apple.us-west-1
+      database: APPLE
+      schema: DEMAND
+      object: FACT_COMPETITIVE_POSITION
+      format: table
+  grain:
+    description: One row is one competitive position.
+    components:
+    - identity_id: competitive_position_identity
+      dataset_columns:
+      - competitive_position_id
+      description: Identifier of the competitive-position row.
+  columns:
+  - name: competitive_position_id
+    description: Identifier of the competitive-position row.
+  - name: country_id
+    description: Country of the comparison.
+  - name: device_family_id
+    description: Device family.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: competitor_constraint_index
+    description: How constrained competitor supply is, as an index.
+  - name: share_change_rate
+    description: Change in Apple share.
+  - name: priority_code
+    description: Whether the commercial priority is share or profitability.
+    value_description: share, profitability
+  - name: low_end_focus_flag
+    description: Whether the priority is the low end where competitors are strained.
+    value_description: true or false.
+  entity_definitions:
+  - identity_id: competitive_position_identity
+    dataset_columns:
+    - competitive_position_id
+    entity_universe: complete
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: device_family_identity
+    dataset_columns:
+    - device_family_id
+    entity_universe: partial
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+- node_id: sf:apple.demand.fact_regional_outlook
+  descriptor:
+    qualified_name: apple.demand.fact_regional_outlook
+    display_name: Regional Outlook
+    description: Direction of demand in a country and quarter, including China turning and the India installed-base
+      opportunity.
+    synonyms: []
+    tags:
+    - fact
+    - demand
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: apple.us-west-1
+      database: APPLE
+      schema: DEMAND
+      object: FACT_REGIONAL_OUTLOOK
+      format: table
+  grain:
+    description: One row is one regional outlook.
+    components:
+    - identity_id: regional_outlook_identity
+      dataset_columns:
+      - regional_outlook_id
+      description: Identifier of the regional-outlook row.
+  columns:
+  - name: regional_outlook_id
+    description: Identifier of the regional-outlook row.
+  - name: country_id
+    description: Country, including China or India.
+  - name: device_family_id
+    description: Device family.
+  - name: product_generation_id
+    description: Generation the outlook depends on, such as iPhone Air.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: demand_direction
+    description: Direction of regional demand.
+    value_description: up, down, flat, turned
+  - name: pause_until_generation_flag
+    description: Whether a weak month was a pause until a generation arrived.
+    value_description: true or false.
+  - name: december_driver_code
+    description: What else lifts the December view.
+    value_description: generation_availability, subsidy, installed_base, other
+  - name: middle_class_tailwind_flag
+    description: Whether a larger middle class is a tailwind.
+    value_description: true or false.
+  - name: installed_base_opportunity_quantity
+    description: Remaining installed-base opportunity in the country.
+  entity_definitions:
+  - identity_id: regional_outlook_identity
+    dataset_columns:
+    - regional_outlook_id
+    entity_universe: complete
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: device_family_identity
+    dataset_columns:
+    - device_family_id
+    entity_universe: partial
+  - identity_id: product_generation_identity
+    dataset_columns:
+    - product_generation_id
+    entity_universe: partial
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+- node_id: sf:apple.demand.fact_subsidy_uptake
+  descriptor:
+    qualified_name: apple.demand.fact_subsidy_uptake
+    display_name: Subsidy Uptake
+    description: How much country demand is subsidy-supported versus underlying demand.
+    synonyms: []
+    tags:
+    - fact
+    - demand
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: apple.us-west-1
+      database: APPLE
+      schema: DEMAND
+      object: FACT_SUBSIDY_UPTAKE
+      format: table
+  grain:
+    description: One row is one subsidy uptake.
+    components:
+    - identity_id: subsidy_uptake_identity
+      dataset_columns:
+      - subsidy_uptake_id
+      description: Identifier of the subsidy-uptake row.
+  columns:
+  - name: subsidy_uptake_id
+    description: Identifier of the subsidy-uptake row.
+  - name: country_id
+    description: Country of the subsidy.
+  - name: device_family_id
+    description: Device family.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: buyer_share_using_subsidy
+    description: Share of buyers using the subsidy.
+  - name: subsidy_attributed_demand_quantity
+    description: Demand quantity attributed to the subsidy.
+  - name: underlying_demand_quantity
+    description: Demand quantity aside from the subsidy.
+  entity_definitions:
+  - identity_id: subsidy_uptake_identity
+    dataset_columns:
+    - subsidy_uptake_id
+    entity_universe: complete
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: device_family_identity
+    dataset_columns:
+    - device_family_id
+    entity_universe: partial
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+- node_id: sf:apple.demand.fact_on_device_market
+  descriptor:
+    qualified_name: apple.demand.fact_on_device_market
+    display_name: On-Device Market
+    description: A use case that opens, or does not open, as more AI runs on the device.
+    synonyms: []
+    tags:
+    - fact
+    - demand
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: apple.us-west-1
+      database: APPLE
+      schema: DEMAND
+      object: FACT_ON_DEVICE_MARKET
+      format: table
+  grain:
+    description: One row is one on-device market.
+    components:
+    - identity_id: on_device_market_identity
+      dataset_columns:
+      - on_device_market_id
+      description: Identifier of the on-device-market row.
+  columns:
+  - name: on_device_market_id
+    description: Identifier of the on-device-market row.
+  - name: feature_id
+    description: On-device feature.
+  - name: device_family_id
+    description: Device family that can carry the use case.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: use_case_name
+    description: Name of the use case.
+  - name: new_market_flag
+    description: Whether the use case is a new addressable market.
+    value_description: true or false.
+  - name: in_current_product_set_flag
+    description: Whether today's product set already covers the use case.
+    value_description: true or false.
+  entity_definitions:
+  - identity_id: on_device_market_identity
+    dataset_columns:
+    - on_device_market_id
+    entity_universe: complete
+  - identity_id: feature_identity
+    dataset_columns:
+    - feature_id
+    entity_universe: partial
+  - identity_id: device_family_identity
+    dataset_columns:
+    - device_family_id
+    entity_universe: partial
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+- node_id: sf:apple.demand.fact_agent_hardware
+  descriptor:
+    qualified_name: apple.demand.fact_agent_hardware
+    display_name: Agent Hardware
+    description: Whether an agent use case sits on the current iPhone or needs a new form factor or a
+      new product.
+    synonyms: []
+    tags:
+    - fact
+    - demand
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: apple.us-west-1
+      database: APPLE
+      schema: DEMAND
+      object: FACT_AGENT_HARDWARE
+      format: table
+  grain:
+    description: One row is one agent hardware.
+    components:
+    - identity_id: agent_hardware_identity
+      dataset_columns:
+      - agent_hardware_id
+      description: Identifier of the agent-hardware row.
+  columns:
+  - name: agent_hardware_id
+    description: Identifier of the agent-hardware row.
+  - name: feature_id
+    description: Agent feature.
+  - name: form_factor_id
+    description: Form factor the use case is being tested against.
+  - name: device_family_id
+    description: Device family.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: sits_on_current_iphone_flag
+    description: Whether the use case sits on the current iPhone.
+    value_description: true or false.
+  - name: requires_new_form_factor_flag
+    description: Whether the use case needs a new form factor.
+    value_description: true or false.
+  - name: requires_new_product_flag
+    description: Whether the use case needs a new product.
+    value_description: true or false.
+  entity_definitions:
+  - identity_id: agent_hardware_identity
+    dataset_columns:
+    - agent_hardware_id
+    entity_universe: complete
+  - identity_id: feature_identity
+    dataset_columns:
+    - feature_id
+    entity_universe: partial
+  - identity_id: form_factor_identity
+    dataset_columns:
+    - form_factor_id
+    entity_universe: partial
+  - identity_id: device_family_identity
+    dataset_columns:
+    - device_family_id
+    entity_universe: partial
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+- node_id: sf:apple.demand.fact_purchase_reason
+  descriptor:
+    qualified_name: apple.demand.fact_purchase_reason
+    display_name: Purchase Reason
+    description: 'Why a purchase happened: an AI feature, iOS retention, or another reason.'
+    synonyms: []
+    tags:
+    - fact
+    - demand
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: apple.us-west-1
+      database: APPLE
+      schema: DEMAND
+      object: FACT_PURCHASE_REASON
+      format: table
+  grain:
+    description: One row is one purchase reason.
+    components:
+    - identity_id: purchase_reason_identity
+      dataset_columns:
+      - purchase_reason_id
+      description: Identifier of the purchase-reason row.
+  columns:
+  - name: purchase_reason_id
+    description: Identifier of the purchase-reason row.
+  - name: device_family_id
+    description: Device family purchased.
+  - name: feature_id
+    description: Feature cited, when the reason is a feature.
+  - name: country_id
+    description: Country of the purchase.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: reason_code
+    description: Purchase reason.
+    value_description: ai_feature, ios_retention, other
+  - name: purchase_share
+    description: Share of purchases with this reason.
+  - name: sways_purchase_flag
+    description: Whether this reason is swaying the purchase decision.
+    value_description: true or false.
+  entity_definitions:
+  - identity_id: purchase_reason_identity
+    dataset_columns:
+    - purchase_reason_id
+    entity_universe: complete
+  - identity_id: device_family_identity
+    dataset_columns:
+    - device_family_id
+    entity_universe: partial
+  - identity_id: feature_identity
+    dataset_columns:
+    - feature_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+- node_id: sf:apple.demand.fact_product_attach
+  descriptor:
+    qualified_name: apple.demand.fact_product_attach
+    display_name: Product Attach
+    description: Holiday attach of one device family to another, such as Mac attached to iPhone. This
+      is product attach, not a service attachment and not a price.
+    synonyms: []
+    tags:
+    - fact
+    - demand
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: apple.us-west-1
+      database: APPLE
+      schema: DEMAND
+      object: FACT_PRODUCT_ATTACH
+      format: table
+  grain:
+    description: One row is one product attach.
+    components:
+    - identity_id: product_attach_identity
+      dataset_columns:
+      - product_attach_id
+      description: Identifier of the product-attach row.
+  columns:
+  - name: product_attach_id
+    description: Identifier of the product-attach row.
+  - name: device_family_id
+    description: Primary device family, such as iPhone.
+  - name: attached_family_code
+    description: Other device family attached to the primary family.
+    value_description: iphone, mac, ipad, wearables
+  - name: country_id
+    description: Country of the attach reading.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: attach_rate
+    description: Attach rate of the other family to the primary family.
+  - name: wallet_pressure_index
+    description: Consumer budget pressure in the holiday window.
+  - name: holiday_flag
+    description: Whether the reading is the holiday window.
+    value_description: true or false.
+  entity_definitions:
+  - identity_id: product_attach_identity
+    dataset_columns:
+    - product_attach_id
+    entity_universe: complete
+  - identity_id: device_family_identity
+    dataset_columns:
+    - device_family_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+- node_id: sf:apple.demand.fact_generation_mix
+  descriptor:
+    qualified_name: apple.demand.fact_generation_mix
+    display_name: Generation Mix
+    description: Mix of generations such as Pro, Pro Max, and Air, versus the prior cycle, including whether
+      Air and a foldable are the same demand.
+    synonyms: []
+    tags:
+    - fact
+    - demand
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: apple.us-west-1
+      database: APPLE
+      schema: DEMAND
+      object: FACT_GENERATION_MIX
+      format: table
+  grain:
+    description: One row is one generation mix.
+    components:
+    - identity_id: generation_mix_identity
+      dataset_columns:
+      - generation_mix_id
+      description: Identifier of the generation-mix row.
+  columns:
+  - name: generation_mix_id
+    description: Identifier of the generation-mix row.
+  - name: product_generation_id
+    description: Generation whose mix is measured.
+  - name: device_family_id
+    description: Device family.
+  - name: form_factor_id
+    description: Form factor, including Air and foldable.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: mix_share
+    description: Share of family demand in this generation.
+  - name: prior_cycle_mix_share
+    description: Share of the comparable generation in the prior cycle.
+  - name: same_demand_as_other_form_flag
+    description: Whether this form factor's reception is evidence for a different form factor.
+    value_description: true or false.
+  entity_definitions:
+  - identity_id: generation_mix_identity
+    dataset_columns:
+    - generation_mix_id
+    entity_universe: complete
+  - identity_id: product_generation_identity
+    dataset_columns:
+    - product_generation_id
+    entity_universe: partial
+  - identity_id: device_family_identity
+    dataset_columns:
+    - device_family_id
+    entity_universe: partial
+  - identity_id: form_factor_identity
+    dataset_columns:
+    - form_factor_id
+    entity_universe: partial
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+- node_id: sf:apple.demand.fact_industry_smartphone_demand
+  descriptor:
+    qualified_name: apple.demand.fact_industry_smartphone_demand
+    display_name: Industry Smartphone Demand
+    description: Industry smartphone demand while memory prices move. The memory price is not stored on
+      this demand fact.
+    synonyms: []
+    tags:
+    - fact
+    - demand
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: apple.us-west-1
+      database: APPLE
+      schema: DEMAND
+      object: FACT_INDUSTRY_SMARTPHONE_DEMAND
+      format: table
+  grain:
+    description: One row is one industry smartphone demand.
+    components:
+    - identity_id: industry_demand_identity
+      dataset_columns:
+      - industry_demand_id
+      description: Identifier of the industry-demand row.
+  columns:
+  - name: industry_demand_id
+    description: Identifier of the industry-demand row.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: country_id
+    description: Country scope, when the reading is national.
+  - name: component_commodity_id
+    description: Memory commodity whose availability is being compared.
+  - name: industry_demand_index
+    description: Index of industry smartphone demand.
+  - name: demand_destruction_flag
+    description: Whether the reading shows demand destruction.
+    value_description: true or false.
+  entity_definitions:
+  - identity_id: industry_demand_identity
+    dataset_columns:
+    - industry_demand_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: component_commodity_identity
+    dataset_columns:
+    - component_commodity_id
+    entity_universe: partial
+- node_id: sf:apple.demand.fact_feature_demand
+  descriptor:
+    qualified_name: apple.demand.fact_feature_demand
+    display_name: Feature Demand
+    description: Whether a feature such as the new Siri is expected to lift holiday iPhone demand, and
+      what the public beta implies.
+    synonyms: []
+    tags:
+    - fact
+    - demand
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: apple.us-west-1
+      database: APPLE
+      schema: DEMAND
+      object: FACT_FEATURE_DEMAND
+      format: table
+  grain:
+    description: One row is one feature demand.
+    components:
+    - identity_id: feature_demand_identity
+      dataset_columns:
+      - feature_demand_id
+      description: Identifier of the feature-demand row.
+  columns:
+  - name: feature_demand_id
+    description: Identifier of the feature-demand row.
+  - name: feature_id
+    description: Feature, including Siri.
+  - name: device_family_id
+    description: Device family the feature may pull, including iPhone.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: beta_usage_rate
+    description: Public-beta usage rate.
+  - name: holiday_demand_lift_rate
+    description: Expected holiday demand lift.
+  - name: expected_demand_driver_flag
+    description: Whether the feature is expected to be a holiday demand driver.
+    value_description: true or false.
+  entity_definitions:
+  - identity_id: feature_demand_identity
+    dataset_columns:
+    - feature_demand_id
+    entity_universe: complete
+  - identity_id: feature_identity
+    dataset_columns:
+    - feature_id
+    entity_universe: partial
+  - identity_id: device_family_identity
+    dataset_columns:
+    - device_family_id
+    entity_universe: partial
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial

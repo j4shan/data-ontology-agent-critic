@@ -188,6 +188,17 @@ Two loadable schema version 3 catalogs now sit beside the question files. Each w
 
 Equinix separates a booking from quarterly occupancy, planned megawatts from power actually available, and a cross-connect from a lease line. Digital Realty separates secured land-bank gigawatts from the quarter power becomes available, and keeps lease commencement off the occupancy snapshot. See each `warehouse/MODEL.md`.
 
+## Warehouse catalogs built for the technology hardware pair
+
+Two loadable schema version 3 catalogs now sit beside the question files. Each was assembled only from that company's slices. Both build as graphs with no unknown claims and no contradictory edges.
+
+| Company | Catalog | Datasets | Relationships | Identities |
+| --- | --- | ---: | ---: | ---: |
+| Apple | `technology-hardware/aapl/warehouse/` | 78 | 180 | 78 |
+| Dell | `technology-hardware/dell/warehouse/` | 60 | 106 | 60 |
+
+Apple keeps demand quantity, component supply, and the price file as separate facts. Memory and silicon are purchased sources, not a wafer fab. Dell keeps traditional server and storage demand, AI-server backlog, and the price-versus-volume bridge apart. See each `warehouse/MODEL.md`.
+
 ## Pairs to defer
 
 - **Specialty chemicals (113), managed care (106), airlines (104), and packaged foods (96)**
