@@ -22,7 +22,8 @@ current state and TODOs are in the
 project_metadata/        PRD, specs, agent instructions, working state
   schema_candidates/     five domain catalogs and role-based question sheets
 resources/data/
-  SOURCES.md             active-source provenance policy
+  SOURCES.md             catalog manifest
+  <industry>/            earnings-call question sheets, references.md, and at most one warehouse
   reference_catalogs/    human-reviewed catalog gold for scoring generated catalogs
   generated_catalogs/    committed actor-generated catalogs, decision logs, and provenance (none yet)
 resources/schema/        AKG submission schema (planned)
