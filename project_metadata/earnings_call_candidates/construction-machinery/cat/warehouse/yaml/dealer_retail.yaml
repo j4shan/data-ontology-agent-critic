@@ -1,0 +1,875 @@
+schema_version: '3'
+nodes:
+- node_id: sf:caterpillar.organization.dim_region
+  descriptor:
+    qualified_name: caterpillar.organization.dim_region
+    display_name: Region
+    description: A Caterpillar sales region. North America is the region used when construction users
+      and dealer stock are discussed together.
+    tags:
+    - dimension
+    synonyms:
+    - sales region
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: caterpillar.us-central-1
+      database: CATERPILLAR
+      schema: ORGANIZATION
+      object: DIM_REGION
+      format: table
+  grain:
+    description: One row is one sales region.
+    components:
+    - identity_id: region_identity
+      dataset_columns:
+      - region_id
+      description: One row is one sales region.
+  columns:
+  - name: region_id
+    description: Identifier of the sales region. This dataset holds the complete region population.
+  - name: region_code
+    description: Short code of the sales region.
+    value_description: north_america, latin_america, emea, or asia_pacific.
+  - name: region_name
+    description: Name of the sales region.
+  entity_definitions:
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: complete
+- node_id: sf:caterpillar.organization.dim_country
+  descriptor:
+    qualified_name: caterpillar.organization.dim_country
+    display_name: Country
+    description: A country inside one Caterpillar sales region.
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: caterpillar.us-central-1
+      database: CATERPILLAR
+      schema: ORGANIZATION
+      object: DIM_COUNTRY
+      format: table
+  grain:
+    description: One row is one country.
+    components:
+    - identity_id: country_identity
+      dataset_columns:
+      - country_id
+      description: One row is one country.
+  columns:
+  - name: country_id
+    description: Identifier of the country. This dataset holds the complete country population.
+  - name: region_id
+    description: Sales region that contains the country.
+  - name: country_name
+    description: Name of the country.
+  - name: country_code
+    description: Short code of the country.
+  entity_definitions:
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: complete
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:caterpillar.dealer.dim_dealer
+  descriptor:
+    qualified_name: caterpillar.dealer.dim_dealer
+    display_name: Dealer
+    description: An independent Caterpillar dealer that stocks machines and sells them to end users and
+      rental fleets.
+    tags:
+    - dimension
+    synonyms:
+    - dealership
+    - Cat dealer
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: caterpillar.us-central-1
+      database: CATERPILLAR
+      schema: DEALER
+      object: DIM_DEALER
+      format: table
+  grain:
+    description: One row is one dealer.
+    components:
+    - identity_id: dealer_identity
+      dataset_columns:
+      - dealer_id
+      description: One row is one dealer.
+  columns:
+  - name: dealer_id
+    description: Identifier of the dealer. This dataset holds the complete dealer population.
+  - name: region_id
+    description: Sales region of the dealer.
+  - name: country_id
+    description: Country where the dealer is based.
+  - name: dealer_name
+    description: Trading name of the dealer.
+  - name: dealer_code
+    description: Caterpillar code for the dealer.
+  entity_definitions:
+  - identity_id: dealer_identity
+    dataset_columns:
+    - dealer_id
+    entity_universe: complete
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+- node_id: sf:caterpillar.dealer.dim_dealer_location
+  descriptor:
+    qualified_name: caterpillar.dealer.dim_dealer_location
+    display_name: Dealer location
+    description: A dealer branch or yard that holds machines. Stock at a location is dealer inventory,
+      not factory inventory.
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: caterpillar.us-central-1
+      database: CATERPILLAR
+      schema: DEALER
+      object: DIM_DEALER_LOCATION
+      format: table
+  grain:
+    description: One row is one dealer location.
+    components:
+    - identity_id: dealer_location_identity
+      dataset_columns:
+      - dealer_location_id
+      description: One row is one dealer location.
+  columns:
+  - name: dealer_location_id
+    description: Identifier of the dealer location. This dataset holds the complete dealer-location population.
+  - name: dealer_id
+    description: Dealer that operates the location.
+  - name: country_id
+    description: Country of the location.
+  - name: location_name
+    description: Name of the dealer location.
+  - name: location_role
+    description: Role of the location.
+    value_description: headquarters, branch, or yard.
+  entity_definitions:
+  - identity_id: dealer_location_identity
+    dataset_columns:
+    - dealer_location_id
+    entity_universe: complete
+  - identity_id: dealer_identity
+    dataset_columns:
+    - dealer_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+- node_id: sf:caterpillar.retail.dim_sales_channel
+  descriptor:
+    qualified_name: caterpillar.retail.dim_sales_channel
+    display_name: Sales channel
+    description: 'Who takes delivery of a Construction Industries machine: an end user, a rental fleet,
+      or dealer stock.'
+    tags:
+    - dimension
+    synonyms:
+    - end user
+    - rental fleet
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: caterpillar.us-central-1
+      database: CATERPILLAR
+      schema: RETAIL
+      object: DIM_SALES_CHANNEL
+      format: table
+  grain:
+    description: One row is one sales channel.
+    components:
+    - identity_id: sales_channel_identity
+      dataset_columns:
+      - sales_channel_id
+      description: One row is one sales channel.
+  columns:
+  - name: sales_channel_id
+    description: Identifier of the sales channel. This dataset holds the complete sales-channel population.
+  - name: channel_code
+    description: Code of the sales channel.
+    value_description: end_user, rental_fleet, or dealer_stock.
+  - name: channel_name
+    description: Name of the sales channel.
+  entity_definitions:
+  - identity_id: sales_channel_identity
+    dataset_columns:
+    - sales_channel_id
+    entity_universe: complete
+- node_id: sf:caterpillar.retail.dim_rental_peer
+  descriptor:
+    qualified_name: caterpillar.retail.dim_rental_peer
+    display_name: Rental peer
+    description: 'The rental operator whose fleet mix is being compared: a Cat Rental dealer or a national
+      rental company.'
+    tags:
+    - dimension
+    synonyms:
+    - Cat Rental
+    - national rental
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: caterpillar.us-central-1
+      database: CATERPILLAR
+      schema: RETAIL
+      object: DIM_RENTAL_PEER
+      format: table
+  grain:
+    description: One row is one rental peer.
+    components:
+    - identity_id: rental_peer_identity
+      dataset_columns:
+      - rental_peer_id
+      description: One row is one rental peer.
+  columns:
+  - name: rental_peer_id
+    description: Identifier of the rental peer. This dataset holds the complete rental-peer population.
+  - name: peer_code
+    description: Code of the rental peer.
+    value_description: cat_rental or national_rental.
+  - name: peer_name
+    description: Name of the rental peer class.
+  entity_definitions:
+  - identity_id: rental_peer_identity
+    dataset_columns:
+    - rental_peer_id
+    entity_universe: complete
+- node_id: sf:caterpillar.retail.dim_equipment_origin
+  descriptor:
+    qualified_name: caterpillar.retail.dim_equipment_origin
+    display_name: Equipment origin
+    description: Whether a unit in a rental fleet is Caterpillar equipment or an alliance product.
+    tags:
+    - dimension
+    synonyms:
+    - alliance product
+    - Cat equipment
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: caterpillar.us-central-1
+      database: CATERPILLAR
+      schema: RETAIL
+      object: DIM_EQUIPMENT_ORIGIN
+      format: table
+  grain:
+    description: One row is one equipment origin.
+    components:
+    - identity_id: equipment_origin_identity
+      dataset_columns:
+      - equipment_origin_id
+      description: One row is one equipment origin.
+  columns:
+  - name: equipment_origin_id
+    description: Identifier of the equipment origin. This dataset holds the complete equipment-origin
+      population.
+  - name: origin_code
+    description: Code of the equipment origin.
+    value_description: cat_equipment or alliance_product.
+  - name: origin_name
+    description: Name of the equipment origin.
+  entity_definitions:
+  - identity_id: equipment_origin_identity
+    dataset_columns:
+    - equipment_origin_id
+    entity_universe: complete
+- node_id: sf:caterpillar.retail.fact_dealer_inventory
+  descriptor:
+    qualified_name: caterpillar.retail.fact_dealer_inventory
+    display_name: Dealer inventory
+    description: Machines on a dealer's books. This is dealer stock, separate from factory production,
+      shipments, and unfilled backlog.
+    tags:
+    - fact
+    synonyms:
+    - dealer stock
+    - machine inventory
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: caterpillar.us-central-1
+      database: CATERPILLAR
+      schema: RETAIL
+      object: FACT_DEALER_INVENTORY
+      format: table
+  grain:
+    description: One row is one dealer, machine model, and accounting period.
+    components:
+    - identity_id: dealer_inventory_identity
+      dataset_columns:
+      - dealer_inventory_id
+      description: One row is one dealer, machine model, and accounting period.
+  columns:
+  - name: dealer_inventory_id
+    description: Identifier of the dealer inventory row. This dataset holds the complete dealer-inventory
+      population.
+  - name: dealer_id
+    description: Dealer that holds the machines.
+  - name: dealer_location_id
+    description: Location of the on-hand machines.
+  - name: machine_model_id
+    description: Machine model in dealer stock. The model population is owned outside this slice.
+  - name: segment_id
+    description: Operating segment of the stock. The segment population is owned outside this slice.
+  - name: region_id
+    description: Sales region of the dealer.
+  - name: accounting_period_id
+    description: Accounting period of the stock observation. The period population is owned outside this
+      slice.
+  - name: on_hand_units
+    description: Machines on the dealer lot in the period.
+    synonyms:
+    - dealer inventory
+    - dealer stock
+  - name: inventory_change_units
+    description: Change in dealer on-hand units during the period. Positive is a restock and negative
+      is a destock.
+  - name: destock_flag
+    description: Whether the dealer reduced stock in the period.
+    value_description: Y or N.
+  - name: prior_year_destock_units
+    description: Units the dealer already destocked in the prior year, kept so a further reduction can
+      be compared with that destock.
+  entity_definitions:
+  - identity_id: dealer_inventory_identity
+    dataset_columns:
+    - dealer_inventory_id
+    entity_universe: complete
+  - identity_id: dealer_identity
+    dataset_columns:
+    - dealer_id
+    entity_universe: partial
+  - identity_id: dealer_location_identity
+    dataset_columns:
+    - dealer_location_id
+    entity_universe: partial
+  - identity_id: machine_model_identity
+    dataset_columns:
+    - machine_model_id
+    entity_universe: partial
+  - identity_id: segment_identity
+    dataset_columns:
+    - segment_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+- node_id: sf:caterpillar.retail.fact_retail_demand
+  descriptor:
+    qualified_name: caterpillar.retail.fact_retail_demand
+    display_name: Retail demand
+    description: Retail demand at a dealer, measured in units and amount. Retail demand is sales to users
+      and rental customers, not dealer inventory and not a factory order.
+    tags:
+    - fact
+    synonyms:
+    - sales to users
+    - retail sales
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: caterpillar.us-central-1
+      database: CATERPILLAR
+      schema: RETAIL
+      object: FACT_RETAIL_DEMAND
+      format: table
+  grain:
+    description: One row is one dealer, segment, channel, and accounting period.
+    components:
+    - identity_id: retail_demand_identity
+      dataset_columns:
+      - retail_demand_id
+      description: One row is one dealer, segment, channel, and accounting period.
+  columns:
+  - name: retail_demand_id
+    description: Identifier of the retail demand row. This dataset holds the complete retail-demand population.
+  - name: dealer_id
+    description: Dealer that faces the retail demand.
+  - name: region_id
+    description: Sales region of the demand.
+  - name: segment_id
+    description: Operating segment. The segment population is owned outside this slice.
+  - name: sales_channel_id
+    description: Channel of the retail demand.
+  - name: accounting_period_id
+    description: Accounting period. The period population is owned outside this slice.
+  - name: retail_demand_units
+    description: Retail units demanded. This measure is not a price.
+  - name: retail_demand_amount
+    description: Retail demand stated as a sales amount. Stored beside units so the amount is not treated
+      as dealer stock.
+  - name: expected_direction
+    description: Expected direction of retail demand versus the prior view.
+    value_description: up, down, or flat.
+  entity_definitions:
+  - identity_id: retail_demand_identity
+    dataset_columns:
+    - retail_demand_id
+    entity_universe: complete
+  - identity_id: dealer_identity
+    dataset_columns:
+    - dealer_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+  - identity_id: segment_identity
+    dataset_columns:
+    - segment_id
+    entity_universe: partial
+  - identity_id: sales_channel_identity
+    dataset_columns:
+    - sales_channel_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+- node_id: sf:caterpillar.retail.fact_production_versus_retail
+  descriptor:
+    qualified_name: caterpillar.retail.fact_production_versus_retail
+    display_name: Production versus retail
+    description: Factory production set next to retail demand for a segment and period, so a build-to-retail
+      decision can be read without mixing in dealer stock.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: caterpillar.us-central-1
+      database: CATERPILLAR
+      schema: RETAIL
+      object: FACT_PRODUCTION_VERSUS_RETAIL
+      format: table
+  grain:
+    description: One row is one segment and accounting period.
+    components:
+    - identity_id: production_versus_retail_identity
+      dataset_columns:
+      - production_versus_retail_id
+      description: One row is one segment and accounting period.
+  columns:
+  - name: production_versus_retail_id
+    description: Identifier of the production-versus-retail row. This dataset holds the complete population
+      of those comparisons.
+  - name: segment_id
+    description: Operating segment whose production is compared with retail demand.
+  - name: accounting_period_id
+    description: Accounting period of the comparison.
+  - name: production_units
+    description: Units Caterpillar plans to build. This is factory output, not dealer inventory.
+  - name: retail_demand_units
+    description: Retail units the production plan is being matched against.
+  - name: build_to_retail_flag
+    description: Whether the production decision is to build to retail demand.
+    value_description: Y or N.
+  entity_definitions:
+  - identity_id: production_versus_retail_identity
+    dataset_columns:
+    - production_versus_retail_id
+    entity_universe: complete
+  - identity_id: segment_identity
+    dataset_columns:
+    - segment_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+- node_id: sf:caterpillar.retail.fact_user_sales_outlook
+  descriptor:
+    qualified_name: caterpillar.retail.fact_user_sales_outlook
+    display_name: Sales to users outlook
+    description: Sales to end users for a period, including the first-half result and the full-year outlook.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: caterpillar.us-central-1
+      database: CATERPILLAR
+      schema: RETAIL
+      object: FACT_USER_SALES_OUTLOOK
+      format: table
+  grain:
+    description: One row is one region, segment, and accounting period.
+    components:
+    - identity_id: user_sales_outlook_identity
+      dataset_columns:
+      - user_sales_outlook_id
+      description: One row is one region, segment, and accounting period.
+  columns:
+  - name: user_sales_outlook_id
+    description: Identifier of the sales-to-users outlook row. This dataset holds the complete population
+      of those outlooks.
+  - name: region_id
+    description: Sales region of the outlook.
+  - name: segment_id
+    description: Operating segment of the outlook.
+  - name: accounting_period_id
+    description: Accounting period the outlook refers to.
+  - name: currency_id
+    description: Currency of the sales amounts. The currency population is owned outside this slice.
+  - name: first_half_sales_to_users_amount
+    description: Sales to users already recorded in the first half.
+  - name: full_year_sales_to_users_amount
+    description: Full-year sales to users expected after the first half.
+  - name: sales_to_users_outlook_amount
+    description: Sales-to-users outlook Caterpillar is carrying for the period.
+    synonyms:
+    - sales to users
+  entity_definitions:
+  - identity_id: user_sales_outlook_identity
+    dataset_columns:
+    - user_sales_outlook_id
+    entity_universe: complete
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+  - identity_id: segment_identity
+    dataset_columns:
+    - segment_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: partial
+- node_id: sf:caterpillar.retail.fact_delivery_split
+  descriptor:
+    qualified_name: caterpillar.retail.fact_delivery_split
+    display_name: Delivery split
+    description: Construction Industries deliveries split between end users and rental fleets, with major-project
+      loading kept as its own unit count.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: caterpillar.us-central-1
+      database: CATERPILLAR
+      schema: RETAIL
+      object: FACT_DELIVERY_SPLIT
+      format: table
+  grain:
+    description: One row is one segment, sales channel, demand driver, and accounting period.
+    components:
+    - identity_id: delivery_split_identity
+      dataset_columns:
+      - delivery_split_id
+      description: One row is one segment, sales channel, demand driver, and accounting period.
+  columns:
+  - name: delivery_split_id
+    description: Identifier of the delivery-split row. This dataset holds the complete population of those
+      splits.
+  - name: segment_id
+    description: Operating segment of the deliveries.
+  - name: sales_channel_id
+    description: Whether the delivery went to an end user or a rental fleet.
+  - name: demand_driver_id
+    description: Demand driver, including major-project loading. The driver population is owned outside
+      this slice.
+  - name: accounting_period_id
+    description: Accounting period of the deliveries.
+  - name: delivery_units
+    description: Units delivered to the channel.
+  - name: major_project_units
+    description: Units inside those deliveries that loaded a major project.
+  entity_definitions:
+  - identity_id: delivery_split_identity
+    dataset_columns:
+    - delivery_split_id
+    entity_universe: complete
+  - identity_id: segment_identity
+    dataset_columns:
+    - segment_id
+    entity_universe: partial
+  - identity_id: sales_channel_identity
+    dataset_columns:
+    - sales_channel_id
+    entity_universe: partial
+  - identity_id: demand_driver_identity
+    dataset_columns:
+    - demand_driver_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+- node_id: sf:caterpillar.retail.fact_construction_ex_mega
+  descriptor:
+    qualified_name: caterpillar.retail.fact_construction_ex_mega
+    display_name: Construction demand excluding mega-projects
+    description: Construction demand after major projects and rental restocking are set aside, so private
+      nonresidential and residential can be read on their own.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: caterpillar.us-central-1
+      database: CATERPILLAR
+      schema: RETAIL
+      object: FACT_CONSTRUCTION_EX_MEGA
+      format: table
+  grain:
+    description: One row is one demand driver, region, and accounting period.
+    components:
+    - identity_id: construction_ex_mega_identity
+      dataset_columns:
+      - construction_ex_mega_id
+      description: One row is one demand driver, region, and accounting period.
+  columns:
+  - name: construction_ex_mega_id
+    description: Identifier of the ex-mega construction demand row. This dataset holds the complete population
+      of those rows.
+  - name: segment_id
+    description: Operating segment. Used for Construction Industries.
+  - name: demand_driver_id
+    description: Private nonresidential, residential, or another driver outside mega-projects and rental
+      restock.
+  - name: region_id
+    description: Sales region of the demand.
+  - name: accounting_period_id
+    description: Accounting period of the demand.
+  - name: demand_amount
+    description: Demand amount for the driver after the stated exclusions.
+  - name: excludes_major_project_flag
+    description: Whether major-project loading has been excluded from the amount.
+    value_description: Y or N.
+  - name: excludes_rental_restock_flag
+    description: Whether rental restocking has been excluded from the amount.
+    value_description: Y or N.
+  entity_definitions:
+  - identity_id: construction_ex_mega_identity
+    dataset_columns:
+    - construction_ex_mega_id
+    entity_universe: complete
+  - identity_id: segment_identity
+    dataset_columns:
+    - segment_id
+    entity_universe: partial
+  - identity_id: demand_driver_identity
+    dataset_columns:
+    - demand_driver_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+- node_id: sf:caterpillar.retail.fact_rental_fleet_plan
+  descriptor:
+    qualified_name: caterpillar.retail.fact_rental_fleet_plan
+    display_name: Rental fleet plan
+    description: How a dealer plans the mix of Cat equipment versus alliance products as Cat Rental expands,
+      compared with national rental fleets.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: caterpillar.us-central-1
+      database: CATERPILLAR
+      schema: RETAIL
+      object: FACT_RENTAL_FLEET_PLAN
+      format: table
+  grain:
+    description: One row is one dealer, rental peer, equipment origin, and accounting period.
+    components:
+    - identity_id: rental_fleet_plan_identity
+      dataset_columns:
+      - rental_fleet_plan_id
+      description: One row is one dealer, rental peer, equipment origin, and accounting period.
+  columns:
+  - name: rental_fleet_plan_id
+    description: Identifier of the rental fleet plan row. This dataset holds the complete population of
+      those plans.
+  - name: dealer_id
+    description: Dealer whose rental fleet is being planned.
+  - name: rental_peer_id
+    description: Cat Rental or a national rental company.
+  - name: equipment_origin_id
+    description: Cat equipment or an alliance product.
+  - name: accounting_period_id
+    description: Accounting period of the plan.
+  - name: planned_units
+    description: Units planned in the fleet for that origin.
+  - name: mix_share
+    description: Share of the fleet plan represented by that equipment origin.
+  entity_definitions:
+  - identity_id: rental_fleet_plan_identity
+    dataset_columns:
+    - rental_fleet_plan_id
+    entity_universe: complete
+  - identity_id: dealer_identity
+    dataset_columns:
+    - dealer_id
+    entity_universe: partial
+  - identity_id: rental_peer_identity
+    dataset_columns:
+    - rental_peer_id
+    entity_universe: partial
+  - identity_id: equipment_origin_identity
+    dataset_columns:
+    - equipment_origin_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+- node_id: sf:caterpillar.retail.fact_north_america_stock
+  descriptor:
+    qualified_name: caterpillar.retail.fact_north_america_stock
+    display_name: North America construction stock
+    description: North American construction dealer stock set against the expected direction of user sales,
+      including whether a further destock is required.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: caterpillar.us-central-1
+      database: CATERPILLAR
+      schema: RETAIL
+      object: FACT_NORTH_AMERICA_STOCK
+      format: table
+  grain:
+    description: One row is one dealer, segment, and accounting period in a region.
+    components:
+    - identity_id: north_america_stock_identity
+      dataset_columns:
+      - north_america_stock_id
+      description: One row is one dealer, segment, and accounting period in a region.
+  columns:
+  - name: north_america_stock_id
+    description: Identifier of the North America stock row. This dataset holds the complete population
+      of those rows.
+  - name: region_id
+    description: Sales region. North America is the region this fact is for.
+  - name: segment_id
+    description: Operating segment. Construction Industries is the segment this fact is for.
+  - name: dealer_id
+    description: Dealer whose stock is being judged.
+  - name: accounting_period_id
+    description: Accounting period of the stock judgment.
+  - name: expected_user_sales_direction
+    description: Expected direction of sales to construction users.
+    value_description: up, down, or flat.
+  - name: on_hand_units
+    description: Dealer on-hand units the judgment is made against.
+  - name: further_destock_flag
+    description: Whether dealer inventories need to fall further after the prior destock.
+    value_description: Y or N.
+  entity_definitions:
+  - identity_id: north_america_stock_identity
+    dataset_columns:
+    - north_america_stock_id
+    entity_universe: complete
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+  - identity_id: segment_identity
+    dataset_columns:
+    - segment_id
+    entity_universe: partial
+  - identity_id: dealer_identity
+    dataset_columns:
+    - dealer_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+- node_id: sf:caterpillar.retail.fact_inventory_swing
+  descriptor:
+    qualified_name: caterpillar.retail.fact_inventory_swing
+    display_name: Inventory swing
+    description: The dealer-inventory swing for a segment and period. A restock or destock is not the
+      same thing as end-user volume.
+    tags:
+    - fact
+    synonyms:
+    - inventory swing
+    - restock
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: caterpillar.us-central-1
+      database: CATERPILLAR
+      schema: RETAIL
+      object: FACT_INVENTORY_SWING
+      format: table
+  grain:
+    description: One row is one segment, region, and accounting period.
+    components:
+    - identity_id: inventory_swing_identity
+      dataset_columns:
+      - inventory_swing_id
+      description: One row is one segment, region, and accounting period.
+  columns:
+  - name: inventory_swing_id
+    description: Identifier of the inventory swing row. This dataset holds the complete population of
+      those swings.
+  - name: segment_id
+    description: Operating segment whose dealer stock swung.
+  - name: region_id
+    description: Sales region of the swing.
+  - name: accounting_period_id
+    description: Accounting period of the swing.
+  - name: inventory_change_units
+    description: Dealer inventory change. Separate from segment sales volume.
+  - name: swing_direction
+    description: Direction of the dealer inventory swing.
+    value_description: restock or destock.
+  entity_definitions:
+  - identity_id: inventory_swing_identity
+    dataset_columns:
+    - inventory_swing_id
+    entity_universe: complete
+  - identity_id: segment_identity
+    dataset_columns:
+    - segment_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial

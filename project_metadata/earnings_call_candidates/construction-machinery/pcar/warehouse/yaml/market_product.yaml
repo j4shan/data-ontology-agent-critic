@@ -1,0 +1,968 @@
+schema_version: '3'
+nodes:
+- node_id: sf:paccar.market.dim_end_market
+  descriptor:
+    qualified_name: paccar.market.dim_end_market
+    display_name: End market
+    description: An end market for PACCAR trucks, including over-the-road and vocational.
+    tags:
+    - dimension
+    synonyms:
+    - over the road
+    - vocational
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: paccar.us-central-1
+      database: PACCAR
+      schema: MARKET
+      object: DIM_END_MARKET
+      format: table
+  grain:
+    description: One row is one end market.
+    components:
+    - identity_id: end_market_identity
+      dataset_columns:
+      - end_market_id
+      description: One row is one end market.
+  columns:
+  - name: end_market_id
+    description: Identifier of the end market. This dataset holds the complete end-market population.
+  - name: market_code
+    description: Code of the end market.
+    value_description: over_the_road or vocational.
+  - name: market_name
+    description: Name of the end market.
+  entity_definitions:
+  - identity_id: end_market_identity
+    dataset_columns:
+    - end_market_id
+    entity_universe: complete
+- node_id: sf:paccar.product.dim_truck_family
+  descriptor:
+    qualified_name: paccar.product.dim_truck_family
+    display_name: Truck family
+    description: 'A PACCAR truck family: Kenworth, Peterbilt, or DAF.'
+    tags:
+    - dimension
+    synonyms:
+    - Kenworth
+    - Peterbilt
+    - DAF
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: paccar.us-central-1
+      database: PACCAR
+      schema: PRODUCT
+      object: DIM_TRUCK_FAMILY
+      format: table
+  grain:
+    description: One row is one truck family.
+    components:
+    - identity_id: truck_family_identity
+      dataset_columns:
+      - truck_family_id
+      description: One row is one truck family.
+  columns:
+  - name: truck_family_id
+    description: Identifier of the truck family. This dataset holds the complete truck-family population.
+  - name: family_code
+    description: Code of the truck family.
+    value_description: kenworth, peterbilt, or daf.
+  - name: family_name
+    description: Name of the truck family.
+  entity_definitions:
+  - identity_id: truck_family_identity
+    dataset_columns:
+    - truck_family_id
+    entity_universe: complete
+- node_id: sf:paccar.product.dim_powertrain
+  descriptor:
+    qualified_name: paccar.product.dim_powertrain
+    display_name: Powertrain
+    description: 'A truck powertrain: the current diesel, a low-NOx emissions engine, or electric.'
+    tags:
+    - dimension
+    synonyms:
+    - EPA 2027
+    - low-NOx
+    - electric truck
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: paccar.us-central-1
+      database: PACCAR
+      schema: PRODUCT
+      object: DIM_POWERTRAIN
+      format: table
+  grain:
+    description: One row is one powertrain.
+    components:
+    - identity_id: powertrain_identity
+      dataset_columns:
+      - powertrain_id
+      description: One row is one powertrain.
+  columns:
+  - name: powertrain_id
+    description: Identifier of the powertrain. This dataset holds the complete powertrain population.
+  - name: powertrain_code
+    description: Code of the powertrain.
+    value_description: current_diesel, low_nox, or electric.
+  - name: powertrain_name
+    description: Name of the powertrain.
+  entity_definitions:
+  - identity_id: powertrain_identity
+    dataset_columns:
+    - powertrain_id
+    entity_universe: complete
+- node_id: sf:paccar.product.dim_plant
+  descriptor:
+    qualified_name: paccar.product.dim_plant
+    display_name: Plant
+    description: A PACCAR truck plant, including Denton and Chillicothe.
+    tags:
+    - dimension
+    synonyms:
+    - Denton
+    - Chillicothe
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: paccar.us-central-1
+      database: PACCAR
+      schema: PRODUCT
+      object: DIM_PLANT
+      format: table
+  grain:
+    description: One row is one plant.
+    components:
+    - identity_id: plant_identity
+      dataset_columns:
+      - plant_id
+      description: One row is one plant.
+  columns:
+  - name: plant_id
+    description: Identifier of the plant. This dataset holds the complete plant population.
+  - name: region_id
+    description: Sales region the plant builds for. The region population is owned outside this slice.
+  - name: plant_code
+    description: Code of the plant.
+    value_description: denton, chillicothe, or europe_assembly.
+  - name: plant_name
+    description: Name of the plant.
+  entity_definitions:
+  - identity_id: plant_identity
+    dataset_columns:
+    - plant_id
+    entity_universe: complete
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:paccar.product.dim_supplier
+  descriptor:
+    qualified_name: paccar.product.dim_supplier
+    display_name: Supplier
+    description: A supplier PACCAR asks to support a build cadence.
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: paccar.us-central-1
+      database: PACCAR
+      schema: PRODUCT
+      object: DIM_SUPPLIER
+      format: table
+  grain:
+    description: One row is one supplier.
+    components:
+    - identity_id: supplier_identity
+      dataset_columns:
+      - supplier_id
+      description: One row is one supplier.
+  columns:
+  - name: supplier_id
+    description: Identifier of the supplier. This dataset holds the complete supplier population.
+  - name: supplier_name
+    description: Name of the supplier.
+  entity_definitions:
+  - identity_id: supplier_identity
+    dataset_columns:
+    - supplier_id
+    entity_universe: complete
+- node_id: sf:paccar.product.dim_input_commodity
+  descriptor:
+    qualified_name: paccar.product.dim_input_commodity
+    display_name: Input commodity
+    description: 'An input whose tariff or availability can constrain trucks or parts: steel, aluminum,
+      memory chips, or parts.'
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: paccar.us-central-1
+      database: PACCAR
+      schema: PRODUCT
+      object: DIM_INPUT_COMMODITY
+      format: table
+  grain:
+    description: One row is one input commodity.
+    components:
+    - identity_id: input_commodity_identity
+      dataset_columns:
+      - input_commodity_id
+      description: One row is one input commodity.
+  columns:
+  - name: input_commodity_id
+    description: Identifier of the input commodity. This dataset holds the complete input-commodity population.
+  - name: commodity_code
+    description: Code of the input.
+    value_description: steel, aluminum, memory_chip, or parts.
+  - name: commodity_name
+    description: Name of the input.
+  entity_definitions:
+  - identity_id: input_commodity_identity
+    dataset_columns:
+    - input_commodity_id
+    entity_universe: complete
+- node_id: sf:paccar.market.dim_industry_peer
+  descriptor:
+    qualified_name: paccar.market.dim_industry_peer
+    display_name: Industry peer
+    description: A competitor whose build location, emissions credits, or cost position is compared with
+      PACCAR. The peer is not a PACCAR dealer.
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: paccar.us-central-1
+      database: PACCAR
+      schema: MARKET
+      object: DIM_INDUSTRY_PEER
+      format: table
+  grain:
+    description: One row is one industry peer.
+    components:
+    - identity_id: industry_peer_identity
+      dataset_columns:
+      - industry_peer_id
+      description: One row is one industry peer.
+  columns:
+  - name: industry_peer_id
+    description: Identifier of the industry peer. This dataset holds the complete industry-peer population.
+  - name: region_id
+    description: Region where the peer builds.
+  - name: peer_name
+    description: Name of the peer class, not a claim about a named competitor's results.
+  entity_definitions:
+  - identity_id: industry_peer_identity
+    dataset_columns:
+    - industry_peer_id
+    entity_universe: complete
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:paccar.market.dim_business_line
+  descriptor:
+    qualified_name: paccar.market.dim_business_line
+    display_name: Business line
+    description: 'A PACCAR business line: trucks, parts, or financial services.'
+    tags:
+    - dimension
+    synonyms:
+    - aftermarket parts
+    - trucks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: paccar.us-central-1
+      database: PACCAR
+      schema: MARKET
+      object: DIM_BUSINESS_LINE
+      format: table
+  grain:
+    description: One row is one business line.
+    components:
+    - identity_id: business_line_identity
+      dataset_columns:
+      - business_line_id
+      description: One row is one business line.
+  columns:
+  - name: business_line_id
+    description: Identifier of the business line. This dataset holds the complete business-line population.
+  - name: line_code
+    description: Code of the business line.
+    value_description: truck, parts, or financial_services.
+  - name: line_name
+    description: Name of the business line.
+  entity_definitions:
+  - identity_id: business_line_identity
+    dataset_columns:
+    - business_line_id
+    entity_universe: complete
+- node_id: sf:paccar.product.fact_local_production
+  descriptor:
+    qualified_name: paccar.product.fact_local_production
+    display_name: Local production
+    description: Local-for-local production, the share of local content, and the production shortfall
+      versus the plan before the sourcing shift.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: paccar.us-central-1
+      database: PACCAR
+      schema: PRODUCT
+      object: FACT_LOCAL_PRODUCTION
+      format: table
+  grain:
+    description: One row is one region, plant, and accounting period.
+    components:
+    - identity_id: local_production_identity
+      dataset_columns:
+      - local_production_id
+      description: One row is one region, plant, and accounting period.
+  columns:
+  - name: local_production_id
+    description: Identifier of the local-production row. This dataset holds the complete local-production
+      population.
+  - name: region_id
+    description: Region whose production moved local-for-local.
+  - name: plant_id
+    description: Plant that absorbed the local production.
+  - name: accounting_period_id
+    description: Accounting period of the sourcing result.
+  - name: local_for_local_share
+    description: Share of production built in the region where it is sold.
+  - name: production_shortfall_units
+    description: Units below the plan that preceded the sourcing shift.
+  - name: plan_before_shift_units
+    description: Units in the plan before the move to local-for-local production.
+  - name: price_room_flag
+    description: Whether the higher local mix leaves more room to realize price.
+    value_description: Y or N.
+  entity_definitions:
+  - identity_id: local_production_identity
+    dataset_columns:
+    - local_production_id
+    entity_universe: complete
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+  - identity_id: plant_identity
+    dataset_columns:
+    - plant_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+- node_id: sf:paccar.product.fact_regional_build
+  descriptor:
+    qualified_name: paccar.product.fact_regional_build
+    display_name: Regional build
+    description: Truck production by region, including a Europe shutdown and the richness of the North
+      American mix.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: paccar.us-central-1
+      database: PACCAR
+      schema: PRODUCT
+      object: FACT_REGIONAL_BUILD
+      format: table
+  grain:
+    description: One row is one region and accounting period.
+    components:
+    - identity_id: regional_build_identity
+      dataset_columns:
+      - regional_build_id
+      description: One row is one region and accounting period.
+  columns:
+  - name: regional_build_id
+    description: Identifier of the regional-build row. This dataset holds the complete regional-build
+      population.
+  - name: region_id
+    description: Region of the build.
+  - name: accounting_period_id
+    description: Accounting period of the build.
+  - name: production_units
+    description: Trucks built. This measure is not a price.
+  - name: europe_shutdown_flag
+    description: Whether European production is shut down in the period.
+    value_description: Y or N.
+  - name: north_america_mix_rate
+    description: Share of the build that is the North American mix.
+  entity_definitions:
+  - identity_id: regional_build_identity
+    dataset_columns:
+    - regional_build_id
+    entity_universe: complete
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+- node_id: sf:paccar.market.fact_europe_order
+  descriptor:
+    qualified_name: paccar.market.fact_europe_order
+    display_name: Europe order
+    description: European truck orders, including whether conflict is showing up in the book.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: paccar.us-central-1
+      database: PACCAR
+      schema: MARKET
+      object: FACT_EUROPE_ORDER
+      format: table
+  grain:
+    description: One row is one end market and accounting period in Europe.
+    components:
+    - identity_id: europe_order_identity
+      dataset_columns:
+      - europe_order_id
+      description: One row is one end market and accounting period in Europe.
+  columns:
+  - name: europe_order_id
+    description: Identifier of the Europe order row. This dataset holds the complete Europe-order population.
+  - name: region_id
+    description: Europe region.
+  - name: end_market_id
+    description: End market of the European orders.
+  - name: accounting_period_id
+    description: Accounting period of the orders.
+  - name: currency_id
+    description: Currency of the order amount. The currency population is owned outside this slice.
+  - name: order_amount
+    description: European order amount.
+  - name: conflict_effect_flag
+    description: Whether the order book shows a conflict effect.
+    value_description: Y or N.
+  entity_definitions:
+  - identity_id: europe_order_identity
+    dataset_columns:
+    - europe_order_id
+    entity_universe: complete
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+  - identity_id: end_market_identity
+    dataset_columns:
+    - end_market_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: partial
+- node_id: sf:paccar.market.fact_china_electric
+  descriptor:
+    qualified_name: paccar.market.fact_china_electric
+    display_name: China electric trucks
+    description: The change in electric truck demand in China, kept apart from European diesel orders.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: paccar.us-central-1
+      database: PACCAR
+      schema: MARKET
+      object: FACT_CHINA_ELECTRIC
+      format: table
+  grain:
+    description: One row is one powertrain and accounting period in China.
+    components:
+    - identity_id: china_electric_identity
+      dataset_columns:
+      - china_electric_id
+      description: One row is one powertrain and accounting period in China.
+  columns:
+  - name: china_electric_id
+    description: Identifier of the China electric row. This dataset holds the complete China-electric
+      population.
+  - name: region_id
+    description: China region.
+  - name: powertrain_id
+    description: Electric powertrain.
+  - name: accounting_period_id
+    description: Accounting period of the reading.
+  - name: electric_unit_change
+    description: Change in electric truck units in China.
+  entity_definitions:
+  - identity_id: china_electric_identity
+    dataset_columns:
+    - china_electric_id
+    entity_universe: complete
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+  - identity_id: powertrain_identity
+    dataset_columns:
+    - powertrain_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+- node_id: sf:paccar.product.fact_emissions_program
+  descriptor:
+    qualified_name: paccar.product.fact_emissions_program
+    display_name: Emissions program
+    description: 'The emissions-rule timetable: phased rollout, the agency deadline, whether the rule
+      is unchanged, and whether a prebuy is a first-half or second-half event.'
+    tags:
+    - fact
+    synonyms:
+    - EPA 2027
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: paccar.us-central-1
+      database: PACCAR
+      schema: PRODUCT
+      object: FACT_EMISSIONS_PROGRAM
+      format: table
+  grain:
+    description: One row is one powertrain and accounting period.
+    components:
+    - identity_id: emissions_program_identity
+      dataset_columns:
+      - emissions_program_id
+      description: One row is one powertrain and accounting period.
+  columns:
+  - name: emissions_program_id
+    description: Identifier of the emissions-program row. This dataset holds the complete emissions-program
+      population.
+  - name: powertrain_id
+    description: Low-NOx or current powertrain the rule applies to.
+  - name: accounting_period_id
+    description: Accounting period the timetable is stated in.
+  - name: phased_rollout_flag
+    description: Whether the emissions rollout is phased rather than a single step.
+    value_description: Y or N.
+  - name: agency_deadline_note
+    description: Deadline the emissions agency faces if the rule changes.
+  - name: rule_unchanged_flag
+    description: Whether the rule is assumed to stay in place.
+    value_description: Y or N.
+  - name: prebuy_half
+    description: Half in which customers say a prebuy would start.
+    value_description: first_half or second_half.
+  entity_definitions:
+  - identity_id: emissions_program_identity
+    dataset_columns:
+    - emissions_program_id
+    entity_universe: complete
+  - identity_id: powertrain_identity
+    dataset_columns:
+    - powertrain_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+- node_id: sf:paccar.market.fact_emissions_credit
+  descriptor:
+    qualified_name: paccar.market.fact_emissions_credit
+    display_name: Emissions credit
+    description: Whether an industry peer's emissions credits create a share or price advantage.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: paccar.us-central-1
+      database: PACCAR
+      schema: MARKET
+      object: FACT_EMISSIONS_CREDIT
+      format: table
+  grain:
+    description: One row is one industry peer, powertrain, and accounting period.
+    components:
+    - identity_id: emissions_credit_identity
+      dataset_columns:
+      - emissions_credit_id
+      description: One row is one industry peer, powertrain, and accounting period.
+  columns:
+  - name: emissions_credit_id
+    description: Identifier of the emissions-credit row. This dataset holds the complete emissions-credit
+      population.
+  - name: industry_peer_id
+    description: Peer whose credit position is compared.
+  - name: powertrain_id
+    description: Powertrain the credits apply to.
+  - name: accounting_period_id
+    description: Year the credits would matter, including 2027.
+  - name: share_advantage_flag
+    description: Whether the credits give the peer a share advantage.
+    value_description: Y or N.
+  - name: price_advantage_flag
+    description: Whether the credits give the peer a price advantage.
+    value_description: Y or N.
+  entity_definitions:
+  - identity_id: emissions_credit_identity
+    dataset_columns:
+    - emissions_credit_id
+    entity_universe: complete
+  - identity_id: industry_peer_identity
+    dataset_columns:
+    - industry_peer_id
+    entity_universe: partial
+  - identity_id: powertrain_identity
+    dataset_columns:
+    - powertrain_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+- node_id: sf:paccar.product.fact_compliance_economics
+  descriptor:
+    qualified_name: paccar.product.fact_compliance_economics
+    display_name: Compliance economics
+    description: The penalty for selling the current engine compared with the cost of a compliant engine,
+      and the product and pricing strategy that follows.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: paccar.us-central-1
+      database: PACCAR
+      schema: PRODUCT
+      object: FACT_COMPLIANCE_ECONOMICS
+      format: table
+  grain:
+    description: One row is one powertrain and accounting period.
+    components:
+    - identity_id: compliance_economics_identity
+      dataset_columns:
+      - compliance_economics_id
+      description: One row is one powertrain and accounting period.
+  columns:
+  - name: compliance_economics_id
+    description: Identifier of the compliance-economics row. This dataset holds the complete compliance-economics
+      population.
+  - name: powertrain_id
+    description: Current engine or compliant low-NOx engine.
+  - name: accounting_period_id
+    description: Accounting period of the comparison.
+  - name: currency_id
+    description: Currency of the penalty and the engine cost.
+  - name: penalty_amount
+    description: Noncompliance penalty for selling the current engine.
+  - name: compliant_engine_cost
+    description: Cost of a compliant engine.
+  - name: strategy_note
+    description: How the comparison changes the product and pricing strategy.
+  entity_definitions:
+  - identity_id: compliance_economics_identity
+    dataset_columns:
+    - compliance_economics_id
+    entity_universe: complete
+  - identity_id: powertrain_identity
+    dataset_columns:
+    - powertrain_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: partial
+- node_id: sf:paccar.product.fact_supplier_cadence
+  descriptor:
+    qualified_name: paccar.product.fact_supplier_cadence
+    display_name: Supplier cadence
+    description: The build cadence suppliers are asked to support, and whether that cadence supports parts
+      growth.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: paccar.us-central-1
+      database: PACCAR
+      schema: PRODUCT
+      object: FACT_SUPPLIER_CADENCE
+      format: table
+  grain:
+    description: One row is one supplier, business line, and accounting period.
+    components:
+    - identity_id: supplier_cadence_identity
+      dataset_columns:
+      - supplier_cadence_id
+      description: One row is one supplier, business line, and accounting period.
+  columns:
+  - name: supplier_cadence_id
+    description: Identifier of the supplier-cadence row. This dataset holds the complete supplier-cadence
+      population.
+  - name: supplier_id
+    description: Supplier being asked to support the cadence.
+  - name: business_line_id
+    description: Trucks or parts the cadence supports.
+  - name: accounting_period_id
+    description: Accounting period the cadence is set from.
+  - name: support_window
+    description: Window the cadence covers, such as the fourth quarter into the first.
+  - name: parts_growth_support_flag
+    description: Whether the cadence supports parts growth exiting the year.
+    value_description: Y or N.
+  entity_definitions:
+  - identity_id: supplier_cadence_identity
+    dataset_columns:
+    - supplier_cadence_id
+    entity_universe: complete
+  - identity_id: supplier_identity
+    dataset_columns:
+    - supplier_id
+    entity_universe: partial
+  - identity_id: business_line_identity
+    dataset_columns:
+    - business_line_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+- node_id: sf:paccar.product.fact_supply_constraint
+  descriptor:
+    qualified_name: paccar.product.fact_supply_constraint
+    display_name: Supply constraint
+    description: An input that can keep the second-half build from ramping, including memory chips and
+      aluminum.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: paccar.us-central-1
+      database: PACCAR
+      schema: PRODUCT
+      object: FACT_SUPPLY_CONSTRAINT
+      format: table
+  grain:
+    description: One row is one input, supplier, and accounting period.
+    components:
+    - identity_id: supply_constraint_identity
+      dataset_columns:
+      - supply_constraint_id
+      description: One row is one input, supplier, and accounting period.
+  columns:
+  - name: supply_constraint_id
+    description: Identifier of the supply-constraint row. This dataset holds the complete supply-constraint
+      population.
+  - name: input_commodity_id
+    description: Input that may constrain the build.
+  - name: supplier_id
+    description: Supplier of the constrained input.
+  - name: accounting_period_id
+    description: Accounting period of the constraint.
+  - name: constraint_flag
+    description: Whether the input constrains the ramp.
+    value_description: Y or N.
+  - name: ramp_risk_note
+    description: Where the supply chain would fail if demand improves.
+  entity_definitions:
+  - identity_id: supply_constraint_identity
+    dataset_columns:
+    - supply_constraint_id
+    entity_universe: complete
+  - identity_id: input_commodity_identity
+    dataset_columns:
+    - input_commodity_id
+    entity_universe: partial
+  - identity_id: supplier_identity
+    dataset_columns:
+    - supplier_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+- node_id: sf:paccar.product.fact_plant_response
+  descriptor:
+    qualified_name: paccar.product.fact_plant_response
+    display_name: Plant response
+    description: How Denton and Chillicothe plans respond when customers talk about incremental share.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: paccar.us-central-1
+      database: PACCAR
+      schema: PRODUCT
+      object: FACT_PLANT_RESPONSE
+      format: table
+  grain:
+    description: One row is one plant and accounting period.
+    components:
+    - identity_id: plant_response_identity
+      dataset_columns:
+      - plant_response_id
+      description: One row is one plant and accounting period.
+  columns:
+  - name: plant_response_id
+    description: Identifier of the plant-response row. This dataset holds the complete plant-response
+      population.
+  - name: plant_id
+    description: Plant whose plan is in view.
+  - name: accounting_period_id
+    description: Accounting period of the plan.
+  - name: share_comment_flag
+    description: Whether customers are talking about incremental share that affects this plant.
+    value_description: Y or N.
+  - name: plan_change_note
+    description: How the plant plan changes.
+  entity_definitions:
+  - identity_id: plant_response_identity
+    dataset_columns:
+    - plant_response_id
+    entity_universe: complete
+  - identity_id: plant_identity
+    dataset_columns:
+    - plant_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+- node_id: sf:paccar.product.fact_sourcing_plan
+  descriptor:
+    qualified_name: paccar.product.fact_sourcing_plan
+    display_name: Sourcing plan
+    description: Whether parts and component sourcing moves more production to the United States under
+      a multi-year tariff offset.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: paccar.us-central-1
+      database: PACCAR
+      schema: PRODUCT
+      object: FACT_SOURCING_PLAN
+      format: table
+  grain:
+    description: One row is one input, business line, and region.
+    components:
+    - identity_id: sourcing_plan_identity
+      dataset_columns:
+      - sourcing_plan_id
+      description: One row is one input, business line, and region.
+  columns:
+  - name: sourcing_plan_id
+    description: Identifier of the sourcing-plan row. This dataset holds the complete sourcing-plan population.
+  - name: input_commodity_id
+    description: Input being sourced.
+  - name: business_line_id
+    description: Parts or trucks the sourcing plan covers.
+  - name: region_id
+    description: Region production would move toward.
+  - name: accounting_period_id
+    description: Accounting period of the plan.
+  - name: us_shift_flag
+    description: Whether more production moves to the United States.
+    value_description: Y or N.
+  - name: multi_year_offset_flag
+    description: Whether the tariff offset is in place for several years.
+    value_description: Y or N.
+  entity_definitions:
+  - identity_id: sourcing_plan_identity
+    dataset_columns:
+    - sourcing_plan_id
+    entity_universe: complete
+  - identity_id: input_commodity_identity
+    dataset_columns:
+    - input_commodity_id
+    entity_universe: partial
+  - identity_id: business_line_identity
+    dataset_columns:
+    - business_line_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+- node_id: sf:paccar.market.fact_peer_position
+  descriptor:
+    qualified_name: paccar.market.fact_peer_position
+    display_name: Peer cost position
+    description: PACCAR's cost position against peers given where those peers build, after the tariff
+      rules.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: paccar.us-central-1
+      database: PACCAR
+      schema: MARKET
+      object: FACT_PEER_POSITION
+      format: table
+  grain:
+    description: One row is one industry peer, region, and accounting period.
+    components:
+    - identity_id: peer_position_identity
+      dataset_columns:
+      - peer_position_id
+      description: One row is one industry peer, region, and accounting period.
+  columns:
+  - name: peer_position_id
+    description: Identifier of the peer-position row. This dataset holds the complete peer-position population.
+  - name: industry_peer_id
+    description: Peer being compared.
+  - name: region_id
+    description: PACCAR region the comparison is made for.
+  - name: accounting_period_id
+    description: Accounting period of the comparison.
+  - name: build_location_note
+    description: Where the peer builds relative to PACCAR.
+  - name: cost_position_code
+    description: PACCAR's resulting cost position.
+    value_description: advantage or even_field.
+  entity_definitions:
+  - identity_id: peer_position_identity
+    dataset_columns:
+    - peer_position_id
+    entity_universe: complete
+  - identity_id: industry_peer_identity
+    dataset_columns:
+    - industry_peer_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial

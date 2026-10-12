@@ -210,6 +210,17 @@ Two loadable schema version 3 catalogs now sit beside the question files. Each w
 
 Stryker keeps procedure volume, capital backlog, and the reimbursement context as separate facts. Intuitive Surgical keeps procedure volume, the installed da Vinci base, and the margin bridge apart. See each `warehouse/MODEL.md`.
 
+## Warehouse catalogs built for the construction machinery pair
+
+Two loadable schema version 3 catalogs now sit beside the question files. Each was assembled only from that company's slices. Both build as graphs with no unknown claims and no contradictory edges.
+
+| Company | Catalog | Datasets | Relationships | Identities |
+| --- | --- | ---: | ---: | ---: |
+| Caterpillar | `construction-machinery/cat/warehouse/` | 74 | 177 | 74 |
+| PACCAR | `construction-machinery/pcar/warehouse/` | 65 | 147 | 65 |
+
+Caterpillar keeps dealer inventory, the power-versus-construction mix, and price, volume, and backlog as separate facts. PACCAR keeps dealer stock, the truck and plant mix, and price, volume, and backlog apart. See each `warehouse/MODEL.md`.
+
 ## Pairs to defer
 
 - **Specialty chemicals (113), managed care (106), airlines (104), and packaged foods (96)**
