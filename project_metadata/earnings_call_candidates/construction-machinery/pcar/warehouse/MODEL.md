@@ -1,4 +1,4 @@
-# PACCAR warehouse catalog
+# Truck Inc warehouse catalog
 
 Loadable intermediary schema version 3. The builder input is `directory-manifest.yaml` beside `yaml/`.
 
@@ -10,7 +10,7 @@ The catalog was assembled from three subject slices that were written separately
 | Relationships | 147 |
 | Logical identities | 65 |
 
-Snowflake database `PACCAR`, account `paccar.us-central-1`. Node ids use the `sf:` prefix. Qualified names start with `paccar.`.
+Snowflake database `TRUCK`, account `truck.us-central-1`. Node ids use the `sf:` prefix. Qualified names start with `truck.`.
 
 ## What the model covers
 

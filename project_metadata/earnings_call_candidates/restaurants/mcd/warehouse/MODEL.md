@@ -1,4 +1,4 @@
-# McDonald's warehouse catalog
+# Burger Inc warehouse catalog
 
 Loadable intermediary schema version 3. The builder input is `directory-manifest.yaml` beside `yaml/`.
 
@@ -10,7 +10,7 @@ The catalog was assembled from three subject slices that were written separately
 | Relationships | 283 |
 | Logical identities | 38 |
 
-Snowflake database `MCDONALDS`, account `mcdonalds.us-east-1`. Node ids use the `sf:` prefix.
+Snowflake database `BURGER`, account `burger.us-east-1`. Node ids use the `sf:` prefix.
 
 ## What the model covers
 

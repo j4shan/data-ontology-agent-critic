@@ -168,58 +168,58 @@ share an entity chain rather than a single KPI.
 
 ## Warehouse catalogs built for the restaurant pair
 
-Two loadable schema version 3 catalogs now sit beside the question files. Each was assembled only from that company's slices. Both build as graphs with no unknown claims and no contradictory edges.
+Question sheets keep the paraphrased earnings-call questions under the source company name. Each warehouse owner is a naive industry name. Two loadable schema version 3 catalogs sit beside those question files. Both build with no unknown claims.
 
-| Company | Catalog | Datasets | Relationships | Identities |
-| --- | --- | ---: | ---: | ---: |
-| McDonald's | `restaurants/mcd/warehouse/` | 71 | 283 | 38 |
-| Starbucks | `restaurants/sbux/warehouse/` | 76 | 203 | 35 |
+| Owner | Question sheet | Catalog | Datasets | Relationships | Identities |
+| --- | --- | --- | ---: | ---: | ---: |
+| Burger Inc | McDonald's | `restaurants/mcd/warehouse/` | 71 | 283 | 38 |
+| Coffee Inc | Starbucks | `restaurants/sbux/warehouse/` | 76 | 203 | 35 |
 
-McDonald's finance slice separates company-operated margin, franchisee cash flow, royalty, rent, capex, and the inflation-versus-mix bridge. Starbucks finance slice separates tariff refunds, coffee and distribution inflation, marketing rebase versus turnaround spend, and guidance scenarios. See each `warehouse/MODEL.md`.
+Burger Inc finance separates company-operated margin, franchisee cash flow, royalty, rent, capex, and the inflation-versus-mix bridge. Coffee Inc finance separates tariff refunds, coffee and distribution inflation, marketing rebase versus turnaround spend, and guidance scenarios. See each `warehouse/MODEL.md`.
 
 ## Warehouse catalogs built for the data center REIT pair
 
-Two loadable schema version 3 catalogs now sit beside the question files. Each was assembled only from that company's slices. Both build as graphs with no unknown claims and no contradictory edges.
+Question sheets keep the paraphrased earnings-call questions under the source company name. Each warehouse owner is a naive industry name. Two loadable schema version 3 catalogs sit beside those question files. Both build as graphs with no unknown claims and no contradictory edges.
 
-| Company | Catalog | Datasets | Relationships | Identities |
-| --- | --- | ---: | ---: | ---: |
-| Equinix | `data-center-reits/eqix/warehouse/` | 67 | 162 | 67 |
-| Digital Realty | `data-center-reits/dlr/warehouse/` | 62 | 139 | 62 |
+| Owner | Question sheet | Catalog | Datasets | Relationships | Identities |
+| --- | --- | --- | ---: | ---: | ---: |
+| Colocation Inc | Equinix | `data-center-reits/eqix/warehouse/` | 67 | 162 | 67 |
+| Data Hall Inc | Digital Realty | `data-center-reits/dlr/warehouse/` | 62 | 139 | 62 |
 
-Equinix separates a booking from quarterly occupancy, planned megawatts from power actually available, and a cross-connect from a lease line. Digital Realty separates secured land-bank gigawatts from the quarter power becomes available, and keeps lease commencement off the occupancy snapshot. See each `warehouse/MODEL.md`.
+Colocation Inc separates a booking from quarterly occupancy, planned megawatts from power actually available, and a cross-connect from a lease line. Data Hall Inc separates secured land-bank gigawatts from the quarter power becomes available, and keeps lease commencement off the occupancy snapshot. See each `warehouse/MODEL.md`.
 
 ## Warehouse catalogs built for the technology hardware pair
 
-Two loadable schema version 3 catalogs now sit beside the question files. Each was assembled only from that company's slices. Both build as graphs with no unknown claims and no contradictory edges.
+Question sheets keep the paraphrased earnings-call questions under the source company name. Each warehouse owner is a naive industry name. Two loadable schema version 3 catalogs sit beside those question files. Both build as graphs with no unknown claims and no contradictory edges.
 
-| Company | Catalog | Datasets | Relationships | Identities |
-| --- | --- | ---: | ---: | ---: |
-| Apple | `technology-hardware/aapl/warehouse/` | 78 | 180 | 78 |
-| Dell | `technology-hardware/dell/warehouse/` | 60 | 106 | 60 |
+| Owner | Question sheet | Catalog | Datasets | Relationships | Identities |
+| --- | --- | --- | ---: | ---: | ---: |
+| Device Inc | Apple | `technology-hardware/aapl/warehouse/` | 78 | 180 | 78 |
+| Computer Inc | Dell | `technology-hardware/dell/warehouse/` | 60 | 106 | 60 |
 
-Apple keeps demand quantity, component supply, and the price file as separate facts. Memory and silicon are purchased sources, not a wafer fab. Dell keeps traditional server and storage demand, AI-server backlog, and the price-versus-volume bridge apart. See each `warehouse/MODEL.md`.
+Device Inc keeps demand quantity, component supply, and the price file as separate facts. Memory and silicon are purchased sources, not a wafer fab. Computer Inc keeps traditional server and storage demand, AI-server backlog, and the price-versus-volume bridge apart. See each `warehouse/MODEL.md`.
 
 ## Warehouse catalogs built for the health care equipment pair
 
-Two loadable schema version 3 catalogs now sit beside the question files. Each was assembled only from that company's slices. Both build as graphs with no unknown claims and no contradictory edges. These are device-maker graphs, separate from the healthcare-payer claims catalog.
+Question sheets keep the paraphrased earnings-call questions under the source company name. Each warehouse owner is a naive industry name. Two loadable schema version 3 catalogs sit beside those question files. Both build as graphs with no unknown claims and no contradictory edges. These are device-maker graphs, separate from the healthcare-payer claims catalog.
 
-| Company | Catalog | Datasets | Relationships | Identities |
-| --- | --- | ---: | ---: | ---: |
-| Stryker | `health-care-equipment/syk/warehouse/` | 74 | 200 | 74 |
-| Intuitive Surgical | `health-care-equipment/isrg/warehouse/` | 65 | 168 | 65 |
+| Owner | Question sheet | Catalog | Datasets | Relationships | Identities |
+| --- | --- | --- | ---: | ---: | ---: |
+| Surgical Supply Inc | Stryker | `health-care-equipment/syk/warehouse/` | 74 | 200 | 74 |
+| Surgical Robot Inc | Intuitive Surgical | `health-care-equipment/isrg/warehouse/` | 65 | 168 | 65 |
 
-Stryker keeps procedure volume, capital backlog, and the reimbursement context as separate facts. Intuitive Surgical keeps procedure volume, the installed da Vinci base, and the margin bridge apart. See each `warehouse/MODEL.md`.
+Surgical Supply Inc keeps procedure volume, capital backlog, and the reimbursement context as separate facts. Surgical Robot Inc keeps procedure volume, the installed da Vinci base, and the margin bridge apart. See each `warehouse/MODEL.md`.
 
 ## Warehouse catalogs built for the construction machinery pair
 
-Two loadable schema version 3 catalogs now sit beside the question files. Each was assembled only from that company's slices. Both build as graphs with no unknown claims and no contradictory edges.
+Question sheets keep the paraphrased earnings-call questions under the source company name. Each warehouse owner is a naive industry name. Two loadable schema version 3 catalogs sit beside those question files. Both build as graphs with no unknown claims and no contradictory edges.
 
-| Company | Catalog | Datasets | Relationships | Identities |
-| --- | --- | ---: | ---: | ---: |
-| Caterpillar | `construction-machinery/cat/warehouse/` | 74 | 177 | 74 |
-| PACCAR | `construction-machinery/pcar/warehouse/` | 65 | 147 | 65 |
+| Owner | Question sheet | Catalog | Datasets | Relationships | Identities |
+| --- | --- | --- | ---: | ---: | ---: |
+| Machinery Inc | Caterpillar | `construction-machinery/cat/warehouse/` | 74 | 177 | 74 |
+| Truck Inc | PACCAR | `construction-machinery/pcar/warehouse/` | 65 | 147 | 65 |
 
-Caterpillar keeps dealer inventory, the power-versus-construction mix, and price, volume, and backlog as separate facts. PACCAR keeps dealer stock, the truck and plant mix, and price, volume, and backlog apart. See each `warehouse/MODEL.md`.
+Machinery Inc keeps dealer inventory, the power-versus-construction mix, and price, volume, and backlog as separate facts. Truck Inc keeps dealer stock, the truck and plant mix, and price, volume, and backlog apart. See each `warehouse/MODEL.md`.
 
 ## Pairs to defer
 

@@ -1,4 +1,4 @@
-# Caterpillar warehouse catalog
+# Machinery Inc warehouse catalog
 
 Loadable intermediary schema version 3. The builder input is `directory-manifest.yaml` beside `yaml/`.
 
@@ -10,7 +10,7 @@ The catalog was assembled from three subject slices that were written separately
 | Relationships | 177 |
 | Logical identities | 74 |
 
-Snowflake database `CATERPILLAR`, account `caterpillar.us-central-1`. Node ids use the `sf:` prefix. Qualified names start with `caterpillar.`.
+Snowflake database `MACHINERY`, account `machinery.us-central-1`. Node ids use the `sf:` prefix. Qualified names start with `machinery.`.
 
 ## What the model covers
 

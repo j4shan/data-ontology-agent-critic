@@ -1,8 +1,8 @@
 schema_version: '3'
 nodes:
-- node_id: sf:starbucks.finance.dim_cost_element
+- node_id: sf:coffee.finance.dim_cost_element
   descriptor:
-    qualified_name: starbucks.finance.dim_cost_element
+    qualified_name: coffee.finance.dim_cost_element
     display_name: Cost element
     description: P&L cost element used to separate the margin bridge and the ledger. The complete set
       used here is coffee, other product cost, distribution, store labor, marketing, occupancy, and general
@@ -13,8 +13,8 @@ nodes:
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
-      account: starbucks.us-west-2
-      database: STARBUCKS
+      account: coffee.us-west-2
+      database: COFFEE
       schema: FINANCE
       object: DIM_COST_ELEMENT
       format: table
@@ -37,9 +37,9 @@ nodes:
     dataset_columns:
     - cost_element_id
     entity_universe: complete
-- node_id: sf:starbucks.finance.dim_commodity
+- node_id: sf:coffee.finance.dim_commodity
   descriptor:
-    qualified_name: starbucks.finance.dim_commodity
+    qualified_name: coffee.finance.dim_commodity
     display_name: Commodity
     description: Purchased commodity whose price and inflation are compared with product-cost savings.
       Coffee commodities are identified by commodity_group_code.
@@ -51,8 +51,8 @@ nodes:
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
-      account: starbucks.us-west-2
-      database: STARBUCKS
+      account: coffee.us-west-2
+      database: COFFEE
       schema: FINANCE
       object: DIM_COMMODITY
       format: table
@@ -78,9 +78,9 @@ nodes:
     dataset_columns:
     - commodity_id
     entity_universe: complete
-- node_id: sf:starbucks.finance.dim_tariff
+- node_id: sf:coffee.finance.dim_tariff
   descriptor:
-    qualified_name: starbucks.finance.dim_tariff
+    qualified_name: coffee.finance.dim_tariff
     display_name: Tariff
     description: Tariff program. Refunds are stored on the tariff-refund fact and as their own margin-bridge
       driver.
@@ -90,8 +90,8 @@ nodes:
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
-      account: starbucks.us-west-2
-      database: STARBUCKS
+      account: coffee.us-west-2
+      database: COFFEE
       schema: FINANCE
       object: DIM_TARIFF
       format: table
@@ -120,12 +120,12 @@ nodes:
     dataset_columns:
     - commodity_id
     entity_universe: partial
-- node_id: sf:starbucks.finance.fact_commodity_price_savings
+- node_id: sf:coffee.finance.fact_commodity_price_savings
   descriptor:
-    qualified_name: starbucks.finance.fact_commodity_price_savings
+    qualified_name: coffee.finance.fact_commodity_price_savings
     display_name: Commodity price and product-cost savings
     description: Commodity price, commodity inflation, and product-cost savings for one commodity, one
-      cost element, and one Starbucks fiscal period. Fiscal 2026 savings are netted against inflation
+      cost element, and one Coffee Inc fiscal period. Fiscal 2026 savings are netted against inflation
       on net_savings_against_inflation_amount. Join fiscal_period_id to the fiscal-period dimension to
       select the fiscal year. Coffee and other product cost remain separate cost elements. Tariff refunds
       are recorded on the tariff-refund fact.
@@ -138,13 +138,13 @@ nodes:
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
-      account: starbucks.us-west-2
-      database: STARBUCKS
+      account: coffee.us-west-2
+      database: COFFEE
       schema: FINANCE
       object: FACT_COMMODITY_PRICE_SAVINGS
       format: table
   grain:
-    description: One row is one commodity, one cost element, and one Starbucks fiscal period.
+    description: One row is one commodity, one cost element, and one Coffee Inc fiscal period.
     components:
     - dataset_columns:
       - commodity_id
@@ -162,7 +162,7 @@ nodes:
     description: Product-cost element the savings and inflation belong to. Coffee and other product cost
       are separate.
   - name: fiscal_period_id
-    description: Starbucks fiscal period of the price, inflation, and savings.
+    description: Coffee Inc fiscal period of the price, inflation, and savings.
   - name: currency_id
     description: Currency of the price, inflation, savings, and net amounts.
   - name: commodity_price_amount
@@ -192,12 +192,12 @@ nodes:
     dataset_columns:
     - currency_id
     entity_universe: partial
-- node_id: sf:starbucks.finance.fact_tariff_refund
+- node_id: sf:coffee.finance.fact_tariff_refund
   descriptor:
-    qualified_name: starbucks.finance.fact_tariff_refund
+    qualified_name: coffee.finance.fact_tariff_refund
     display_name: Tariff refund
     description: Tariff refund fact. Each row is a received refund or an expected further refund. The
-      refund is not a note on coffee cost. Received rows carry the Starbucks fiscal period received. Expected
+      refund is not a note on coffee cost. Received rows carry the Coffee Inc fiscal period received. Expected
       rows say whether more refunds are expected, whether that expectation is the fourth quarter, and
       whether guidance includes the refund.
     tags:
@@ -208,8 +208,8 @@ nodes:
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
-      account: starbucks.us-west-2
-      database: STARBUCKS
+      account: coffee.us-west-2
+      database: COFFEE
       schema: FINANCE
       object: FACT_TARIFF_REFUND
       format: table
@@ -230,7 +230,7 @@ nodes:
     description: Whether this line has been received or is still an expectation.
     value_description: received or expected
   - name: received_fiscal_period_id
-    description: Starbucks fiscal period in which the refund was received. Empty when refund_status_code
+    description: Coffee Inc fiscal period in which the refund was received. Empty when refund_status_code
       is expected.
   - name: refund_amount
     description: Refund amount in currency_id.
@@ -241,11 +241,11 @@ nodes:
     description: Whether more tariff refunds are expected after the refunds already identified.
     value_description: expected or not_expected
   - name: expected_in_fourth_quarter_code
-    description: Whether an additional refund is expected in the Starbucks fourth quarter. Confirm the
+    description: Whether an additional refund is expected in the Coffee Inc fourth quarter. Confirm the
       quarter with expected_fiscal_period_id joined to fiscal_quarter_number.
     value_description: fourth_quarter or not_fourth_quarter
   - name: expected_fiscal_period_id
-    description: Starbucks fiscal period in which an additional refund is expected. Empty when no further
+    description: Coffee Inc fiscal period in which an additional refund is expected. Empty when no further
       refund is expected.
   entity_definitions:
   - identity_id: tariff_identity
@@ -264,11 +264,11 @@ nodes:
     dataset_columns:
     - expected_fiscal_period_id
     entity_universe: partial
-- node_id: sf:starbucks.finance.fact_marketing_spend
+- node_id: sf:coffee.finance.fact_marketing_spend
   descriptor:
-    qualified_name: starbucks.finance.fact_marketing_spend
+    qualified_name: coffee.finance.fact_marketing_spend
     display_name: Marketing spend
-    description: Marketing spend for one media channel in one Starbucks fiscal period. Dollars, percent
+    description: Marketing spend for one media channel in one Coffee Inc fiscal period. Dollars, percent
       of sales, the year-over-year change, and the media mix are columns. prior_year_fiscal_period_id
       is the comparison period.
     tags:
@@ -279,13 +279,13 @@ nodes:
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
-      account: starbucks.us-west-2
-      database: STARBUCKS
+      account: coffee.us-west-2
+      database: COFFEE
       schema: FINANCE
       object: FACT_MARKETING_SPEND
       format: table
   grain:
-    description: One row is one marketing-spend record for one media channel and one Starbucks fiscal
+    description: One row is one marketing-spend record for one media channel and one Coffee Inc fiscal
       period.
     components:
     - dataset_columns:
@@ -295,9 +295,9 @@ nodes:
   - name: marketing_spend_id
     description: Surrogate key of one marketing-spend row.
   - name: fiscal_period_id
-    description: Starbucks fiscal period of the spend.
+    description: Coffee Inc fiscal period of the spend.
   - name: prior_year_fiscal_period_id
-    description: Starbucks fiscal period used as the year-ago comparison for this spend.
+    description: Coffee Inc fiscal period used as the year-ago comparison for this spend.
   - name: currency_id
     description: Currency of the spend amounts.
   - name: media_channel_code
@@ -335,12 +335,12 @@ nodes:
     dataset_columns:
     - currency_id
     entity_universe: partial
-- node_id: sf:starbucks.finance.fact_na_company_operated_operating_margin
+- node_id: sf:coffee.finance.fact_na_company_operated_operating_margin
   descriptor:
-    qualified_name: starbucks.finance.fact_na_company_operated_operating_margin
+    qualified_name: coffee.finance.fact_na_company_operated_operating_margin
     display_name: North America company-operated operating margin
-    description: Operating margin for Starbucks North America company-operated stores. One row is one
-      country inside that scope, one company-operated ownership type, and one Starbucks fiscal period.
+    description: Operating margin for Coffee Inc North America company-operated stores. One row is one
+      country inside that scope, one company-operated ownership type, and one Coffee Inc fiscal period.
       First-half and second-half rows are the same grain in different periods. Compare them by joining
       fiscal_period_id to fiscal_half_number. Country and ownership type are partial foreign keys.
     tags:
@@ -351,14 +351,14 @@ nodes:
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
-      account: starbucks.us-west-2
-      database: STARBUCKS
+      account: coffee.us-west-2
+      database: COFFEE
       schema: FINANCE
       object: FACT_NA_COMPANY_OPERATED_OPERATING_MARGIN
       format: table
   grain:
     description: One row is North America company-operated operating margin for one country, one ownership
-      type, and one Starbucks fiscal period.
+      type, and one Coffee Inc fiscal period.
     components:
     - dataset_columns:
       - country_id
@@ -371,13 +371,13 @@ nodes:
       identity_id: ownership_type_identity
   columns:
   - name: country_id
-    description: Partial foreign key to country_id on starbucks.organization.dim_country. Finance does
+    description: Partial foreign key to country_id on coffee.organization.dim_country. Finance does
       not contain the complete country population.
   - name: fiscal_period_id
-    description: Starbucks fiscal period of the margin. Half-year comparison uses the fiscal period, not
+    description: Coffee Inc fiscal period of the margin. Half-year comparison uses the fiscal period, not
       a separate half-year grain.
   - name: ownership_type_id
-    description: Partial foreign key to ownership_type_id on starbucks.store.dim_ownership_type. Finance
+    description: Partial foreign key to ownership_type_id on coffee.store.dim_ownership_type. Finance
       does not contain the complete ownership-type population. North America margin rows use the company-operated
       type.
   - name: currency_id
@@ -408,12 +408,12 @@ nodes:
     dataset_columns:
     - currency_id
     entity_universe: partial
-- node_id: sf:starbucks.finance.fact_margin_bridge
+- node_id: sf:coffee.finance.fact_margin_bridge
   descriptor:
-    qualified_name: starbucks.finance.fact_margin_bridge
+    qualified_name: coffee.finance.fact_margin_bridge
     display_name: Margin bridge
-    description: Operating-margin bridge for Starbucks North America company-operated stores. Each line
-      isolates one driver for one Starbucks fiscal period. Drivers separate product inflation, distribution,
+    description: Operating-margin bridge for Coffee Inc North America company-operated stores. Each line
+      isolates one driver for one Coffee Inc fiscal period. Drivers separate product inflation, distribution,
       labor investment, a permanent marketing rebase, temporary turnaround marketing spend, and tariff
       refunds. Cost elements separately identify coffee, other product cost, distribution, store labor,
       marketing, occupancy, and general and administrative. A tariff-refund line leaves cost_element_id
@@ -427,8 +427,8 @@ nodes:
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
-      account: starbucks.us-west-2
-      database: STARBUCKS
+      account: coffee.us-west-2
+      database: COFFEE
       schema: FINANCE
       object: FACT_MARGIN_BRIDGE
       format: table
@@ -442,12 +442,12 @@ nodes:
   - name: margin_bridge_id
     description: Surrogate key of one margin-bridge line.
   - name: fiscal_period_id
-    description: Starbucks fiscal period of the bridge line.
+    description: Coffee Inc fiscal period of the bridge line.
   - name: country_id
-    description: Partial foreign key to country_id on starbucks.organization.dim_country. Finance does
+    description: Partial foreign key to country_id on coffee.organization.dim_country. Finance does
       not contain the complete country population.
   - name: ownership_type_id
-    description: Partial foreign key to ownership_type_id on starbucks.store.dim_ownership_type. Finance
+    description: Partial foreign key to ownership_type_id on coffee.store.dim_ownership_type. Finance
       does not contain the complete ownership-type population. North America margin rows use the company-operated
       type.
   - name: currency_id

@@ -1,4 +1,4 @@
-# Digital Realty warehouse catalog
+# Data Hall Inc warehouse catalog
 
 Loadable intermediary schema version 3. The builder input is `directory-manifest.yaml` beside `yaml/`.
 
@@ -10,7 +10,7 @@ The catalog was assembled from three subject slices that were written separately
 | Relationships | 139 |
 | Logical identities | 62 |
 
-Snowflake database `DIGITAL_REALTY`, account `digitalrealty.us-east-1`. Node ids use the `sf:` prefix. Qualified names start with `digitalrealty.`.
+Snowflake database `DATA_HALL`, account `datahall.us-east-1`. Node ids use the `sf:` prefix. Qualified names start with `datahall.`.
 
 ## What the model covers
 

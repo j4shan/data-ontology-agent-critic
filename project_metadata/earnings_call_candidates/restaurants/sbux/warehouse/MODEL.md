@@ -1,4 +1,4 @@
-# Starbucks warehouse catalog
+# Coffee Inc warehouse catalog
 
 Loadable intermediary schema version 3. The builder input is `directory-manifest.yaml` beside `yaml/`.
 
@@ -10,7 +10,7 @@ The catalog was assembled from three subject slices that were written separately
 | Relationships | 203 |
 | Logical identities | 35 |
 
-Snowflake database `STARBUCKS`, account `starbucks.us-west-2`. Node ids use the `sf:` prefix. Periods are Starbucks fiscal periods.
+Snowflake database `COFFEE`, account `coffee.us-west-2`. Node ids use the `sf:` prefix. Periods are Coffee Inc fiscal periods.
 
 ## What the model covers
 

@@ -1,4 +1,4 @@
-# Intuitive Surgical warehouse catalog
+# Surgical Robot Inc warehouse catalog
 
 Loadable intermediary schema version 3. The builder input is `directory-manifest.yaml` beside `yaml/`.
 
@@ -10,7 +10,7 @@ The catalog was assembled from three subject slices that were written separately
 | Relationships | 168 |
 | Logical identities | 65 |
 
-Snowflake database `INTUITIVE_SURGICAL`, account `intuitive.us-west-1`. Node ids use the `sf:` prefix. Qualified names start with `intuitive.`.
+Snowflake database `SURGICAL_ROBOT`, account `surgicalrobot.us-west-1`. Node ids use the `sf:` prefix. Qualified names start with `surgicalrobot.`.
 
 ## What the model covers
 

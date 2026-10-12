@@ -1,4 +1,4 @@
-# Stryker warehouse catalog
+# Surgical Supply Inc warehouse catalog
 
 Loadable intermediary schema version 3. The builder input is `directory-manifest.yaml` beside `yaml/`.
 
@@ -10,11 +10,11 @@ The catalog was assembled from three subject slices that were written separately
 | Relationships | 200 |
 | Logical identities | 74 |
 
-Snowflake database `STRYKER`, account `stryker.us-east-1`. Node ids use the `sf:` prefix. Qualified names start with `stryker.`.
+Snowflake database `SURGICAL_SUPPLY`, account `surgicalsupply.us-east-1`. Node ids use the `sf:` prefix. Qualified names start with `surgicalsupply.`.
 
 ## What the model covers
 
-Procedure volume and hospital demand hold the hospital, the country, and the site of care as different populations from the product. Procedure families include hips, knees, shoulders, trauma, vascular, and endoscopy. Volume, catch-up from a delayed quarter, site-of-care mix, and market growth are separate facts. Share compares Stryker growth with market and peer growth. Exchange-coverage effects, underlying hospital demand, customer response after the manufacturing disruption, and surgery-center buildout sit on this side. This is case volume a device maker uses, not a claim.
+Procedure volume and hospital demand hold the hospital, the country, and the site of care as different populations from the product. Procedure families include hips, knees, shoulders, trauma, vascular, and endoscopy. Volume, catch-up from a delayed quarter, site-of-care mix, and market growth are separate facts. Share compares Surgical Supply Inc growth with market and peer growth. Exchange-coverage effects, underlying hospital demand, customer response after the manufacturing disruption, and surgery-center buildout sit on this side. This is case volume a device maker uses, not a claim.
 
 Capital equipment and the product franchise hold Mako, Inari, MedSurg, orthopedics, endoscopy, and the other franchises named on the calls. A capital system is Mako, Mako 4, the handheld robot, or the newer platform. The installed system is the current placement. Orders, backlog, and the quarter the backlog is planned to ship are separate from procedure volume. Supply shortages record whether a gap is limited to Inari or also hits other vascular and MedSurg products. Plant shifts are the capacity plan. Launches, trials, acquisitions, sales-force channels, and field restock are commercial facts on this slice.
 
