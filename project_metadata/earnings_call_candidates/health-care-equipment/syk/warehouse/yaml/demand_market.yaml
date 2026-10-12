@@ -1,0 +1,481 @@
+schema_version: '3'
+nodes:
+- node_id: sf:stryker.market.dim_competitor
+  descriptor:
+    qualified_name: stryker.market.dim_competitor
+    display_name: Competitor
+    description: A competing device maker discussed as a portfolio or launch event. Rows are rival events,
+      not a claims payer.
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: stryker.us-east-1
+      database: STRYKER
+      schema: MARKET
+      object: DIM_COMPETITOR
+      format: table
+  grain:
+    description: One row is one competitor.
+    components:
+    - identity_id: competitor_identity
+      dataset_columns:
+      - competitor_id
+  columns:
+  - name: competitor_id
+    description: Identifier of the competitor. This dataset holds the complete population.
+  - name: competitor_name
+    description: Label of the rival event or rival portfolio.
+  - name: competitor_role_code
+    description: What the rival is doing.
+    value_description: orthopedic_spin, vascular_acquisition, hip_launch, autonomy_claim, multiple_form_factors,
+      sales_force_move
+  entity_definitions:
+  - identity_id: competitor_identity
+    dataset_columns:
+    - competitor_id
+    entity_universe: complete
+- node_id: sf:stryker.market.fact_market_share
+  descriptor:
+    qualified_name: stryker.market.fact_market_share
+    display_name: Market share
+    description: Stryker growth versus market or peer growth for a procedure family and franchise.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: stryker.us-east-1
+      database: STRYKER
+      schema: MARKET
+      object: FACT_MARKET_SHARE
+      format: table
+  grain:
+    description: One row is one market share.
+    components:
+    - identity_id: market_share_identity
+      dataset_columns:
+      - market_share_id
+  columns:
+  - name: market_share_id
+    description: Identifier of the market share. This dataset holds the complete population.
+  - name: procedure_family_id
+    description: Procedure family. The complete population is not re-authored on this dataset.
+  - name: product_franchise_id
+    description: Stryker franchise being compared. The complete population is not re-authored on this
+      dataset.
+  - name: country_id
+    description: Country of the comparison. The complete population is not re-authored on this dataset.
+  - name: accounting_period_id
+    description: Quarter of the comparison. The complete population is not re-authored on this dataset.
+  - name: competitor_id
+    description: Rival involved, when the comparison names one. The complete population is not re-authored
+      on this dataset.
+  - name: stryker_growth_rate
+    description: Stryker growth.
+  - name: market_growth_rate
+    description: Market growth.
+  - name: peer_growth_rate
+    description: Peer growth outside the United States or in the same family.
+  - name: share_shift_flag
+    description: 1 when the gap versus the market is a share shift.
+  entity_definitions:
+  - identity_id: market_share_identity
+    dataset_columns:
+    - market_share_id
+    entity_universe: complete
+  - identity_id: procedure_family_identity
+    dataset_columns:
+    - procedure_family_id
+    entity_universe: partial
+  - identity_id: product_franchise_identity
+    dataset_columns:
+    - product_franchise_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: competitor_identity
+    dataset_columns:
+    - competitor_id
+    entity_universe: partial
+- node_id: sf:stryker.market.fact_competitive_event
+  descriptor:
+    qualified_name: stryker.market.fact_competitive_event
+    display_name: Competitive event
+    description: A rival portfolio move, launch, or sales-force change and the ordering or share effect
+      Stryker sees.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: stryker.us-east-1
+      database: STRYKER
+      schema: MARKET
+      object: FACT_COMPETITIVE_EVENT
+      format: table
+  grain:
+    description: One row is one competitive event.
+    components:
+    - identity_id: competitive_event_identity
+      dataset_columns:
+      - competitive_event_id
+  columns:
+  - name: competitive_event_id
+    description: Identifier of the competitive event. This dataset holds the complete population.
+  - name: competitor_id
+    description: Rival the event belongs to. The complete population is not re-authored on this dataset.
+  - name: product_franchise_id
+    description: Stryker franchise exposed to the event. The complete population is not re-authored on
+      this dataset.
+  - name: procedure_family_id
+    description: Procedure family exposed to the event. The complete population is not re-authored on
+      this dataset.
+  - name: country_id
+    description: Country of the event. The complete population is not re-authored on this dataset.
+  - name: accounting_period_id
+    description: Quarter the event is read. The complete population is not re-authored on this dataset.
+  - name: event_code
+    description: Kind of competitive event.
+    value_description: orthopedic_spin, sales_force_move, vascular_acquisition, hip_launch, autonomy_claim,
+      multiple_form_factors
+  - name: share_effect_rate
+    description: Share effect Stryker attributes to the event.
+  - name: ordering_pattern_code
+    description: How hospital ordering changed.
+    value_description: paused, shifted, unchanged
+  - name: surgeon_adoption_expectation
+    description: Expected surgeon adoption of the rival approach.
+    value_description: low, mixed, high
+  entity_definitions:
+  - identity_id: competitive_event_identity
+    dataset_columns:
+    - competitive_event_id
+    entity_universe: complete
+  - identity_id: competitor_identity
+    dataset_columns:
+    - competitor_id
+    entity_universe: partial
+  - identity_id: product_franchise_identity
+    dataset_columns:
+    - product_franchise_id
+    entity_universe: partial
+  - identity_id: procedure_family_identity
+    dataset_columns:
+    - procedure_family_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+- node_id: sf:stryker.market.fact_exchange_coverage
+  descriptor:
+    qualified_name: stryker.market.fact_exchange_coverage
+    display_name: Exchange coverage effect
+    description: Procedure demand Stryker expects to change because exchange coverage changed.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: stryker.us-east-1
+      database: STRYKER
+      schema: MARKET
+      object: FACT_EXCHANGE_COVERAGE
+      format: table
+  grain:
+    description: One row is one exchange coverage effect.
+    components:
+    - identity_id: exchange_coverage_identity
+      dataset_columns:
+      - exchange_coverage_id
+  columns:
+  - name: exchange_coverage_id
+    description: Identifier of the exchange coverage effect. This dataset holds the complete population.
+  - name: country_id
+    description: Country of the coverage change. The complete population is not re-authored on this dataset.
+  - name: accounting_period_id
+    description: Quarter of the effect. The complete population is not re-authored on this dataset.
+  - name: procedure_family_id
+    description: Procedure family affected. The complete population is not re-authored on this dataset.
+  - name: coverage_change_code
+    description: Coverage change being watched.
+    value_description: exchange_subsidy, medicaid, other
+  - name: expected_procedure_demand
+    description: Procedure demand Stryker still expects after the coverage change.
+  - name: affected_procedure_count
+    description: Procedures exposed to the coverage change.
+  entity_definitions:
+  - identity_id: exchange_coverage_identity
+    dataset_columns:
+    - exchange_coverage_id
+    entity_universe: complete
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: procedure_family_identity
+    dataset_columns:
+    - procedure_family_id
+    entity_universe: partial
+- node_id: sf:stryker.market.fact_hospital_demand
+  descriptor:
+    qualified_name: stryker.market.fact_hospital_demand
+    display_name: Hospital demand
+    description: Underlying procedure and capital demand at a hospital, apart from what Stryker was able
+      to ship.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: stryker.us-east-1
+      database: STRYKER
+      schema: MARKET
+      object: FACT_HOSPITAL_DEMAND
+      format: table
+  grain:
+    description: One row is one hospital demand.
+    components:
+    - identity_id: hospital_demand_identity
+      dataset_columns:
+      - hospital_demand_id
+  columns:
+  - name: hospital_demand_id
+    description: Identifier of the hospital demand. This dataset holds the complete population.
+  - name: hospital_id
+    description: Hospital whose demand is measured. The complete population is not re-authored on this
+      dataset.
+  - name: procedure_family_id
+    description: Procedure family, when demand is procedure-specific. The complete population is not re-authored
+      on this dataset.
+  - name: product_franchise_id
+    description: Franchise, when demand is franchise-specific. The complete population is not re-authored
+      on this dataset.
+  - name: accounting_period_id
+    description: Quarter of the demand. The complete population is not re-authored on this dataset.
+  - name: underlying_procedure_demand
+    description: Procedure demand before supply constraints.
+  - name: underlying_capital_demand
+    description: Capital demand before supply constraints.
+  - name: demand_change_amount
+    description: Change in underlying demand versus the prior period.
+  entity_definitions:
+  - identity_id: hospital_demand_identity
+    dataset_columns:
+    - hospital_demand_id
+    entity_universe: complete
+  - identity_id: hospital_identity
+    dataset_columns:
+    - hospital_id
+    entity_universe: partial
+  - identity_id: procedure_family_identity
+    dataset_columns:
+    - procedure_family_id
+    entity_universe: partial
+  - identity_id: product_franchise_identity
+    dataset_columns:
+    - product_franchise_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+- node_id: sf:stryker.market.fact_customer_response
+  descriptor:
+    qualified_name: stryker.market.fact_customer_response
+    display_name: Customer response
+    description: Whether a hospital relationship held after a disruption, and the lasting loss the outlook
+      assumes.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: stryker.us-east-1
+      database: STRYKER
+      schema: MARKET
+      object: FACT_CUSTOMER_RESPONSE
+      format: table
+  grain:
+    description: One row is one customer response.
+    components:
+    - identity_id: customer_response_identity
+      dataset_columns:
+      - customer_response_id
+  columns:
+  - name: customer_response_id
+    description: Identifier of the customer response. This dataset holds the complete population.
+  - name: hospital_id
+    description: Hospital customer. The complete population is not re-authored on this dataset.
+  - name: accounting_period_id
+    description: Quarter of the response. The complete population is not re-authored on this dataset.
+  - name: relationship_held_flag
+    description: 1 when the customer relationship held.
+  - name: lasting_loss_assumed_flag
+    description: 1 when guidance assumes a lasting loss of the account.
+  - name: guidance_loss_amount
+    description: Sales loss the outlook assumes for this hospital.
+  - name: capital_order_response_code
+    description: What happened to capital orders.
+    value_description: held, paused, cancelled
+  entity_definitions:
+  - identity_id: customer_response_identity
+    dataset_columns:
+    - customer_response_id
+    entity_universe: complete
+  - identity_id: hospital_identity
+    dataset_columns:
+    - hospital_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+- node_id: sf:stryker.market.fact_asc_buildout
+  descriptor:
+    qualified_name: stryker.market.fact_asc_buildout
+    display_name: Surgery center buildout
+    description: Construction of ambulatory surgery centers and which procedure categories are moving
+      there.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: stryker.us-east-1
+      database: STRYKER
+      schema: MARKET
+      object: FACT_ASC_BUILDOUT
+      format: table
+  grain:
+    description: One row is one surgery center buildout.
+    components:
+    - identity_id: asc_buildout_identity
+      dataset_columns:
+      - asc_buildout_id
+  columns:
+  - name: asc_buildout_id
+    description: Identifier of the surgery center buildout. This dataset holds the complete population.
+  - name: country_id
+    description: Country of the buildout. The complete population is not re-authored on this dataset.
+  - name: site_of_care_id
+    description: Site of care being built, typically ambulatory surgery. The complete population is not
+      re-authored on this dataset.
+  - name: procedure_family_id
+    description: Procedure family moving into the setting. The complete population is not re-authored
+      on this dataset.
+  - name: accounting_period_id
+    description: Quarter of the buildout read. The complete population is not re-authored on this dataset.
+  - name: center_construction_count
+    description: Surgery centers under construction or newly opened.
+  - name: beyond_orthopedics_flag
+    description: 1 when the buildout is outside orthopedics.
+  - name: procedure_category_code
+    description: Category moving outpatient.
+    value_description: orthopedics, ablation, endoscopy, other
+  entity_definitions:
+  - identity_id: asc_buildout_identity
+    dataset_columns:
+    - asc_buildout_id
+    entity_universe: complete
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: site_of_care_identity
+    dataset_columns:
+    - site_of_care_id
+    entity_universe: partial
+  - identity_id: procedure_family_identity
+    dataset_columns:
+    - procedure_family_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+- node_id: sf:stryker.market.fact_growth_geography
+  descriptor:
+    qualified_name: stryker.market.fact_growth_geography
+    display_name: Growth geography
+    description: Growth rate and driver by country and region, including the United States versus international
+      markets.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: stryker.us-east-1
+      database: STRYKER
+      schema: MARKET
+      object: FACT_GROWTH_GEOGRAPHY
+      format: table
+  grain:
+    description: One row is one growth geography.
+    components:
+    - identity_id: growth_geography_identity
+      dataset_columns:
+      - growth_geography_id
+  columns:
+  - name: growth_geography_id
+    description: Identifier of the growth geography. This dataset holds the complete population.
+  - name: country_id
+    description: Country of the growth. The complete population is not re-authored on this dataset.
+  - name: region_id
+    description: Region of the growth. The complete population is not re-authored on this dataset.
+  - name: product_franchise_id
+    description: Franchise, when growth is franchise-specific. The complete population is not re-authored
+      on this dataset.
+  - name: procedure_family_id
+    description: Procedure family, when growth is procedure-specific. The complete population is not re-authored
+      on this dataset.
+  - name: accounting_period_id
+    description: Quarter of the growth. The complete population is not re-authored on this dataset.
+  - name: growth_rate
+    description: Growth rate for this geography.
+  - name: prior_period_growth_rate
+    description: Growth rate in the prior quarter.
+  - name: driver_code
+    description: What the growth bridge attributes the change to.
+    value_description: us, international, endoscopy_reclass, comparison, procedure_mix
+  entity_definitions:
+  - identity_id: growth_geography_identity
+    dataset_columns:
+    - growth_geography_id
+    entity_universe: complete
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+  - identity_id: product_franchise_identity
+    dataset_columns:
+    - product_franchise_id
+    entity_universe: partial
+  - identity_id: procedure_family_identity
+    dataset_columns:
+    - procedure_family_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial

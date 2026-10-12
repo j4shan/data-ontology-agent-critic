@@ -1,0 +1,922 @@
+schema_version: '3'
+nodes:
+- node_id: sf:stryker.commercial.dim_sales_force
+  descriptor:
+    qualified_name: stryker.commercial.dim_sales_force
+    display_name: Sales force
+    description: A Stryker selling team, including the Inari team, a specialized breast-care team, and
+      franchise representatives.
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: stryker.us-east-1
+      database: STRYKER
+      schema: COMMERCIAL
+      object: DIM_SALES_FORCE
+      format: table
+  grain:
+    description: One row is one sales force.
+    components:
+    - identity_id: sales_force_identity
+      dataset_columns:
+      - sales_force_id
+  columns:
+  - name: sales_force_id
+    description: Identifier of the sales force. This dataset holds the complete population.
+  - name: product_franchise_id
+    description: Franchise the team sells. The complete population is not re-authored on this dataset.
+  - name: sales_force_name
+    description: Name of the sales force.
+  - name: sales_force_code
+    description: Sales force code.
+    value_description: inari, breast_care, orthopedics, medsurg, vascular, endoscopy
+  entity_definitions:
+  - identity_id: sales_force_identity
+    dataset_columns:
+    - sales_force_id
+    entity_universe: complete
+  - identity_id: product_franchise_identity
+    dataset_columns:
+    - product_franchise_id
+    entity_universe: partial
+- node_id: sf:stryker.commercial.dim_clinical_trial
+  descriptor:
+    qualified_name: stryker.commercial.dim_clinical_trial
+    display_name: Clinical trial
+    description: A Stryker trial such as intravascular lithotripsy, a peripheral or coronary indication,
+      or the pulmonary-embolism study.
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: stryker.us-east-1
+      database: STRYKER
+      schema: COMMERCIAL
+      object: DIM_CLINICAL_TRIAL
+      format: table
+  grain:
+    description: One row is one clinical trial.
+    components:
+    - identity_id: clinical_trial_identity
+      dataset_columns:
+      - clinical_trial_id
+  columns:
+  - name: clinical_trial_id
+    description: Identifier of the clinical trial. This dataset holds the complete population.
+  - name: product_franchise_id
+    description: Franchise that owns the trial. The complete population is not re-authored on this dataset.
+  - name: product_id
+    description: Product in the trial. The complete population is not re-authored on this dataset.
+  - name: trial_name
+    description: Name of the trial.
+  - name: indication_code
+    description: Indication the trial supports.
+    value_description: peripheral, coronary, pulmonary_embolism, intravascular_lithotripsy
+  entity_definitions:
+  - identity_id: clinical_trial_identity
+    dataset_columns:
+    - clinical_trial_id
+    entity_universe: complete
+  - identity_id: product_franchise_identity
+    dataset_columns:
+    - product_franchise_id
+    entity_universe: partial
+  - identity_id: product_identity
+    dataset_columns:
+    - product_id
+    entity_universe: partial
+- node_id: sf:stryker.commercial.dim_acquisition_target
+  descriptor:
+    qualified_name: stryker.commercial.dim_acquisition_target
+    display_name: Acquisition target
+    description: A business Stryker bought or is considering, including a pre-commercial vascular company.
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: stryker.us-east-1
+      database: STRYKER
+      schema: COMMERCIAL
+      object: DIM_ACQUISITION_TARGET
+      format: table
+  grain:
+    description: One row is one acquisition target.
+    components:
+    - identity_id: acquisition_target_identity
+      dataset_columns:
+      - acquisition_target_id
+  columns:
+  - name: acquisition_target_id
+    description: Identifier of the acquisition target. This dataset holds the complete population.
+  - name: target_name
+    description: Name of the target.
+  - name: target_stage_code
+    description: Stage of the target when evaluated.
+    value_description: pre_commercial, commercial
+  entity_definitions:
+  - identity_id: acquisition_target_identity
+    dataset_columns:
+    - acquisition_target_id
+    entity_universe: complete
+- node_id: sf:stryker.commercial.fact_equipment_order
+  descriptor:
+    qualified_name: stryker.commercial.fact_equipment_order
+    display_name: Equipment order
+    description: A hospital order for a Stryker franchise or capital system.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: stryker.us-east-1
+      database: STRYKER
+      schema: COMMERCIAL
+      object: FACT_EQUIPMENT_ORDER
+      format: table
+  grain:
+    description: One row is one equipment order.
+    components:
+    - identity_id: equipment_order_identity
+      dataset_columns:
+      - equipment_order_id
+  columns:
+  - name: equipment_order_id
+    description: Identifier of the equipment order. This dataset holds the complete population.
+  - name: hospital_id
+    description: Hospital that placed the order. The complete population is not re-authored on this dataset.
+  - name: product_franchise_id
+    description: Franchise ordered. The complete population is not re-authored on this dataset.
+  - name: capital_system_id
+    description: Capital system ordered. The complete population is not re-authored on this dataset.
+  - name: accounting_period_id
+    description: Quarter the order was booked. The complete population is not re-authored on this dataset.
+  - name: order_amount
+    description: Amount ordered.
+  - name: unfilled_amount
+    description: Amount not yet shipped.
+  entity_definitions:
+  - identity_id: equipment_order_identity
+    dataset_columns:
+    - equipment_order_id
+    entity_universe: complete
+  - identity_id: hospital_identity
+    dataset_columns:
+    - hospital_id
+    entity_universe: partial
+  - identity_id: product_franchise_identity
+    dataset_columns:
+    - product_franchise_id
+    entity_universe: partial
+  - identity_id: capital_system_identity
+    dataset_columns:
+    - capital_system_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+- node_id: sf:stryker.commercial.fact_order_backlog
+  descriptor:
+    qualified_name: stryker.commercial.fact_order_backlog
+    display_name: Order backlog
+    description: Open backlog and the amount planned to be realized as capital deliveries by quarter.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: stryker.us-east-1
+      database: STRYKER
+      schema: COMMERCIAL
+      object: FACT_ORDER_BACKLOG
+      format: table
+  grain:
+    description: One row is one order backlog.
+    components:
+    - identity_id: order_backlog_identity
+      dataset_columns:
+      - order_backlog_id
+  columns:
+  - name: order_backlog_id
+    description: Identifier of the order backlog. This dataset holds the complete population.
+  - name: equipment_order_id
+    description: Order the backlog belongs to. The complete population is not re-authored on this dataset.
+  - name: product_franchise_id
+    description: Franchise of the backlog. The complete population is not re-authored on this dataset.
+  - name: accounting_period_id
+    description: Quarter the backlog position is stated. The complete population is not re-authored on
+      this dataset.
+  - name: open_backlog_amount
+    description: Backlog still open.
+  - name: planned_realization_amount
+    description: Amount planned to ship in this quarter.
+  - name: capital_delivery_amount
+    description: Capital deliveries recognized from backlog.
+  - name: quarter_cadence_code
+    description: Which part of the year the realization is aimed at.
+    value_description: q3, q4, back_half
+  - name: remaining_backlog_amount
+    description: Backlog still ahead after this quarter.
+  entity_definitions:
+  - identity_id: order_backlog_identity
+    dataset_columns:
+    - order_backlog_id
+    entity_universe: complete
+  - identity_id: equipment_order_identity
+    dataset_columns:
+    - equipment_order_id
+    entity_universe: partial
+  - identity_id: product_franchise_identity
+    dataset_columns:
+    - product_franchise_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+- node_id: sf:stryker.commercial.fact_order_pause
+  descriptor:
+    qualified_name: stryker.commercial.fact_order_pause
+    display_name: Order pause
+    description: How much of an order pause was inability to supply versus a change in hospital demand.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: stryker.us-east-1
+      database: STRYKER
+      schema: COMMERCIAL
+      object: FACT_ORDER_PAUSE
+      format: table
+  grain:
+    description: One row is one order pause.
+    components:
+    - identity_id: order_pause_identity
+      dataset_columns:
+      - order_pause_id
+  columns:
+  - name: order_pause_id
+    description: Identifier of the order pause. This dataset holds the complete population.
+  - name: hospital_id
+    description: Hospital that paused. The complete population is not re-authored on this dataset.
+  - name: product_franchise_id
+    description: Franchise that was paused. The complete population is not re-authored on this dataset.
+  - name: accounting_period_id
+    description: Quarter of the pause. The complete population is not re-authored on this dataset.
+  - name: unfilled_order_amount
+    description: Orders left unfilled.
+  - name: supply_inability_amount
+    description: Unfilled amount caused by inability to supply.
+  - name: demand_change_amount
+    description: Unfilled amount caused by a change in hospital demand.
+  - name: procedure_demand_amount
+    description: Underlying procedure demand at the same hospital.
+  - name: capital_demand_amount
+    description: Underlying capital demand at the same hospital.
+  entity_definitions:
+  - identity_id: order_pause_identity
+    dataset_columns:
+    - order_pause_id
+    entity_universe: complete
+  - identity_id: hospital_identity
+    dataset_columns:
+    - hospital_id
+    entity_universe: partial
+  - identity_id: product_franchise_identity
+    dataset_columns:
+    - product_franchise_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+- node_id: sf:stryker.commercial.fact_channel_inventory
+  descriptor:
+    qualified_name: stryker.commercial.fact_channel_inventory
+    display_name: Channel inventory
+    description: Stocking or destocking in the channel, and how visible that effect is.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: stryker.us-east-1
+      database: STRYKER
+      schema: COMMERCIAL
+      object: FACT_CHANNEL_INVENTORY
+      format: table
+  grain:
+    description: One row is one channel inventory.
+    components:
+    - identity_id: channel_inventory_identity
+      dataset_columns:
+      - channel_inventory_id
+  columns:
+  - name: channel_inventory_id
+    description: Identifier of the channel inventory. This dataset holds the complete population.
+  - name: product_franchise_id
+    description: Franchise whose channel inventory moved. The complete population is not re-authored on
+      this dataset.
+  - name: sales_force_id
+    description: Sales force involved in the inventory move. The complete population is not re-authored
+      on this dataset.
+  - name: accounting_period_id
+    description: Quarter of the inventory move. The complete population is not re-authored on this dataset.
+  - name: stocking_amount
+    description: Inventory added in the channel.
+  - name: destocking_amount
+    description: Inventory removed from the channel.
+  - name: visibility_flag
+    description: 1 when Stryker can see the destock or sales-force effect.
+  - name: temporary_effect_flag
+    description: 1 when the shortfall is a temporary channel effect.
+  - name: reported_growth_rate
+    description: Reported growth while the channel was moving.
+  - name: underlying_demand_amount
+    description: Demand underneath the channel movement.
+  - name: return_to_market_growth_flag
+    description: 1 when growth is expected to return to the market rate.
+  entity_definitions:
+  - identity_id: channel_inventory_identity
+    dataset_columns:
+    - channel_inventory_id
+    entity_universe: complete
+  - identity_id: product_franchise_identity
+    dataset_columns:
+    - product_franchise_id
+    entity_universe: partial
+  - identity_id: sales_force_identity
+    dataset_columns:
+    - sales_force_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+- node_id: sf:stryker.commercial.fact_field_inventory
+  descriptor:
+    qualified_name: stryker.commercial.fact_field_inventory
+    display_name: Field inventory
+    description: Days to restock the field so representatives can sell rather than recover supply.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: stryker.us-east-1
+      database: STRYKER
+      schema: COMMERCIAL
+      object: FACT_FIELD_INVENTORY
+      format: table
+  grain:
+    description: One row is one field inventory.
+    components:
+    - identity_id: field_inventory_identity
+      dataset_columns:
+      - field_inventory_id
+  columns:
+  - name: field_inventory_id
+    description: Identifier of the field inventory. This dataset holds the complete population.
+  - name: sales_force_id
+    description: Sales force being restocked. The complete population is not re-authored on this dataset.
+  - name: manufacturing_plant_id
+    description: Plant that refills the field. The complete population is not re-authored on this dataset.
+  - name: product_franchise_id
+    description: Franchise being restocked. The complete population is not re-authored on this dataset.
+  - name: accounting_period_id
+    description: Quarter of the restock. The complete population is not re-authored on this dataset.
+  - name: days_to_restock
+    description: Days until field inventory is sufficient to sell.
+  - name: channel_inventory_quantity
+    description: Units in the channel.
+  - name: selling_time_share
+    description: Share of representative time spent selling.
+  - name: recovery_time_share
+    description: Share of representative time spent recovering supply.
+  entity_definitions:
+  - identity_id: field_inventory_identity
+    dataset_columns:
+    - field_inventory_id
+    entity_universe: complete
+  - identity_id: sales_force_identity
+    dataset_columns:
+    - sales_force_id
+    entity_universe: partial
+  - identity_id: manufacturing_plant_identity
+    dataset_columns:
+    - manufacturing_plant_id
+    entity_universe: partial
+  - identity_id: product_franchise_identity
+    dataset_columns:
+    - product_franchise_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+- node_id: sf:stryker.commercial.fact_trial_milestone
+  descriptor:
+    qualified_name: stryker.commercial.fact_trial_milestone
+    display_name: Trial milestone
+    description: Clearance, market release, and data timing for a clinical trial against the published
+      timeline.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: stryker.us-east-1
+      database: STRYKER
+      schema: COMMERCIAL
+      object: FACT_TRIAL_MILESTONE
+      format: table
+  grain:
+    description: One row is one trial milestone.
+    components:
+    - identity_id: trial_milestone_identity
+      dataset_columns:
+      - trial_milestone_id
+  columns:
+  - name: trial_milestone_id
+    description: Identifier of the trial milestone. This dataset holds the complete population.
+  - name: clinical_trial_id
+    description: Trial this milestone belongs to. The complete population is not re-authored on this dataset.
+  - name: product_franchise_id
+    description: Franchise of the trial. The complete population is not re-authored on this dataset.
+  - name: product_id
+    description: Product in the trial. The complete population is not re-authored on this dataset.
+  - name: accounting_period_id
+    description: Quarter the milestone is reviewed. The complete population is not re-authored on this
+      dataset.
+  - name: expected_clearance_calendar_day_id
+    description: Expected clearance day. The complete population is not re-authored on this dataset.
+  - name: market_release_calendar_day_id
+    description: Expected day the indication reaches the market. Same calendar-day population, stored
+      as a second role rather than a second join. The complete population is not re-authored on this dataset.
+  - name: data_expected_calendar_day_id
+    description: Day the trial data is expected. Same calendar-day population, stored as a second role
+      rather than a second join. The complete population is not re-authored on this dataset.
+  - name: indication_code
+    description: Indication.
+    value_description: peripheral, coronary, pulmonary_embolism, intravascular_lithotripsy
+  - name: milestone_status
+    description: Status of the milestone.
+    value_description: enrolling, on_timeline, delayed, cleared
+  - name: published_timeline_flag
+    description: 1 when the trial is still on the published timeline.
+  - name: competitor_readout_flag
+    description: 1 when a rival readout is the comparison for this data timing.
+  entity_definitions:
+  - identity_id: trial_milestone_identity
+    dataset_columns:
+    - trial_milestone_id
+    entity_universe: complete
+  - identity_id: clinical_trial_identity
+    dataset_columns:
+    - clinical_trial_id
+    entity_universe: partial
+  - identity_id: product_franchise_identity
+    dataset_columns:
+    - product_franchise_id
+    entity_universe: partial
+  - identity_id: product_identity
+    dataset_columns:
+    - product_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - expected_clearance_calendar_day_id
+    entity_universe: partial
+- node_id: sf:stryker.commercial.fact_acquisition
+  descriptor:
+    qualified_name: stryker.commercial.fact_acquisition
+    display_name: Acquisition
+    description: A deal's stage versus Stryker's historical preference for commercial businesses, and
+      vascular adjacencies such as calcium management.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: stryker.us-east-1
+      database: STRYKER
+      schema: COMMERCIAL
+      object: FACT_ACQUISITION
+      format: table
+  grain:
+    description: One row is one acquisition.
+    components:
+    - identity_id: acquisition_identity
+      dataset_columns:
+      - acquisition_id
+  columns:
+  - name: acquisition_id
+    description: Identifier of the acquisition. This dataset holds the complete population.
+  - name: acquisition_target_id
+    description: Target of the deal. The complete population is not re-authored on this dataset.
+  - name: product_franchise_id
+    description: Franchise the deal extends. The complete population is not re-authored on this dataset.
+  - name: accounting_period_id
+    description: Quarter the deal is evaluated. The complete population is not re-authored on this dataset.
+  - name: target_stage_code
+    description: Stage of the target.
+    value_description: pre_commercial, commercial
+  - name: historical_preference_code
+    description: Historical deal preference.
+    value_description: commercial
+  - name: deal_stage_shift_flag
+    description: 1 when earlier-stage deals are now more likely.
+  - name: adjacency_code
+    description: Portfolio adjacency.
+    value_description: calcium_management, none
+  - name: vascular_priority_flag
+    description: 1 when vascular build-out is still a stated priority.
+  entity_definitions:
+  - identity_id: acquisition_identity
+    dataset_columns:
+    - acquisition_id
+    entity_universe: complete
+  - identity_id: acquisition_target_identity
+    dataset_columns:
+    - acquisition_target_id
+    entity_universe: partial
+  - identity_id: product_franchise_identity
+    dataset_columns:
+    - product_franchise_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+- node_id: sf:stryker.commercial.fact_sales_channel
+  descriptor:
+    qualified_name: stryker.commercial.fact_sales_channel
+    display_name: Sales channel
+    description: Whether a pipeline product, once approved, is sold through the Inari sales force and
+      whether that is the model for later indications.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: stryker.us-east-1
+      database: STRYKER
+      schema: COMMERCIAL
+      object: FACT_SALES_CHANNEL
+      format: table
+  grain:
+    description: One row is one sales channel.
+    components:
+    - identity_id: sales_channel_identity
+      dataset_columns:
+      - sales_channel_id
+  columns:
+  - name: sales_channel_id
+    description: Identifier of the sales channel. This dataset holds the complete population.
+  - name: product_id
+    description: Product being routed. The complete population is not re-authored on this dataset.
+  - name: sales_force_id
+    description: Sales force that would sell it. The complete population is not re-authored on this dataset.
+  - name: product_franchise_id
+    description: Franchise of the channel. The complete population is not re-authored on this dataset.
+  - name: indication_code
+    description: Indication the channel would sell.
+    value_description: peripheral, coronary, other
+  - name: uses_inari_sales_force_flag
+    description: 1 when the Inari sales force sells the product.
+  - name: later_product_model_flag
+    description: 1 when the same channel is the model for later products.
+  entity_definitions:
+  - identity_id: sales_channel_identity
+    dataset_columns:
+    - sales_channel_id
+    entity_universe: complete
+  - identity_id: product_identity
+    dataset_columns:
+    - product_id
+    entity_universe: partial
+  - identity_id: sales_force_identity
+    dataset_columns:
+    - sales_force_id
+    entity_universe: partial
+  - identity_id: product_franchise_identity
+    dataset_columns:
+    - product_franchise_id
+    entity_universe: partial
+- node_id: sf:stryker.commercial.fact_franchise_result
+  descriptor:
+    qualified_name: stryker.commercial.fact_franchise_result
+    display_name: Franchise result
+    description: Growth, disruption, and remaining runway for a franchise, including Inari, MedSurg, orthopedics,
+      Pangaea, LIFEPAK, trauma, and endoscopy.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: stryker.us-east-1
+      database: STRYKER
+      schema: COMMERCIAL
+      object: FACT_FRANCHISE_RESULT
+      format: table
+  grain:
+    description: One row is one franchise result.
+    components:
+    - identity_id: franchise_result_identity
+      dataset_columns:
+      - franchise_result_id
+  columns:
+  - name: franchise_result_id
+    description: Identifier of the franchise result. This dataset holds the complete population.
+  - name: product_franchise_id
+    description: Franchise. The complete population is not re-authored on this dataset.
+  - name: country_id
+    description: Country of the result. The complete population is not re-authored on this dataset.
+  - name: accounting_period_id
+    description: Quarter of the result. The complete population is not re-authored on this dataset.
+  - name: growth_rate
+    description: Franchise growth.
+  - name: market_growth_rate
+    description: Market growth the franchise is compared with.
+  - name: post_integration_run_rate
+    description: Run rate after an acquisition is integrated.
+  - name: competitive_deal_effect_amount
+    description: Sales effect of a pending competitive deal.
+  - name: cyber_disruption_effect_amount
+    description: Sales effect of the manufacturing cyber incident.
+  - name: recovery_cadence_code
+    description: How the franchise recovers through the year.
+    value_description: faster, in_line, slower
+  - name: remaining_opportunity_amount
+    description: Remaining geographic or account opportunity.
+  - name: international_flag
+    description: 1 when the result is outside the United States.
+  - name: launch_lap_flag
+    description: 1 when growth is being compared with a launch quarter that is now lapped.
+  - name: double_digit_sustainable_flag
+    description: 1 when a double-digit rate is still expected after the lap.
+  - name: medtech_market_growth_rate
+    description: Broader device-market growth used as the MedSurg comparison.
+  - name: durability_code
+    description: Whether the growth is expected to last.
+    value_description: durable, uncertain, temporary
+  entity_definitions:
+  - identity_id: franchise_result_identity
+    dataset_columns:
+    - franchise_result_id
+    entity_universe: complete
+  - identity_id: product_franchise_identity
+    dataset_columns:
+    - product_franchise_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+- node_id: sf:stryker.commercial.fact_endoscopy_attachment
+  descriptor:
+    qualified_name: stryker.commercial.fact_endoscopy_attachment
+    display_name: Endoscopy attachment
+    description: Specialized breast-care calling effort versus endoscopy attachment to the installed base.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: stryker.us-east-1
+      database: STRYKER
+      schema: COMMERCIAL
+      object: FACT_ENDOSCOPY_ATTACHMENT
+      format: table
+  grain:
+    description: One row is one endoscopy attachment.
+    components:
+    - identity_id: endoscopy_attachment_identity
+      dataset_columns:
+      - endoscopy_attachment_id
+  columns:
+  - name: endoscopy_attachment_id
+    description: Identifier of the endoscopy attachment. This dataset holds the complete population.
+  - name: sales_force_id
+    description: Specialized sales force. The complete population is not re-authored on this dataset.
+  - name: installed_system_id
+    description: Installed base the calling effort attaches to. The complete population is not re-authored
+      on this dataset.
+  - name: product_franchise_id
+    description: Endoscopy or breast-care franchise. The complete population is not re-authored on this
+      dataset.
+  - name: hospital_id
+    description: Hospital being called on. The complete population is not re-authored on this dataset.
+  - name: accounting_period_id
+    description: Quarter of the effort. The complete population is not re-authored on this dataset.
+  - name: calling_effort
+    description: Calling effort of the specialized team.
+  - name: attachment_rate
+    description: Share of the installed base that also takes the endoscopy offer.
+  entity_definitions:
+  - identity_id: endoscopy_attachment_identity
+    dataset_columns:
+    - endoscopy_attachment_id
+    entity_universe: complete
+  - identity_id: sales_force_identity
+    dataset_columns:
+    - sales_force_id
+    entity_universe: partial
+  - identity_id: installed_system_identity
+    dataset_columns:
+    - installed_system_id
+    entity_universe: partial
+  - identity_id: product_franchise_identity
+    dataset_columns:
+    - product_franchise_id
+    entity_universe: partial
+  - identity_id: hospital_identity
+    dataset_columns:
+    - hospital_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+- node_id: sf:stryker.commercial.fact_europe_capital
+  descriptor:
+    qualified_name: stryker.commercial.fact_europe_capital
+    display_name: Europe capital
+    description: European capital demand and whether European device regulation is a MedSurg friction.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: stryker.us-east-1
+      database: STRYKER
+      schema: COMMERCIAL
+      object: FACT_EUROPE_CAPITAL
+      format: table
+  grain:
+    description: One row is one europe capital.
+    components:
+    - identity_id: europe_capital_identity
+      dataset_columns:
+      - europe_capital_id
+  columns:
+  - name: europe_capital_id
+    description: Identifier of the europe capital. This dataset holds the complete population.
+  - name: country_id
+    description: European country. The complete population is not re-authored on this dataset.
+  - name: product_franchise_id
+    description: Franchise, typically MedSurg. The complete population is not re-authored on this dataset.
+  - name: accounting_period_id
+    description: Quarter of the capital read. The complete population is not re-authored on this dataset.
+  - name: capital_demand_amount
+    description: Hospital capital demand.
+  - name: regulatory_friction_flag
+    description: 1 when device regulation is affecting the result.
+  - name: softness_driver_code
+    description: What is softening capital.
+    value_description: budgets, regulation, both, none
+  entity_definitions:
+  - identity_id: europe_capital_identity
+    dataset_columns:
+    - europe_capital_id
+    entity_universe: complete
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: product_franchise_identity
+    dataset_columns:
+    - product_franchise_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+- node_id: sf:stryker.commercial.fact_sales_disruption
+  descriptor:
+    qualified_name: stryker.commercial.fact_sales_disruption
+    display_name: Sales disruption
+    description: Lost selling productivity from a noncompete or a sales-force change, and the revenue
+      the outlook assumes.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: stryker.us-east-1
+      database: STRYKER
+      schema: COMMERCIAL
+      object: FACT_SALES_DISRUPTION
+      format: table
+  grain:
+    description: One row is one sales disruption.
+    components:
+    - identity_id: sales_disruption_identity
+      dataset_columns:
+      - sales_disruption_id
+  columns:
+  - name: sales_disruption_id
+    description: Identifier of the sales disruption. This dataset holds the complete population.
+  - name: sales_force_id
+    description: Sales force that was disrupted. The complete population is not re-authored on this dataset.
+  - name: product_franchise_id
+    description: Franchise, typically Inari. The complete population is not re-authored on this dataset.
+  - name: accounting_period_id
+    description: Quarter of the disruption. The complete population is not re-authored on this dataset.
+  - name: assumed_lost_productivity
+    description: Selling productivity the outlook assumes is lost.
+  - name: revenue_outlook_effect_amount
+    description: Revenue effect built into the outlook.
+  - name: noncompete_flag
+    description: 1 when a noncompete is part of the disruption.
+  - name: transition_flag
+    description: 1 when the sales force is in transition.
+  entity_definitions:
+  - identity_id: sales_disruption_identity
+    dataset_columns:
+    - sales_disruption_id
+    entity_universe: complete
+  - identity_id: sales_force_identity
+    dataset_columns:
+    - sales_force_id
+    entity_universe: partial
+  - identity_id: product_franchise_identity
+    dataset_columns:
+    - product_franchise_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+- node_id: sf:stryker.commercial.fact_capital_budget
+  descriptor:
+    qualified_name: stryker.commercial.fact_capital_budget
+    display_name: Hospital capital budget
+    description: Hospital capital spending, including a softer Europe and any change from accelerated
+      depreciation.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: stryker.us-east-1
+      database: STRYKER
+      schema: COMMERCIAL
+      object: FACT_CAPITAL_BUDGET
+      format: table
+  grain:
+    description: One row is one hospital capital budget.
+    components:
+    - identity_id: capital_budget_identity
+      dataset_columns:
+      - capital_budget_id
+  columns:
+  - name: capital_budget_id
+    description: Identifier of the hospital capital budget. This dataset holds the complete population.
+  - name: hospital_id
+    description: Hospital whose capital budget is observed. The complete population is not re-authored
+      on this dataset.
+  - name: country_id
+    description: Country of the hospital. The complete population is not re-authored on this dataset.
+  - name: accounting_period_id
+    description: Quarter of the budget read. The complete population is not re-authored on this dataset.
+  - name: accelerated_depreciation_flag
+    description: 1 when accelerated depreciation is in the purchasing discussion.
+  - name: budget_change_amount
+    description: Change in the capital budget.
+  - name: capital_environment_code
+    description: Capital environment.
+    value_description: strong, soft, europe_soft
+  - name: purchasing_behavior_code
+    description: How purchasing changed.
+    value_description: pulled_forward, delayed, unchanged
+  entity_definitions:
+  - identity_id: capital_budget_identity
+    dataset_columns:
+    - capital_budget_id
+    entity_universe: complete
+  - identity_id: hospital_identity
+    dataset_columns:
+    - hospital_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial

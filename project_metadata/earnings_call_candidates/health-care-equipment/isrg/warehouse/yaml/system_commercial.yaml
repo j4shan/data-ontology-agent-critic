@@ -1,0 +1,510 @@
+schema_version: '3'
+nodes:
+- node_id: sf:intuitive.commercial.dim_distributor
+  descriptor:
+    qualified_name: intuitive.commercial.dim_distributor
+    display_name: Distributor
+    description: An international distributor, including a European distributor, used to place systems.
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: intuitive.us-west-1
+      database: INTUITIVE_SURGICAL
+      schema: COMMERCIAL
+      object: DIM_DISTRIBUTOR
+      format: table
+  grain:
+    description: One row is one distributor.
+    components:
+    - identity_id: distributor_identity
+      dataset_columns:
+      - distributor_id
+  columns:
+  - name: distributor_id
+    description: Identifier of the distributor. This dataset holds the complete population.
+  - name: country_id
+    description: Country the distributor covers. The complete population is not re-authored on this dataset.
+  - name: distributor_name
+    description: Name of the distributor.
+  entity_definitions:
+  - identity_id: distributor_identity
+    dataset_columns:
+    - distributor_id
+    entity_universe: complete
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+- node_id: sf:intuitive.commercial.dim_joint_venture
+  descriptor:
+    qualified_name: intuitive.commercial.dim_joint_venture
+    display_name: Joint venture
+    description: A joint venture used in a country, including the China joint venture.
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: intuitive.us-west-1
+      database: INTUITIVE_SURGICAL
+      schema: COMMERCIAL
+      object: DIM_JOINT_VENTURE
+      format: table
+  grain:
+    description: One row is one joint venture.
+    components:
+    - identity_id: joint_venture_identity
+      dataset_columns:
+      - joint_venture_id
+  columns:
+  - name: joint_venture_id
+    description: Identifier of the joint venture. This dataset holds the complete population.
+  - name: country_id
+    description: Country of the joint venture. The complete population is not re-authored on this dataset.
+  - name: venture_name
+    description: Name of the joint venture.
+  entity_definitions:
+  - identity_id: joint_venture_identity
+    dataset_columns:
+    - joint_venture_id
+    entity_universe: complete
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+- node_id: sf:intuitive.commercial.fact_go_to_market
+  descriptor:
+    qualified_name: intuitive.commercial.fact_go_to_market
+    display_name: Go to market
+    description: 'International actions read together: distributors, refurbished systems, and the China
+      joint venture, against procedure and placement growth.'
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: intuitive.us-west-1
+      database: INTUITIVE_SURGICAL
+      schema: COMMERCIAL
+      object: FACT_GO_TO_MARKET
+      format: table
+  grain:
+    description: One row is one go to market.
+    components:
+    - identity_id: go_to_market_identity
+      dataset_columns:
+      - go_to_market_id
+  columns:
+  - name: go_to_market_id
+    description: Identifier of the go to market. This dataset holds the complete population.
+  - name: country_id
+    description: Country of the action. The complete population is not re-authored on this dataset.
+  - name: accounting_period_id
+    description: Quarter of the action. The complete population is not re-authored on this dataset.
+  - name: distributor_id
+    description: Distributor, when the action uses one. The complete population is not re-authored on
+      this dataset.
+  - name: joint_venture_id
+    description: Joint venture, when the action uses one. The complete population is not re-authored on
+      this dataset.
+  - name: system_generation_id
+    description: Generation, including refurbished Xi. The complete population is not re-authored on this
+      dataset.
+  - name: action_code
+    description: Kind of go-to-market move.
+    value_description: distributor, refurbished, joint_venture
+  - name: procedure_growth_rate
+    description: Procedure growth in the country.
+  - name: placement_growth_rate
+    description: Placement growth in the country.
+  entity_definitions:
+  - identity_id: go_to_market_identity
+    dataset_columns:
+    - go_to_market_id
+    entity_universe: complete
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: distributor_identity
+    dataset_columns:
+    - distributor_id
+    entity_universe: partial
+  - identity_id: joint_venture_identity
+    dataset_columns:
+    - joint_venture_id
+    entity_universe: partial
+  - identity_id: system_generation_identity
+    dataset_columns:
+    - system_generation_id
+    entity_universe: partial
+- node_id: sf:intuitive.commercial.fact_refurbished_offer
+  descriptor:
+    qualified_name: intuitive.commercial.fact_refurbished_offer
+    display_name: Refurbished offer
+    description: Refurbished Xi systems placed as customers upgrade, including the site of care the older
+      system moves to.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: intuitive.us-west-1
+      database: INTUITIVE_SURGICAL
+      schema: COMMERCIAL
+      object: FACT_REFURBISHED_OFFER
+      format: table
+  grain:
+    description: One row is one refurbished offer.
+    components:
+    - identity_id: refurbished_offer_identity
+      dataset_columns:
+      - refurbished_offer_id
+  columns:
+  - name: refurbished_offer_id
+    description: Identifier of the refurbished offer. This dataset holds the complete population.
+  - name: system_generation_id
+    description: Refurbished generation. The complete population is not re-authored on this dataset.
+  - name: country_id
+    description: Country of the offer. The complete population is not re-authored on this dataset.
+  - name: site_of_care_id
+    description: Site of care receiving the older system. The complete population is not re-authored on
+      this dataset.
+  - name: accounting_period_id
+    description: Quarter of the placement. The complete population is not re-authored on this dataset.
+  - name: competitor_id
+    description: Rival the offer is aimed at. The complete population is not re-authored on this dataset.
+  - name: placement_count
+    description: Refurbished systems placed.
+  - name: upgrade_source_flag
+    description: 1 when the unit comes from a customer upgrading.
+  - name: tier_code
+    description: Price tier of the offer.
+    value_description: refurbished, new_premium, lower_price_form
+  entity_definitions:
+  - identity_id: refurbished_offer_identity
+    dataset_columns:
+    - refurbished_offer_id
+    entity_universe: complete
+  - identity_id: system_generation_identity
+    dataset_columns:
+    - system_generation_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: site_of_care_identity
+    dataset_columns:
+    - site_of_care_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: competitor_identity
+    dataset_columns:
+    - competitor_id
+    entity_universe: partial
+- node_id: sf:intuitive.commercial.fact_price_architecture
+  descriptor:
+    qualified_name: intuitive.commercial.fact_price_architecture
+    display_name: Price architecture
+    description: Tiered pricing, including refurbished Xi, by the United States, China, and Europe versus
+      competitive entries.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: intuitive.us-west-1
+      database: INTUITIVE_SURGICAL
+      schema: COMMERCIAL
+      object: FACT_PRICE_ARCHITECTURE
+      format: table
+  grain:
+    description: One row is one price architecture.
+    components:
+    - identity_id: price_architecture_identity
+      dataset_columns:
+      - price_architecture_id
+  columns:
+  - name: price_architecture_id
+    description: Identifier of the price architecture. This dataset holds the complete population.
+  - name: system_generation_id
+    description: Generation being priced. The complete population is not re-authored on this dataset.
+  - name: country_id
+    description: Country of the price. The complete population is not re-authored on this dataset.
+  - name: accounting_period_id
+    description: Quarter of the price. The complete population is not re-authored on this dataset.
+  - name: competitor_id
+    description: Rival entry the price answers. The complete population is not re-authored on this dataset.
+  - name: currency_id
+    description: Currency of the price. The complete population is not re-authored on this dataset.
+  - name: price_amount
+    description: System price.
+  - name: tier_code
+    description: Price tier.
+    value_description: refurbished, new_premium, lower_price_form
+  - name: competitive_response_flag
+    description: 1 when the tier is a response to a rival entry.
+  entity_definitions:
+  - identity_id: price_architecture_identity
+    dataset_columns:
+    - price_architecture_id
+    entity_universe: complete
+  - identity_id: system_generation_identity
+    dataset_columns:
+    - system_generation_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: competitor_identity
+    dataset_columns:
+    - competitor_id
+    entity_universe: partial
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: partial
+- node_id: sf:intuitive.commercial.fact_international_placement
+  descriptor:
+    qualified_name: intuitive.commercial.fact_international_placement
+    display_name: International placement
+    description: System placements outside the United States after clearances such as Europe and Japan.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: intuitive.us-west-1
+      database: INTUITIVE_SURGICAL
+      schema: COMMERCIAL
+      object: FACT_INTERNATIONAL_PLACEMENT
+      format: table
+  grain:
+    description: One row is one international placement.
+    components:
+    - identity_id: international_placement_identity
+      dataset_columns:
+      - international_placement_id
+  columns:
+  - name: international_placement_id
+    description: Identifier of the international placement. This dataset holds the complete population.
+  - name: country_id
+    description: Country of the placements. The complete population is not re-authored on this dataset.
+  - name: system_generation_id
+    description: Generation placed. The complete population is not re-authored on this dataset.
+  - name: accounting_period_id
+    description: Quarter of the placements. The complete population is not re-authored on this dataset.
+  - name: regulatory_clearance_id
+    description: Clearance that opened the placements. The complete population is not re-authored on this
+      dataset.
+  - name: placement_count
+    description: Systems placed.
+  - name: post_clearance_flag
+    description: 1 when the placements follow a new clearance.
+  - name: cadence_code
+    description: How the cadence is moving.
+    value_description: accelerating, steady, constrained
+  entity_definitions:
+  - identity_id: international_placement_identity
+    dataset_columns:
+    - international_placement_id
+    entity_universe: complete
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: system_generation_identity
+    dataset_columns:
+    - system_generation_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: regulatory_clearance_identity
+    dataset_columns:
+    - regulatory_clearance_id
+    entity_universe: partial
+- node_id: sf:intuitive.commercial.fact_capital_conversation
+  descriptor:
+    qualified_name: intuitive.commercial.fact_capital_conversation
+    display_name: Capital conversation
+    description: Hospital capital-budget conversations and whether policy risk is showing up in placement
+      plans.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: intuitive.us-west-1
+      database: INTUITIVE_SURGICAL
+      schema: COMMERCIAL
+      object: FACT_CAPITAL_CONVERSATION
+      format: table
+  grain:
+    description: One row is one capital conversation.
+    components:
+    - identity_id: capital_conversation_identity
+      dataset_columns:
+      - capital_conversation_id
+  columns:
+  - name: capital_conversation_id
+    description: Identifier of the capital conversation. This dataset holds the complete population.
+  - name: hospital_id
+    description: Hospital in the conversation. The complete population is not re-authored on this dataset.
+  - name: country_id
+    description: Country of the hospital. The complete population is not re-authored on this dataset.
+  - name: accounting_period_id
+    description: Quarter of the conversation. The complete population is not re-authored on this dataset.
+  - name: system_generation_id
+    description: Generation being discussed. The complete population is not re-authored on this dataset.
+  - name: budget_risk_code
+    description: Capital risk the hospital is citing.
+    value_description: policy, coverage, budget, none
+  - name: placement_plan_count
+    description: Placements still in the plan.
+  - name: placement_plan_change_count
+    description: Change in planned placements.
+  - name: purchasing_behavior_code
+    description: How purchasing moved.
+    value_description: pulled_forward, delayed, unchanged
+  entity_definitions:
+  - identity_id: capital_conversation_identity
+    dataset_columns:
+    - capital_conversation_id
+    entity_universe: complete
+  - identity_id: hospital_identity
+    dataset_columns:
+    - hospital_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: system_generation_identity
+    dataset_columns:
+    - system_generation_id
+    entity_universe: partial
+- node_id: sf:intuitive.commercial.fact_reprocessing
+  descriptor:
+    qualified_name: intuitive.commercial.fact_reprocessing
+    display_name: Instrument reprocessing
+    description: Whether instrument reprocessing and a longer useful life can be done in-house.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: intuitive.us-west-1
+      database: INTUITIVE_SURGICAL
+      schema: COMMERCIAL
+      object: FACT_REPROCESSING
+      format: table
+  grain:
+    description: One row is one instrument reprocessing.
+    components:
+    - identity_id: reprocessing_identity
+      dataset_columns:
+      - reprocessing_id
+  columns:
+  - name: reprocessing_id
+    description: Identifier of the instrument reprocessing. This dataset holds the complete population.
+  - name: system_generation_id
+    description: Generation whose instruments are reprocessed. The complete population is not re-authored
+      on this dataset.
+  - name: accounting_period_id
+    description: Quarter of the capability. The complete population is not re-authored on this dataset.
+  - name: in_house_flag
+    description: 1 when reprocessing can be done in-house.
+  - name: third_party_flag
+    description: 1 when reprocessing is still done by a third party.
+  - name: useful_life_days
+    description: Useful life of the instrument.
+  - name: useful_life_change_days
+    description: Change in useful life from in-house reprocessing.
+  entity_definitions:
+  - identity_id: reprocessing_identity
+    dataset_columns:
+    - reprocessing_id
+    entity_universe: complete
+  - identity_id: system_generation_identity
+    dataset_columns:
+    - system_generation_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+- node_id: sf:intuitive.commercial.fact_lower_acuity_offer
+  descriptor:
+    qualified_name: intuitive.commercial.fact_lower_acuity_offer
+    display_name: Lower-acuity offer
+    description: Whether a lower-acuity case is served by a lower-priced form factor or by a refurbished
+      system.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: intuitive.us-west-1
+      database: INTUITIVE_SURGICAL
+      schema: COMMERCIAL
+      object: FACT_LOWER_ACUITY_OFFER
+      format: table
+  grain:
+    description: One row is one lower-acuity offer.
+    components:
+    - identity_id: lower_acuity_offer_identity
+      dataset_columns:
+      - lower_acuity_offer_id
+  columns:
+  - name: lower_acuity_offer_id
+    description: Identifier of the lower-acuity offer. This dataset holds the complete population.
+  - name: procedure_category_id
+    description: Lower-acuity procedure category. The complete population is not re-authored on this dataset.
+  - name: system_generation_id
+    description: System used to compete for the case. The complete population is not re-authored on this
+      dataset.
+  - name: country_id
+    description: Country of the offer. The complete population is not re-authored on this dataset.
+  - name: offer_code
+    description: How the case is served.
+    value_description: lower_price_form, refurbished, current_generation
+  - name: procedure_economics_fit_flag
+    description: 1 when the system fits the economics of the case.
+  entity_definitions:
+  - identity_id: lower_acuity_offer_identity
+    dataset_columns:
+    - lower_acuity_offer_id
+    entity_universe: complete
+  - identity_id: procedure_category_identity
+    dataset_columns:
+    - procedure_category_id
+    entity_universe: partial
+  - identity_id: system_generation_identity
+    dataset_columns:
+    - system_generation_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial

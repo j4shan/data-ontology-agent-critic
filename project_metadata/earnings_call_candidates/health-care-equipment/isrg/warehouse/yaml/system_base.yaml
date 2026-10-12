@@ -1,0 +1,458 @@
+schema_version: '3'
+nodes:
+- node_id: sf:intuitive.system.dim_system_generation
+  descriptor:
+    qualified_name: intuitive.system.dim_system_generation
+    display_name: System generation
+    description: 'A da Vinci generation or offer: da Vinci 5, Xi, refurbished Xi, single-port, or a lower-priced
+      form factor.'
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: intuitive.us-west-1
+      database: INTUITIVE_SURGICAL
+      schema: SYSTEM
+      object: DIM_SYSTEM_GENERATION
+      format: table
+  grain:
+    description: One row is one system generation.
+    components:
+    - identity_id: system_generation_identity
+      dataset_columns:
+      - system_generation_id
+  columns:
+  - name: system_generation_id
+    description: Identifier of the system generation. This dataset holds the complete population.
+  - name: generation_name
+    description: Name of the generation.
+  - name: generation_code
+    description: Generation code.
+    value_description: da_vinci_5, xi, refurbished_xi, single_port, lower_price_form
+  - name: refurbished_flag
+    description: 1 when the offer is a refurbished system.
+  entity_definitions:
+  - identity_id: system_generation_identity
+    dataset_columns:
+    - system_generation_id
+    entity_universe: complete
+- node_id: sf:intuitive.system.dim_installed_system
+  descriptor:
+    qualified_name: intuitive.system.dim_installed_system
+    display_name: Installed system
+    description: A system currently installed at a hospital site, including a retained Xi after a da Vinci
+      5 purchase.
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: intuitive.us-west-1
+      database: INTUITIVE_SURGICAL
+      schema: SYSTEM
+      object: DIM_INSTALLED_SYSTEM
+      format: table
+  grain:
+    description: One row is one installed system.
+    components:
+    - identity_id: installed_system_identity
+      dataset_columns:
+      - installed_system_id
+  columns:
+  - name: installed_system_id
+    description: Identifier of the installed system. This dataset holds the complete population.
+  - name: system_generation_id
+    description: Generation of the installed system. The complete population is not re-authored on this
+      dataset.
+  - name: hospital_id
+    description: Hospital that holds the system. The complete population is not re-authored on this dataset.
+  - name: hospital_site_id
+    description: Site that holds the system. The complete population is not re-authored on this dataset.
+  - name: country_id
+    description: Country of the installation. The complete population is not re-authored on this dataset.
+  - name: site_of_care_id
+    description: Site of care of the installation. The complete population is not re-authored on this
+      dataset.
+  - name: retained_after_upgrade_flag
+    description: 1 when the system was kept after a newer generation was purchased.
+  - name: redeployed_flag
+    description: 1 when the system was moved to another site of care.
+  entity_definitions:
+  - identity_id: installed_system_identity
+    dataset_columns:
+    - installed_system_id
+    entity_universe: complete
+  - identity_id: system_generation_identity
+    dataset_columns:
+    - system_generation_id
+    entity_universe: partial
+  - identity_id: hospital_identity
+    dataset_columns:
+    - hospital_id
+    entity_universe: partial
+  - identity_id: hospital_site_identity
+    dataset_columns:
+    - hospital_site_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: site_of_care_identity
+    dataset_columns:
+    - site_of_care_id
+    entity_universe: partial
+- node_id: sf:intuitive.system.dim_system_feature
+  descriptor:
+    qualified_name: intuitive.system.dim_system_feature
+    display_name: System feature
+    description: A capability on the product path, such as force feedback, advanced imaging, augmented
+      dexterity, biopsy, the digital hub, or a cloud account.
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: intuitive.us-west-1
+      database: INTUITIVE_SURGICAL
+      schema: SYSTEM
+      object: DIM_SYSTEM_FEATURE
+      format: table
+  grain:
+    description: One row is one system feature.
+    components:
+    - identity_id: system_feature_identity
+      dataset_columns:
+      - system_feature_id
+  columns:
+  - name: system_feature_id
+    description: Identifier of the system feature. This dataset holds the complete population.
+  - name: feature_name
+    description: Name of the feature.
+  - name: feature_code
+    description: Feature code.
+    value_description: force_feedback, advanced_imaging, augmented_dexterity, biopsy, digital_hub, cloud_account,
+      digital_subscription
+  entity_definitions:
+  - identity_id: system_feature_identity
+    dataset_columns:
+    - system_feature_id
+    entity_universe: complete
+- node_id: sf:intuitive.system.fact_system_placement
+  descriptor:
+    qualified_name: intuitive.system.fact_system_placement
+    display_name: System placement
+    description: Systems placed in a quarter by generation, country, and site of care.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: intuitive.us-west-1
+      database: INTUITIVE_SURGICAL
+      schema: SYSTEM
+      object: FACT_SYSTEM_PLACEMENT
+      format: table
+  grain:
+    description: One row is one system placement.
+    components:
+    - identity_id: system_placement_identity
+      dataset_columns:
+      - system_placement_id
+  columns:
+  - name: system_placement_id
+    description: Identifier of the system placement. This dataset holds the complete population.
+  - name: system_generation_id
+    description: Generation placed. The complete population is not re-authored on this dataset.
+  - name: hospital_id
+    description: Hospital that took the system. The complete population is not re-authored on this dataset.
+  - name: hospital_site_id
+    description: Site of the placement. The complete population is not re-authored on this dataset.
+  - name: country_id
+    description: Country of the placement. The complete population is not re-authored on this dataset.
+  - name: site_of_care_id
+    description: Site of care. The complete population is not re-authored on this dataset.
+  - name: accounting_period_id
+    description: Quarter of the placement. The complete population is not re-authored on this dataset.
+  - name: placement_count
+    description: Systems placed.
+  - name: upgrade_flag
+    description: 1 when the customer is moving up from an older generation.
+  - name: new_site_flag
+    description: 1 when the displaced system is going to a new site of care.
+  entity_definitions:
+  - identity_id: system_placement_identity
+    dataset_columns:
+    - system_placement_id
+    entity_universe: complete
+  - identity_id: system_generation_identity
+    dataset_columns:
+    - system_generation_id
+    entity_universe: partial
+  - identity_id: hospital_identity
+    dataset_columns:
+    - hospital_id
+    entity_universe: partial
+  - identity_id: hospital_site_identity
+    dataset_columns:
+    - hospital_site_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: site_of_care_identity
+    dataset_columns:
+    - site_of_care_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+- node_id: sf:intuitive.system.fact_utilization
+  descriptor:
+    qualified_name: intuitive.system.fact_utilization
+    display_name: System utilization
+    description: Utilization of an installed system, including how U.S. utilization moves as da Vinci
+      5 becomes a larger share of the base.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: intuitive.us-west-1
+      database: INTUITIVE_SURGICAL
+      schema: SYSTEM
+      object: FACT_UTILIZATION
+      format: table
+  grain:
+    description: One row is one system utilization.
+    components:
+    - identity_id: utilization_identity
+      dataset_columns:
+      - utilization_id
+  columns:
+  - name: utilization_id
+    description: Identifier of the system utilization. This dataset holds the complete population.
+  - name: installed_system_id
+    description: Installed system. The complete population is not re-authored on this dataset.
+  - name: system_generation_id
+    description: Generation of the system. The complete population is not re-authored on this dataset.
+  - name: country_id
+    description: Country of the system. The complete population is not re-authored on this dataset.
+  - name: accounting_period_id
+    description: Quarter of the utilization. The complete population is not re-authored on this dataset.
+  - name: procedure_category_id
+    description: Category, when utilization is split by category. The complete population is not re-authored
+      on this dataset.
+  - name: utilization_rate
+    description: Utilization of the system.
+  - name: generation_mix_rate
+    description: Share of the installed base that is this generation.
+  - name: headroom_rate
+    description: Utilization still available before another placement is required.
+  - name: placement_demand_count
+    description: Additional placements the remaining headroom supports.
+  entity_definitions:
+  - identity_id: utilization_identity
+    dataset_columns:
+    - utilization_id
+    entity_universe: complete
+  - identity_id: installed_system_identity
+    dataset_columns:
+    - installed_system_id
+    entity_universe: partial
+  - identity_id: system_generation_identity
+    dataset_columns:
+    - system_generation_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: procedure_category_identity
+    dataset_columns:
+    - procedure_category_id
+    entity_universe: partial
+- node_id: sf:intuitive.system.fact_after_hours
+  descriptor:
+    qualified_name: intuitive.system.fact_after_hours
+    display_name: After-hours use
+    description: After-hours use of a da Vinci 5 and how much of that use is still available.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: intuitive.us-west-1
+      database: INTUITIVE_SURGICAL
+      schema: SYSTEM
+      object: FACT_AFTER_HOURS
+      format: table
+  grain:
+    description: One row is one after-hours use.
+    components:
+    - identity_id: after_hours_identity
+      dataset_columns:
+      - after_hours_id
+  columns:
+  - name: after_hours_id
+    description: Identifier of the after-hours use. This dataset holds the complete population.
+  - name: installed_system_id
+    description: Installed system. The complete population is not re-authored on this dataset.
+  - name: system_generation_id
+    description: Generation, typically da Vinci 5. The complete population is not re-authored on this
+      dataset.
+  - name: accounting_period_id
+    description: Quarter of the use. The complete population is not re-authored on this dataset.
+  - name: after_hours_hour_count
+    description: Hours used after the usual day.
+  - name: remaining_after_hours_rate
+    description: Share of after-hours capacity still unused.
+  - name: procedure_count
+    description: Procedures performed in those hours.
+  entity_definitions:
+  - identity_id: after_hours_identity
+    dataset_columns:
+    - after_hours_id
+    entity_universe: complete
+  - identity_id: installed_system_identity
+    dataset_columns:
+    - installed_system_id
+    entity_universe: partial
+  - identity_id: system_generation_identity
+    dataset_columns:
+    - system_generation_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+- node_id: sf:intuitive.system.fact_redeployed_system
+  descriptor:
+    qualified_name: intuitive.system.fact_redeployed_system
+    display_name: Redeployed system
+    description: 'What a retained or moved Xi does after the hospital buys da Vinci 5: utilization and
+      new procedure categories.'
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: intuitive.us-west-1
+      database: INTUITIVE_SURGICAL
+      schema: SYSTEM
+      object: FACT_REDEPLOYED_SYSTEM
+      format: table
+  grain:
+    description: One row is one redeployed system.
+    components:
+    - identity_id: redeployed_system_identity
+      dataset_columns:
+      - redeployed_system_id
+  columns:
+  - name: redeployed_system_id
+    description: Identifier of the redeployed system. This dataset holds the complete population.
+  - name: installed_system_id
+    description: Retained or moved system. The complete population is not re-authored on this dataset.
+  - name: system_generation_id
+    description: Generation of the retained system. The complete population is not re-authored on this
+      dataset.
+  - name: procedure_category_id
+    description: Procedure category showing up on the retained system. The complete population is not
+      re-authored on this dataset.
+  - name: site_of_care_id
+    description: Site of care the system moved to. The complete population is not re-authored on this
+      dataset.
+  - name: accounting_period_id
+    description: Quarter of the redeployment. The complete population is not re-authored on this dataset.
+  - name: utilization_rate
+    description: Utilization of the retained system.
+  - name: new_category_flag
+    description: 1 when a procedure category is new on this system.
+  - name: procedure_count
+    description: Procedures on the redeployed system.
+  entity_definitions:
+  - identity_id: redeployed_system_identity
+    dataset_columns:
+    - redeployed_system_id
+    entity_universe: complete
+  - identity_id: installed_system_identity
+    dataset_columns:
+    - installed_system_id
+    entity_universe: partial
+  - identity_id: system_generation_identity
+    dataset_columns:
+    - system_generation_id
+    entity_universe: partial
+  - identity_id: procedure_category_identity
+    dataset_columns:
+    - procedure_category_id
+    entity_universe: partial
+  - identity_id: site_of_care_identity
+    dataset_columns:
+    - site_of_care_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+- node_id: sf:intuitive.system.fact_generation_mix
+  descriptor:
+    qualified_name: intuitive.system.fact_generation_mix
+    display_name: Generation mix
+    description: Share of the installed base by generation, used to read U.S. utilization as da Vinci
+      5 grows.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: intuitive.us-west-1
+      database: INTUITIVE_SURGICAL
+      schema: SYSTEM
+      object: FACT_GENERATION_MIX
+      format: table
+  grain:
+    description: One row is one generation mix.
+    components:
+    - identity_id: generation_mix_identity
+      dataset_columns:
+      - generation_mix_id
+  columns:
+  - name: generation_mix_id
+    description: Identifier of the generation mix. This dataset holds the complete population.
+  - name: system_generation_id
+    description: Generation. The complete population is not re-authored on this dataset.
+  - name: country_id
+    description: Country of the mix. The complete population is not re-authored on this dataset.
+  - name: accounting_period_id
+    description: Quarter of the mix. The complete population is not re-authored on this dataset.
+  - name: installed_count
+    description: Installed systems of this generation.
+  - name: installed_share_rate
+    description: Share of the installed base.
+  - name: utilization_rate
+    description: Utilization across that generation.
+  entity_definitions:
+  - identity_id: generation_mix_identity
+    dataset_columns:
+    - generation_mix_id
+    entity_universe: complete
+  - identity_id: system_generation_identity
+    dataset_columns:
+    - system_generation_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial

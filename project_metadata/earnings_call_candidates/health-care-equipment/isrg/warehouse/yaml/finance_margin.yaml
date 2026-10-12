@@ -1,0 +1,574 @@
+schema_version: '3'
+nodes:
+- node_id: sf:intuitive.finance.fact_gross_margin
+  descriptor:
+    qualified_name: intuitive.finance.fact_gross_margin
+    display_name: Gross margin
+    description: Gross margin for a quarter.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: intuitive.us-west-1
+      database: INTUITIVE_SURGICAL
+      schema: FINANCE
+      object: FACT_GROSS_MARGIN
+      format: table
+  grain:
+    description: One row is one gross margin.
+    components:
+    - identity_id: gross_margin_identity
+      dataset_columns:
+      - gross_margin_id
+  columns:
+  - name: gross_margin_id
+    description: Identifier of the gross margin. This dataset holds the complete population.
+  - name: accounting_period_id
+    description: Quarter of the margin. The complete population is not re-authored on this dataset.
+  - name: currency_id
+    description: Currency of the amount. The complete population is not re-authored on this dataset.
+  - name: legal_entity_id
+    description: Legal entity. The complete population is not re-authored on this dataset.
+  - name: gross_margin_rate
+    description: Gross margin rate.
+  - name: gross_margin_amount
+    description: Gross margin amount.
+  - name: one_time_flag
+    description: 1 when part of the margin is a one-time item.
+  entity_definitions:
+  - identity_id: gross_margin_identity
+    dataset_columns:
+    - gross_margin_id
+    entity_universe: complete
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: partial
+  - identity_id: legal_entity_identity
+    dataset_columns:
+    - legal_entity_id
+    entity_universe: partial
+- node_id: sf:intuitive.finance.fact_margin_bridge
+  descriptor:
+    qualified_name: intuitive.finance.fact_margin_bridge
+    display_name: Margin bridge
+    description: Gross-margin change split into tariff, product cost, facility, and mix.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: intuitive.us-west-1
+      database: INTUITIVE_SURGICAL
+      schema: FINANCE
+      object: FACT_MARGIN_BRIDGE
+      format: table
+  grain:
+    description: One row is one margin bridge.
+    components:
+    - identity_id: margin_bridge_identity
+      dataset_columns:
+      - margin_bridge_id
+  columns:
+  - name: margin_bridge_id
+    description: Identifier of the margin bridge. This dataset holds the complete population.
+  - name: accounting_period_id
+    description: Quarter of the bridge. The complete population is not re-authored on this dataset.
+  - name: cost_element_id
+    description: Cost element. The complete population is not re-authored on this dataset.
+  - name: currency_id
+    description: Currency of the amounts. The complete population is not re-authored on this dataset.
+  - name: tariff_effect_amount
+    description: Margin effect of tariffs.
+  - name: product_cost_effect_amount
+    description: Margin effect of product cost.
+  - name: facility_effect_amount
+    description: Margin effect of a facility.
+  - name: mix_effect_amount
+    description: Margin effect of product mix.
+  - name: other_effect_amount
+    description: Margin effect beyond the tariff headwind.
+  entity_definitions:
+  - identity_id: margin_bridge_identity
+    dataset_columns:
+    - margin_bridge_id
+    entity_universe: complete
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: cost_element_identity
+    dataset_columns:
+    - cost_element_id
+    entity_universe: partial
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: partial
+- node_id: sf:intuitive.finance.fact_margin_outlook
+  descriptor:
+    qualified_name: intuitive.finance.fact_margin_outlook
+    display_name: Margin outlook
+    description: Gross-margin outlook, including the fourth-quarter starting point for the next year.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: intuitive.us-west-1
+      database: INTUITIVE_SURGICAL
+      schema: FINANCE
+      object: FACT_MARGIN_OUTLOOK
+      format: table
+  grain:
+    description: One row is one margin outlook.
+    components:
+    - identity_id: margin_outlook_identity
+      dataset_columns:
+      - margin_outlook_id
+  columns:
+  - name: margin_outlook_id
+    description: Identifier of the margin outlook. This dataset holds the complete population.
+  - name: accounting_period_id
+    description: Quarter the outlook is about. The complete population is not re-authored on this dataset.
+  - name: outlook_margin_rate
+    description: Margin rate in the outlook.
+  - name: starting_margin_rate
+    description: Margin rate used as the starting point for the next year.
+  - name: fourth_quarter_margin_rate
+    description: Implied fourth-quarter margin.
+  - name: put_amount
+    description: A margin put versus that starting point.
+  - name: take_amount
+    description: A margin take versus that starting point.
+  entity_definitions:
+  - identity_id: margin_outlook_identity
+    dataset_columns:
+    - margin_outlook_id
+    entity_universe: complete
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+- node_id: sf:intuitive.finance.fact_generation_margin
+  descriptor:
+    qualified_name: intuitive.finance.fact_generation_margin
+    display_name: Generation margin
+    description: da Vinci 5 contribution margin compared with Xi. The comparison generation is a second
+      role of the same population.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: intuitive.us-west-1
+      database: INTUITIVE_SURGICAL
+      schema: FINANCE
+      object: FACT_GENERATION_MARGIN
+      format: table
+  grain:
+    description: One row is one generation margin.
+    components:
+    - identity_id: generation_margin_identity
+      dataset_columns:
+      - generation_margin_id
+  columns:
+  - name: generation_margin_id
+    description: Identifier of the generation margin. This dataset holds the complete population.
+  - name: system_generation_id
+    description: Generation whose contribution margin is measured. The complete population is not re-authored
+      on this dataset.
+  - name: compared_system_generation_id
+    description: Generation it is compared with, typically Xi. Same population, stored as a second role
+      rather than a second join. The complete population is not re-authored on this dataset.
+  - name: accounting_period_id
+    description: Quarter of the comparison. The complete population is not re-authored on this dataset.
+  - name: contribution_margin_rate
+    description: Contribution margin of this generation.
+  - name: compared_contribution_margin_rate
+    description: Contribution margin of the comparison generation.
+  - name: mix_share_rate
+    description: Share of system mix that is this generation.
+  entity_definitions:
+  - identity_id: generation_margin_identity
+    dataset_columns:
+    - generation_margin_id
+    entity_universe: complete
+  - identity_id: system_generation_identity
+    dataset_columns:
+    - system_generation_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+- node_id: sf:intuitive.finance.fact_tariff_cost
+  descriptor:
+    qualified_name: intuitive.finance.fact_tariff_cost
+    display_name: Tariff cost
+    description: Tariff headwind in the margin outlook, including a smaller headwind than previously expected.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: intuitive.us-west-1
+      database: INTUITIVE_SURGICAL
+      schema: FINANCE
+      object: FACT_TARIFF_COST
+      format: table
+  grain:
+    description: One row is one tariff cost.
+    components:
+    - identity_id: tariff_cost_identity
+      dataset_columns:
+      - tariff_cost_id
+  columns:
+  - name: tariff_cost_id
+    description: Identifier of the tariff cost. This dataset holds the complete population.
+  - name: tariff_program_id
+    description: Tariff program. The complete population is not re-authored on this dataset.
+  - name: accounting_period_id
+    description: Quarter of the cost. The complete population is not re-authored on this dataset.
+  - name: currency_id
+    description: Currency of the cost. The complete population is not re-authored on this dataset.
+  - name: tariff_cost_amount
+    description: Tariff cost.
+  - name: prior_headwind_amount
+    description: Previously expected tariff headwind.
+  - name: headwind_change_amount
+    description: How much the headwind shrank or grew.
+  - name: in_outlook_flag
+    description: 1 when the outlook includes this tariff amount.
+  entity_definitions:
+  - identity_id: tariff_cost_identity
+    dataset_columns:
+    - tariff_cost_id
+    entity_universe: complete
+  - identity_id: tariff_program_identity
+    dataset_columns:
+    - tariff_program_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: partial
+- node_id: sf:intuitive.finance.fact_innovation_revenue
+  descriptor:
+    qualified_name: intuitive.finance.fact_innovation_revenue
+    display_name: Innovation revenue
+    description: Revenue from new products compared with procedure growth, to see whether innovation-led
+      revenue is growing faster.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: intuitive.us-west-1
+      database: INTUITIVE_SURGICAL
+      schema: FINANCE
+      object: FACT_INNOVATION_REVENUE
+      format: table
+  grain:
+    description: One row is one innovation revenue.
+    components:
+    - identity_id: innovation_revenue_identity
+      dataset_columns:
+      - innovation_revenue_id
+  columns:
+  - name: innovation_revenue_id
+    description: Identifier of the innovation revenue. This dataset holds the complete population.
+  - name: accounting_period_id
+    description: Quarter of the comparison. The complete population is not re-authored on this dataset.
+  - name: currency_id
+    description: Currency of the revenue. The complete population is not re-authored on this dataset.
+  - name: system_generation_id
+    description: Generation the new products attach to. The complete population is not re-authored on
+      this dataset.
+  - name: procedure_category_id
+    description: Procedure category the revenue is compared with. The complete population is not re-authored
+      on this dataset.
+  - name: innovation_revenue_amount
+    description: Revenue from new products.
+  - name: revenue_growth_rate
+    description: Growth of that revenue.
+  - name: procedure_growth_rate
+    description: Procedure growth in the same quarter.
+  - name: faster_than_procedures_flag
+    description: 1 when innovation revenue is growing faster than procedures.
+  entity_definitions:
+  - identity_id: innovation_revenue_identity
+    dataset_columns:
+    - innovation_revenue_id
+    entity_universe: complete
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: partial
+  - identity_id: system_generation_identity
+    dataset_columns:
+    - system_generation_id
+    entity_universe: partial
+  - identity_id: procedure_category_identity
+    dataset_columns:
+    - procedure_category_id
+    entity_universe: partial
+- node_id: sf:intuitive.finance.fact_asc_economics
+  descriptor:
+    qualified_name: intuitive.finance.fact_asc_economics
+    display_name: Surgery center economics
+    description: Capital cost, Medicare and commercial rates, instrument cost, and sterilization for placing
+      a system in a surgery center.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: intuitive.us-west-1
+      database: INTUITIVE_SURGICAL
+      schema: FINANCE
+      object: FACT_ASC_ECONOMICS
+      format: table
+  grain:
+    description: One row is one surgery center economics.
+    components:
+    - identity_id: asc_economics_identity
+      dataset_columns:
+      - asc_economics_id
+  columns:
+  - name: asc_economics_id
+    description: Identifier of the surgery center economics. This dataset holds the complete population.
+  - name: site_of_care_id
+    description: Ambulatory surgery center setting. The complete population is not re-authored on this
+      dataset.
+  - name: system_generation_id
+    description: System being placed. The complete population is not re-authored on this dataset.
+  - name: procedure_category_id
+    description: Procedure whose economics are measured. The complete population is not re-authored on
+      this dataset.
+  - name: reimbursement_scheme_id
+    description: Payment scheme, Medicare or commercial. The complete population is not re-authored on
+      this dataset.
+  - name: country_id
+    description: Country of the economics. The complete population is not re-authored on this dataset.
+  - name: currency_id
+    description: Currency of the amounts. The complete population is not re-authored on this dataset.
+  - name: capital_cost_amount
+    description: Capital cost of the system.
+  - name: medicare_rate_amount
+    description: Medicare payment rate for the procedure.
+  - name: commercial_rate_amount
+    description: Commercial payment rate for the procedure.
+  - name: instrument_cost_amount
+    description: Instrument cost per procedure.
+  - name: sterilization_cost_amount
+    description: Sterilization cost per procedure.
+  entity_definitions:
+  - identity_id: asc_economics_identity
+    dataset_columns:
+    - asc_economics_id
+    entity_universe: complete
+  - identity_id: site_of_care_identity
+    dataset_columns:
+    - site_of_care_id
+    entity_universe: partial
+  - identity_id: system_generation_identity
+    dataset_columns:
+    - system_generation_id
+    entity_universe: partial
+  - identity_id: procedure_category_identity
+    dataset_columns:
+    - procedure_category_id
+    entity_universe: partial
+  - identity_id: reimbursement_scheme_identity
+    dataset_columns:
+    - reimbursement_scheme_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: partial
+- node_id: sf:intuitive.finance.fact_facility_margin
+  descriptor:
+    qualified_name: intuitive.finance.fact_facility_margin
+    display_name: Facility margin
+    description: Gross-margin effect of a manufacturing facility, and how much of the upside is sustainable.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: intuitive.us-west-1
+      database: INTUITIVE_SURGICAL
+      schema: FINANCE
+      object: FACT_FACILITY_MARGIN
+      format: table
+  grain:
+    description: One row is one facility margin.
+    components:
+    - identity_id: facility_margin_identity
+      dataset_columns:
+      - facility_margin_id
+  columns:
+  - name: facility_margin_id
+    description: Identifier of the facility margin. This dataset holds the complete population.
+  - name: manufacturing_facility_id
+    description: Facility. The complete population is not re-authored on this dataset.
+  - name: accounting_period_id
+    description: Quarter of the effect. The complete population is not re-authored on this dataset.
+  - name: currency_id
+    description: Currency of the amount. The complete population is not re-authored on this dataset.
+  - name: margin_uplift_amount
+    description: Margin uplift from the facility.
+  - name: one_time_flag
+    description: 1 when the uplift is a one-time item.
+  - name: sustainable_flag
+    description: 1 when the uplift is expected to persist.
+  entity_definitions:
+  - identity_id: facility_margin_identity
+    dataset_columns:
+    - facility_margin_id
+    entity_universe: complete
+  - identity_id: manufacturing_facility_identity
+    dataset_columns:
+    - manufacturing_facility_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: partial
+- node_id: sf:intuitive.finance.fact_guidance
+  descriptor:
+    qualified_name: intuitive.finance.fact_guidance
+    display_name: Guidance
+    description: Gross-margin guidance and the cost items, other than tariff, that support it.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: intuitive.us-west-1
+      database: INTUITIVE_SURGICAL
+      schema: FINANCE
+      object: FACT_GUIDANCE
+      format: table
+  grain:
+    description: One row is one guidance.
+    components:
+    - identity_id: guidance_identity
+      dataset_columns:
+      - guidance_id
+  columns:
+  - name: guidance_id
+    description: Identifier of the guidance. This dataset holds the complete population.
+  - name: accounting_period_id
+    description: Quarter the guidance covers. The complete population is not re-authored on this dataset.
+  - name: currency_id
+    description: Currency of the outlook. The complete population is not re-authored on this dataset.
+  - name: gross_margin_guide_rate
+    description: Guided gross margin.
+  - name: non_tariff_cost_support_amount
+    description: Cost-base support beyond the smaller tariff headwind.
+  - name: procedure_growth_guide_rate
+    description: Procedure growth in the outlook.
+  entity_definitions:
+  - identity_id: guidance_identity
+    dataset_columns:
+    - guidance_id
+    entity_universe: complete
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: partial
+- node_id: sf:intuitive.finance.fact_payment_rate
+  descriptor:
+    qualified_name: intuitive.finance.fact_payment_rate
+    display_name: Payment rate
+    description: A Medicare or commercial rate used in surgery-center procedure economics.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: intuitive.us-west-1
+      database: INTUITIVE_SURGICAL
+      schema: FINANCE
+      object: FACT_PAYMENT_RATE
+      format: table
+  grain:
+    description: One row is one payment rate.
+    components:
+    - identity_id: payment_rate_identity
+      dataset_columns:
+      - payment_rate_id
+  columns:
+  - name: payment_rate_id
+    description: Identifier of the payment rate. This dataset holds the complete population.
+  - name: reimbursement_scheme_id
+    description: Scheme. The complete population is not re-authored on this dataset.
+  - name: procedure_category_id
+    description: Procedure category. The complete population is not re-authored on this dataset.
+  - name: site_of_care_id
+    description: Site of care. The complete population is not re-authored on this dataset.
+  - name: country_id
+    description: Country. The complete population is not re-authored on this dataset.
+  - name: accounting_period_id
+    description: Quarter the rate is in effect. The complete population is not re-authored on this dataset.
+  - name: currency_id
+    description: Currency of the rate. The complete population is not re-authored on this dataset.
+  - name: payment_rate_amount
+    description: Payment rate for the procedure.
+  entity_definitions:
+  - identity_id: payment_rate_identity
+    dataset_columns:
+    - payment_rate_id
+    entity_universe: complete
+  - identity_id: reimbursement_scheme_identity
+    dataset_columns:
+    - reimbursement_scheme_id
+    entity_universe: partial
+  - identity_id: procedure_category_identity
+    dataset_columns:
+    - procedure_category_id
+    entity_universe: partial
+  - identity_id: site_of_care_identity
+    dataset_columns:
+    - site_of_care_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: partial

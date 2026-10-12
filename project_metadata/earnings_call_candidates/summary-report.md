@@ -199,6 +199,17 @@ Two loadable schema version 3 catalogs now sit beside the question files. Each w
 
 Apple keeps demand quantity, component supply, and the price file as separate facts. Memory and silicon are purchased sources, not a wafer fab. Dell keeps traditional server and storage demand, AI-server backlog, and the price-versus-volume bridge apart. See each `warehouse/MODEL.md`.
 
+## Warehouse catalogs built for the health care equipment pair
+
+Two loadable schema version 3 catalogs now sit beside the question files. Each was assembled only from that company's slices. Both build as graphs with no unknown claims and no contradictory edges. These are device-maker graphs, separate from the healthcare-payer claims catalog.
+
+| Company | Catalog | Datasets | Relationships | Identities |
+| --- | --- | ---: | ---: | ---: |
+| Stryker | `health-care-equipment/syk/warehouse/` | 74 | 200 | 74 |
+| Intuitive Surgical | `health-care-equipment/isrg/warehouse/` | 65 | 168 | 65 |
+
+Stryker keeps procedure volume, capital backlog, and the reimbursement context as separate facts. Intuitive Surgical keeps procedure volume, the installed da Vinci base, and the margin bridge apart. See each `warehouse/MODEL.md`.
+
 ## Pairs to defer
 
 - **Specialty chemicals (113), managed care (106), airlines (104), and packaged foods (96)**

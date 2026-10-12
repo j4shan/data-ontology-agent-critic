@@ -1,0 +1,636 @@
+schema_version: '3'
+nodes:
+- node_id: sf:stryker.finance.dim_tariff_program
+  descriptor:
+    qualified_name: stryker.finance.dim_tariff_program
+    display_name: Tariff program
+    description: A tariff program that hits Stryker cost, including China.
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: stryker.us-east-1
+      database: STRYKER
+      schema: FINANCE
+      object: DIM_TARIFF_PROGRAM
+      format: table
+  grain:
+    description: One row is one tariff program.
+    components:
+    - identity_id: tariff_program_identity
+      dataset_columns:
+      - tariff_program_id
+  columns:
+  - name: tariff_program_id
+    description: Identifier of the tariff program. This dataset holds the complete population.
+  - name: country_id
+    description: Country the program is associated with. The complete population is not re-authored on
+      this dataset.
+  - name: program_name
+    description: Name of the tariff program.
+  entity_definitions:
+  - identity_id: tariff_program_identity
+    dataset_columns:
+    - tariff_program_id
+    entity_universe: complete
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+- node_id: sf:stryker.finance.fact_operating_margin
+  descriptor:
+    qualified_name: stryker.finance.fact_operating_margin
+    display_name: Operating margin
+    description: Operating margin and earnings for a quarter.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: stryker.us-east-1
+      database: STRYKER
+      schema: FINANCE
+      object: FACT_OPERATING_MARGIN
+      format: table
+  grain:
+    description: One row is one operating margin.
+    components:
+    - identity_id: operating_margin_identity
+      dataset_columns:
+      - operating_margin_id
+  columns:
+  - name: operating_margin_id
+    description: Identifier of the operating margin. This dataset holds the complete population.
+  - name: accounting_period_id
+    description: Quarter of the margin. The complete population is not re-authored on this dataset.
+  - name: legal_entity_id
+    description: Legal entity. The complete population is not re-authored on this dataset.
+  - name: currency_id
+    description: Currency of the earnings amount. The complete population is not re-authored on this dataset.
+  - name: operating_margin_rate
+    description: Operating margin rate.
+  - name: operating_margin_amount
+    description: Operating margin amount.
+  - name: earnings_amount
+    description: Earnings amount.
+  entity_definitions:
+  - identity_id: operating_margin_identity
+    dataset_columns:
+    - operating_margin_id
+    entity_universe: complete
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: legal_entity_identity
+    dataset_columns:
+    - legal_entity_id
+    entity_universe: partial
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: partial
+- node_id: sf:stryker.finance.fact_margin_outlook
+  descriptor:
+    qualified_name: stryker.finance.fact_margin_outlook
+    display_name: Margin outlook
+    description: Second-half, full-year, and multi-year operating-margin path, including the expansion
+      target through 2028.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: stryker.us-east-1
+      database: STRYKER
+      schema: FINANCE
+      object: FACT_MARGIN_OUTLOOK
+      format: table
+  grain:
+    description: One row is one margin outlook.
+    components:
+    - identity_id: margin_outlook_identity
+      dataset_columns:
+      - margin_outlook_id
+  columns:
+  - name: margin_outlook_id
+    description: Identifier of the margin outlook. This dataset holds the complete population.
+  - name: accounting_period_id
+    description: Quarter the outlook is stated. The complete population is not re-authored on this dataset.
+  - name: operating_margin_rate
+    description: Margin rate in the outlook.
+  - name: earnings_amount
+    description: Earnings embedded in the outlook.
+  - name: second_half_margin_rate
+    description: Margin rate embedded in the second half.
+  - name: full_year_margin_rate
+    description: Full-year margin rate.
+  - name: margin_expansion_bps
+    description: Expected margin expansion in basis points, including the 50 basis point year.
+  - name: multiyear_target_rate
+    description: Operating-margin target on the path through 2028.
+  - name: target_year
+    description: Year of the multi-year target.
+  - name: outlook_horizon_code
+    description: Horizon of the path.
+    value_description: second_half, full_year, through_2028
+  - name: path_intact_flag
+    description: 1 when the multi-year expansion path is still intact.
+  entity_definitions:
+  - identity_id: margin_outlook_identity
+    dataset_columns:
+    - margin_outlook_id
+    entity_universe: complete
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+- node_id: sf:stryker.finance.fact_margin_bridge
+  descriptor:
+    qualified_name: stryker.finance.fact_margin_bridge
+    display_name: Margin bridge
+    description: Margin change split into input inflation, offsets, price, mix, and tariff.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: stryker.us-east-1
+      database: STRYKER
+      schema: FINANCE
+      object: FACT_MARGIN_BRIDGE
+      format: table
+  grain:
+    description: One row is one margin bridge.
+    components:
+    - identity_id: margin_bridge_identity
+      dataset_columns:
+      - margin_bridge_id
+  columns:
+  - name: margin_bridge_id
+    description: Identifier of the margin bridge. This dataset holds the complete population.
+  - name: accounting_period_id
+    description: Quarter of the bridge. The complete population is not re-authored on this dataset.
+  - name: cost_element_id
+    description: Cost element on the bridge. The complete population is not re-authored on this dataset.
+  - name: currency_id
+    description: Currency of the amounts. The complete population is not re-authored on this dataset.
+  - name: input_inflation_amount
+    description: Margin effect of input inflation.
+  - name: offset_amount
+    description: Offset to inflation.
+  - name: price_effect_amount
+    description: Margin effect of price.
+  - name: mix_effect_amount
+    description: Margin effect of mix.
+  - name: tariff_effect_amount
+    description: Margin effect of tariffs.
+  - name: margin_change_bps
+    description: Net margin change in basis points.
+  entity_definitions:
+  - identity_id: margin_bridge_identity
+    dataset_columns:
+    - margin_bridge_id
+    entity_universe: complete
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: cost_element_identity
+    dataset_columns:
+    - cost_element_id
+    entity_universe: partial
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: partial
+- node_id: sf:stryker.finance.fact_earnings_outlook
+  descriptor:
+    qualified_name: stryker.finance.fact_earnings_outlook
+    display_name: Earnings outlook
+    description: Sales and earnings cadence for the rest of the year, including an outlook reiterated
+      after the disruption.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: stryker.us-east-1
+      database: STRYKER
+      schema: FINANCE
+      object: FACT_EARNINGS_OUTLOOK
+      format: table
+  grain:
+    description: One row is one earnings outlook.
+    components:
+    - identity_id: earnings_outlook_identity
+      dataset_columns:
+      - earnings_outlook_id
+  columns:
+  - name: earnings_outlook_id
+    description: Identifier of the earnings outlook. This dataset holds the complete population.
+  - name: accounting_period_id
+    description: Quarter the cadence refers to. The complete population is not re-authored on this dataset.
+  - name: currency_id
+    description: Currency of the amounts. The complete population is not re-authored on this dataset.
+  - name: earnings_amount
+    description: Earnings in the cadence.
+  - name: organic_sales_amount
+    description: Organic sales in the cadence.
+  - name: cadence_code
+    description: Which part of the year.
+    value_description: remaining_year, second_half, full_year
+  - name: reiterated_despite_disruption_flag
+    description: 1 when the outlook was reiterated despite the disruption.
+  - name: cyber_incident_flag
+    description: 1 when the cyber incident is in the cadence.
+  entity_definitions:
+  - identity_id: earnings_outlook_identity
+    dataset_columns:
+    - earnings_outlook_id
+    entity_universe: complete
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: partial
+- node_id: sf:stryker.finance.fact_input_cost
+  descriptor:
+    qualified_name: stryker.finance.fact_input_cost
+    display_name: Input cost
+    description: Higher input cost, including oil, and the offset that protects the margin guide.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: stryker.us-east-1
+      database: STRYKER
+      schema: FINANCE
+      object: FACT_INPUT_COST
+      format: table
+  grain:
+    description: One row is one input cost.
+    components:
+    - identity_id: input_cost_identity
+      dataset_columns:
+      - input_cost_id
+  columns:
+  - name: input_cost_id
+    description: Identifier of the input cost. This dataset holds the complete population.
+  - name: accounting_period_id
+    description: Quarter of the cost. The complete population is not re-authored on this dataset.
+  - name: cost_element_id
+    description: Cost element. The complete population is not re-authored on this dataset.
+  - name: currency_id
+    description: Currency of the cost. The complete population is not re-authored on this dataset.
+  - name: input_cost_change_amount
+    description: Change in input cost.
+  - name: offset_amount
+    description: Amount offsetting the input cost.
+  - name: margin_guide_bps
+    description: Margin expansion still guided, in basis points.
+  - name: cost_driver_code
+    description: Driver of the cost.
+    value_description: oil, other_inflation
+  entity_definitions:
+  - identity_id: input_cost_identity
+    dataset_columns:
+    - input_cost_id
+    entity_universe: complete
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: cost_element_identity
+    dataset_columns:
+    - cost_element_id
+    entity_universe: partial
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: partial
+- node_id: sf:stryker.finance.fact_price_realization
+  descriptor:
+    qualified_name: stryker.finance.fact_price_realization
+    display_name: Price realization
+    description: Capital, implant, MedSurg, and orthopedic price versus last year, including whether a
+      MedSurg price benefit was temporary.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: stryker.us-east-1
+      database: STRYKER
+      schema: FINANCE
+      object: FACT_PRICE_REALIZATION
+      format: table
+  grain:
+    description: One row is one price realization.
+    components:
+    - identity_id: price_realization_identity
+      dataset_columns:
+      - price_realization_id
+  columns:
+  - name: price_realization_id
+    description: Identifier of the price realization. This dataset holds the complete population.
+  - name: product_franchise_id
+    description: Franchise whose price is measured. The complete population is not re-authored on this
+      dataset.
+  - name: procedure_family_id
+    description: Procedure family, when price is procedure-specific. The complete population is not re-authored
+      on this dataset.
+  - name: capital_system_id
+    description: Capital system, when the price is a system price. The complete population is not re-authored
+      on this dataset.
+  - name: country_id
+    description: Country of the price. The complete population is not re-authored on this dataset.
+  - name: site_of_care_id
+    description: Site of care, when price differs in a surgery center. The complete population is not
+      re-authored on this dataset.
+  - name: accounting_period_id
+    description: Quarter of the price. The complete population is not re-authored on this dataset.
+  - name: currency_id
+    description: Currency of the price. The complete population is not re-authored on this dataset.
+  - name: price_type_code
+    description: Which price.
+    value_description: capital, implant, medsurg, orthopedic
+  - name: price_change_rate
+    description: Price change this period.
+  - name: prior_year_price_change_rate
+    description: Price change in the comparison period.
+  - name: temporary_flag
+    description: 1 when the price benefit is temporary.
+  - name: company_price_dependence_flag
+    description: 1 when company price depends on this franchise price recovering.
+  - name: assumed_price_rate
+    description: Price change assumed for the coming year.
+  - name: capital_environment_code
+    description: Capital-equipment environment alongside price.
+    value_description: strong, soft
+  - name: asc_price_amount
+    description: Price realized in the ambulatory surgery center.
+  - name: volume_balance_amount
+    description: Volume that offsets or accompanies the price change.
+  entity_definitions:
+  - identity_id: price_realization_identity
+    dataset_columns:
+    - price_realization_id
+    entity_universe: complete
+  - identity_id: product_franchise_identity
+    dataset_columns:
+    - product_franchise_id
+    entity_universe: partial
+  - identity_id: procedure_family_identity
+    dataset_columns:
+    - procedure_family_id
+    entity_universe: partial
+  - identity_id: capital_system_identity
+    dataset_columns:
+    - capital_system_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: site_of_care_identity
+    dataset_columns:
+    - site_of_care_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: partial
+- node_id: sf:stryker.finance.fact_organic_sales_bridge
+  descriptor:
+    qualified_name: stryker.finance.fact_organic_sales_bridge
+    display_name: Organic sales bridge
+    description: Quarterly sales split into underlying demand, procedure catch-up, revenue recognition,
+      and capital.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: stryker.us-east-1
+      database: STRYKER
+      schema: FINANCE
+      object: FACT_ORGANIC_SALES_BRIDGE
+      format: table
+  grain:
+    description: One row is one organic sales bridge.
+    components:
+    - identity_id: organic_sales_bridge_identity
+      dataset_columns:
+      - organic_sales_bridge_id
+  columns:
+  - name: organic_sales_bridge_id
+    description: Identifier of the organic sales bridge. This dataset holds the complete population.
+  - name: accounting_period_id
+    description: Quarter of the bridge. The complete population is not re-authored on this dataset.
+  - name: product_franchise_id
+    description: Franchise, such as vascular, hips, or medical. The complete population is not re-authored
+      on this dataset.
+  - name: procedure_family_id
+    description: Procedure family, when the bridge is procedure-specific. The complete population is not
+      re-authored on this dataset.
+  - name: country_id
+    description: Country of the sales. The complete population is not re-authored on this dataset.
+  - name: currency_id
+    description: Currency of the amounts. The complete population is not re-authored on this dataset.
+  - name: underlying_demand_amount
+    description: Sales from underlying demand.
+  - name: catchup_demand_amount
+    description: Sales from catch-up of delayed demand.
+  - name: revenue_recognition_amount
+    description: Sales from revenue recognition timing.
+  - name: capital_amount
+    description: Capital equipment sales.
+  - name: procedure_amount
+    description: Procedure-related sales.
+  - name: remaining_recovery_amount
+    description: Recovery still ahead after this quarter.
+  - name: organic_sales_amount
+    description: Organic sales.
+  - name: organic_growth_rate
+    description: Organic growth rate.
+  entity_definitions:
+  - identity_id: organic_sales_bridge_identity
+    dataset_columns:
+    - organic_sales_bridge_id
+    entity_universe: complete
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: product_franchise_identity
+    dataset_columns:
+    - product_franchise_id
+    entity_universe: partial
+  - identity_id: procedure_family_identity
+    dataset_columns:
+    - procedure_family_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: partial
+- node_id: sf:stryker.finance.fact_tariff_cost
+  descriptor:
+    qualified_name: stryker.finance.fact_tariff_cost
+    display_name: Tariff cost
+    description: Tariff cost, mitigation, and estimate revisions, tied to where products are made and
+      to China.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: stryker.us-east-1
+      database: STRYKER
+      schema: FINANCE
+      object: FACT_TARIFF_COST
+      format: table
+  grain:
+    description: One row is one tariff cost.
+    components:
+    - identity_id: tariff_cost_identity
+      dataset_columns:
+      - tariff_cost_id
+  columns:
+  - name: tariff_cost_id
+    description: Identifier of the tariff cost. This dataset holds the complete population.
+  - name: tariff_program_id
+    description: Tariff program. The complete population is not re-authored on this dataset.
+  - name: manufacturing_plant_id
+    description: Plant whose footprint drives the tariff. The complete population is not re-authored on
+      this dataset.
+  - name: country_id
+    description: Country of the tariff or the market, including China. The complete population is not
+      re-authored on this dataset.
+  - name: accounting_period_id
+    description: Quarter of the tariff cost. The complete population is not re-authored on this dataset.
+  - name: currency_id
+    description: Currency of the cost. The complete population is not re-authored on this dataset.
+  - name: tariff_cost_amount
+    description: Tariff cost.
+  - name: mitigation_amount
+    description: Cost reduced by mitigation.
+  - name: estimate_revision_amount
+    description: Change in the tariff estimate.
+  - name: absorbed_flag
+    description: 1 when the tariff cost can be absorbed.
+  - name: manufacturing_footprint_code
+    description: How the plant footprint explains the estimate.
+    value_description: domestic, imported, mixed
+  - name: china_under_indexed_flag
+    description: 1 when Stryker is under-indexed in China.
+  - name: local_market_rule_effect_amount
+    description: Effect of local-market rules alongside the tariff.
+  entity_definitions:
+  - identity_id: tariff_cost_identity
+    dataset_columns:
+    - tariff_cost_id
+    entity_universe: complete
+  - identity_id: tariff_program_identity
+    dataset_columns:
+    - tariff_program_id
+    entity_universe: partial
+  - identity_id: manufacturing_plant_identity
+    dataset_columns:
+    - manufacturing_plant_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: partial
+- node_id: sf:stryker.finance.fact_guidance
+  descriptor:
+    qualified_name: stryker.finance.fact_guidance
+    display_name: Guidance
+    description: Organic-growth and earnings guidance, including the back-half drivers of volume, capital
+      conversion, and backlog realization.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: stryker.us-east-1
+      database: STRYKER
+      schema: FINANCE
+      object: FACT_GUIDANCE
+      format: table
+  grain:
+    description: One row is one guidance.
+    components:
+    - identity_id: guidance_identity
+      dataset_columns:
+      - guidance_id
+  columns:
+  - name: guidance_id
+    description: Identifier of the guidance. This dataset holds the complete population.
+  - name: accounting_period_id
+    description: Quarter the guidance is about. The complete population is not re-authored on this dataset.
+  - name: currency_id
+    description: Currency of the earnings guide. The complete population is not re-authored on this dataset.
+  - name: organic_growth_guide_rate
+    description: Guided organic growth.
+  - name: earnings_guide_amount
+    description: Guided earnings.
+  - name: full_year_outlook_amount
+    description: Full-year outlook amount.
+  - name: higher_start_guide_flag
+    description: 1 when the year starts with slightly higher organic-growth guidance.
+  - name: ten_percent_year_possible_flag
+    description: 1 when a 10 percent growth year is still possible.
+  - name: investor_day_market_growth_rate
+    description: Market growth discussed at the investor day.
+  - name: second_half_growth_rate
+    description: Growth rate embedded in the second half.
+  - name: first_half_growth_rate
+    description: Growth rate of the first half, the run-rate comparison.
+  - name: step_down_reason_code
+    description: Why the back half steps down.
+    value_description: conservatism, slowdown
+  - name: volume_growth_assumption_rate
+    description: Procedure volume growth assumed in the back half.
+  - name: capital_conversion_assumption_rate
+    description: Capital conversion assumed in the back half.
+  - name: backlog_realization_assumption_amount
+    description: Backlog realization assumed in the back half.
+  - name: disruption_adjusted_flag
+    description: 1 when the guide is stated after the disruption.
+  entity_definitions:
+  - identity_id: guidance_identity
+    dataset_columns:
+    - guidance_id
+    entity_universe: complete
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: partial

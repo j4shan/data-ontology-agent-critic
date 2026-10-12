@@ -1,0 +1,427 @@
+schema_version: '3'
+nodes:
+- node_id: sf:intuitive.calendar.dim_accounting_period
+  descriptor:
+    qualified_name: intuitive.calendar.dim_accounting_period
+    display_name: Accounting period
+    description: An Intuitive fiscal quarter.
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: intuitive.us-west-1
+      database: INTUITIVE_SURGICAL
+      schema: CALENDAR
+      object: DIM_ACCOUNTING_PERIOD
+      format: table
+  grain:
+    description: One row is one accounting period.
+    components:
+    - identity_id: accounting_period_identity
+      dataset_columns:
+      - accounting_period_id
+  columns:
+  - name: accounting_period_id
+    description: Identifier of the accounting period. This dataset holds the complete population.
+  - name: period_label
+    description: Label of the quarter.
+  - name: fiscal_year
+    description: Fiscal year.
+  - name: fiscal_quarter
+    description: Fiscal quarter number.
+  entity_definitions:
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: complete
+- node_id: sf:intuitive.calendar.dim_calendar_day
+  descriptor:
+    qualified_name: intuitive.calendar.dim_calendar_day
+    display_name: Calendar day
+    description: A calendar day for clearance dates. Every day belongs to one quarter, and every quarter
+      has at least one day.
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: intuitive.us-west-1
+      database: INTUITIVE_SURGICAL
+      schema: CALENDAR
+      object: DIM_CALENDAR_DAY
+      format: table
+  grain:
+    description: One row is one calendar day.
+    components:
+    - identity_id: calendar_day_identity
+      dataset_columns:
+      - calendar_day_id
+  columns:
+  - name: calendar_day_id
+    description: Identifier of the calendar day. This dataset holds the complete population.
+  - name: accounting_period_id
+    description: Quarter that contains the day. The complete population is not re-authored on this dataset.
+  - name: calendar_date
+    description: Civil date of the day.
+  entity_definitions:
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    entity_universe: complete
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+- node_id: sf:intuitive.finance.dim_currency
+  descriptor:
+    qualified_name: intuitive.finance.dim_currency
+    display_name: Currency
+    description: A currency for margin, price, and tariff cost.
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: intuitive.us-west-1
+      database: INTUITIVE_SURGICAL
+      schema: FINANCE
+      object: DIM_CURRENCY
+      format: table
+  grain:
+    description: One row is one currency.
+    components:
+    - identity_id: currency_identity
+      dataset_columns:
+      - currency_id
+  columns:
+  - name: currency_id
+    description: Identifier of the currency. This dataset holds the complete population.
+  - name: currency_code
+    description: Currency code.
+  - name: currency_name
+    description: Name of the currency.
+  entity_definitions:
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: complete
+- node_id: sf:intuitive.finance.dim_legal_entity
+  descriptor:
+    qualified_name: intuitive.finance.dim_legal_entity
+    display_name: Legal entity
+    description: An Intuitive legal entity that posts the ledger.
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: intuitive.us-west-1
+      database: INTUITIVE_SURGICAL
+      schema: FINANCE
+      object: DIM_LEGAL_ENTITY
+      format: table
+  grain:
+    description: One row is one legal entity.
+    components:
+    - identity_id: legal_entity_identity
+      dataset_columns:
+      - legal_entity_id
+  columns:
+  - name: legal_entity_id
+    description: Identifier of the legal entity. This dataset holds the complete population.
+  - name: legal_entity_name
+    description: Name of the legal entity.
+  entity_definitions:
+  - identity_id: legal_entity_identity
+    dataset_columns:
+    - legal_entity_id
+    entity_universe: complete
+- node_id: sf:intuitive.finance.dim_gl_account
+  descriptor:
+    qualified_name: intuitive.finance.dim_gl_account
+    display_name: GL account
+    description: A general-ledger account.
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: intuitive.us-west-1
+      database: INTUITIVE_SURGICAL
+      schema: FINANCE
+      object: DIM_GL_ACCOUNT
+      format: table
+  grain:
+    description: One row is one gl account.
+    components:
+    - identity_id: gl_account_identity
+      dataset_columns:
+      - gl_account_id
+  columns:
+  - name: gl_account_id
+    description: Identifier of the gl account. This dataset holds the complete population.
+  - name: account_name
+    description: Name of the account.
+  - name: statement_line
+    description: Statement line.
+    value_description: revenue, gross_margin, tariff, instrument_cost
+  entity_definitions:
+  - identity_id: gl_account_identity
+    dataset_columns:
+    - gl_account_id
+    entity_universe: complete
+- node_id: sf:intuitive.finance.dim_cost_element
+  descriptor:
+    qualified_name: intuitive.finance.dim_cost_element
+    display_name: Cost element
+    description: A cost element in the margin bridge.
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: intuitive.us-west-1
+      database: INTUITIVE_SURGICAL
+      schema: FINANCE
+      object: DIM_COST_ELEMENT
+      format: table
+  grain:
+    description: One row is one cost element.
+    components:
+    - identity_id: cost_element_identity
+      dataset_columns:
+      - cost_element_id
+  columns:
+  - name: cost_element_id
+    description: Identifier of the cost element. This dataset holds the complete population.
+  - name: element_name
+    description: Name of the cost element.
+  - name: element_code
+    description: Element code.
+    value_description: tariff, product_cost, facility, mix, other
+  entity_definitions:
+  - identity_id: cost_element_identity
+    dataset_columns:
+    - cost_element_id
+    entity_universe: complete
+- node_id: sf:intuitive.finance.dim_manufacturing_facility
+  descriptor:
+    qualified_name: intuitive.finance.dim_manufacturing_facility
+    display_name: Manufacturing facility
+    description: A plant, including a new facility, whose startup affects gross margin.
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: intuitive.us-west-1
+      database: INTUITIVE_SURGICAL
+      schema: FINANCE
+      object: DIM_MANUFACTURING_FACILITY
+      format: table
+  grain:
+    description: One row is one manufacturing facility.
+    components:
+    - identity_id: manufacturing_facility_identity
+      dataset_columns:
+      - manufacturing_facility_id
+  columns:
+  - name: manufacturing_facility_id
+    description: Identifier of the manufacturing facility. This dataset holds the complete population.
+  - name: country_id
+    description: Country of the facility. The complete population is not re-authored on this dataset.
+  - name: facility_name
+    description: Name of the facility.
+  - name: new_facility_flag
+    description: 1 when the facility is the new plant.
+  entity_definitions:
+  - identity_id: manufacturing_facility_identity
+    dataset_columns:
+    - manufacturing_facility_id
+    entity_universe: complete
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+- node_id: sf:intuitive.finance.dim_reimbursement_scheme
+  descriptor:
+    qualified_name: intuitive.finance.dim_reimbursement_scheme
+    display_name: Reimbursement scheme
+    description: A payment context Intuitive watches for surgery-center economics. This is not a payer
+      remittance ledger.
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: intuitive.us-west-1
+      database: INTUITIVE_SURGICAL
+      schema: FINANCE
+      object: DIM_REIMBURSEMENT_SCHEME
+      format: table
+  grain:
+    description: One row is one reimbursement scheme.
+    components:
+    - identity_id: reimbursement_scheme_identity
+      dataset_columns:
+      - reimbursement_scheme_id
+  columns:
+  - name: reimbursement_scheme_id
+    description: Identifier of the reimbursement scheme. This dataset holds the complete population.
+  - name: country_id
+    description: Country of the scheme. The complete population is not re-authored on this dataset.
+  - name: scheme_name
+    description: Name of the scheme.
+  - name: scheme_code
+    description: Scheme code.
+    value_description: medicare, medicaid, commercial, exchange
+  entity_definitions:
+  - identity_id: reimbursement_scheme_identity
+    dataset_columns:
+    - reimbursement_scheme_id
+    entity_universe: complete
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+- node_id: sf:intuitive.finance.dim_tariff_program
+  descriptor:
+    qualified_name: intuitive.finance.dim_tariff_program
+    display_name: Tariff program
+    description: A tariff program in the gross-margin outlook.
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: intuitive.us-west-1
+      database: INTUITIVE_SURGICAL
+      schema: FINANCE
+      object: DIM_TARIFF_PROGRAM
+      format: table
+  grain:
+    description: One row is one tariff program.
+    components:
+    - identity_id: tariff_program_identity
+      dataset_columns:
+      - tariff_program_id
+  columns:
+  - name: tariff_program_id
+    description: Identifier of the tariff program. This dataset holds the complete population.
+  - name: program_name
+    description: Name of the tariff program.
+  entity_definitions:
+  - identity_id: tariff_program_identity
+    dataset_columns:
+    - tariff_program_id
+    entity_universe: complete
+- node_id: sf:intuitive.finance.fact_journal_line
+  descriptor:
+    qualified_name: intuitive.finance.fact_journal_line
+    display_name: Journal line
+    description: A posted ledger line for revenue, cost, and margin.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: intuitive.us-west-1
+      database: INTUITIVE_SURGICAL
+      schema: FINANCE
+      object: FACT_JOURNAL_LINE
+      format: table
+  grain:
+    description: One row is one journal line.
+    components:
+    - identity_id: journal_line_identity
+      dataset_columns:
+      - journal_line_id
+  columns:
+  - name: journal_line_id
+    description: Identifier of the journal line. This dataset holds the complete population.
+  - name: legal_entity_id
+    description: Legal entity. The complete population is not re-authored on this dataset.
+  - name: gl_account_id
+    description: Account posted. The complete population is not re-authored on this dataset.
+  - name: accounting_period_id
+    description: Quarter of the posting. The complete population is not re-authored on this dataset.
+  - name: currency_id
+    description: Currency of the amount. The complete population is not re-authored on this dataset.
+  - name: cost_element_id
+    description: Cost element, when the line is a cost. The complete population is not re-authored on
+      this dataset.
+  - name: signed_amount
+    description: Signed posted amount.
+  entity_definitions:
+  - identity_id: journal_line_identity
+    dataset_columns:
+    - journal_line_id
+    entity_universe: complete
+  - identity_id: legal_entity_identity
+    dataset_columns:
+    - legal_entity_id
+    entity_universe: partial
+  - identity_id: gl_account_identity
+    dataset_columns:
+    - gl_account_id
+    entity_universe: partial
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: partial
+  - identity_id: cost_element_identity
+    dataset_columns:
+    - cost_element_id
+    entity_universe: partial
+- node_id: sf:intuitive.finance.fact_exchange_rate
+  descriptor:
+    qualified_name: intuitive.finance.fact_exchange_rate
+    display_name: Exchange rate
+    description: A daily translation rate. The source currency is stored as a second role of the currency
+      population.
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: intuitive.us-west-1
+      database: INTUITIVE_SURGICAL
+      schema: FINANCE
+      object: FACT_EXCHANGE_RATE
+      format: table
+  grain:
+    description: One row is one exchange rate.
+    components:
+    - identity_id: exchange_rate_identity
+      dataset_columns:
+      - exchange_rate_id
+  columns:
+  - name: exchange_rate_id
+    description: Identifier of the exchange rate. This dataset holds the complete population.
+  - name: from_currency_id
+    description: Currency being translated. Same currency population, stored as a second role rather than
+      a second join. The complete population is not re-authored on this dataset.
+  - name: to_currency_id
+    description: Currency translated into. The complete population is not re-authored on this dataset.
+  - name: calendar_day_id
+    description: Day of the rate. The complete population is not re-authored on this dataset.
+  - name: rate_amount
+    description: Translation rate.
+  entity_definitions:
+  - identity_id: exchange_rate_identity
+    dataset_columns:
+    - exchange_rate_id
+    entity_universe: complete
+  - identity_id: currency_identity
+    dataset_columns:
+    - to_currency_id
+    entity_universe: partial
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    entity_universe: partial
