@@ -1,0 +1,1136 @@
+schema_version: '3'
+nodes:
+- node_id: sf:equinix.power.dim_campus
+  descriptor:
+    qualified_name: equinix.power.dim_campus
+    display_name: Campus
+    description: A colocation campus, including campuses such as Chicago and Manukau. A campus is not
+      an office building.
+    synonyms:
+    - site
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: equinix.us-west-1
+      database: EQUINIX
+      schema: POWER
+      object: DIM_CAMPUS
+      format: table
+  grain:
+    description: One row is one campus.
+    components:
+    - identity_id: campus_identity
+      dataset_columns:
+      - campus_id
+      description: Identifier of the campus.
+  columns:
+  - name: campus_id
+    description: Identifier of the campus. This dataset holds the complete population.
+  - name: metro_id
+    description: Metro that contains the campus. The population is owned by its complete dataset.
+  - name: campus_name
+    description: Name of the campus.
+  - name: campus_code
+    description: Short code of the campus.
+  entity_definitions:
+  - identity_id: campus_identity
+    dataset_columns:
+    - campus_id
+    entity_universe: complete
+  - identity_id: metro_identity
+    dataset_columns:
+    - metro_id
+    entity_universe: partial
+- node_id: sf:equinix.power.dim_ibx
+  descriptor:
+    qualified_name: equinix.power.dim_ibx
+    display_name: IBX
+    description: An IBX data center on a campus.
+    synonyms:
+    - data center
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: equinix.us-west-1
+      database: EQUINIX
+      schema: POWER
+      object: DIM_IBX
+      format: table
+  grain:
+    description: One row is one ibx.
+    components:
+    - identity_id: ibx_identity
+      dataset_columns:
+      - ibx_id
+      description: Identifier of the IBX.
+  columns:
+  - name: ibx_id
+    description: Identifier of the IBX. This dataset holds the complete population.
+  - name: campus_id
+    description: Campus that contains the IBX. The population is owned by its complete dataset.
+  - name: metro_id
+    description: Metro of the IBX. The population is owned by its complete dataset.
+  - name: ibx_code
+    description: Code of the IBX.
+  entity_definitions:
+  - identity_id: ibx_identity
+    dataset_columns:
+    - ibx_id
+    entity_universe: complete
+  - identity_id: campus_identity
+    dataset_columns:
+    - campus_id
+    entity_universe: partial
+  - identity_id: metro_identity
+    dataset_columns:
+    - metro_id
+    entity_universe: partial
+- node_id: sf:equinix.power.dim_land_site
+  descriptor:
+    qualified_name: equinix.power.dim_land_site
+    display_name: Land Site
+    description: A land site in the development bank, with its size rank and intended product.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: equinix.us-west-1
+      database: EQUINIX
+      schema: POWER
+      object: DIM_LAND_SITE
+      format: table
+  grain:
+    description: One row is one land site.
+    components:
+    - identity_id: land_site_identity
+      dataset_columns:
+      - land_site_id
+      description: Identifier of the land site.
+  columns:
+  - name: land_site_id
+    description: Identifier of the land site. This dataset holds the complete population.
+  - name: metro_id
+    description: Metro of the land site. The population is owned by its complete dataset.
+  - name: product_line_id
+    description: Intended product line, xScale or retail. The population is owned by its complete dataset.
+  - name: site_name
+    description: Name of the land site.
+  - name: relative_size_rank
+    description: Size rank of the site within the land bank. Lower is larger.
+  entity_definitions:
+  - identity_id: land_site_identity
+    dataset_columns:
+    - land_site_id
+    entity_universe: complete
+  - identity_id: metro_identity
+    dataset_columns:
+    - metro_id
+    entity_universe: partial
+  - identity_id: product_line_identity
+    dataset_columns:
+    - product_line_id
+    entity_universe: partial
+- node_id: sf:equinix.power.dim_development_project
+  descriptor:
+    qualified_name: equinix.power.dim_development_project
+    display_name: Development Project
+    description: A development project that adds IT capacity. xScale projects are flagged on the project.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: equinix.us-west-1
+      database: EQUINIX
+      schema: POWER
+      object: DIM_DEVELOPMENT_PROJECT
+      format: table
+  grain:
+    description: One row is one development project.
+    components:
+    - identity_id: development_project_identity
+      dataset_columns:
+      - development_project_id
+      description: Identifier of the development project.
+  columns:
+  - name: development_project_id
+    description: Identifier of the development project. This dataset holds the complete population.
+  - name: campus_id
+    description: Campus the project expands. The population is owned by its complete dataset.
+  - name: metro_id
+    description: Metro of the project. The population is owned by its complete dataset.
+  - name: product_line_id
+    description: Product line the project builds. The population is owned by its complete dataset.
+  - name: land_site_id
+    description: Land site the project uses. The population is owned by its complete dataset.
+  - name: project_name
+    description: Name of the project.
+  - name: xscale_flag
+    description: Whether the project is xScale.
+    value_description: true or false.
+  entity_definitions:
+  - identity_id: development_project_identity
+    dataset_columns:
+    - development_project_id
+    entity_universe: complete
+  - identity_id: campus_identity
+    dataset_columns:
+    - campus_id
+    entity_universe: partial
+  - identity_id: metro_identity
+    dataset_columns:
+    - metro_id
+    entity_universe: partial
+  - identity_id: product_line_identity
+    dataset_columns:
+    - product_line_id
+    entity_universe: partial
+  - identity_id: land_site_identity
+    dataset_columns:
+    - land_site_id
+    entity_universe: partial
+- node_id: sf:equinix.power.dim_power_source
+  descriptor:
+    qualified_name: equinix.power.dim_power_source
+    display_name: Power Source
+    description: A utility or other source that supplies a project.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: equinix.us-west-1
+      database: EQUINIX
+      schema: POWER
+      object: DIM_POWER_SOURCE
+      format: table
+  grain:
+    description: One row is one power source.
+    components:
+    - identity_id: power_source_identity
+      dataset_columns:
+      - power_source_id
+      description: Identifier of the power source.
+  columns:
+  - name: power_source_id
+    description: Identifier of the power source. This dataset holds the complete population.
+  - name: source_name
+    description: Name of the power source.
+  entity_definitions:
+  - identity_id: power_source_identity
+    dataset_columns:
+    - power_source_id
+    entity_universe: complete
+- node_id: sf:equinix.power.dim_cooling_technology
+  descriptor:
+    qualified_name: equinix.power.dim_cooling_technology
+    display_name: Cooling Technology
+    description: Liquid cooling, direct-to-chip, or immersion.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: equinix.us-west-1
+      database: EQUINIX
+      schema: POWER
+      object: DIM_COOLING_TECHNOLOGY
+      format: table
+  grain:
+    description: One row is one cooling technology.
+    components:
+    - identity_id: cooling_technology_identity
+      dataset_columns:
+      - cooling_technology_id
+      description: Identifier of the cooling technology.
+  columns:
+  - name: cooling_technology_id
+    description: Identifier of the cooling technology. This dataset holds the complete population.
+  - name: technology_name
+    description: Name of the cooling technology.
+  - name: technology_code
+    description: Code of the cooling technology.
+    value_description: liquid, direct_to_chip, or immersion.
+  entity_definitions:
+  - identity_id: cooling_technology_identity
+    dataset_columns:
+    - cooling_technology_id
+    entity_universe: complete
+- node_id: sf:equinix.power.dim_density_class
+  descriptor:
+    qualified_name: equinix.power.dim_density_class
+    display_name: Density Class
+    description: A power-density class used to compare traditional and dense deployments.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: equinix.us-west-1
+      database: EQUINIX
+      schema: POWER
+      object: DIM_DENSITY_CLASS
+      format: table
+  grain:
+    description: One row is one density class.
+    components:
+    - identity_id: density_class_identity
+      dataset_columns:
+      - density_class_id
+      description: Identifier of the density class.
+  columns:
+  - name: density_class_id
+    description: Identifier of the density class. This dataset holds the complete population.
+  - name: class_name
+    description: Name of the density class.
+  entity_definitions:
+  - identity_id: density_class_identity
+    dataset_columns:
+    - density_class_id
+    entity_universe: complete
+- node_id: sf:equinix.power.fact_development_spend
+  descriptor:
+    qualified_name: equinix.power.fact_development_spend
+    display_name: Development Spend
+    description: Development capital by project and year, including the raise versus the prior plan and
+      whether spend is front-loaded.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: equinix.us-west-1
+      database: EQUINIX
+      schema: POWER
+      object: FACT_DEVELOPMENT_SPEND
+      format: table
+  grain:
+    description: One row is one development spend.
+    components:
+    - identity_id: development_spend_identity
+      dataset_columns:
+      - development_spend_id
+      description: Identifier of the development spend row.
+  columns:
+  - name: development_spend_id
+    description: Identifier of the development spend row. This dataset holds the complete population.
+  - name: fiscal_year_id
+    description: Year of the spend. The population is owned by its complete dataset.
+  - name: fiscal_quarter_id
+    description: Quarter of the spend, when the row is quarterly. The population is owned by its complete
+      dataset.
+  - name: development_project_id
+    description: Project being funded. The population is owned by its complete dataset.
+  - name: region_id
+    description: Region of the spend. The population is owned by its complete dataset.
+  - name: capital_spend_amount
+    description: Development capital spend.
+  - name: prior_plan_amount
+    description: Spend in the prior plan for the same project and year.
+  - name: spend_increase_amount
+    description: Increase versus the prior plan.
+  - name: demand_support_flag
+    description: Whether booked and pipeline demand supports the increase.
+    value_description: true or false.
+  - name: front_loaded_flag
+    description: Whether this year's spend is front-loaded versus the multi-year program.
+    value_description: true or false.
+  - name: run_rate_amount
+    description: Annual spend treated as the ongoing run rate.
+  - name: multiyear_program_amount
+    description: Remaining multi-year program spend.
+  entity_definitions:
+  - identity_id: development_spend_identity
+    dataset_columns:
+    - development_spend_id
+    entity_universe: complete
+  - identity_id: fiscal_year_identity
+    dataset_columns:
+    - fiscal_year_id
+    entity_universe: partial
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: development_project_identity
+    dataset_columns:
+    - development_project_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:equinix.power.fact_demand_case
+  descriptor:
+    qualified_name: equinix.power.fact_demand_case
+    display_name: Demand Case
+    description: A lower-demand case for whether the capital plan can still be deployed.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: equinix.us-west-1
+      database: EQUINIX
+      schema: POWER
+      object: FACT_DEMAND_CASE
+      format: table
+  grain:
+    description: One row is one demand case.
+    components:
+    - identity_id: demand_case_identity
+      dataset_columns:
+      - demand_case_id
+      description: Identifier of the demand case.
+  columns:
+  - name: demand_case_id
+    description: Identifier of the demand case. This dataset holds the complete population.
+  - name: fiscal_year_id
+    description: Year of the case. The population is owned by its complete dataset.
+  - name: region_id
+    description: Region of the case. The population is owned by its complete dataset.
+  - name: base_demand_mw
+    description: Base-case demand in megawatts.
+  - name: lower_demand_mw
+    description: Lower-demand case in megawatts.
+  - name: deployable_flag
+    description: Whether the capital plan is still deployable in the lower-demand case.
+    value_description: true or false.
+  - name: risk_step_code
+    description: Operating step if demand misses.
+    value_description: slow_start, resequence, or hold.
+  entity_definitions:
+  - identity_id: demand_case_identity
+    dataset_columns:
+    - demand_case_id
+    entity_universe: complete
+  - identity_id: fiscal_year_identity
+    dataset_columns:
+    - fiscal_year_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:equinix.power.fact_market_power
+  descriptor:
+    qualified_name: equinix.power.fact_market_power
+    display_name: Market Power
+    description: Planned IT megawatts versus power actually available in a metro, including power-constrained
+      top markets.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: equinix.us-west-1
+      database: EQUINIX
+      schema: POWER
+      object: FACT_MARKET_POWER
+      format: table
+  grain:
+    description: One row is one market power.
+    components:
+    - identity_id: market_power_identity
+      dataset_columns:
+      - market_power_id
+      description: Identifier of the market power row.
+  columns:
+  - name: market_power_id
+    description: Identifier of the market power row. This dataset holds the complete population.
+  - name: fiscal_year_id
+    description: Year of the power view. The population is owned by its complete dataset.
+  - name: metro_id
+    description: Metro, including top constrained markets. The population is owned by its complete dataset.
+  - name: planned_it_mw
+    description: Planned IT capacity in megawatts.
+  - name: power_available_mw
+    description: Megawatts of power available to support that plan.
+  - name: power_supported_mw
+    description: Planned megawatts that have power.
+  - name: top_market_flag
+    description: Whether the metro is a top market.
+    value_description: true or false.
+  - name: constrained_flag
+    description: Whether the metro is power constrained.
+    value_description: true or false.
+  entity_definitions:
+  - identity_id: market_power_identity
+    dataset_columns:
+    - market_power_id
+    entity_universe: complete
+  - identity_id: fiscal_year_identity
+    dataset_columns:
+    - fiscal_year_id
+    entity_universe: partial
+  - identity_id: metro_identity
+    dataset_columns:
+    - metro_id
+    entity_universe: partial
+- node_id: sf:equinix.power.fact_capacity_plan
+  descriptor:
+    qualified_name: equinix.power.fact_capacity_plan
+    display_name: Capacity Plan
+    description: Annual IT gigawatts against the larger developable pool, and spend per megawatt.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: equinix.us-west-1
+      database: EQUINIX
+      schema: POWER
+      object: FACT_CAPACITY_PLAN
+      format: table
+  grain:
+    description: One row is one capacity plan.
+    components:
+    - identity_id: capacity_plan_identity
+      dataset_columns:
+      - capacity_plan_id
+      description: Identifier of the capacity plan row.
+  columns:
+  - name: capacity_plan_id
+    description: Identifier of the capacity plan row. This dataset holds the complete population.
+  - name: fiscal_year_id
+    description: Year of the plan. The population is owned by its complete dataset.
+  - name: annual_it_gw
+    description: IT capacity the annual plan delivers, in gigawatts.
+  - name: developable_gw
+    description: Developable pool, in gigawatts.
+  - name: spend_per_mw
+    description: Development spend per megawatt.
+  - name: capex_amount
+    description: Development capital associated with the plan.
+  entity_definitions:
+  - identity_id: capacity_plan_identity
+    dataset_columns:
+    - capacity_plan_id
+    entity_universe: complete
+  - identity_id: fiscal_year_identity
+    dataset_columns:
+    - fiscal_year_id
+    entity_universe: partial
+- node_id: sf:equinix.power.fact_industry_supply
+  descriptor:
+    qualified_name: equinix.power.fact_industry_supply
+    display_name: Industry Supply
+    description: Equinix capacity additions beside industry supply, and whether demand still supports
+      the spend.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: equinix.us-west-1
+      database: EQUINIX
+      schema: POWER
+      object: FACT_INDUSTRY_SUPPLY
+      format: table
+  grain:
+    description: One row is one industry supply.
+    components:
+    - identity_id: industry_supply_identity
+      dataset_columns:
+      - industry_supply_id
+      description: Identifier of the industry supply row.
+  columns:
+  - name: industry_supply_id
+    description: Identifier of the industry supply row. This dataset holds the complete population.
+  - name: fiscal_year_id
+    description: Year of the supply view. The population is owned by its complete dataset.
+  - name: region_id
+    description: Region of the supply view. The population is owned by its complete dataset.
+  - name: company_addition_mw
+    description: Megawatts Equinix is adding.
+  - name: industry_addition_mw
+    description: Megawatts the industry is adding.
+  - name: demand_durable_flag
+    description: Whether demand is treated as durable against that supply.
+    value_description: true or false.
+  entity_definitions:
+  - identity_id: industry_supply_identity
+    dataset_columns:
+    - industry_supply_id
+    entity_universe: complete
+  - identity_id: fiscal_year_identity
+    dataset_columns:
+    - fiscal_year_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:equinix.power.fact_project_power
+  descriptor:
+    qualified_name: equinix.power.fact_project_power
+    display_name: Project Power Schedule
+    description: Power availability and schedule for a development project, including xScale projects
+      underway.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: equinix.us-west-1
+      database: EQUINIX
+      schema: POWER
+      object: FACT_PROJECT_POWER
+      format: table
+  grain:
+    description: One row is one project power schedule.
+    components:
+    - identity_id: project_power_identity
+      dataset_columns:
+      - project_power_id
+      description: Identifier of the project power schedule.
+  columns:
+  - name: project_power_id
+    description: Identifier of the project power schedule. This dataset holds the complete population.
+  - name: development_project_id
+    description: Project being scheduled. The population is owned by its complete dataset.
+  - name: fiscal_quarter_id
+    description: Quarter of the status. The population is owned by its complete dataset.
+  - name: power_source_id
+    description: Power source for the project. The population is owned by its complete dataset.
+  - name: power_available_flag
+    description: Whether power is available for the project.
+    value_description: true or false.
+  - name: schedule_confidence
+    description: Confidence that power and the build stay on the stated schedule.
+    value_description: high, medium, or low.
+  entity_definitions:
+  - identity_id: project_power_identity
+    dataset_columns:
+    - project_power_id
+    entity_universe: complete
+  - identity_id: development_project_identity
+    dataset_columns:
+    - development_project_id
+    entity_universe: partial
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: power_source_identity
+    dataset_columns:
+    - power_source_id
+    entity_universe: partial
+- node_id: sf:equinix.power.fact_power_milestone
+  descriptor:
+    qualified_name: equinix.power.fact_power_milestone
+    display_name: Power Milestone
+    description: 'A dated milestone on a project: when capacity is scheduled to deliver, or when power
+      is scheduled to be available.'
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: equinix.us-west-1
+      database: EQUINIX
+      schema: POWER
+      object: FACT_POWER_MILESTONE
+      format: table
+  grain:
+    description: One row is one power milestone.
+    components:
+    - identity_id: power_milestone_identity
+      dataset_columns:
+      - power_milestone_id
+      description: Identifier of the power milestone.
+  columns:
+  - name: power_milestone_id
+    description: Identifier of the power milestone. This dataset holds the complete population.
+  - name: development_project_id
+    description: Project the milestone belongs to. The population is owned by its complete dataset.
+  - name: fiscal_quarter_id
+    description: Quarter the milestone falls in. The population is owned by its complete dataset.
+  - name: milestone_code
+    description: Which date this quarter is.
+    value_description: scheduled_capacity_delivery or power_delivery.
+  entity_definitions:
+  - identity_id: power_milestone_identity
+    dataset_columns:
+    - power_milestone_id
+    entity_universe: complete
+  - identity_id: development_project_identity
+    dataset_columns:
+    - development_project_id
+    entity_universe: partial
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+- node_id: sf:equinix.power.fact_campus_mix
+  descriptor:
+    qualified_name: equinix.power.fact_campus_mix
+    display_name: Campus Product Mix
+    description: How a campus is split between xScale and retail, including a campus such as Chicago.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: equinix.us-west-1
+      database: EQUINIX
+      schema: POWER
+      object: FACT_CAMPUS_MIX
+      format: table
+  grain:
+    description: One row is one campus product mix.
+    components:
+    - identity_id: campus_mix_identity
+      dataset_columns:
+      - campus_mix_id
+      description: Identifier of the campus mix row.
+  columns:
+  - name: campus_mix_id
+    description: Identifier of the campus mix row. This dataset holds the complete population.
+  - name: campus_id
+    description: Campus being split. The population is owned by its complete dataset.
+  - name: product_line_id
+    description: Product line on the campus. The population is owned by its complete dataset.
+  - name: fiscal_year_id
+    description: Year of the plan. The population is owned by its complete dataset.
+  - name: planned_mw
+    description: Megawatts planned for that product line.
+  - name: planned_share
+    description: Share of the campus plan.
+  entity_definitions:
+  - identity_id: campus_mix_identity
+    dataset_columns:
+    - campus_mix_id
+    entity_universe: complete
+  - identity_id: campus_identity
+    dataset_columns:
+    - campus_id
+    entity_universe: partial
+  - identity_id: product_line_identity
+    dataset_columns:
+    - product_line_id
+    entity_universe: partial
+  - identity_id: fiscal_year_identity
+    dataset_columns:
+    - fiscal_year_id
+    entity_universe: partial
+- node_id: sf:equinix.power.fact_cooling_deployment
+  descriptor:
+    qualified_name: equinix.power.fact_cooling_deployment
+    display_name: Cooling Deployment
+    description: Liquid, direct-to-chip, or immersion deployments that are active or signed.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: equinix.us-west-1
+      database: EQUINIX
+      schema: POWER
+      object: FACT_COOLING_DEPLOYMENT
+      format: table
+  grain:
+    description: One row is one cooling deployment.
+    components:
+    - identity_id: cooling_deployment_identity
+      dataset_columns:
+      - cooling_deployment_id
+      description: Identifier of the cooling deployment.
+  columns:
+  - name: cooling_deployment_id
+    description: Identifier of the cooling deployment. This dataset holds the complete population.
+  - name: cooling_technology_id
+    description: Cooling technology deployed. The population is owned by its complete dataset.
+  - name: fiscal_quarter_id
+    description: Quarter of the status. The population is owned by its complete dataset.
+  - name: campus_id
+    description: Campus of the deployment. The population is owned by its complete dataset.
+  - name: deployment_status
+    description: Whether the deployment is active or signed.
+    value_description: active or signed.
+  - name: deployment_count
+    description: Count of deployments.
+  - name: growth_rate
+    description: Growth in deployment count versus the prior quarter.
+  entity_definitions:
+  - identity_id: cooling_deployment_identity
+    dataset_columns:
+    - cooling_deployment_id
+    entity_universe: complete
+  - identity_id: cooling_technology_identity
+    dataset_columns:
+    - cooling_technology_id
+    entity_universe: partial
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: campus_identity
+    dataset_columns:
+    - campus_id
+    entity_universe: partial
+- node_id: sf:equinix.power.fact_edge_constraint
+  descriptor:
+    qualified_name: equinix.power.fact_edge_constraint
+    display_name: Edge Constraint
+    description: Whether a dense edge workload is hitting space, power, or thermal limits at an IBX.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: equinix.us-west-1
+      database: EQUINIX
+      schema: POWER
+      object: FACT_EDGE_CONSTRAINT
+      format: table
+  grain:
+    description: One row is one edge constraint.
+    components:
+    - identity_id: edge_constraint_identity
+      dataset_columns:
+      - edge_constraint_id
+      description: Identifier of the edge constraint row.
+  columns:
+  - name: edge_constraint_id
+    description: Identifier of the edge constraint row. This dataset holds the complete population.
+  - name: fiscal_quarter_id
+    description: Quarter of the constraint view. The population is owned by its complete dataset.
+  - name: metro_id
+    description: Metro of the IBX. The population is owned by its complete dataset.
+  - name: ibx_id
+    description: IBX being tested. The population is owned by its complete dataset.
+  - name: workload_type_id
+    description: Workload, including agentic edge workloads. The population is owned by its complete dataset.
+  - name: space_constrained_flag
+    description: Whether space is the constraint.
+    value_description: true or false.
+  - name: power_constrained_flag
+    description: Whether power is the constraint.
+    value_description: true or false.
+  - name: thermal_constrained_flag
+    description: Whether cooling is the constraint.
+    value_description: true or false.
+  - name: density_kw_per_cabinet
+    description: Kilowatts per cabinet the workload requires.
+  entity_definitions:
+  - identity_id: edge_constraint_identity
+    dataset_columns:
+    - edge_constraint_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: metro_identity
+    dataset_columns:
+    - metro_id
+    entity_universe: partial
+  - identity_id: ibx_identity
+    dataset_columns:
+    - ibx_id
+    entity_universe: partial
+  - identity_id: workload_type_identity
+    dataset_columns:
+    - workload_type_id
+    entity_universe: partial
+- node_id: sf:equinix.power.fact_workload_capital
+  descriptor:
+    qualified_name: equinix.power.fact_workload_capital
+    display_name: Workload Capital
+    description: Capital per megawatt and return for a workload versus the historical deployment, including
+      density.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: equinix.us-west-1
+      database: EQUINIX
+      schema: POWER
+      object: FACT_WORKLOAD_CAPITAL
+      format: table
+  grain:
+    description: One row is one workload capital.
+    components:
+    - identity_id: workload_capital_identity
+      dataset_columns:
+      - workload_capital_id
+      description: Identifier of the workload capital row.
+  columns:
+  - name: workload_capital_id
+    description: Identifier of the workload capital row. This dataset holds the complete population.
+  - name: workload_type_id
+    description: Workload, including AI inference. The population is owned by its complete dataset.
+  - name: fiscal_year_id
+    description: Year of the comparison. The population is owned by its complete dataset.
+  - name: density_class_id
+    description: Density class of the deployment. The population is owned by its complete dataset.
+  - name: capital_per_mw
+    description: Capital per megawatt for this workload.
+  - name: historical_capital_per_mw
+    description: Capital per megawatt on the historical traditional deployment.
+  - name: return_rate
+    description: Return on the deployment.
+  - name: density_raises_return_flag
+    description: Whether higher density raises the return.
+    value_description: true or false.
+  entity_definitions:
+  - identity_id: workload_capital_identity
+    dataset_columns:
+    - workload_capital_id
+    entity_universe: complete
+  - identity_id: workload_type_identity
+    dataset_columns:
+    - workload_type_id
+    entity_universe: partial
+  - identity_id: fiscal_year_identity
+    dataset_columns:
+    - fiscal_year_id
+    entity_universe: partial
+  - identity_id: density_class_identity
+    dataset_columns:
+    - density_class_id
+    entity_universe: partial
+- node_id: sf:equinix.power.fact_enterprise_power
+  descriptor:
+    qualified_name: equinix.power.fact_enterprise_power
+    display_name: Enterprise Power Gap
+    description: Available power versus the incremental power enterprise customers need.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: equinix.us-west-1
+      database: EQUINIX
+      schema: POWER
+      object: FACT_ENTERPRISE_POWER
+      format: table
+  grain:
+    description: One row is one enterprise power gap.
+    components:
+    - identity_id: enterprise_power_identity
+      dataset_columns:
+      - enterprise_power_id
+      description: Identifier of the enterprise power row.
+  columns:
+  - name: enterprise_power_id
+    description: Identifier of the enterprise power row. This dataset holds the complete population.
+  - name: fiscal_quarter_id
+    description: Quarter of the comparison. The population is owned by its complete dataset.
+  - name: metro_id
+    description: Metro of the comparison. The population is owned by its complete dataset.
+  - name: customer_vertical_id
+    description: Vertical, used to keep enterprise demand apart from other verticals. The population is
+      owned by its complete dataset.
+  - name: available_power_mw
+    description: Power available for that demand.
+  - name: required_power_mw
+    description: Incremental power the demand needs.
+  - name: caught_up_flag
+    description: Whether available power has caught up with the requirement.
+    value_description: true or false.
+  entity_definitions:
+  - identity_id: enterprise_power_identity
+    dataset_columns:
+    - enterprise_power_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: metro_identity
+    dataset_columns:
+    - metro_id
+    entity_universe: partial
+  - identity_id: customer_vertical_identity
+    dataset_columns:
+    - customer_vertical_id
+    entity_universe: partial
+- node_id: sf:equinix.power.fact_delivery_schedule
+  descriptor:
+    qualified_name: equinix.power.fact_delivery_schedule
+    display_name: Capacity Delivery
+    description: Capacity scheduled to deliver and how much of it is already pre-leased.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: equinix.us-west-1
+      database: EQUINIX
+      schema: POWER
+      object: FACT_DELIVERY_SCHEDULE
+      format: table
+  grain:
+    description: One row is one capacity delivery.
+    components:
+    - identity_id: delivery_schedule_identity
+      dataset_columns:
+      - delivery_schedule_id
+      description: Identifier of the delivery schedule row.
+  columns:
+  - name: delivery_schedule_id
+    description: Identifier of the delivery schedule row. This dataset holds the complete population.
+  - name: fiscal_quarter_id
+    description: Quarter the schedule is stated. The population is owned by its complete dataset.
+  - name: metro_id
+    description: Metro of the capacity. The population is owned by its complete dataset.
+  - name: development_project_id
+    description: Project that delivers the capacity. The population is owned by its complete dataset.
+  - name: upcoming_capacity_mw
+    description: Megawatts scheduled to deliver.
+  - name: preleased_mw
+    description: Megawatts already pre-leased.
+  - name: presold_share
+    description: Share of upcoming capacity that is pre-sold.
+  - name: sell_ahead_flag
+    description: Whether capacity is being sold ahead of delivery.
+    value_description: true or false.
+  entity_definitions:
+  - identity_id: delivery_schedule_identity
+    dataset_columns:
+    - delivery_schedule_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: metro_identity
+    dataset_columns:
+    - metro_id
+    entity_universe: partial
+  - identity_id: development_project_identity
+    dataset_columns:
+    - development_project_id
+    entity_universe: partial
+- node_id: sf:equinix.power.fact_affo_path
+  descriptor:
+    qualified_name: equinix.power.fact_affo_path
+    display_name: AFFO Path
+    description: Cash-earnings growth under the analyst-day path versus a faster build that capitalizes
+      more expense.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: equinix.us-west-1
+      database: EQUINIX
+      schema: POWER
+      object: FACT_AFFO_PATH
+      format: table
+  grain:
+    description: One row is one affo path.
+    components:
+    - identity_id: affo_path_identity
+      dataset_columns:
+      - affo_path_id
+      description: Identifier of the AFFO path row.
+  columns:
+  - name: affo_path_id
+    description: Identifier of the AFFO path row. This dataset holds the complete population.
+  - name: fiscal_year_id
+    description: Year of the path. The population is owned by its complete dataset.
+  - name: analyst_day_affo_growth
+    description: AFFO growth on the analyst-day path.
+  - name: accelerated_build_affo_growth
+    description: AFFO growth if builds accelerate.
+  - name: capitalized_expense_amount
+    description: Expense capitalized under the faster build.
+  - name: shape_change_flag
+    description: Whether the cash-earnings shape changes versus the analyst day.
+    value_description: true or false.
+  entity_definitions:
+  - identity_id: affo_path_identity
+    dataset_columns:
+    - affo_path_id
+    entity_universe: complete
+  - identity_id: fiscal_year_identity
+    dataset_columns:
+    - fiscal_year_id
+    entity_universe: partial
+- node_id: sf:equinix.power.fact_region_operations
+  descriptor:
+    qualified_name: equinix.power.fact_region_operations
+    display_name: Region Operations
+    description: Whether Equinix can still sell or add IBX capacity in a region, including the Middle
+      East.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: equinix.us-west-1
+      database: EQUINIX
+      schema: POWER
+      object: FACT_REGION_OPERATIONS
+      format: table
+  grain:
+    description: One row is one region operations.
+    components:
+    - identity_id: region_operation_identity
+      dataset_columns:
+      - region_operation_id
+      description: Identifier of the region operations row.
+  columns:
+  - name: region_operation_id
+    description: Identifier of the region operations row. This dataset holds the complete population.
+  - name: fiscal_quarter_id
+    description: Quarter of the status. The population is owned by its complete dataset.
+  - name: region_id
+    description: Region, including the Middle East. The population is owned by its complete dataset.
+  - name: metro_id
+    description: Metro inside the region. The population is owned by its complete dataset.
+  - name: sell_capacity_flag
+    description: Whether capacity can still be sold.
+    value_description: true or false.
+  - name: add_capacity_flag
+    description: Whether capacity can still be added.
+    value_description: true or false.
+  - name: disruption_flag
+    description: Whether a geopolitical disruption is affecting the metro.
+    value_description: true or false.
+  entity_definitions:
+  - identity_id: region_operation_identity
+    dataset_columns:
+    - region_operation_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+  - identity_id: metro_identity
+    dataset_columns:
+    - metro_id
+    entity_universe: partial

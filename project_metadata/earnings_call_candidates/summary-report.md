@@ -177,6 +177,17 @@ Two loadable schema version 3 catalogs now sit beside the question files. Each w
 
 McDonald's finance slice separates company-operated margin, franchisee cash flow, royalty, rent, capex, and the inflation-versus-mix bridge. Starbucks finance slice separates tariff refunds, coffee and distribution inflation, marketing rebase versus turnaround spend, and guidance scenarios. See each `warehouse/MODEL.md`.
 
+## Warehouse catalogs built for the data center REIT pair
+
+Two loadable schema version 3 catalogs now sit beside the question files. Each was assembled only from that company's slices. Both build as graphs with no unknown claims and no contradictory edges.
+
+| Company | Catalog | Datasets | Relationships | Identities |
+| --- | --- | ---: | ---: | ---: |
+| Equinix | `data-center-reits/eqix/warehouse/` | 67 | 162 | 67 |
+| Digital Realty | `data-center-reits/dlr/warehouse/` | 62 | 139 | 62 |
+
+Equinix separates a booking from quarterly occupancy, planned megawatts from power actually available, and a cross-connect from a lease line. Digital Realty separates secured land-bank gigawatts from the quarter power becomes available, and keeps lease commencement off the occupancy snapshot. See each `warehouse/MODEL.md`.
+
 ## Pairs to defer
 
 - **Specialty chemicals (113), managed care (106), airlines (104), and packaged foods (96)**
