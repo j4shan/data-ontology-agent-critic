@@ -1,0 +1,2347 @@
+schema_version: '3'
+nodes:
+- node_id: sf:automaker.time.dim_fiscal_quarter
+  descriptor:
+    qualified_name: automaker.time.dim_fiscal_quarter
+    display_name: Fiscal Quarter
+    description: Automaker Inc fiscal quarter used on the earnings calendar.
+    synonyms: []
+    tags:
+    - dimension
+    - demand_vehicle
+    - automobile-manufacturers
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: automaker.us-central-1
+      database: AUTOMAKER
+      schema: TIME
+      object: DIM_FISCAL_QUARTER
+      format: table
+  grain:
+    description: One row is one fiscal quarter.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: fiscal_quarter_name
+    description: Name of the fiscal quarter.
+  - name: fiscal_quarter_code
+    description: Code of the fiscal quarter.
+    value_description: 2025Q2, 2025Q3, 2025Q4, 2026Q1, 2026Q2
+  - name: guidance_horizon
+    description: Reported quarter or a later plan year.
+    value_description: reported, guided_next, year_2026, year_2027, year_2028
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: complete
+- node_id: sf:automaker.time.dim_calendar_day
+  descriptor:
+    qualified_name: automaker.time.dim_calendar_day
+    display_name: Calendar Day
+    description: Calendar day for Automaker Inc demand, production, and price.
+    synonyms: []
+    tags:
+    - dimension
+    - demand_vehicle
+    - automobile-manufacturers
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: automaker.us-central-1
+      database: AUTOMAKER
+      schema: TIME
+      object: DIM_CALENDAR_DAY
+      format: table
+  grain:
+    description: One row is one calendar day.
+    components:
+    - identity_id: calendar_day_identity
+      dataset_columns:
+      - calendar_day_id
+      description: Identifier of the calendar day.
+  columns:
+  - name: calendar_day_id
+    description: Identifier of the calendar day.
+  - name: calendar_day_name
+    description: Name of the calendar day.
+  - name: calendar_day_code
+    description: Code of the calendar day.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: calendar_date
+    description: Civil date.
+  entity_definitions:
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+- node_id: sf:automaker.geography.dim_region
+  descriptor:
+    qualified_name: automaker.geography.dim_region
+    display_name: Region
+    description: Commercial region for Automaker Inc.
+    synonyms: []
+    tags:
+    - dimension
+    - demand_vehicle
+    - automobile-manufacturers
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: automaker.us-central-1
+      database: AUTOMAKER
+      schema: GEOGRAPHY
+      object: DIM_REGION
+      format: table
+  grain:
+    description: One row is one region.
+    components:
+    - identity_id: region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+  columns:
+  - name: region_id
+    description: Identifier of the region.
+  - name: region_name
+    description: Name of the region.
+  - name: region_code
+    description: Code of the region.
+    value_description: north_america, china, europe, south_america, other_international
+  entity_definitions:
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: complete
+- node_id: sf:automaker.geography.dim_country
+  descriptor:
+    qualified_name: automaker.geography.dim_country
+    display_name: Country
+    description: Country where Automaker Inc sells or builds.
+    synonyms: []
+    tags:
+    - dimension
+    - demand_vehicle
+    - automobile-manufacturers
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: automaker.us-central-1
+      database: AUTOMAKER
+      schema: GEOGRAPHY
+      object: DIM_COUNTRY
+      format: table
+  grain:
+    description: One row is one country.
+    components:
+    - identity_id: country_identity
+      dataset_columns:
+      - country_id
+      description: Identifier of the country.
+  columns:
+  - name: country_id
+    description: Identifier of the country.
+  - name: country_name
+    description: Name of the country.
+  - name: country_code
+    description: Code of the country.
+    value_description: united_states, china, mexico, south_korea, canada, germany
+  - name: region_id
+    description: Identifier of the region.
+  entity_definitions:
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: complete
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:automaker.geography.dim_city
+  descriptor:
+    qualified_name: automaker.geography.dim_city
+    display_name: City
+    description: City in a robotaxi or vehicle launch sequence.
+    synonyms: []
+    tags:
+    - dimension
+    - demand_vehicle
+    - automobile-manufacturers
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: automaker.us-central-1
+      database: AUTOMAKER
+      schema: GEOGRAPHY
+      object: DIM_CITY
+      format: table
+  grain:
+    description: One row is one city.
+    components:
+    - identity_id: city_identity
+      dataset_columns:
+      - city_id
+      description: Identifier of the city.
+  columns:
+  - name: city_id
+    description: Identifier of the city.
+  - name: city_name
+    description: Name of the city.
+  - name: city_code
+    description: Code of the city.
+    value_description: austin, bay_area, other_launch_city
+  - name: country_id
+    description: Identifier of the country.
+  entity_definitions:
+  - identity_id: city_identity
+    dataset_columns:
+    - city_id
+    entity_universe: complete
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+- node_id: sf:automaker.geography.dim_state
+  descriptor:
+    qualified_name: automaker.geography.dim_state
+    display_name: State
+    description: State whose sensor or vehicle rules matter to a rollout.
+    synonyms: []
+    tags:
+    - dimension
+    - demand_vehicle
+    - automobile-manufacturers
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: automaker.us-central-1
+      database: AUTOMAKER
+      schema: GEOGRAPHY
+      object: DIM_STATE
+      format: table
+  grain:
+    description: One row is one state.
+    components:
+    - identity_id: state_identity
+      dataset_columns:
+      - state_id
+      description: Identifier of the state.
+  columns:
+  - name: state_id
+    description: Identifier of the state.
+  - name: state_name
+    description: Name of the state.
+  - name: state_code
+    description: Code of the state.
+    value_description: launch_state, restricted_state
+  - name: country_id
+    description: Identifier of the country.
+  entity_definitions:
+  - identity_id: state_identity
+    dataset_columns:
+    - state_id
+    entity_universe: complete
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+- node_id: sf:automaker.channel.dim_channel
+  descriptor:
+    qualified_name: automaker.channel.dim_channel
+    display_name: Channel
+    description: How an Automaker Inc vehicle or ride reaches the user.
+    synonyms: []
+    tags:
+    - dimension
+    - demand_vehicle
+    - automobile-manufacturers
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: automaker.us-central-1
+      database: AUTOMAKER
+      schema: CHANNEL
+      object: DIM_CHANNEL
+      format: table
+  grain:
+    description: One row is one channel.
+    components:
+    - identity_id: channel_identity
+      dataset_columns:
+      - channel_id
+      description: Identifier of the channel.
+  columns:
+  - name: channel_id
+    description: Identifier of the channel.
+  - name: channel_name
+    description: Name of the channel.
+  - name: channel_code
+    description: Code of the channel.
+    value_description: owned_fleet, rideshare_partner, dealer, direct
+  entity_definitions:
+  - identity_id: channel_identity
+    dataset_columns:
+    - channel_id
+    entity_universe: complete
+- node_id: sf:automaker.product.dim_vehicle_family
+  descriptor:
+    qualified_name: automaker.product.dim_vehicle_family
+    display_name: Vehicle Family
+    description: Automaker Inc family. Codes cover the cars, trucks, robotaxis, robots, and storage products
+      named on the calls.
+    synonyms: []
+    tags:
+    - dimension
+    - demand_vehicle
+    - automobile-manufacturers
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: automaker.us-central-1
+      database: AUTOMAKER
+      schema: PRODUCT
+      object: DIM_VEHICLE_FAMILY
+      format: table
+  grain:
+    description: One row is one vehicle family.
+    components:
+    - identity_id: vehicle_family_identity
+      dataset_columns:
+      - vehicle_family_id
+      description: Identifier of the vehicle family.
+  columns:
+  - name: vehicle_family_id
+    description: Identifier of the vehicle family.
+  - name: vehicle_family_name
+    description: Name of the vehicle family.
+  - name: vehicle_family_code
+    description: Code of the vehicle family.
+    value_description: optimus, robotaxi, cybercab, semi, full_size_pickup, suv, energy_storage, passenger_ev,
+      passenger_ice
+  entity_definitions:
+  - identity_id: vehicle_family_identity
+    dataset_columns:
+    - vehicle_family_id
+    entity_universe: complete
+- node_id: sf:automaker.product.dim_vehicle_program
+  descriptor:
+    qualified_name: automaker.product.dim_vehicle_program
+    display_name: Vehicle Program
+    description: Program or generation inside a family.
+    synonyms: []
+    tags:
+    - dimension
+    - demand_vehicle
+    - automobile-manufacturers
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: automaker.us-central-1
+      database: AUTOMAKER
+      schema: PRODUCT
+      object: DIM_VEHICLE_PROGRAM
+      format: table
+  grain:
+    description: One row is one vehicle program.
+    components:
+    - identity_id: vehicle_program_identity
+      dataset_columns:
+      - vehicle_program_id
+      description: Identifier of the vehicle program.
+  columns:
+  - name: vehicle_program_id
+    description: Identifier of the vehicle program.
+  - name: vehicle_program_name
+    description: Name of the vehicle program.
+  - name: vehicle_program_code
+    description: Code of the vehicle program.
+    value_description: optimus_3, optimus_4, cybercab, semi, next_pickup, affordable_ev, software_defined_2028
+  - name: vehicle_family_id
+    description: Identifier of the vehicle family.
+  - name: powertrain_id
+    description: Identifier of the powertrain.
+  entity_definitions:
+  - identity_id: vehicle_program_identity
+    dataset_columns:
+    - vehicle_program_id
+    entity_universe: complete
+  - identity_id: vehicle_family_identity
+    dataset_columns:
+    - vehicle_family_id
+    entity_universe: partial
+  - identity_id: powertrain_identity
+    dataset_columns:
+    - powertrain_id
+    entity_universe: partial
+- node_id: sf:automaker.product.dim_powertrain
+  descriptor:
+    qualified_name: automaker.product.dim_powertrain
+    display_name: Powertrain
+    description: 'Powertrain: electric, ICE, hybrid, plug-in, or extended range.'
+    synonyms: []
+    tags:
+    - dimension
+    - demand_vehicle
+    - automobile-manufacturers
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: automaker.us-central-1
+      database: AUTOMAKER
+      schema: PRODUCT
+      object: DIM_POWERTRAIN
+      format: table
+  grain:
+    description: One row is one powertrain.
+    components:
+    - identity_id: powertrain_identity
+      dataset_columns:
+      - powertrain_id
+      description: Identifier of the powertrain.
+  columns:
+  - name: powertrain_id
+    description: Identifier of the powertrain.
+  - name: powertrain_name
+    description: Name of the powertrain.
+  - name: powertrain_code
+    description: Code of the powertrain.
+    value_description: ev, ice, hybrid, plug_in, extended_range
+  entity_definitions:
+  - identity_id: powertrain_identity
+    dataset_columns:
+    - powertrain_id
+    entity_universe: complete
+- node_id: sf:automaker.product.dim_trim
+  descriptor:
+    qualified_name: automaker.product.dim_trim
+    display_name: Trim
+    description: Trim slice, including the more profitable slices of a full-size pickup.
+    synonyms: []
+    tags:
+    - dimension
+    - demand_vehicle
+    - automobile-manufacturers
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: automaker.us-central-1
+      database: AUTOMAKER
+      schema: PRODUCT
+      object: DIM_TRIM
+      format: table
+  grain:
+    description: One row is one trim.
+    components:
+    - identity_id: trim_identity
+      dataset_columns:
+      - trim_id
+      description: Identifier of the trim.
+  columns:
+  - name: trim_id
+    description: Identifier of the trim.
+  - name: trim_name
+    description: Name of the trim.
+  - name: trim_code
+    description: Code of the trim.
+    value_description: upper, lower, luxury, cadillac
+  - name: vehicle_family_id
+    description: Identifier of the vehicle family.
+  entity_definitions:
+  - identity_id: trim_identity
+    dataset_columns:
+    - trim_id
+    entity_universe: complete
+  - identity_id: vehicle_family_identity
+    dataset_columns:
+    - vehicle_family_id
+    entity_universe: partial
+- node_id: sf:automaker.product.dim_use_case
+  descriptor:
+    qualified_name: automaker.product.dim_use_case
+    display_name: Use Case
+    description: Job a product is bought to do.
+    synonyms: []
+    tags:
+    - dimension
+    - demand_vehicle
+    - automobile-manufacturers
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: automaker.us-central-1
+      database: AUTOMAKER
+      schema: PRODUCT
+      object: DIM_USE_CASE
+      format: table
+  grain:
+    description: One row is one use case.
+    components:
+    - identity_id: use_case_identity
+      dataset_columns:
+      - use_case_id
+      description: Identifier of the use case.
+  columns:
+  - name: use_case_id
+    description: Identifier of the use case.
+  - name: use_case_name
+    description: Name of the use case.
+  - name: use_case_code
+    description: Code of the use case.
+    value_description: data_center_smoothing, utility_peak, grid_balancing, passenger, freight, personal_autonomy
+  - name: vehicle_family_id
+    description: Identifier of the vehicle family.
+  entity_definitions:
+  - identity_id: use_case_identity
+    dataset_columns:
+    - use_case_id
+    entity_universe: complete
+  - identity_id: vehicle_family_identity
+    dataset_columns:
+    - vehicle_family_id
+    entity_universe: partial
+- node_id: sf:automaker.software.dim_software_release
+  descriptor:
+    qualified_name: automaker.software.dim_software_release
+    display_name: Software Release
+    description: Software release for consumer driving or the robotaxi stack.
+    synonyms: []
+    tags:
+    - dimension
+    - demand_vehicle
+    - automobile-manufacturers
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: automaker.us-central-1
+      database: AUTOMAKER
+      schema: SOFTWARE
+      object: DIM_SOFTWARE_RELEASE
+      format: table
+  grain:
+    description: One row is one software release.
+    components:
+    - identity_id: software_release_identity
+      dataset_columns:
+      - software_release_id
+      description: Identifier of the software release.
+  columns:
+  - name: software_release_id
+    description: Identifier of the software release.
+  - name: software_release_name
+    description: Name of the software release.
+  - name: software_release_code
+    description: Code of the software release.
+    value_description: consumer_fsd, robotaxi_stack, point_to_point, parking, comfort
+  - name: autonomy_stack_id
+    description: Identifier of the autonomy stack.
+  entity_definitions:
+  - identity_id: software_release_identity
+    dataset_columns:
+    - software_release_id
+    entity_universe: complete
+  - identity_id: autonomy_stack_identity
+    dataset_columns:
+    - autonomy_stack_id
+    entity_universe: partial
+- node_id: sf:automaker.software.dim_autonomy_stack
+  descriptor:
+    qualified_name: automaker.software.dim_autonomy_stack
+    display_name: Autonomy Stack
+    description: Consumer or robotaxi autonomy stack.
+    synonyms: []
+    tags:
+    - dimension
+    - demand_vehicle
+    - automobile-manufacturers
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: automaker.us-central-1
+      database: AUTOMAKER
+      schema: SOFTWARE
+      object: DIM_AUTONOMY_STACK
+      format: table
+  grain:
+    description: One row is one autonomy stack.
+    components:
+    - identity_id: autonomy_stack_identity
+      dataset_columns:
+      - autonomy_stack_id
+      description: Identifier of the autonomy stack.
+  columns:
+  - name: autonomy_stack_id
+    description: Identifier of the autonomy stack.
+  - name: autonomy_stack_name
+    description: Name of the autonomy stack.
+  - name: autonomy_stack_code
+    description: Code of the autonomy stack.
+    value_description: consumer_fsd, robotaxi, supervised, unsupervised
+  entity_definitions:
+  - identity_id: autonomy_stack_identity
+    dataset_columns:
+    - autonomy_stack_id
+    entity_universe: complete
+- node_id: sf:automaker.software.dim_service
+  descriptor:
+    qualified_name: automaker.software.dim_service
+    display_name: Digital Service
+    description: Digital service such as Super Cruise or OnStar.
+    synonyms: []
+    tags:
+    - dimension
+    - demand_vehicle
+    - automobile-manufacturers
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: automaker.us-central-1
+      database: AUTOMAKER
+      schema: SOFTWARE
+      object: DIM_SERVICE
+      format: table
+  grain:
+    description: One row is one digital service.
+    components:
+    - identity_id: service_identity
+      dataset_columns:
+      - service_id
+      description: Identifier of the digital service.
+  columns:
+  - name: service_id
+    description: Identifier of the digital service.
+  - name: service_name
+    description: Name of the digital service.
+  - name: service_code
+    description: Code of the digital service.
+    value_description: super_cruise, onstar, fsd_subscription, other_digital
+  - name: vehicle_family_id
+    description: Identifier of the vehicle family.
+  entity_definitions:
+  - identity_id: service_identity
+    dataset_columns:
+    - service_id
+    entity_universe: complete
+  - identity_id: vehicle_family_identity
+    dataset_columns:
+    - vehicle_family_id
+    entity_universe: partial
+- node_id: sf:automaker.finance.dim_finance_book
+  descriptor:
+    qualified_name: automaker.finance.dim_finance_book
+    display_name: Finance Book
+    description: Captive-finance book, including prime and subprime borrowers.
+    synonyms: []
+    tags:
+    - dimension
+    - demand_vehicle
+    - automobile-manufacturers
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: automaker.us-central-1
+      database: AUTOMAKER
+      schema: FINANCE
+      object: DIM_FINANCE_BOOK
+      format: table
+  grain:
+    description: One row is one finance book.
+    components:
+    - identity_id: finance_book_identity
+      dataset_columns:
+      - finance_book_id
+      description: Identifier of the finance book.
+  columns:
+  - name: finance_book_id
+    description: Identifier of the finance book.
+  - name: finance_book_name
+    description: Name of the finance book.
+  - name: finance_book_code
+    description: Code of the finance book.
+    value_description: prime, subprime, industrial_bank
+  - name: country_id
+    description: Identifier of the country.
+  entity_definitions:
+  - identity_id: finance_book_identity
+    dataset_columns:
+    - finance_book_id
+    entity_universe: complete
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+- node_id: sf:automaker.demand.fact_delivery
+  descriptor:
+    qualified_name: automaker.demand.fact_delivery
+    display_name: Delivery
+    description: Vehicle deliveries. The row stores a quantity, not a price.
+    synonyms: []
+    tags:
+    - quantity
+    - demand_vehicle
+    - automobile-manufacturers
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: automaker.us-central-1
+      database: AUTOMAKER
+      schema: DEMAND
+      object: FACT_DELIVERY
+      format: table
+  grain:
+    description: One row is one delivery.
+    components:
+    - identity_id: delivery_identity
+      dataset_columns:
+      - delivery_id
+      description: Identifier of the delivery.
+  columns:
+  - name: delivery_id
+    description: Identifier of the delivery.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: vehicle_family_id
+    description: Identifier of the vehicle family.
+  - name: powertrain_id
+    description: Identifier of the powertrain.
+  - name: country_id
+    description: Identifier of the country.
+  - name: region_id
+    description: Identifier of the region.
+  - name: delivery_quantity
+    description: Vehicles delivered or wholesaled.
+  - name: cadence_code
+    description: How the quarter compares with the usual pattern.
+    value_description: stronger, usual, weaker
+  entity_definitions:
+  - identity_id: delivery_identity
+    dataset_columns:
+    - delivery_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: vehicle_family_identity
+    dataset_columns:
+    - vehicle_family_id
+    entity_universe: partial
+  - identity_id: powertrain_identity
+    dataset_columns:
+    - powertrain_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:automaker.demand.fact_fleet
+  descriptor:
+    qualified_name: automaker.demand.fact_fleet
+    display_name: Robotaxi Fleet
+    description: Robotaxis operating. Count and city spread are quantities, not a fare.
+    synonyms: []
+    tags:
+    - quantity
+    - demand_vehicle
+    - automobile-manufacturers
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: automaker.us-central-1
+      database: AUTOMAKER
+      schema: DEMAND
+      object: FACT_FLEET
+      format: table
+  grain:
+    description: One row is one robotaxi fleet.
+    components:
+    - identity_id: fleet_identity
+      dataset_columns:
+      - fleet_id
+      description: Identifier of the robotaxi fleet.
+  columns:
+  - name: fleet_id
+    description: Identifier of the robotaxi fleet.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: city_id
+    description: Identifier of the city.
+  - name: vehicle_program_id
+    description: Identifier of the vehicle program.
+  - name: channel_id
+    description: Identifier of the channel.
+  - name: fleet_count
+    description: Vehicles in service.
+  - name: city_count
+    description: Cities with service.
+  - name: small_fleet_flag
+    description: Whether the count in a city is still small.
+  entity_definitions:
+  - identity_id: fleet_identity
+    dataset_columns:
+    - fleet_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: city_identity
+    dataset_columns:
+    - city_id
+    entity_universe: partial
+  - identity_id: vehicle_program_identity
+    dataset_columns:
+    - vehicle_program_id
+    entity_universe: partial
+  - identity_id: channel_identity
+    dataset_columns:
+    - channel_id
+    entity_universe: partial
+- node_id: sf:automaker.demand.fact_miles
+  descriptor:
+    qualified_name: automaker.demand.fact_miles
+    display_name: Autonomous Miles
+    description: Autonomous miles and safety-critical interventions. Cost per mile is not stored here.
+    synonyms: []
+    tags:
+    - quantity
+    - demand_vehicle
+    - automobile-manufacturers
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: automaker.us-central-1
+      database: AUTOMAKER
+      schema: DEMAND
+      object: FACT_MILES
+      format: table
+  grain:
+    description: One row is one autonomous miles.
+    components:
+    - identity_id: miles_identity
+      dataset_columns:
+      - miles_id
+      description: Identifier of the autonomous miles.
+  columns:
+  - name: miles_id
+    description: Identifier of the autonomous miles.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: city_id
+    description: Identifier of the city.
+  - name: autonomy_stack_id
+    description: Identifier of the autonomy stack.
+  - name: vehicle_program_id
+    description: Identifier of the vehicle program.
+  - name: mile_count
+    description: Autonomous miles.
+  - name: intervention_count
+    description: Safety-critical interventions.
+  - name: target_mile_count
+    description: Mile target that should follow.
+  entity_definitions:
+  - identity_id: miles_identity
+    dataset_columns:
+    - miles_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: city_identity
+    dataset_columns:
+    - city_id
+    entity_universe: partial
+  - identity_id: autonomy_stack_identity
+    dataset_columns:
+    - autonomy_stack_id
+    entity_universe: partial
+  - identity_id: vehicle_program_identity
+    dataset_columns:
+    - vehicle_program_id
+    entity_universe: partial
+- node_id: sf:automaker.demand.fact_utilization
+  descriptor:
+    qualified_name: automaker.demand.fact_utilization
+    display_name: Utilization
+    description: Owned-fleet utilization versus third-party distribution. It is not a fare.
+    synonyms: []
+    tags:
+    - quantity
+    - demand_vehicle
+    - automobile-manufacturers
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: automaker.us-central-1
+      database: AUTOMAKER
+      schema: DEMAND
+      object: FACT_UTILIZATION
+      format: table
+  grain:
+    description: One row is one utilization.
+    components:
+    - identity_id: utilization_identity
+      dataset_columns:
+      - utilization_id
+      description: Identifier of the utilization.
+  columns:
+  - name: utilization_id
+    description: Identifier of the utilization.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: channel_id
+    description: Identifier of the channel.
+  - name: city_id
+    description: Identifier of the city.
+  - name: vehicle_program_id
+    description: Identifier of the vehicle program.
+  - name: utilization_rate
+    description: Share of hours the owned fleet is in use.
+  - name: partner_used_flag
+    description: Whether a rideshare partner is used to raise utilization.
+  entity_definitions:
+  - identity_id: utilization_identity
+    dataset_columns:
+    - utilization_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: channel_identity
+    dataset_columns:
+    - channel_id
+    entity_universe: partial
+  - identity_id: city_identity
+    dataset_columns:
+    - city_id
+    entity_universe: partial
+  - identity_id: vehicle_program_identity
+    dataset_columns:
+    - vehicle_program_id
+    entity_universe: partial
+- node_id: sf:automaker.demand.fact_storage_demand
+  descriptor:
+    qualified_name: automaker.demand.fact_storage_demand
+    display_name: Storage Demand
+    description: Energy-storage deployments by use case. It is a quantity, not a price.
+    synonyms: []
+    tags:
+    - quantity
+    - demand_vehicle
+    - automobile-manufacturers
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: automaker.us-central-1
+      database: AUTOMAKER
+      schema: DEMAND
+      object: FACT_STORAGE_DEMAND
+      format: table
+  grain:
+    description: One row is one storage demand.
+    components:
+    - identity_id: storage_demand_identity
+      dataset_columns:
+      - storage_demand_id
+      description: Identifier of the storage demand.
+  columns:
+  - name: storage_demand_id
+    description: Identifier of the storage demand.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: use_case_id
+    description: Identifier of the use case.
+  - name: country_id
+    description: Identifier of the country.
+  - name: vehicle_family_id
+    description: Identifier of the vehicle family.
+  - name: deployment_quantity
+    description: Storage units deployed.
+  - name: use_case_share
+    description: Share of deployments in the use case.
+  entity_definitions:
+  - identity_id: storage_demand_identity
+    dataset_columns:
+    - storage_demand_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: use_case_identity
+    dataset_columns:
+    - use_case_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: vehicle_family_identity
+    dataset_columns:
+    - vehicle_family_id
+    entity_universe: partial
+- node_id: sf:automaker.demand.fact_installed_base
+  descriptor:
+    qualified_name: automaker.demand.fact_installed_base
+    display_name: Installed Base
+    description: Vehicles already in the field. Subscription revenue is not stored here.
+    synonyms: []
+    tags:
+    - quantity
+    - demand_vehicle
+    - automobile-manufacturers
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: automaker.us-central-1
+      database: AUTOMAKER
+      schema: DEMAND
+      object: FACT_INSTALLED_BASE
+      format: table
+  grain:
+    description: One row is one installed base.
+    components:
+    - identity_id: installed_base_identity
+      dataset_columns:
+      - installed_base_id
+      description: Identifier of the installed base.
+  columns:
+  - name: installed_base_id
+    description: Identifier of the installed base.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: vehicle_family_id
+    description: Identifier of the vehicle family.
+  - name: country_id
+    description: Identifier of the country.
+  - name: component_id
+    description: Identifier of the component.
+  - name: installed_quantity
+    description: Vehicles in the field.
+  - name: camera_equipped_quantity
+    description: Vehicles with the older camera set.
+  - name: unsubscribed_quantity
+    description: Vehicles that do not subscribe today.
+  entity_definitions:
+  - identity_id: installed_base_identity
+    dataset_columns:
+    - installed_base_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: vehicle_family_identity
+    dataset_columns:
+    - vehicle_family_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: component_identity
+    dataset_columns:
+    - component_id
+    entity_universe: partial
+- node_id: sf:automaker.demand.fact_subscription_demand
+  descriptor:
+    qualified_name: automaker.demand.fact_subscription_demand
+    display_name: Subscription Demand
+    description: Take rate and paid subscriptions. Revenue sits on the price slice.
+    synonyms: []
+    tags:
+    - quantity
+    - demand_vehicle
+    - automobile-manufacturers
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: automaker.us-central-1
+      database: AUTOMAKER
+      schema: DEMAND
+      object: FACT_SUBSCRIPTION_DEMAND
+      format: table
+  grain:
+    description: One row is one subscription demand.
+    components:
+    - identity_id: subscription_demand_identity
+      dataset_columns:
+      - subscription_demand_id
+      description: Identifier of the subscription demand.
+  columns:
+  - name: subscription_demand_id
+    description: Identifier of the subscription demand.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: service_id
+    description: Identifier of the digital service.
+  - name: trim_id
+    description: Identifier of the trim.
+  - name: vehicle_family_id
+    description: Identifier of the vehicle family.
+  - name: take_rate
+    description: Share of eligible vehicles that subscribe.
+  - name: paid_subscription_count
+    description: Paid subscriptions.
+  - name: concentrated_in_luxury_flag
+    description: Whether demand is concentrated in the luxury trim.
+  entity_definitions:
+  - identity_id: subscription_demand_identity
+    dataset_columns:
+    - subscription_demand_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: service_identity
+    dataset_columns:
+    - service_id
+    entity_universe: partial
+  - identity_id: trim_identity
+    dataset_columns:
+    - trim_id
+    entity_universe: partial
+  - identity_id: vehicle_family_identity
+    dataset_columns:
+    - vehicle_family_id
+    entity_universe: partial
+- node_id: sf:automaker.demand.fact_trim_share
+  descriptor:
+    qualified_name: automaker.demand.fact_trim_share
+    display_name: Trim Share
+    description: Share inside the more profitable and less profitable slices of a truck.
+    synonyms: []
+    tags:
+    - quantity
+    - demand_vehicle
+    - automobile-manufacturers
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: automaker.us-central-1
+      database: AUTOMAKER
+      schema: DEMAND
+      object: FACT_TRIM_SHARE
+      format: table
+  grain:
+    description: One row is one trim share.
+    components:
+    - identity_id: trim_share_identity
+      dataset_columns:
+      - trim_share_id
+      description: Identifier of the trim share.
+  columns:
+  - name: trim_share_id
+    description: Identifier of the trim share.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: trim_id
+    description: Identifier of the trim.
+  - name: vehicle_family_id
+    description: Identifier of the vehicle family.
+  - name: country_id
+    description: Identifier of the country.
+  - name: share_rate
+    description: Share in the trim slice.
+  - name: holding_flag
+    description: Whether share is being held.
+  entity_definitions:
+  - identity_id: trim_share_identity
+    dataset_columns:
+    - trim_share_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: trim_identity
+    dataset_columns:
+    - trim_id
+    entity_universe: partial
+  - identity_id: vehicle_family_identity
+    dataset_columns:
+    - vehicle_family_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+- node_id: sf:automaker.demand.fact_powertrain_mix
+  descriptor:
+    qualified_name: automaker.demand.fact_powertrain_mix
+    display_name: Powertrain Mix
+    description: How much of an EV volume decline converts into ICE demand.
+    synonyms: []
+    tags:
+    - quantity
+    - demand_vehicle
+    - automobile-manufacturers
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: automaker.us-central-1
+      database: AUTOMAKER
+      schema: DEMAND
+      object: FACT_POWERTRAIN_MIX
+      format: table
+  grain:
+    description: One row is one powertrain mix.
+    components:
+    - identity_id: powertrain_mix_identity
+      dataset_columns:
+      - powertrain_mix_id
+      description: Identifier of the powertrain mix.
+  columns:
+  - name: powertrain_mix_id
+    description: Identifier of the powertrain mix.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: powertrain_id
+    description: Identifier of the powertrain.
+  - name: vehicle_family_id
+    description: Identifier of the vehicle family.
+  - name: country_id
+    description: Identifier of the country.
+  - name: delivery_quantity
+    description: Deliveries of the powertrain.
+  - name: converted_quantity
+    description: EV decline that shows up as ICE demand.
+  entity_definitions:
+  - identity_id: powertrain_mix_identity
+    dataset_columns:
+    - powertrain_mix_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: powertrain_identity
+    dataset_columns:
+    - powertrain_id
+    entity_universe: partial
+  - identity_id: vehicle_family_identity
+    dataset_columns:
+    - vehicle_family_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+- node_id: sf:automaker.demand.fact_regional_volume
+  descriptor:
+    qualified_name: automaker.demand.fact_regional_volume
+    display_name: Regional Volume
+    description: International volume versus the usual stronger middle quarters.
+    synonyms: []
+    tags:
+    - quantity
+    - demand_vehicle
+    - automobile-manufacturers
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: automaker.us-central-1
+      database: AUTOMAKER
+      schema: DEMAND
+      object: FACT_REGIONAL_VOLUME
+      format: table
+  grain:
+    description: One row is one regional volume.
+    components:
+    - identity_id: regional_volume_identity
+      dataset_columns:
+      - regional_volume_id
+      description: Identifier of the regional volume.
+  columns:
+  - name: regional_volume_id
+    description: Identifier of the regional volume.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: region_id
+    description: Identifier of the region.
+  - name: country_id
+    description: Identifier of the country.
+  - name: vehicle_family_id
+    description: Identifier of the vehicle family.
+  - name: delivery_quantity
+    description: Deliveries in the region.
+  - name: seasonal_pattern_flag
+    description: Whether the usual stronger middle quarters still hold.
+  entity_definitions:
+  - identity_id: regional_volume_identity
+    dataset_columns:
+    - regional_volume_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: vehicle_family_identity
+    dataset_columns:
+    - vehicle_family_id
+    entity_universe: partial
+- node_id: sf:automaker.demand.fact_consumer_demand
+  descriptor:
+    qualified_name: automaker.demand.fact_consumer_demand
+    display_name: Consumer Demand
+    description: Demand outlook given consumer and credit worries, and a competitor's added product.
+    synonyms: []
+    tags:
+    - status
+    - demand_vehicle
+    - automobile-manufacturers
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: automaker.us-central-1
+      database: AUTOMAKER
+      schema: DEMAND
+      object: FACT_CONSUMER_DEMAND
+      format: table
+  grain:
+    description: One row is one consumer demand.
+    components:
+    - identity_id: consumer_demand_identity
+      dataset_columns:
+      - consumer_demand_id
+      description: Identifier of the consumer demand.
+  columns:
+  - name: consumer_demand_id
+    description: Identifier of the consumer demand.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: country_id
+    description: Identifier of the country.
+  - name: vehicle_family_id
+    description: Identifier of the vehicle family.
+  - name: demand_index
+    description: Demand index versus the plan.
+  - name: credit_worry_flag
+    description: Whether consumer credit is a constraint.
+  - name: competitor_product_flag
+    description: Whether a competitor added a product in the segment.
+  entity_definitions:
+  - identity_id: consumer_demand_identity
+    dataset_columns:
+    - consumer_demand_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: vehicle_family_identity
+    dataset_columns:
+    - vehicle_family_id
+    entity_universe: partial
+- node_id: sf:automaker.demand.fact_fsd_attach
+  descriptor:
+    qualified_name: automaker.demand.fact_fsd_attach
+    display_name: FSD Attach
+    description: Full Self-Driving attach after consumer trials. Recognized revenue is not stored here.
+    synonyms: []
+    tags:
+    - quantity
+    - demand_vehicle
+    - automobile-manufacturers
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: automaker.us-central-1
+      database: AUTOMAKER
+      schema: DEMAND
+      object: FACT_FSD_ATTACH
+      format: table
+  grain:
+    description: One row is one fsd attach.
+    components:
+    - identity_id: fsd_attach_identity
+      dataset_columns:
+      - fsd_attach_id
+      description: Identifier of the fsd attach.
+  columns:
+  - name: fsd_attach_id
+    description: Identifier of the fsd attach.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: software_release_id
+    description: Identifier of the software release.
+  - name: vehicle_family_id
+    description: Identifier of the vehicle family.
+  - name: country_id
+    description: Identifier of the country.
+  - name: take_rate
+    description: Attach or take rate.
+  - name: trial_conversion_rate
+    description: Share of trials that became paid.
+  entity_definitions:
+  - identity_id: fsd_attach_identity
+    dataset_columns:
+    - fsd_attach_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: software_release_identity
+    dataset_columns:
+    - software_release_id
+    entity_universe: partial
+  - identity_id: vehicle_family_identity
+    dataset_columns:
+    - vehicle_family_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+- node_id: sf:automaker.demand.fact_network_entry
+  descriptor:
+    qualified_name: automaker.demand.fact_network_entry
+    display_name: Network Entry
+    description: What has to be true before a customer-owned vehicle can join the robotaxi network.
+    synonyms: []
+    tags:
+    - status
+    - demand_vehicle
+    - automobile-manufacturers
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: automaker.us-central-1
+      database: AUTOMAKER
+      schema: DEMAND
+      object: FACT_NETWORK_ENTRY
+      format: table
+  grain:
+    description: One row is one network entry.
+    components:
+    - identity_id: network_entry_identity
+      dataset_columns:
+      - network_entry_id
+      description: Identifier of the network entry.
+  columns:
+  - name: network_entry_id
+    description: Identifier of the network entry.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: vehicle_family_id
+    description: Identifier of the vehicle family.
+  - name: software_release_id
+    description: Identifier of the software release.
+  - name: eligible_flag
+    description: Whether the hardware and software are eligible.
+  - name: timing_code
+    description: When entry is expected.
+    value_description: this_year, next_year, later
+  entity_definitions:
+  - identity_id: network_entry_identity
+    dataset_columns:
+    - network_entry_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: vehicle_family_identity
+    dataset_columns:
+    - vehicle_family_id
+    entity_universe: partial
+  - identity_id: software_release_identity
+    dataset_columns:
+    - software_release_id
+    entity_universe: partial
+- node_id: sf:automaker.demand.fact_hardware_upgrade
+  descriptor:
+    qualified_name: automaker.demand.fact_hardware_upgrade
+    display_name: Hardware Upgrade
+    description: Whether older camera cars get a hardware upgrade for newer software.
+    synonyms: []
+    tags:
+    - status
+    - demand_vehicle
+    - automobile-manufacturers
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: automaker.us-central-1
+      database: AUTOMAKER
+      schema: DEMAND
+      object: FACT_HARDWARE_UPGRADE
+      format: table
+  grain:
+    description: One row is one hardware upgrade.
+    components:
+    - identity_id: hardware_upgrade_identity
+      dataset_columns:
+      - hardware_upgrade_id
+      description: Identifier of the hardware upgrade.
+  columns:
+  - name: hardware_upgrade_id
+    description: Identifier of the hardware upgrade.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: component_id
+    description: Identifier of the component.
+  - name: software_release_id
+    description: Identifier of the software release.
+  - name: vehicle_family_id
+    description: Identifier of the vehicle family.
+  - name: upgrade_planned_flag
+    description: Whether an upgrade is still planned.
+  - name: compute_gap_flag
+    description: Whether the fleet lacks the compute for later builds.
+  entity_definitions:
+  - identity_id: hardware_upgrade_identity
+    dataset_columns:
+    - hardware_upgrade_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: component_identity
+    dataset_columns:
+    - component_id
+    entity_universe: partial
+  - identity_id: software_release_identity
+    dataset_columns:
+    - software_release_id
+    entity_universe: partial
+  - identity_id: vehicle_family_identity
+    dataset_columns:
+    - vehicle_family_id
+    entity_universe: partial
+- node_id: sf:automaker.demand.fact_software_path
+  descriptor:
+    qualified_name: automaker.demand.fact_software_path
+    display_name: Software Path
+    description: Whether consumer builds diverge from the robotaxi stack, and what a release is for.
+    synonyms: []
+    tags:
+    - status
+    - demand_vehicle
+    - automobile-manufacturers
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: automaker.us-central-1
+      database: AUTOMAKER
+      schema: DEMAND
+      object: FACT_SOFTWARE_PATH
+      format: table
+  grain:
+    description: One row is one software path.
+    components:
+    - identity_id: software_path_identity
+      dataset_columns:
+      - software_path_id
+      description: Identifier of the software path.
+  columns:
+  - name: software_path_id
+    description: Identifier of the software path.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: software_release_id
+    description: Identifier of the software release.
+  - name: autonomy_stack_id
+    description: Identifier of the autonomy stack.
+  - name: separate_path_flag
+    description: Whether the consumer build is on a different path.
+  - name: release_aim_code
+    description: What the release is aimed at.
+    value_description: fewer_interventions, added_functions
+  entity_definitions:
+  - identity_id: software_path_identity
+    dataset_columns:
+    - software_path_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: software_release_identity
+    dataset_columns:
+    - software_release_id
+    entity_universe: partial
+  - identity_id: autonomy_stack_identity
+    dataset_columns:
+    - autonomy_stack_id
+    entity_universe: partial
+- node_id: sf:automaker.demand.fact_city_staffing
+  descriptor:
+    qualified_name: automaker.demand.fact_city_staffing
+    display_name: City Staffing
+    description: Whether a city is limited by regulation or local learning, and whether it opens with
+      an attendant.
+    synonyms: []
+    tags:
+    - status
+    - demand_vehicle
+    - automobile-manufacturers
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: automaker.us-central-1
+      database: AUTOMAKER
+      schema: DEMAND
+      object: FACT_CITY_STAFFING
+      format: table
+  grain:
+    description: One row is one city staffing.
+    components:
+    - identity_id: city_staffing_identity
+      dataset_columns:
+      - city_staffing_id
+      description: Identifier of the city staffing.
+  columns:
+  - name: city_staffing_id
+    description: Identifier of the city staffing.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: city_id
+    description: Identifier of the city.
+  - name: regulation_id
+    description: Identifier of the regulation.
+  - name: autonomy_stack_id
+    description: Identifier of the autonomy stack.
+  - name: driver_removed_flag
+    description: Whether the safety driver can leave.
+  - name: limit_code
+    description: What limits the city.
+    value_description: regulation, local_learning
+  - name: attendant_flag
+    description: Whether a new city starts with an attendant.
+  entity_definitions:
+  - identity_id: city_staffing_identity
+    dataset_columns:
+    - city_staffing_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: city_identity
+    dataset_columns:
+    - city_id
+    entity_universe: partial
+  - identity_id: regulation_identity
+    dataset_columns:
+    - regulation_id
+    entity_universe: partial
+  - identity_id: autonomy_stack_identity
+    dataset_columns:
+    - autonomy_stack_id
+    entity_universe: partial
+- node_id: sf:automaker.demand.fact_safety_gate
+  descriptor:
+    qualified_name: automaker.demand.fact_safety_gate
+    display_name: Safety Gate
+    description: Which safety or reliability milestone speeds fleet growth.
+    synonyms: []
+    tags:
+    - status
+    - demand_vehicle
+    - automobile-manufacturers
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: automaker.us-central-1
+      database: AUTOMAKER
+      schema: DEMAND
+      object: FACT_SAFETY_GATE
+      format: table
+  grain:
+    description: One row is one safety gate.
+    components:
+    - identity_id: safety_gate_identity
+      dataset_columns:
+      - safety_gate_id
+      description: Identifier of the safety gate.
+  columns:
+  - name: safety_gate_id
+    description: Identifier of the safety gate.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: city_id
+    description: Identifier of the city.
+  - name: vehicle_program_id
+    description: Identifier of the vehicle program.
+  - name: milestone_met_flag
+    description: Whether the milestone is met.
+  - name: speeds_growth_flag
+    description: Whether meeting it speeds fleet growth.
+  entity_definitions:
+  - identity_id: safety_gate_identity
+    dataset_columns:
+    - safety_gate_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: city_identity
+    dataset_columns:
+    - city_id
+    entity_universe: partial
+  - identity_id: vehicle_program_identity
+    dataset_columns:
+    - vehicle_program_id
+    entity_universe: partial
+- node_id: sf:automaker.demand.fact_connectivity_use
+  descriptor:
+    qualified_name: automaker.demand.fact_connectivity_use
+    display_name: Connectivity Use
+    description: Whether a connected vehicle is also used as a mobile hotspot.
+    synonyms: []
+    tags:
+    - status
+    - demand_vehicle
+    - automobile-manufacturers
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: automaker.us-central-1
+      database: AUTOMAKER
+      schema: DEMAND
+      object: FACT_CONNECTIVITY_USE
+      format: table
+  grain:
+    description: One row is one connectivity use.
+    components:
+    - identity_id: connectivity_use_identity
+      dataset_columns:
+      - connectivity_use_id
+      description: Identifier of the connectivity use.
+  columns:
+  - name: connectivity_use_id
+    description: Identifier of the connectivity use.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: vehicle_program_id
+    description: Identifier of the vehicle program.
+  - name: component_id
+    description: Identifier of the component.
+  - name: hotspot_flag
+    description: Whether the vehicle is planned as a mobile hotspot.
+  - name: passenger_only_flag
+    description: Whether the terminal is only for passengers.
+  entity_definitions:
+  - identity_id: connectivity_use_identity
+    dataset_columns:
+    - connectivity_use_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: vehicle_program_identity
+    dataset_columns:
+    - vehicle_program_id
+    entity_universe: partial
+  - identity_id: component_identity
+    dataset_columns:
+    - component_id
+    entity_universe: partial
+- node_id: sf:automaker.demand.fact_autonomy_timing
+  descriptor:
+    qualified_name: automaker.demand.fact_autonomy_timing
+    display_name: Autonomy Timing
+    description: When unsupervised driving is expected on a product, given other engineering priorities.
+    synonyms: []
+    tags:
+    - status
+    - demand_vehicle
+    - automobile-manufacturers
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: automaker.us-central-1
+      database: AUTOMAKER
+      schema: DEMAND
+      object: FACT_AUTONOMY_TIMING
+      format: table
+  grain:
+    description: One row is one autonomy timing.
+    components:
+    - identity_id: autonomy_timing_identity
+      dataset_columns:
+      - autonomy_timing_id
+      description: Identifier of the autonomy timing.
+  columns:
+  - name: autonomy_timing_id
+    description: Identifier of the autonomy timing.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: vehicle_program_id
+    description: Identifier of the vehicle program.
+  - name: autonomy_stack_id
+    description: Identifier of the autonomy stack.
+  - name: unsupervised_flag
+    description: Whether unsupervised driving is expected.
+  - name: priority_versus_volume_flag
+    description: Whether higher-volume vehicles take engineering priority.
+  entity_definitions:
+  - identity_id: autonomy_timing_identity
+    dataset_columns:
+    - autonomy_timing_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: vehicle_program_identity
+    dataset_columns:
+    - vehicle_program_id
+    entity_universe: partial
+  - identity_id: autonomy_stack_identity
+    dataset_columns:
+    - autonomy_stack_id
+    entity_universe: partial
+- node_id: sf:automaker.demand.fact_product_scope
+  descriptor:
+    qualified_name: automaker.demand.fact_product_scope
+    display_name: Product Scope
+    description: Which AI applications sit inside the core work.
+    synonyms: []
+    tags:
+    - status
+    - demand_vehicle
+    - automobile-manufacturers
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: automaker.us-central-1
+      database: AUTOMAKER
+      schema: DEMAND
+      object: FACT_PRODUCT_SCOPE
+      format: table
+  grain:
+    description: One row is one product scope.
+    components:
+    - identity_id: product_scope_identity
+      dataset_columns:
+      - product_scope_id
+      description: Identifier of the product scope.
+  columns:
+  - name: product_scope_id
+    description: Identifier of the product scope.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: vehicle_family_id
+    description: Identifier of the vehicle family.
+  - name: use_case_id
+    description: Identifier of the use case.
+  - name: in_scope_flag
+    description: Whether the application is inside the core work.
+  - name: outside_market_flag
+    description: Whether the market should stay outside.
+  entity_definitions:
+  - identity_id: product_scope_identity
+    dataset_columns:
+    - product_scope_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: vehicle_family_identity
+    dataset_columns:
+    - vehicle_family_id
+    entity_universe: partial
+  - identity_id: use_case_identity
+    dataset_columns:
+    - use_case_id
+    entity_universe: partial
+- node_id: sf:automaker.demand.fact_competitive_design
+  descriptor:
+    qualified_name: automaker.demand.fact_competitive_design
+    display_name: Competitive Design
+    description: What keeps the robot ahead of new humanoid platforms, including those from China.
+    synonyms: []
+    tags:
+    - status
+    - demand_vehicle
+    - automobile-manufacturers
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: automaker.us-central-1
+      database: AUTOMAKER
+      schema: DEMAND
+      object: FACT_COMPETITIVE_DESIGN
+      format: table
+  grain:
+    description: One row is one competitive design.
+    components:
+    - identity_id: competitive_design_identity
+      dataset_columns:
+      - competitive_design_id
+      description: Identifier of the competitive design.
+  columns:
+  - name: competitive_design_id
+    description: Identifier of the competitive design.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: vehicle_program_id
+    description: Identifier of the vehicle program.
+  - name: country_id
+    description: Identifier of the country.
+  - name: ahead_flag
+    description: Whether the design is ahead.
+  - name: difference_code
+    description: How the product differs.
+    value_description: manufacturing, design, cost
+  entity_definitions:
+  - identity_id: competitive_design_identity
+    dataset_columns:
+    - competitive_design_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: vehicle_program_identity
+    dataset_columns:
+    - vehicle_program_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+- node_id: sf:automaker.demand.fact_competitor_entry
+  descriptor:
+    qualified_name: automaker.demand.fact_competitor_entry
+    display_name: Competitor Entry
+    description: Whether Chinese automakers sell in the United States, and how that entry evolves.
+    synonyms: []
+    tags:
+    - status
+    - demand_vehicle
+    - automobile-manufacturers
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: automaker.us-central-1
+      database: AUTOMAKER
+      schema: DEMAND
+      object: FACT_COMPETITOR_ENTRY
+      format: table
+  grain:
+    description: One row is one competitor entry.
+    components:
+    - identity_id: competitor_entry_identity
+      dataset_columns:
+      - competitor_entry_id
+      description: Identifier of the competitor entry.
+  columns:
+  - name: competitor_entry_id
+    description: Identifier of the competitor entry.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: country_id
+    description: Identifier of the country.
+  - name: vehicle_family_id
+    description: Identifier of the vehicle family.
+  - name: entry_flag
+    description: Whether entry is expected.
+  - name: path_code
+    description: How entry would evolve.
+    value_description: import, local_build, partner
+  entity_definitions:
+  - identity_id: competitor_entry_identity
+    dataset_columns:
+    - competitor_entry_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: vehicle_family_identity
+    dataset_columns:
+    - vehicle_family_id
+    entity_universe: partial
+- node_id: sf:automaker.demand.fact_partnership
+  descriptor:
+    qualified_name: automaker.demand.fact_partnership
+    display_name: Partnership
+    description: Development partnership used to compete in a region.
+    synonyms: []
+    tags:
+    - status
+    - demand_vehicle
+    - automobile-manufacturers
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: automaker.us-central-1
+      database: AUTOMAKER
+      schema: DEMAND
+      object: FACT_PARTNERSHIP
+      format: table
+  grain:
+    description: One row is one partnership.
+    components:
+    - identity_id: partnership_identity
+      dataset_columns:
+      - partnership_id
+      description: Identifier of the partnership.
+  columns:
+  - name: partnership_id
+    description: Identifier of the partnership.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: country_id
+    description: Identifier of the country.
+  - name: region_id
+    description: Identifier of the region.
+  - name: vehicle_family_id
+    description: Identifier of the vehicle family.
+  - name: partnership_flag
+    description: Whether the partnership is the competitive route.
+  - name: pushing_again_flag
+    description: Whether international markets are being pushed again.
+  entity_definitions:
+  - identity_id: partnership_identity
+    dataset_columns:
+    - partnership_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+  - identity_id: vehicle_family_identity
+    dataset_columns:
+    - vehicle_family_id
+    entity_universe: partial
+- node_id: sf:automaker.demand.fact_geo_focus
+  descriptor:
+    qualified_name: automaker.demand.fact_geo_focus
+    display_name: Geographic Focus
+    description: Whether to concentrate more on the United States than on China or Europe.
+    synonyms: []
+    tags:
+    - status
+    - demand_vehicle
+    - automobile-manufacturers
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: automaker.us-central-1
+      database: AUTOMAKER
+      schema: DEMAND
+      object: FACT_GEO_FOCUS
+      format: table
+  grain:
+    description: One row is one geographic focus.
+    components:
+    - identity_id: geo_focus_identity
+      dataset_columns:
+      - geo_focus_id
+      description: Identifier of the geographic focus.
+  columns:
+  - name: geo_focus_id
+    description: Identifier of the geographic focus.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: country_id
+    description: Identifier of the country.
+  - name: region_id
+    description: Identifier of the region.
+  - name: focus_code
+    description: Where effort concentrates.
+    value_description: united_states, china, europe
+  - name: china_better_flag
+    description: Whether the China result was better than feared.
+  entity_definitions:
+  - identity_id: geo_focus_identity
+    dataset_columns:
+    - geo_focus_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:automaker.demand.fact_lineup
+  descriptor:
+    qualified_name: automaker.demand.fact_lineup
+    display_name: Lineup
+    description: How broad the EV lineup stays as credits end.
+    synonyms: []
+    tags:
+    - status
+    - demand_vehicle
+    - automobile-manufacturers
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: automaker.us-central-1
+      database: AUTOMAKER
+      schema: DEMAND
+      object: FACT_LINEUP
+      format: table
+  grain:
+    description: One row is one lineup.
+    components:
+    - identity_id: lineup_identity
+      dataset_columns:
+      - lineup_id
+      description: Identifier of the lineup.
+  columns:
+  - name: lineup_id
+    description: Identifier of the lineup.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: powertrain_id
+    description: Identifier of the powertrain.
+  - name: vehicle_program_id
+    description: Identifier of the vehicle program.
+  - name: breadth_code
+    description: How broad the lineup stays.
+    value_description: full, narrower, profitable_only
+  - name: point_moved_up_flag
+    description: Whether profitable points move higher.
+  entity_definitions:
+  - identity_id: lineup_identity
+    dataset_columns:
+    - lineup_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: powertrain_identity
+    dataset_columns:
+    - powertrain_id
+    entity_universe: partial
+  - identity_id: vehicle_program_identity
+    dataset_columns:
+    - vehicle_program_id
+    entity_universe: partial
+- node_id: sf:automaker.demand.fact_feature_cut
+  descriptor:
+    qualified_name: automaker.demand.fact_feature_cut
+    display_name: Feature Cut
+    description: Whether content is cut the way it was in an earlier chip shortage.
+    synonyms: []
+    tags:
+    - status
+    - demand_vehicle
+    - automobile-manufacturers
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: automaker.us-central-1
+      database: AUTOMAKER
+      schema: DEMAND
+      object: FACT_FEATURE_CUT
+      format: table
+  grain:
+    description: One row is one feature cut.
+    components:
+    - identity_id: feature_cut_identity
+      dataset_columns:
+      - feature_cut_id
+      description: Identifier of the feature cut.
+  columns:
+  - name: feature_cut_id
+    description: Identifier of the feature cut.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: component_id
+    description: Identifier of the component.
+  - name: vehicle_family_id
+    description: Identifier of the vehicle family.
+  - name: cut_flag
+    description: Whether features would be cut.
+  - name: same_playbook_flag
+    description: Whether the earlier shortage playbook applies.
+  entity_definitions:
+  - identity_id: feature_cut_identity
+    dataset_columns:
+    - feature_cut_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: component_identity
+    dataset_columns:
+    - component_id
+    entity_universe: partial
+  - identity_id: vehicle_family_identity
+    dataset_columns:
+    - vehicle_family_id
+    entity_universe: partial
+- node_id: sf:automaker.demand.fact_coverage_limit
+  descriptor:
+    qualified_name: automaker.demand.fact_coverage_limit
+    display_name: Road Coverage Limit
+    description: What limits expanding driver-assistance road coverage.
+    synonyms: []
+    tags:
+    - status
+    - demand_vehicle
+    - automobile-manufacturers
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: automaker.us-central-1
+      database: AUTOMAKER
+      schema: DEMAND
+      object: FACT_COVERAGE_LIMIT
+      format: table
+  grain:
+    description: One row is one road coverage limit.
+    components:
+    - identity_id: coverage_limit_identity
+      dataset_columns:
+      - coverage_limit_id
+      description: Identifier of the road coverage limit.
+  columns:
+  - name: coverage_limit_id
+    description: Identifier of the road coverage limit.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: service_id
+    description: Identifier of the digital service.
+  - name: regulation_id
+    description: Identifier of the regulation.
+  - name: country_id
+    description: Identifier of the country.
+  - name: limit_code
+    description: What limits coverage.
+    value_description: regulation, risk_appetite
+  - name: expanded_flag
+    description: Whether coverage expanded.
+  entity_definitions:
+  - identity_id: coverage_limit_identity
+    dataset_columns:
+    - coverage_limit_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: service_identity
+    dataset_columns:
+    - service_id
+    entity_universe: partial
+  - identity_id: regulation_identity
+    dataset_columns:
+    - regulation_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+- node_id: sf:automaker.demand.fact_subscription_limit
+  descriptor:
+    qualified_name: automaker.demand.fact_subscription_limit
+    display_name: Subscription Limit
+    description: What limits putting a subscription on the installed base, including hardware.
+    synonyms: []
+    tags:
+    - status
+    - demand_vehicle
+    - automobile-manufacturers
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: automaker.us-central-1
+      database: AUTOMAKER
+      schema: DEMAND
+      object: FACT_SUBSCRIPTION_LIMIT
+      format: table
+  grain:
+    description: One row is one subscription limit.
+    components:
+    - identity_id: subscription_limit_identity
+      dataset_columns:
+      - subscription_limit_id
+      description: Identifier of the subscription limit.
+  columns:
+  - name: subscription_limit_id
+    description: Identifier of the subscription limit.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: service_id
+    description: Identifier of the digital service.
+  - name: component_id
+    description: Identifier of the component.
+  - name: vehicle_family_id
+    description: Identifier of the vehicle family.
+  - name: hardware_limit_flag
+    description: Whether hardware limits attach.
+  - name: other_limit_code
+    description: Other limit.
+    value_description: awareness, price, coverage
+  entity_definitions:
+  - identity_id: subscription_limit_identity
+    dataset_columns:
+    - subscription_limit_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: service_identity
+    dataset_columns:
+    - service_id
+    entity_universe: partial
+  - identity_id: component_identity
+    dataset_columns:
+    - component_id
+    entity_universe: partial
+  - identity_id: vehicle_family_identity
+    dataset_columns:
+    - vehicle_family_id
+    entity_universe: partial

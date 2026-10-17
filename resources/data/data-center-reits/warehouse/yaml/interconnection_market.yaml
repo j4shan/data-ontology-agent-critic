@@ -1,0 +1,909 @@
+schema_version: '3'
+nodes:
+- node_id: sf:colocation.interconnection.dim_region
+  descriptor:
+    qualified_name: colocation.interconnection.dim_region
+    display_name: Region
+    description: Americas, EMEA, Asia-Pacific, or Middle East.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: colocation.us-west-1
+      database: COLOCATION
+      schema: INTERCONNECTION
+      object: DIM_REGION
+      format: table
+  grain:
+    description: One row is one region.
+    components:
+    - identity_id: region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+  columns:
+  - name: region_id
+    description: Identifier of the region. This dataset holds the complete population.
+  - name: region_name
+    description: Name of the region.
+  - name: region_code
+    description: Code of the region.
+    value_description: americas, emea, asia_pacific, or middle_east.
+  entity_definitions:
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: complete
+- node_id: sf:colocation.interconnection.dim_metro
+  descriptor:
+    qualified_name: colocation.interconnection.dim_metro
+    display_name: Metro
+    description: A market Colocation Inc operates in. Constrained markets include metros such as Northern Virginia
+      and Frankfurt.
+    synonyms:
+    - market
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: colocation.us-west-1
+      database: COLOCATION
+      schema: INTERCONNECTION
+      object: DIM_METRO
+      format: table
+  grain:
+    description: One row is one metro.
+    components:
+    - identity_id: metro_identity
+      dataset_columns:
+      - metro_id
+      description: Identifier of the metro.
+  columns:
+  - name: metro_id
+    description: Identifier of the metro. This dataset holds the complete population.
+  - name: region_id
+    description: Region that contains the metro. The population is owned by its complete dataset.
+  - name: metro_name
+    description: Name of the metro.
+  - name: metro_code
+    description: Short code of the metro.
+  - name: constrained_flag
+    description: Whether the metro is capacity constrained.
+    value_description: true or false.
+  - name: top_market_flag
+    description: Whether the metro is a top market.
+    value_description: true or false.
+  entity_definitions:
+  - identity_id: metro_identity
+    dataset_columns:
+    - metro_id
+    entity_universe: complete
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:colocation.interconnection.dim_customer_vertical
+  descriptor:
+    qualified_name: colocation.interconnection.dim_customer_vertical
+    display_name: Customer Vertical
+    description: 'Who buys: enterprise, hyperscaler, neo-cloud, AI provider, cloud provider, or network.'
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: colocation.us-west-1
+      database: COLOCATION
+      schema: INTERCONNECTION
+      object: DIM_CUSTOMER_VERTICAL
+      format: table
+  grain:
+    description: One row is one customer vertical.
+    components:
+    - identity_id: customer_vertical_identity
+      dataset_columns:
+      - customer_vertical_id
+      description: Identifier of the customer vertical.
+  columns:
+  - name: customer_vertical_id
+    description: Identifier of the customer vertical. This dataset holds the complete population.
+  - name: vertical_name
+    description: Name of the vertical.
+  - name: vertical_code
+    description: Code of the vertical.
+    value_description: enterprise, hyperscaler, neo_cloud, ai_provider, cloud_provider, or network.
+  entity_definitions:
+  - identity_id: customer_vertical_identity
+    dataset_columns:
+    - customer_vertical_id
+    entity_universe: complete
+- node_id: sf:colocation.interconnection.dim_customer
+  descriptor:
+    qualified_name: colocation.interconnection.dim_customer
+    display_name: Customer
+    description: A customer that buys space, power, or interconnection.
+    synonyms:
+    - tenant
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: colocation.us-west-1
+      database: COLOCATION
+      schema: INTERCONNECTION
+      object: DIM_CUSTOMER
+      format: table
+  grain:
+    description: One row is one customer.
+    components:
+    - identity_id: customer_identity
+      dataset_columns:
+      - customer_id
+      description: Identifier of the customer.
+  columns:
+  - name: customer_id
+    description: Identifier of the customer. This dataset holds the complete population.
+  - name: customer_vertical_id
+    description: Primary vertical of the customer. The population is owned by its complete dataset.
+  - name: customer_name
+    description: Name of the customer.
+  entity_definitions:
+  - identity_id: customer_identity
+    dataset_columns:
+    - customer_id
+    entity_universe: complete
+  - identity_id: customer_vertical_identity
+    dataset_columns:
+    - customer_vertical_id
+    entity_universe: partial
+- node_id: sf:colocation.interconnection.dim_network
+  descriptor:
+    qualified_name: colocation.interconnection.dim_network
+    display_name: Network
+    description: A network or cloud provider present for interconnection. This is not Colocation Inc itself.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: colocation.us-west-1
+      database: COLOCATION
+      schema: INTERCONNECTION
+      object: DIM_NETWORK
+      format: table
+  grain:
+    description: One row is one network.
+    components:
+    - identity_id: network_identity
+      dataset_columns:
+      - network_id
+      description: Identifier of the network.
+  columns:
+  - name: network_id
+    description: Identifier of the network. This dataset holds the complete population.
+  - name: network_name
+    description: Name of the network.
+  - name: cloud_provider_flag
+    description: Whether the network is a cloud provider.
+    value_description: true or false.
+  entity_definitions:
+  - identity_id: network_identity
+    dataset_columns:
+    - network_id
+    entity_universe: complete
+- node_id: sf:colocation.interconnection.dim_interconnect_type
+  descriptor:
+    qualified_name: colocation.interconnection.dim_interconnect_type
+    display_name: Interconnect Type
+    description: Cross-connect, traditional cloud on-ramp, neo-cloud on-ramp, or network node.
+    synonyms:
+    - cross connect
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: colocation.us-west-1
+      database: COLOCATION
+      schema: INTERCONNECTION
+      object: DIM_INTERCONNECT_TYPE
+      format: table
+  grain:
+    description: One row is one interconnect type.
+    components:
+    - identity_id: interconnect_type_identity
+      dataset_columns:
+      - interconnect_type_id
+      description: Identifier of the interconnect type.
+  columns:
+  - name: interconnect_type_id
+    description: Identifier of the interconnect type. This dataset holds the complete population.
+  - name: type_name
+    description: Name of the interconnect type.
+  - name: type_code
+    description: Code of the interconnect type.
+    value_description: cross_connect, cloud_on_ramp, neo_cloud_on_ramp, or network_node.
+  entity_definitions:
+  - identity_id: interconnect_type_identity
+    dataset_columns:
+    - interconnect_type_id
+    entity_universe: complete
+- node_id: sf:colocation.interconnection.dim_demand_source
+  descriptor:
+    qualified_name: colocation.interconnection.dim_demand_source
+    display_name: Interconnect Demand Source
+    description: Where a step-up in interconnection net adds comes from.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: colocation.us-west-1
+      database: COLOCATION
+      schema: INTERCONNECTION
+      object: DIM_DEMAND_SOURCE
+      format: table
+  grain:
+    description: One row is one interconnect demand source.
+    components:
+    - identity_id: demand_source_identity
+      dataset_columns:
+      - demand_source_id
+      description: Identifier of the demand source.
+  columns:
+  - name: demand_source_id
+    description: Identifier of the demand source. This dataset holds the complete population.
+  - name: source_name
+    description: Name of the demand source.
+  entity_definitions:
+  - identity_id: demand_source_identity
+    dataset_columns:
+    - demand_source_id
+    entity_universe: complete
+- node_id: sf:colocation.interconnection.dim_cloud_product
+  descriptor:
+    qualified_name: colocation.interconnection.dim_cloud_product
+    display_name: Cloud Product
+    description: A cloud-provider product, including a multi-cloud product, that can change interconnection
+      demand.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: colocation.us-west-1
+      database: COLOCATION
+      schema: INTERCONNECTION
+      object: DIM_CLOUD_PRODUCT
+      format: table
+  grain:
+    description: One row is one cloud product.
+    components:
+    - identity_id: cloud_product_identity
+      dataset_columns:
+      - cloud_product_id
+      description: Identifier of the cloud product.
+  columns:
+  - name: cloud_product_id
+    description: Identifier of the cloud product. This dataset holds the complete population.
+  - name: network_id
+    description: Network or provider that offers the product. The population is owned by its complete
+      dataset.
+  - name: product_name
+    description: Name of the cloud product.
+  - name: multicloud_flag
+    description: Whether the product is multi-cloud.
+    value_description: true or false.
+  entity_definitions:
+  - identity_id: cloud_product_identity
+    dataset_columns:
+    - cloud_product_id
+    entity_universe: complete
+  - identity_id: network_identity
+    dataset_columns:
+    - network_id
+    entity_universe: partial
+- node_id: sf:colocation.interconnection.fact_cross_connect
+  descriptor:
+    qualified_name: colocation.interconnection.fact_cross_connect
+    display_name: Cross-Connect
+    description: A cross-connect or port. It is not a lease line.
+    synonyms:
+    - interconnect
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: colocation.us-west-1
+      database: COLOCATION
+      schema: INTERCONNECTION
+      object: FACT_CROSS_CONNECT
+      format: table
+  grain:
+    description: One row is one cross-connect.
+    components:
+    - identity_id: cross_connect_identity
+      dataset_columns:
+      - cross_connect_id
+      description: Identifier of the cross-connect.
+  columns:
+  - name: cross_connect_id
+    description: Identifier of the cross-connect. This dataset holds the complete population.
+  - name: customer_id
+    description: Customer that ordered the cross-connect. The population is owned by its complete dataset.
+  - name: metro_id
+    description: Metro of the cross-connect. The population is owned by its complete dataset.
+  - name: network_id
+    description: Network at the far end, when the far end is a network. The population is owned by its
+      complete dataset.
+  - name: interconnect_type_id
+    description: Type of interconnection. The population is owned by its complete dataset.
+  - name: ibx_id
+    description: IBX where the cross-connect lands. The population is owned by its complete dataset.
+  - name: fiscal_quarter_id
+    description: Quarter the cross-connect was installed or is active. The population is owned by its
+      complete dataset.
+  - name: customer_vertical_id
+    description: Vertical of the ordering customer. The population is owned by its complete dataset.
+  - name: connect_status
+    description: Status of the cross-connect.
+    value_description: ordered, active, or disconnected.
+  - name: monthly_recurring_amount
+    description: Monthly recurring charge for the cross-connect.
+  entity_definitions:
+  - identity_id: cross_connect_identity
+    dataset_columns:
+    - cross_connect_id
+    entity_universe: complete
+  - identity_id: customer_identity
+    dataset_columns:
+    - customer_id
+    entity_universe: partial
+  - identity_id: metro_identity
+    dataset_columns:
+    - metro_id
+    entity_universe: partial
+  - identity_id: network_identity
+    dataset_columns:
+    - network_id
+    entity_universe: partial
+  - identity_id: interconnect_type_identity
+    dataset_columns:
+    - interconnect_type_id
+    entity_universe: partial
+  - identity_id: ibx_identity
+    dataset_columns:
+    - ibx_id
+    entity_universe: partial
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: customer_vertical_identity
+    dataset_columns:
+    - customer_vertical_id
+    entity_universe: partial
+- node_id: sf:colocation.interconnection.fact_interconnect_net_add
+  descriptor:
+    qualified_name: colocation.interconnection.fact_interconnect_net_add
+    display_name: Interconnect Net Add
+    description: Interconnection net adds by source, metro, and vertical.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: colocation.us-west-1
+      database: COLOCATION
+      schema: INTERCONNECTION
+      object: FACT_INTERCONNECT_NET_ADD
+      format: table
+  grain:
+    description: One row is one interconnect net add.
+    components:
+    - identity_id: interconnect_net_add_identity
+      dataset_columns:
+      - net_add_id
+      description: Identifier of the net-add row.
+  columns:
+  - name: net_add_id
+    description: Identifier of the net-add row. This dataset holds the complete population.
+  - name: fiscal_quarter_id
+    description: Quarter of the net adds. The population is owned by its complete dataset.
+  - name: metro_id
+    description: Metro of the net adds. The population is owned by its complete dataset.
+  - name: demand_source_id
+    description: Source of the step-up. The population is owned by its complete dataset.
+  - name: customer_vertical_id
+    description: Vertical of the net adds. The population is owned by its complete dataset.
+  - name: interconnect_type_id
+    description: Interconnect type added. The population is owned by its complete dataset.
+  - name: net_add_count
+    description: Net interconnection adds.
+  - name: price_opportunity_flag
+    description: Whether the source still has room for a higher price.
+    value_description: true or false.
+  entity_definitions:
+  - identity_id: interconnect_net_add_identity
+    dataset_columns:
+    - net_add_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: metro_identity
+    dataset_columns:
+    - metro_id
+    entity_universe: partial
+  - identity_id: demand_source_identity
+    dataset_columns:
+    - demand_source_id
+    entity_universe: partial
+  - identity_id: customer_vertical_identity
+    dataset_columns:
+    - customer_vertical_id
+    entity_universe: partial
+  - identity_id: interconnect_type_identity
+    dataset_columns:
+    - interconnect_type_id
+    entity_universe: partial
+- node_id: sf:colocation.interconnection.fact_interconnect_price
+  descriptor:
+    qualified_name: colocation.interconnection.fact_interconnect_price
+    display_name: Interconnect Price
+    description: Interconnection price and whether there is room to price higher.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: colocation.us-west-1
+      database: COLOCATION
+      schema: INTERCONNECTION
+      object: FACT_INTERCONNECT_PRICE
+      format: table
+  grain:
+    description: One row is one interconnect price.
+    components:
+    - identity_id: interconnect_price_identity
+      dataset_columns:
+      - interconnect_price_id
+      description: Identifier of the interconnect price row.
+  columns:
+  - name: interconnect_price_id
+    description: Identifier of the interconnect price row. This dataset holds the complete population.
+  - name: fiscal_quarter_id
+    description: Quarter of the price. The population is owned by its complete dataset.
+  - name: metro_id
+    description: Metro of the price. The population is owned by its complete dataset.
+  - name: interconnect_type_id
+    description: Interconnect type priced. The population is owned by its complete dataset.
+  - name: price_amount
+    description: Price of the interconnection.
+  - name: price_increase_room_flag
+    description: Whether price can still move higher.
+    value_description: true or false.
+  entity_definitions:
+  - identity_id: interconnect_price_identity
+    dataset_columns:
+    - interconnect_price_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: metro_identity
+    dataset_columns:
+    - metro_id
+    entity_universe: partial
+  - identity_id: interconnect_type_identity
+    dataset_columns:
+    - interconnect_type_id
+    entity_universe: partial
+- node_id: sf:colocation.interconnection.fact_interconnect_revenue
+  descriptor:
+    qualified_name: colocation.interconnection.fact_interconnect_revenue
+    display_name: Interconnect Revenue
+    description: Interconnection revenue and its growth. Total company revenue stays on the occupancy
+      revenue fact.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: colocation.us-west-1
+      database: COLOCATION
+      schema: INTERCONNECTION
+      object: FACT_INTERCONNECT_REVENUE
+      format: table
+  grain:
+    description: One row is one interconnect revenue.
+    components:
+    - identity_id: interconnect_revenue_identity
+      dataset_columns:
+      - interconnect_revenue_id
+      description: Identifier of the interconnect revenue row.
+  columns:
+  - name: interconnect_revenue_id
+    description: Identifier of the interconnect revenue row. This dataset holds the complete population.
+  - name: fiscal_quarter_id
+    description: Quarter of the revenue. The population is owned by its complete dataset.
+  - name: region_id
+    description: Region of the revenue. The population is owned by its complete dataset.
+  - name: interconnect_revenue_amount
+    description: Interconnection revenue.
+  - name: interconnect_growth_rate
+    description: Growth of interconnection revenue.
+  - name: revenue_share
+    description: Interconnection share of total revenue. Total revenue is joined from quarterly revenue.
+  entity_definitions:
+  - identity_id: interconnect_revenue_identity
+    dataset_columns:
+    - interconnect_revenue_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:colocation.interconnection.fact_attach_rate
+  descriptor:
+    qualified_name: colocation.interconnection.fact_attach_rate
+    display_name: Interconnect Attach Rate
+    description: Interconnection attach versus the historical attach rate, by vertical, workload, and
+      metro.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: colocation.us-west-1
+      database: COLOCATION
+      schema: INTERCONNECTION
+      object: FACT_ATTACH_RATE
+      format: table
+  grain:
+    description: One row is one interconnect attach rate.
+    components:
+    - identity_id: attach_rate_identity
+      dataset_columns:
+      - attach_rate_id
+      description: Identifier of the attach-rate row.
+  columns:
+  - name: attach_rate_id
+    description: Identifier of the attach-rate row. This dataset holds the complete population.
+  - name: fiscal_quarter_id
+    description: Quarter of the attach rate. The population is owned by its complete dataset.
+  - name: metro_id
+    description: Metro of the attach rate. The population is owned by its complete dataset.
+  - name: customer_vertical_id
+    description: Vertical of the attach rate. The population is owned by its complete dataset.
+  - name: workload_type_id
+    description: Workload, including AI workloads. The population is owned by its complete dataset.
+  - name: attach_rate
+    description: Interconnection attach rate.
+  - name: historical_attach_rate
+    description: Attach rate on the prior book of similar deals.
+  - name: deal_size_kw
+    description: Deal size the attach rate is measured against.
+  entity_definitions:
+  - identity_id: attach_rate_identity
+    dataset_columns:
+    - attach_rate_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: metro_identity
+    dataset_columns:
+    - metro_id
+    entity_universe: partial
+  - identity_id: customer_vertical_identity
+    dataset_columns:
+    - customer_vertical_id
+    entity_universe: partial
+  - identity_id: workload_type_identity
+    dataset_columns:
+    - workload_type_id
+    entity_universe: partial
+- node_id: sf:colocation.interconnection.fact_on_ramp
+  descriptor:
+    qualified_name: colocation.interconnection.fact_on_ramp
+    display_name: On-Ramp Node
+    description: Cloud and neo-cloud on-ramp nodes versus the installed base, including whether new nodes
+      are additive.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: colocation.us-west-1
+      database: COLOCATION
+      schema: INTERCONNECTION
+      object: FACT_ON_RAMP
+      format: table
+  grain:
+    description: One row is one on-ramp node.
+    components:
+    - identity_id: on_ramp_identity
+      dataset_columns:
+      - on_ramp_id
+      description: Identifier of the on-ramp row.
+  columns:
+  - name: on_ramp_id
+    description: Identifier of the on-ramp row. This dataset holds the complete population.
+  - name: fiscal_quarter_id
+    description: Quarter of the count. The population is owned by its complete dataset.
+  - name: metro_id
+    description: Metro of the nodes. The population is owned by its complete dataset.
+  - name: interconnect_type_id
+    description: On-ramp or network-node type. The population is owned by its complete dataset.
+  - name: customer_vertical_id
+    description: Vertical deploying the nodes. The population is owned by its complete dataset.
+  - name: node_count
+    description: Nodes added or active in the quarter.
+  - name: installed_base_node_count
+    description: Nodes already in the installed base.
+  - name: additive_flag
+    description: Whether the new nodes add to the installed base rather than replacing it.
+    value_description: true or false.
+  - name: strategic_rank
+    description: Rank of this on-ramp type against the traditional cloud on-ramp franchise. Lower is more
+      strategic.
+  entity_definitions:
+  - identity_id: on_ramp_identity
+    dataset_columns:
+    - on_ramp_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: metro_identity
+    dataset_columns:
+    - metro_id
+    entity_universe: partial
+  - identity_id: interconnect_type_identity
+    dataset_columns:
+    - interconnect_type_id
+    entity_universe: partial
+  - identity_id: customer_vertical_identity
+    dataset_columns:
+    - customer_vertical_id
+    entity_universe: partial
+- node_id: sf:colocation.interconnection.fact_multicloud_effect
+  descriptor:
+    qualified_name: colocation.interconnection.fact_multicloud_effect
+    display_name: Multi-Cloud Effect
+    description: How a provider multi-cloud product changes interconnection demand.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: colocation.us-west-1
+      database: COLOCATION
+      schema: INTERCONNECTION
+      object: FACT_MULTICLOUD_EFFECT
+      format: table
+  grain:
+    description: One row is one multi-cloud effect.
+    components:
+    - identity_id: multicloud_effect_identity
+      dataset_columns:
+      - multicloud_effect_id
+      description: Identifier of the multi-cloud effect.
+  columns:
+  - name: multicloud_effect_id
+    description: Identifier of the multi-cloud effect. This dataset holds the complete population.
+  - name: fiscal_quarter_id
+    description: Quarter of the effect. The population is owned by its complete dataset.
+  - name: cloud_product_id
+    description: Cloud product being measured. The population is owned by its complete dataset.
+  - name: metro_id
+    description: Metro of the effect. The population is owned by its complete dataset.
+  - name: interconnect_demand_change
+    description: Change in interconnection demand attributed to the product.
+  - name: franchise_effect
+    description: Direction of the effect on the interconnection franchise.
+    value_description: expand, neutral, or substitute.
+  entity_definitions:
+  - identity_id: multicloud_effect_identity
+    dataset_columns:
+    - multicloud_effect_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: cloud_product_identity
+    dataset_columns:
+    - cloud_product_id
+    entity_universe: partial
+  - identity_id: metro_identity
+    dataset_columns:
+    - metro_id
+    entity_universe: partial
+- node_id: sf:colocation.interconnection.fact_inference_link
+  descriptor:
+    qualified_name: colocation.interconnection.fact_inference_link
+    display_name: Inference Interconnect Link
+    description: The shift from AI training to inference and how much interconnection matters to winning
+      enterprise inference.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: colocation.us-west-1
+      database: COLOCATION
+      schema: INTERCONNECTION
+      object: FACT_INFERENCE_LINK
+      format: table
+  grain:
+    description: One row is one inference interconnect link.
+    components:
+    - identity_id: inference_link_identity
+      dataset_columns:
+      - inference_link_id
+      description: Identifier of the inference link row.
+  columns:
+  - name: inference_link_id
+    description: Identifier of the inference link row. This dataset holds the complete population.
+  - name: fiscal_year_id
+    description: Year of the mix. The population is owned by its complete dataset.
+  - name: workload_type_id
+    description: Workload the row describes. The population is owned by its complete dataset.
+  - name: training_share
+    description: Share of the AI book that is training.
+  - name: inference_share
+    description: Share of the AI book that is inference.
+  - name: interconnect_importance_score
+    description: How important interconnection is to winning that workload.
+  - name: timing_stage
+    description: Where the shift from training to inference stands.
+    value_description: training_led, transitioning, or inference_led.
+  entity_definitions:
+  - identity_id: inference_link_identity
+    dataset_columns:
+    - inference_link_id
+    entity_universe: complete
+  - identity_id: fiscal_year_identity
+    dataset_columns:
+    - fiscal_year_id
+    entity_universe: partial
+  - identity_id: workload_type_identity
+    dataset_columns:
+    - workload_type_id
+    entity_universe: partial
+- node_id: sf:colocation.interconnection.fact_arpu_driver
+  descriptor:
+    qualified_name: colocation.interconnection.fact_arpu_driver
+    display_name: Cross-Connect ARPU Driver
+    description: Whether cross-connect revenue and ARPU moved because of power density or customer mix.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: colocation.us-west-1
+      database: COLOCATION
+      schema: INTERCONNECTION
+      object: FACT_ARPU_DRIVER
+      format: table
+  grain:
+    description: One row is one cross-connect arpu driver.
+    components:
+    - identity_id: arpu_driver_identity
+      dataset_columns:
+      - arpu_driver_id
+      description: Identifier of the ARPU driver row.
+  columns:
+  - name: arpu_driver_id
+    description: Identifier of the ARPU driver row. This dataset holds the complete population.
+  - name: fiscal_quarter_id
+    description: Quarter of the ARPU result. The population is owned by its complete dataset.
+  - name: customer_vertical_id
+    description: Vertical of the mix. The population is owned by its complete dataset.
+  - name: density_class_id
+    description: Density class being compared. The population is owned by its complete dataset.
+  - name: cross_connect_revenue_amount
+    description: Cross-connect revenue.
+  - name: arpu_amount
+    description: Average revenue per cross-connect.
+  - name: density_effect_amount
+    description: ARPU change attributed to power density.
+  - name: mix_effect_amount
+    description: ARPU change attributed to customer mix.
+  entity_definitions:
+  - identity_id: arpu_driver_identity
+    dataset_columns:
+    - arpu_driver_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: customer_vertical_identity
+    dataset_columns:
+    - customer_vertical_id
+    entity_universe: partial
+  - identity_id: density_class_identity
+    dataset_columns:
+    - density_class_id
+    entity_universe: partial
+- node_id: sf:colocation.interconnection.fact_customer_mix
+  descriptor:
+    qualified_name: colocation.interconnection.fact_customer_mix
+    display_name: Customer Mix
+    description: The vertical mix of interconnection and bookings context in a metro and quarter.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: colocation.us-west-1
+      database: COLOCATION
+      schema: INTERCONNECTION
+      object: FACT_CUSTOMER_MIX
+      format: table
+  grain:
+    description: One row is one customer mix.
+    components:
+    - identity_id: customer_mix_identity
+      dataset_columns:
+      - customer_mix_id
+      description: Identifier of the customer mix row.
+  columns:
+  - name: customer_mix_id
+    description: Identifier of the customer mix row. This dataset holds the complete population.
+  - name: fiscal_quarter_id
+    description: Quarter of the mix. The population is owned by its complete dataset.
+  - name: metro_id
+    description: Metro of the mix. The population is owned by its complete dataset.
+  - name: customer_vertical_id
+    description: Vertical whose share is measured. The population is owned by its complete dataset.
+  - name: interconnect_share
+    description: Vertical share of interconnection.
+  - name: booking_share
+    description: Vertical share of bookings in the same metro. Booking amounts stay on the booking fact.
+  entity_definitions:
+  - identity_id: customer_mix_identity
+    dataset_columns:
+    - customer_mix_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: metro_identity
+    dataset_columns:
+    - metro_id
+    entity_universe: partial
+  - identity_id: customer_vertical_identity
+    dataset_columns:
+    - customer_vertical_id
+    entity_universe: partial

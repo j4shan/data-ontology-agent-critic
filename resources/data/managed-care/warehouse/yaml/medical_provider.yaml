@@ -1,0 +1,1732 @@
+schema_version: '3'
+nodes:
+- node_id: sf:healthplan.provider.dim_provider
+  descriptor:
+    qualified_name: healthplan.provider.dim_provider
+    display_name: Provider
+    description: Provider that bills Health Plan Inc.
+    synonyms: []
+    tags:
+    - dimension
+    - medical_provider
+    - managed-care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      schema: PROVIDER
+      object: DIM_PROVIDER
+      format: table
+  grain:
+    description: One row is one provider.
+    components:
+    - identity_id: provider_identity
+      dataset_columns:
+      - provider_id
+      description: Identifier of the provider.
+  columns:
+  - name: provider_id
+    description: Identifier of the provider.
+  - name: provider_name
+    description: Name of the provider.
+  - name: provider_code
+    description: Code of the provider.
+    value_description: physician, hospital, outpatient_surgery, pharmacy
+  - name: provider_group_id
+    description: Identifier of the provider group.
+  entity_definitions:
+  - identity_id: provider_identity
+    dataset_columns:
+    - provider_id
+    entity_universe: complete
+  - identity_id: provider_group_identity
+    dataset_columns:
+    - provider_group_id
+    entity_universe: partial
+- node_id: sf:healthplan.provider.dim_provider_group
+  descriptor:
+    qualified_name: healthplan.provider.dim_provider_group
+    display_name: Provider Group
+    description: Provider group, including groups added to value-based arrangements.
+    synonyms: []
+    tags:
+    - dimension
+    - medical_provider
+    - managed-care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      schema: PROVIDER
+      object: DIM_PROVIDER_GROUP
+      format: table
+  grain:
+    description: One row is one provider group.
+    components:
+    - identity_id: provider_group_identity
+      dataset_columns:
+      - provider_group_id
+      description: Identifier of the provider group.
+  columns:
+  - name: provider_group_id
+    description: Identifier of the provider group.
+  - name: provider_group_name
+    description: Name of the provider group.
+  - name: provider_group_code
+    description: Code of the provider group.
+    value_description: employed, affiliated, independent, value_based
+  entity_definitions:
+  - identity_id: provider_group_identity
+    dataset_columns:
+    - provider_group_id
+    entity_universe: complete
+- node_id: sf:healthplan.provider.dim_network
+  descriptor:
+    qualified_name: healthplan.provider.dim_network
+    display_name: Network
+    description: Network Health Plan Inc uses for care.
+    synonyms: []
+    tags:
+    - dimension
+    - medical_provider
+    - managed-care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      schema: PROVIDER
+      object: DIM_NETWORK
+      format: table
+  grain:
+    description: One row is one network.
+    components:
+    - identity_id: network_identity
+      dataset_columns:
+      - network_id
+      description: Identifier of the network.
+  columns:
+  - name: network_id
+    description: Identifier of the network.
+  - name: network_name
+    description: Name of the network.
+  - name: network_code
+    description: Code of the network.
+    value_description: hmo, ppo, value_based, open
+  entity_definitions:
+  - identity_id: network_identity
+    dataset_columns:
+    - network_id
+    entity_universe: complete
+- node_id: sf:healthplan.provider.dim_facility
+  descriptor:
+    qualified_name: healthplan.provider.dim_facility
+    display_name: Facility
+    description: Facility in a Health Plan Inc network.
+    synonyms: []
+    tags:
+    - dimension
+    - medical_provider
+    - managed-care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      schema: PROVIDER
+      object: DIM_FACILITY
+      format: table
+  grain:
+    description: One row is one facility.
+    components:
+    - identity_id: facility_identity
+      dataset_columns:
+      - facility_id
+      description: Identifier of the facility.
+  columns:
+  - name: facility_id
+    description: Identifier of the facility.
+  - name: facility_name
+    description: Name of the facility.
+  - name: facility_code
+    description: Code of the facility.
+    value_description: hospital, outpatient, post_acute, physician_office
+  - name: network_id
+    description: Identifier of the network.
+  - name: site_of_care_id
+    description: Identifier of the site of care.
+  entity_definitions:
+  - identity_id: facility_identity
+    dataset_columns:
+    - facility_id
+    entity_universe: complete
+  - identity_id: network_identity
+    dataset_columns:
+    - network_id
+    entity_universe: partial
+  - identity_id: site_of_care_identity
+    dataset_columns:
+    - site_of_care_id
+    entity_universe: partial
+- node_id: sf:healthplan.medical.dim_clinical_category
+  descriptor:
+    qualified_name: healthplan.medical.dim_clinical_category
+    display_name: Clinical Category
+    description: Physician, hospital, pharmacy, and outpatient surgery cost categories.
+    synonyms: []
+    tags:
+    - dimension
+    - medical_provider
+    - managed-care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      schema: MEDICAL
+      object: DIM_CLINICAL_CATEGORY
+      format: table
+  grain:
+    description: One row is one clinical category.
+    components:
+    - identity_id: clinical_category_identity
+      dataset_columns:
+      - clinical_category_id
+      description: Identifier of the clinical category.
+  columns:
+  - name: clinical_category_id
+    description: Identifier of the clinical category.
+  - name: clinical_category_name
+    description: Name of the clinical category.
+  - name: clinical_category_code
+    description: Code of the clinical category.
+    value_description: physician, hospital, pharmacy, outpatient_surgery
+  entity_definitions:
+  - identity_id: clinical_category_identity
+    dataset_columns:
+    - clinical_category_id
+    entity_universe: complete
+- node_id: sf:healthplan.medical.dim_clinical_program
+  descriptor:
+    qualified_name: healthplan.medical.dim_clinical_program
+    display_name: Clinical Program
+    description: Clinical program meant to bend a cost trend.
+    synonyms: []
+    tags:
+    - dimension
+    - medical_provider
+    - managed-care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      schema: MEDICAL
+      object: DIM_CLINICAL_PROGRAM
+      format: table
+  grain:
+    description: One row is one clinical program.
+    components:
+    - identity_id: clinical_program_identity
+      dataset_columns:
+      - clinical_program_id
+      description: Identifier of the clinical program.
+  columns:
+  - name: clinical_program_id
+    description: Identifier of the clinical program.
+  - name: clinical_program_name
+    description: Name of the clinical program.
+  - name: clinical_program_code
+    description: Code of the clinical program.
+    value_description: site_of_care, surgical, pharmacy, complex_care
+  - name: clinical_category_id
+    description: Identifier of the clinical category.
+  entity_definitions:
+  - identity_id: clinical_program_identity
+    dataset_columns:
+    - clinical_program_id
+    entity_universe: complete
+  - identity_id: clinical_category_identity
+    dataset_columns:
+    - clinical_category_id
+    entity_universe: partial
+- node_id: sf:healthplan.medical.dim_drug
+  descriptor:
+    qualified_name: healthplan.medical.dim_drug
+    display_name: Drug
+    description: Drug or drug class on a Health Plan Inc pharmacy benefit.
+    synonyms: []
+    tags:
+    - dimension
+    - medical_provider
+    - managed-care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      schema: MEDICAL
+      object: DIM_DRUG
+      format: table
+  grain:
+    description: One row is one drug.
+    components:
+    - identity_id: drug_identity
+      dataset_columns:
+      - drug_id
+      description: Identifier of the drug.
+  columns:
+  - name: drug_id
+    description: Identifier of the drug.
+  - name: drug_name
+    description: Name of the drug.
+  - name: drug_code
+    description: Code of the drug.
+    value_description: glp1, specialty, tier3_branded, generic
+  - name: clinical_category_id
+    description: Identifier of the clinical category.
+  entity_definitions:
+  - identity_id: drug_identity
+    dataset_columns:
+    - drug_id
+    entity_universe: complete
+  - identity_id: clinical_category_identity
+    dataset_columns:
+    - clinical_category_id
+    entity_universe: partial
+- node_id: sf:healthplan.medical.dim_site_of_care
+  descriptor:
+    qualified_name: healthplan.medical.dim_site_of_care
+    display_name: Site of Care
+    description: Site of care for an admission or a shifted service.
+    synonyms: []
+    tags:
+    - dimension
+    - medical_provider
+    - managed-care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      schema: MEDICAL
+      object: DIM_SITE_OF_CARE
+      format: table
+  grain:
+    description: One row is one site of care.
+    components:
+    - identity_id: site_of_care_identity
+      dataset_columns:
+      - site_of_care_id
+      description: Identifier of the site of care.
+  columns:
+  - name: site_of_care_id
+    description: Identifier of the site of care.
+  - name: site_of_care_name
+    description: Name of the site of care.
+  - name: site_of_care_code
+    description: Code of the site of care.
+    value_description: inpatient, outpatient, post_acute, home
+  entity_definitions:
+  - identity_id: site_of_care_identity
+    dataset_columns:
+    - site_of_care_id
+    entity_universe: complete
+- node_id: sf:healthplan.medical.dim_dispute_type
+  descriptor:
+    qualified_name: healthplan.medical.dim_dispute_type
+    display_name: Dispute Type
+    description: Independent dispute-resolution case type.
+    synonyms: []
+    tags:
+    - dimension
+    - medical_provider
+    - managed-care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      schema: MEDICAL
+      object: DIM_DISPUTE_TYPE
+      format: table
+  grain:
+    description: One row is one dispute type.
+    components:
+    - identity_id: dispute_type_identity
+      dataset_columns:
+      - dispute_type_id
+      description: Identifier of the dispute type.
+  columns:
+  - name: dispute_type_id
+    description: Identifier of the dispute type.
+  - name: dispute_type_name
+    description: Name of the dispute type.
+  - name: dispute_type_code
+    description: Code of the dispute type.
+    value_description: independent_dispute_resolution
+  entity_definitions:
+  - identity_id: dispute_type_identity
+    dataset_columns:
+    - dispute_type_id
+    entity_universe: complete
+- node_id: sf:healthplan.medical.dim_risk_model
+  descriptor:
+    qualified_name: healthplan.medical.dim_risk_model
+    display_name: Risk Model
+    description: Medicare Advantage risk model, including the delayed recalibration.
+    synonyms: []
+    tags:
+    - dimension
+    - medical_provider
+    - managed-care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      schema: MEDICAL
+      object: DIM_RISK_MODEL
+      format: table
+  grain:
+    description: One row is one risk model.
+    components:
+    - identity_id: risk_model_identity
+      dataset_columns:
+      - risk_model_id
+      description: Identifier of the risk model.
+  columns:
+  - name: risk_model_id
+    description: Identifier of the risk model.
+  - name: risk_model_name
+    description: Name of the risk model.
+  - name: risk_model_code
+    description: Code of the risk model.
+    value_description: v28, prior_model, delayed_recalibration
+  entity_definitions:
+  - identity_id: risk_model_identity
+    dataset_columns:
+    - risk_model_id
+    entity_universe: complete
+- node_id: sf:healthplan.medical.dim_care_service
+  descriptor:
+    qualified_name: healthplan.medical.dim_care_service
+    display_name: Care Service
+    description: Care-delivery service, including risk-based programs and CareBridge.
+    synonyms: []
+    tags:
+    - dimension
+    - medical_provider
+    - managed-care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      schema: MEDICAL
+      object: DIM_CARE_SERVICE
+      format: table
+  grain:
+    description: One row is one care service.
+    components:
+    - identity_id: care_service_identity
+      dataset_columns:
+      - care_service_id
+      description: Identifier of the care service.
+  columns:
+  - name: care_service_id
+    description: Identifier of the care service.
+  - name: care_service_name
+    description: Name of the care service.
+  - name: care_service_code
+    description: Code of the care service.
+    value_description: risk_based, carebridge, insight, pharmacy, blue_bid_attach
+  - name: business_unit_id
+    description: Identifier of the business unit.
+  entity_definitions:
+  - identity_id: care_service_identity
+    dataset_columns:
+    - care_service_id
+    entity_universe: complete
+  - identity_id: business_unit_identity
+    dataset_columns:
+    - business_unit_id
+    entity_universe: partial
+- node_id: sf:healthplan.medical.dim_utilization_driver
+  descriptor:
+    qualified_name: healthplan.medical.dim_utilization_driver
+    display_name: Utilization Driver
+    description: Driver of utilization such as flu, weather, acuity, or acuity and billing.
+    synonyms: []
+    tags:
+    - dimension
+    - medical_provider
+    - managed-care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      schema: MEDICAL
+      object: DIM_UTILIZATION_DRIVER
+      format: table
+  grain:
+    description: One row is one utilization driver.
+    components:
+    - identity_id: utilization_driver_identity
+      dataset_columns:
+      - utilization_driver_id
+      description: Identifier of the utilization driver.
+  columns:
+  - name: utilization_driver_id
+    description: Identifier of the utilization driver.
+  - name: utilization_driver_name
+    description: Name of the utilization driver.
+  - name: utilization_driver_code
+    description: Code of the utilization driver.
+    value_description: flu, weather, acuity, provider_billing, deductible, economy
+  entity_definitions:
+  - identity_id: utilization_driver_identity
+    dataset_columns:
+    - utilization_driver_id
+    entity_universe: complete
+- node_id: sf:healthplan.medical.dim_claim_inventory
+  descriptor:
+    qualified_name: healthplan.medical.dim_claim_inventory
+    display_name: Claim Inventory
+    description: Inventory bucket behind days claims payable.
+    synonyms: []
+    tags:
+    - dimension
+    - medical_provider
+    - managed-care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      schema: MEDICAL
+      object: DIM_CLAIM_INVENTORY
+      format: table
+  grain:
+    description: One row is one claim inventory.
+    components:
+    - identity_id: claim_inventory_identity
+      dataset_columns:
+      - claim_inventory_id
+      description: Identifier of the claim inventory.
+  columns:
+  - name: claim_inventory_id
+    description: Identifier of the claim inventory.
+  - name: claim_inventory_name
+    description: Name of the claim inventory.
+  - name: claim_inventory_code
+    description: Code of the claim inventory.
+    value_description: received, pended, paid
+  entity_definitions:
+  - identity_id: claim_inventory_identity
+    dataset_columns:
+    - claim_inventory_id
+    entity_universe: complete
+- node_id: sf:healthplan.medical.fact_utilization
+  descriptor:
+    qualified_name: healthplan.medical.fact_utilization
+    display_name: Utilization
+    description: Utilization index. It is not a unit price and not a margin.
+    synonyms: []
+    tags:
+    - quantity
+    - medical_provider
+    - managed-care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      schema: MEDICAL
+      object: FACT_UTILIZATION
+      format: table
+  grain:
+    description: One row is one utilization.
+    components:
+    - identity_id: utilization_identity
+      dataset_columns:
+      - utilization_id
+      description: Identifier of the utilization.
+  columns:
+  - name: utilization_id
+    description: Identifier of the utilization.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: line_of_business_id
+    description: Identifier of the line of business.
+  - name: clinical_category_id
+    description: Identifier of the clinical category.
+  - name: utilization_driver_id
+    description: Identifier of the utilization driver.
+  - name: utilization_index
+    description: Utilization versus the baseline.
+  - name: versus_assumption_index
+    description: Utilization versus the assumption inside the original trend.
+  - name: favorable_flag
+    description: Whether the trend is more favorable than the prior narrative.
+  entity_definitions:
+  - identity_id: utilization_identity
+    dataset_columns:
+    - utilization_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: line_of_business_identity
+    dataset_columns:
+    - line_of_business_id
+    entity_universe: partial
+  - identity_id: clinical_category_identity
+    dataset_columns:
+    - clinical_category_id
+    entity_universe: partial
+  - identity_id: utilization_driver_identity
+    dataset_columns:
+    - utilization_driver_id
+    entity_universe: partial
+- node_id: sf:healthplan.medical.fact_outpatient_surgery
+  descriptor:
+    qualified_name: healthplan.medical.fact_outpatient_surgery
+    display_name: Outpatient Surgery
+    description: Outpatient surgical procedure counts, split between volume and higher-acuity procedures.
+    synonyms: []
+    tags:
+    - quantity
+    - medical_provider
+    - managed-care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      schema: MEDICAL
+      object: FACT_OUTPATIENT_SURGERY
+      format: table
+  grain:
+    description: One row is one outpatient surgery.
+    components:
+    - identity_id: outpatient_surgery_identity
+      dataset_columns:
+      - outpatient_surgery_id
+      description: Identifier of the outpatient surgery.
+  columns:
+  - name: outpatient_surgery_id
+    description: Identifier of the outpatient surgery.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: line_of_business_id
+    description: Identifier of the line of business.
+  - name: clinical_category_id
+    description: Identifier of the clinical category.
+  - name: facility_id
+    description: Identifier of the facility.
+  - name: procedure_count
+    description: Surgical procedures.
+  - name: high_acuity_procedure_count
+    description: Higher-acuity procedures.
+  - name: catch_up_risk_flag
+    description: Whether a second-half catch-up is a risk.
+  entity_definitions:
+  - identity_id: outpatient_surgery_identity
+    dataset_columns:
+    - outpatient_surgery_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: line_of_business_identity
+    dataset_columns:
+    - line_of_business_id
+    entity_universe: partial
+  - identity_id: clinical_category_identity
+    dataset_columns:
+    - clinical_category_id
+    entity_universe: partial
+  - identity_id: facility_identity
+    dataset_columns:
+    - facility_id
+    entity_universe: partial
+- node_id: sf:healthplan.medical.fact_part_d_utilization
+  descriptor:
+    qualified_name: healthplan.medical.fact_part_d_utilization
+    display_name: Part D Utilization
+    description: Part D utilization, including a step-up tied to the benefit change.
+    synonyms: []
+    tags:
+    - quantity
+    - medical_provider
+    - managed-care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      schema: MEDICAL
+      object: FACT_PART_D_UTILIZATION
+      format: table
+  grain:
+    description: One row is one part d utilization.
+    components:
+    - identity_id: part_d_utilization_identity
+      dataset_columns:
+      - part_d_utilization_id
+      description: Identifier of the part d utilization.
+  columns:
+  - name: part_d_utilization_id
+    description: Identifier of the part d utilization.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: line_of_business_id
+    description: Identifier of the line of business.
+  - name: drug_id
+    description: Identifier of the drug.
+  - name: benefit_design_id
+    description: Identifier of the benefit design.
+  - name: utilization_index
+    description: Part D utilization index.
+  - name: step_up_flag
+    description: Whether a step-up is expected in the quarter.
+  entity_definitions:
+  - identity_id: part_d_utilization_identity
+    dataset_columns:
+    - part_d_utilization_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: line_of_business_identity
+    dataset_columns:
+    - line_of_business_id
+    entity_universe: partial
+  - identity_id: drug_identity
+    dataset_columns:
+    - drug_id
+    entity_universe: partial
+  - identity_id: benefit_design_identity
+    dataset_columns:
+    - benefit_design_id
+    entity_universe: partial
+- node_id: sf:healthplan.medical.fact_claims_payable
+  descriptor:
+    qualified_name: healthplan.medical.fact_claims_payable
+    display_name: Claims Payable
+    description: Days claims payable and the claim inventory behind the step-up.
+    synonyms: []
+    tags:
+    - quantity
+    - medical_provider
+    - managed-care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      schema: MEDICAL
+      object: FACT_CLAIMS_PAYABLE
+      format: table
+  grain:
+    description: One row is one claims payable.
+    components:
+    - identity_id: claims_payable_identity
+      dataset_columns:
+      - claims_payable_id
+      description: Identifier of the claims payable.
+  columns:
+  - name: claims_payable_id
+    description: Identifier of the claims payable.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: line_of_business_id
+    description: Identifier of the line of business.
+  - name: claim_inventory_id
+    description: Identifier of the claim inventory.
+  - name: membership_cohort_id
+    description: Identifier of the membership cohort.
+  - name: days_payable_count
+    description: Days claims payable.
+  - name: inventory_claim_count
+    description: Claims in inventory.
+  - name: mix_driven_flag
+    description: Whether membership mix drove the step-up.
+  entity_definitions:
+  - identity_id: claims_payable_identity
+    dataset_columns:
+    - claims_payable_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: line_of_business_identity
+    dataset_columns:
+    - line_of_business_id
+    entity_universe: partial
+  - identity_id: claim_inventory_identity
+    dataset_columns:
+    - claim_inventory_id
+    entity_universe: partial
+  - identity_id: membership_cohort_identity
+    dataset_columns:
+    - membership_cohort_id
+    entity_universe: partial
+- node_id: sf:healthplan.medical.fact_network_capacity
+  descriptor:
+    qualified_name: healthplan.medical.fact_network_capacity
+    display_name: Network Capacity
+    description: Provider panel capacity. Slots are capacity, not a price and not a membership count.
+    synonyms: []
+    tags:
+    - capacity
+    - medical_provider
+    - managed-care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      schema: MEDICAL
+      object: FACT_NETWORK_CAPACITY
+      format: table
+  grain:
+    description: One row is one network capacity.
+    components:
+    - identity_id: network_capacity_identity
+      dataset_columns:
+      - network_capacity_id
+      description: Identifier of the network capacity.
+  columns:
+  - name: network_capacity_id
+    description: Identifier of the network capacity.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: network_id
+    description: Identifier of the network.
+  - name: provider_group_id
+    description: Identifier of the provider group.
+  - name: clinical_category_id
+    description: Identifier of the clinical category.
+  - name: panel_slot_count
+    description: Open panel slots.
+  - name: accepting_patient_flag
+    description: Whether the panel is accepting patients.
+  entity_definitions:
+  - identity_id: network_capacity_identity
+    dataset_columns:
+    - network_capacity_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: network_identity
+    dataset_columns:
+    - network_id
+    entity_universe: partial
+  - identity_id: provider_group_identity
+    dataset_columns:
+    - provider_group_id
+    entity_universe: partial
+  - identity_id: clinical_category_identity
+    dataset_columns:
+    - clinical_category_id
+    entity_universe: partial
+- node_id: sf:healthplan.medical.fact_site_shift
+  descriptor:
+    qualified_name: healthplan.medical.fact_site_shift
+    display_name: Site Shift
+    description: Admissions and post-acute shifts from site-of-care optimization.
+    synonyms: []
+    tags:
+    - quantity
+    - medical_provider
+    - managed-care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      schema: MEDICAL
+      object: FACT_SITE_SHIFT
+      format: table
+  grain:
+    description: One row is one site shift.
+    components:
+    - identity_id: site_shift_identity
+      dataset_columns:
+      - site_shift_id
+      description: Identifier of the site shift.
+  columns:
+  - name: site_shift_id
+    description: Identifier of the site shift.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: site_of_care_id
+    description: Identifier of the site of care.
+  - name: care_service_id
+    description: Identifier of the care service.
+  - name: line_of_business_id
+    description: Identifier of the line of business.
+  - name: admission_count
+    description: Admissions at the site.
+  - name: shifted_case_count
+    description: Cases shifted off the higher-cost site.
+  - name: program_scope_code
+    description: Whether the shift is in the risk program or the broader book.
+    value_description: risk_program, health_benefits
+  entity_definitions:
+  - identity_id: site_shift_identity
+    dataset_columns:
+    - site_shift_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: site_of_care_identity
+    dataset_columns:
+    - site_of_care_id
+    entity_universe: partial
+  - identity_id: care_service_identity
+    dataset_columns:
+    - care_service_id
+    entity_universe: partial
+  - identity_id: line_of_business_identity
+    dataset_columns:
+    - line_of_business_id
+    entity_universe: partial
+- node_id: sf:healthplan.medical.fact_dispute_volume
+  descriptor:
+    qualified_name: healthplan.medical.fact_dispute_volume
+    display_name: Dispute Volume
+    description: Independent dispute case counts, win rate, and resolution timing. Cost sits on the price
+      slice.
+    synonyms: []
+    tags:
+    - quantity
+    - medical_provider
+    - managed-care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      schema: MEDICAL
+      object: FACT_DISPUTE_VOLUME
+      format: table
+  grain:
+    description: One row is one dispute volume.
+    components:
+    - identity_id: dispute_volume_identity
+      dataset_columns:
+      - dispute_volume_id
+      description: Identifier of the dispute volume.
+  columns:
+  - name: dispute_volume_id
+    description: Identifier of the dispute volume.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: dispute_type_id
+    description: Identifier of the dispute type.
+  - name: line_of_business_id
+    description: Identifier of the line of business.
+  - name: case_count
+    description: Dispute cases.
+  - name: win_rate
+    description: Share of disputes won.
+  - name: resolution_days
+    description: Time to resolution.
+  entity_definitions:
+  - identity_id: dispute_volume_identity
+    dataset_columns:
+    - dispute_volume_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dispute_type_identity
+    dataset_columns:
+    - dispute_type_id
+    entity_universe: partial
+  - identity_id: line_of_business_identity
+    dataset_columns:
+    - line_of_business_id
+    entity_universe: partial
+- node_id: sf:healthplan.medical.fact_coding_intensity
+  descriptor:
+    qualified_name: healthplan.medical.fact_coding_intensity
+    display_name: Coding Intensity
+    description: Code volume, including chronic-condition codes and provider billing.
+    synonyms: []
+    tags:
+    - quantity
+    - medical_provider
+    - managed-care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      schema: MEDICAL
+      object: FACT_CODING_INTENSITY
+      format: table
+  grain:
+    description: One row is one coding intensity.
+    components:
+    - identity_id: coding_intensity_identity
+      dataset_columns:
+      - coding_intensity_id
+      description: Identifier of the coding intensity.
+  columns:
+  - name: coding_intensity_id
+    description: Identifier of the coding intensity.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: risk_model_id
+    description: Identifier of the risk model.
+  - name: provider_group_id
+    description: Identifier of the provider group.
+  - name: line_of_business_id
+    description: Identifier of the line of business.
+  - name: clinical_category_id
+    description: Identifier of the clinical category.
+  - name: code_count
+    description: Condition codes submitted.
+  - name: chronic_code_cut_count
+    description: Chronic-condition codes removed under the recalibration.
+  - name: limited_to_medicare_flag
+    description: Whether the dynamic is limited to Medicare Advantage.
+  - name: subset_only_flag
+    description: Whether the coding shows up only in a subset of providers.
+  entity_definitions:
+  - identity_id: coding_intensity_identity
+    dataset_columns:
+    - coding_intensity_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: risk_model_identity
+    dataset_columns:
+    - risk_model_id
+    entity_universe: partial
+  - identity_id: provider_group_identity
+    dataset_columns:
+    - provider_group_id
+    entity_universe: partial
+  - identity_id: line_of_business_identity
+    dataset_columns:
+    - line_of_business_id
+    entity_universe: partial
+  - identity_id: clinical_category_identity
+    dataset_columns:
+    - clinical_category_id
+    entity_universe: partial
+- node_id: sf:healthplan.medical.fact_risk_pool
+  descriptor:
+    qualified_name: healthplan.medical.fact_risk_pool
+    display_name: Risk Pool
+    description: Morbidity of a risk pool. The transfer dollar sits on the price slice.
+    synonyms: []
+    tags:
+    - quantity
+    - medical_provider
+    - managed-care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      schema: MEDICAL
+      object: FACT_RISK_POOL
+      format: table
+  grain:
+    description: One row is one risk pool.
+    components:
+    - identity_id: risk_pool_identity
+      dataset_columns:
+      - risk_pool_id
+      description: Identifier of the risk pool.
+  columns:
+  - name: risk_pool_id
+    description: Identifier of the risk pool.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: line_of_business_id
+    description: Identifier of the line of business.
+  - name: state_id
+    description: Identifier of the state.
+  - name: morbidity_index
+    description: Morbidity of the pool.
+  - name: worse_than_plan_flag
+    description: Whether the pool is worse than plan.
+  entity_definitions:
+  - identity_id: risk_pool_identity
+    dataset_columns:
+    - risk_pool_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: line_of_business_identity
+    dataset_columns:
+    - line_of_business_id
+    entity_universe: partial
+  - identity_id: state_identity
+    dataset_columns:
+    - state_id
+    entity_universe: partial
+- node_id: sf:healthplan.medical.fact_flu_weather
+  descriptor:
+    qualified_name: healthplan.medical.fact_flu_weather
+    display_name: Flu and Weather
+    description: Flu and weather disruption versus peers and versus claims-management actions.
+    synonyms: []
+    tags:
+    - quantity
+    - medical_provider
+    - managed-care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      schema: MEDICAL
+      object: FACT_FLU_WEATHER
+      format: table
+  grain:
+    description: One row is one flu and weather.
+    components:
+    - identity_id: flu_weather_identity
+      dataset_columns:
+      - flu_weather_id
+      description: Identifier of the flu and weather.
+  columns:
+  - name: flu_weather_id
+    description: Identifier of the flu and weather.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: utilization_driver_id
+    description: Identifier of the utilization driver.
+  - name: line_of_business_id
+    description: Identifier of the line of business.
+  - name: disruption_index
+    description: Size of the flu or weather disruption.
+  - name: peer_gap_index
+    description: Gap versus the disruption peers reported.
+  - name: bounce_back_flag
+    description: Whether the next quarter is a bounce-back.
+  entity_definitions:
+  - identity_id: flu_weather_identity
+    dataset_columns:
+    - flu_weather_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: utilization_driver_identity
+    dataset_columns:
+    - utilization_driver_id
+    entity_universe: partial
+  - identity_id: line_of_business_identity
+    dataset_columns:
+    - line_of_business_id
+    entity_universe: partial
+- node_id: sf:healthplan.medical.fact_program_scope
+  descriptor:
+    qualified_name: healthplan.medical.fact_program_scope
+    display_name: Program Scope
+    description: How far risk-based care programs have expanded. Scope is a count, not a margin.
+    synonyms: []
+    tags:
+    - quantity
+    - medical_provider
+    - managed-care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      schema: MEDICAL
+      object: FACT_PROGRAM_SCOPE
+      format: table
+  grain:
+    description: One row is one program scope.
+    components:
+    - identity_id: program_scope_identity
+      dataset_columns:
+      - program_scope_id
+      description: Identifier of the program scope.
+  columns:
+  - name: program_scope_id
+    description: Identifier of the program scope.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: care_service_id
+    description: Identifier of the care service.
+  - name: business_unit_id
+    description: Identifier of the business unit.
+  - name: clinical_program_id
+    description: Identifier of the clinical program.
+  - name: program_count
+    description: Risk-based programs in market.
+  - name: expanded_flag
+    description: Whether the program expanded in the period.
+  - name: trend_cap_flag
+    description: Whether an operating action caps medical-cost upside risk.
+  entity_definitions:
+  - identity_id: program_scope_identity
+    dataset_columns:
+    - program_scope_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: care_service_identity
+    dataset_columns:
+    - care_service_id
+    entity_universe: partial
+  - identity_id: business_unit_identity
+    dataset_columns:
+    - business_unit_id
+    entity_universe: partial
+  - identity_id: clinical_program_identity
+    dataset_columns:
+    - clinical_program_id
+    entity_universe: partial
+- node_id: sf:healthplan.medical.fact_claim_action
+  descriptor:
+    qualified_name: healthplan.medical.fact_claim_action
+    display_name: Claim Action
+    description: Claims-management and medical-management actions. The earnings dollar sits on the price
+      slice.
+    synonyms: []
+    tags:
+    - quantity
+    - medical_provider
+    - managed-care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      schema: MEDICAL
+      object: FACT_CLAIM_ACTION
+      format: table
+  grain:
+    description: One row is one claim action.
+    components:
+    - identity_id: claim_action_identity
+      dataset_columns:
+      - claim_action_id
+      description: Identifier of the claim action.
+  columns:
+  - name: claim_action_id
+    description: Identifier of the claim action.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: clinical_program_id
+    description: Identifier of the clinical program.
+  - name: line_of_business_id
+    description: Identifier of the line of business.
+  - name: action_count
+    description: Actions taken.
+  - name: temporary_driver_flag
+    description: Whether the quarter was temporary utilization rather than the action.
+  entity_definitions:
+  - identity_id: claim_action_identity
+    dataset_columns:
+    - claim_action_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: clinical_program_identity
+    dataset_columns:
+    - clinical_program_id
+    entity_universe: partial
+  - identity_id: line_of_business_identity
+    dataset_columns:
+    - line_of_business_id
+    entity_universe: partial
+- node_id: sf:healthplan.medical.fact_clinical_action
+  descriptor:
+    qualified_name: healthplan.medical.fact_clinical_action
+    display_name: Clinical Action
+    description: Clinical and network actions aimed at physician, hospital, and drug trend.
+    synonyms: []
+    tags:
+    - status
+    - medical_provider
+    - managed-care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      schema: MEDICAL
+      object: FACT_CLINICAL_ACTION
+      format: table
+  grain:
+    description: One row is one clinical action.
+    components:
+    - identity_id: clinical_action_identity
+      dataset_columns:
+      - clinical_action_id
+      description: Identifier of the clinical action.
+  columns:
+  - name: clinical_action_id
+    description: Identifier of the clinical action.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: clinical_program_id
+    description: Identifier of the clinical program.
+  - name: clinical_category_id
+    description: Identifier of the clinical category.
+  - name: line_of_business_id
+    description: Identifier of the line of business.
+  - name: network_id
+    description: Identifier of the network.
+  - name: action_on_flag
+    description: Whether the action is in market for that category.
+  - name: bending_flag
+    description: Whether the action is bending the category.
+  entity_definitions:
+  - identity_id: clinical_action_identity
+    dataset_columns:
+    - clinical_action_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: clinical_program_identity
+    dataset_columns:
+    - clinical_program_id
+    entity_universe: partial
+  - identity_id: clinical_category_identity
+    dataset_columns:
+    - clinical_category_id
+    entity_universe: partial
+  - identity_id: line_of_business_identity
+    dataset_columns:
+    - line_of_business_id
+    entity_universe: partial
+  - identity_id: network_identity
+    dataset_columns:
+    - network_id
+    entity_universe: partial
+- node_id: sf:healthplan.medical.fact_procedure_mix
+  descriptor:
+    qualified_name: healthplan.medical.fact_procedure_mix
+    display_name: Procedure Mix
+    description: Share of outpatient procedures that are higher acuity rather than more volume.
+    synonyms: []
+    tags:
+    - quantity
+    - medical_provider
+    - managed-care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      schema: MEDICAL
+      object: FACT_PROCEDURE_MIX
+      format: table
+  grain:
+    description: One row is one procedure mix.
+    components:
+    - identity_id: procedure_mix_identity
+      dataset_columns:
+      - procedure_mix_id
+      description: Identifier of the procedure mix.
+  columns:
+  - name: procedure_mix_id
+    description: Identifier of the procedure mix.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: clinical_category_id
+    description: Identifier of the clinical category.
+  - name: line_of_business_id
+    description: Identifier of the line of business.
+  - name: acuity_share
+    description: Share of procedures that are higher acuity.
+  - name: volume_driven_flag
+    description: Whether the pressure is from volume.
+  entity_definitions:
+  - identity_id: procedure_mix_identity
+    dataset_columns:
+    - procedure_mix_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: clinical_category_identity
+    dataset_columns:
+    - clinical_category_id
+    entity_universe: partial
+  - identity_id: line_of_business_identity
+    dataset_columns:
+    - line_of_business_id
+    entity_universe: partial
+- node_id: sf:healthplan.medical.fact_peer_utilization
+  descriptor:
+    qualified_name: healthplan.medical.fact_peer_utilization
+    display_name: Peer Utilization
+    description: Health Plan Inc utilization compared with peers.
+    synonyms: []
+    tags:
+    - quantity
+    - medical_provider
+    - managed-care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      schema: MEDICAL
+      object: FACT_PEER_UTILIZATION
+      format: table
+  grain:
+    description: One row is one peer utilization.
+    components:
+    - identity_id: peer_utilization_identity
+      dataset_columns:
+      - peer_utilization_id
+      description: Identifier of the peer utilization.
+  columns:
+  - name: peer_utilization_id
+    description: Identifier of the peer utilization.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: line_of_business_id
+    description: Identifier of the line of business.
+  - name: utilization_driver_id
+    description: Identifier of the utilization driver.
+  - name: peer_utilization_index
+    description: Peer utilization index.
+  - name: company_gap_index
+    description: Gap between Health Plan Inc and peers.
+  entity_definitions:
+  - identity_id: peer_utilization_identity
+    dataset_columns:
+    - peer_utilization_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: line_of_business_identity
+    dataset_columns:
+    - line_of_business_id
+    entity_universe: partial
+  - identity_id: utilization_driver_identity
+    dataset_columns:
+    - utilization_driver_id
+    entity_universe: partial
+- node_id: sf:healthplan.medical.fact_specialty_volume
+  descriptor:
+    qualified_name: healthplan.medical.fact_specialty_volume
+    display_name: Specialty Volume
+    description: Specialty-drug dispensing volume. The cost rate sits on the price slice.
+    synonyms: []
+    tags:
+    - quantity
+    - medical_provider
+    - managed-care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      schema: MEDICAL
+      object: FACT_SPECIALTY_VOLUME
+      format: table
+  grain:
+    description: One row is one specialty volume.
+    components:
+    - identity_id: specialty_volume_identity
+      dataset_columns:
+      - specialty_volume_id
+      description: Identifier of the specialty volume.
+  columns:
+  - name: specialty_volume_id
+    description: Identifier of the specialty volume.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: drug_id
+    description: Identifier of the drug.
+  - name: care_service_id
+    description: Identifier of the care service.
+  - name: business_unit_id
+    description: Identifier of the business unit.
+  - name: script_count
+    description: Specialty scripts.
+  - name: growth_rate
+    description: Volume growth of specialty scripts.
+  entity_definitions:
+  - identity_id: specialty_volume_identity
+    dataset_columns:
+    - specialty_volume_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: drug_identity
+    dataset_columns:
+    - drug_id
+    entity_universe: partial
+  - identity_id: care_service_identity
+    dataset_columns:
+    - care_service_id
+    entity_universe: partial
+  - identity_id: business_unit_identity
+    dataset_columns:
+    - business_unit_id
+    entity_universe: partial
+- node_id: sf:healthplan.medical.fact_carebridge_volume
+  descriptor:
+    qualified_name: healthplan.medical.fact_carebridge_volume
+    display_name: CareBridge Volume
+    description: CareBridge case volume. Margin normalization sits on the price slice.
+    synonyms: []
+    tags:
+    - quantity
+    - medical_provider
+    - managed-care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      schema: MEDICAL
+      object: FACT_CAREBRIDGE_VOLUME
+      format: table
+  grain:
+    description: One row is one carebridge volume.
+    components:
+    - identity_id: carebridge_volume_identity
+      dataset_columns:
+      - carebridge_volume_id
+      description: Identifier of the carebridge volume.
+  columns:
+  - name: carebridge_volume_id
+    description: Identifier of the carebridge volume.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: care_service_id
+    description: Identifier of the care service.
+  - name: business_unit_id
+    description: Identifier of the business unit.
+  - name: case_count
+    description: CareBridge cases.
+  - name: normalize_flag
+    description: Whether volume is past the growth surge.
+  entity_definitions:
+  - identity_id: carebridge_volume_identity
+    dataset_columns:
+    - carebridge_volume_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: care_service_identity
+    dataset_columns:
+    - care_service_id
+    entity_universe: partial
+  - identity_id: business_unit_identity
+    dataset_columns:
+    - business_unit_id
+    entity_universe: partial
+- node_id: sf:healthplan.medical.fact_reserve_posture
+  descriptor:
+    qualified_name: healthplan.medical.fact_reserve_posture
+    display_name: Reserve Posture
+    description: Whether reserve stance became more conservative. The reserve dollar is not stored here.
+    synonyms: []
+    tags:
+    - status
+    - medical_provider
+    - managed-care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      schema: MEDICAL
+      object: FACT_RESERVE_POSTURE
+      format: table
+  grain:
+    description: One row is one reserve posture.
+    components:
+    - identity_id: reserve_posture_identity
+      dataset_columns:
+      - reserve_posture_id
+      description: Identifier of the reserve posture.
+  columns:
+  - name: reserve_posture_id
+    description: Identifier of the reserve posture.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: line_of_business_id
+    description: Identifier of the line of business.
+  - name: business_unit_id
+    description: Identifier of the business unit.
+  - name: more_conservative_flag
+    description: Whether the stance tightened in the quarter.
+  - name: stance_code
+    description: Reserve stance.
+    value_description: conservative, unchanged, released
+  entity_definitions:
+  - identity_id: reserve_posture_identity
+    dataset_columns:
+    - reserve_posture_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: line_of_business_identity
+    dataset_columns:
+    - line_of_business_id
+    entity_universe: partial
+  - identity_id: business_unit_identity
+    dataset_columns:
+    - business_unit_id
+    entity_universe: partial
+- node_id: sf:healthplan.medical.fact_benefit_carve
+  descriptor:
+    qualified_name: healthplan.medical.fact_benefit_carve
+    display_name: Benefit Carve-In
+    description: Benefits a state carved in. Matching rates sit on the price slice.
+    synonyms: []
+    tags:
+    - quantity
+    - medical_provider
+    - managed-care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      schema: MEDICAL
+      object: FACT_BENEFIT_CARVE
+      format: table
+  grain:
+    description: One row is one benefit carve-in.
+    components:
+    - identity_id: benefit_carve_identity
+      dataset_columns:
+      - benefit_carve_id
+      description: Identifier of the benefit carve-in.
+  columns:
+  - name: benefit_carve_id
+    description: Identifier of the benefit carve-in.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: state_id
+    description: Identifier of the state.
+  - name: state_program_id
+    description: Identifier of the state program.
+  - name: benefit_design_id
+    description: Identifier of the benefit design.
+  - name: carved_benefit_count
+    description: Benefits carved in.
+  - name: rate_matched_flag
+    description: Whether the state attached a matching rate.
+  entity_definitions:
+  - identity_id: benefit_carve_identity
+    dataset_columns:
+    - benefit_carve_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: state_identity
+    dataset_columns:
+    - state_id
+    entity_universe: partial
+  - identity_id: state_program_identity
+    dataset_columns:
+    - state_program_id
+    entity_universe: partial
+  - identity_id: benefit_design_identity
+    dataset_columns:
+    - benefit_design_id
+    entity_universe: partial
+- node_id: sf:healthplan.medical.fact_exchange_morbidity
+  descriptor:
+    qualified_name: healthplan.medical.fact_exchange_morbidity
+    display_name: Exchange Morbidity
+    description: Exchange morbidity and the back-half acuity surge.
+    synonyms: []
+    tags:
+    - quantity
+    - medical_provider
+    - managed-care
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      schema: MEDICAL
+      object: FACT_EXCHANGE_MORBIDITY
+      format: table
+  grain:
+    description: One row is one exchange morbidity.
+    components:
+    - identity_id: exchange_morbidity_identity
+      dataset_columns:
+      - exchange_morbidity_id
+      description: Identifier of the exchange morbidity.
+  columns:
+  - name: exchange_morbidity_id
+    description: Identifier of the exchange morbidity.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: line_of_business_id
+    description: Identifier of the line of business.
+  - name: risk_pool_id
+    description: Identifier of the risk pool.
+  - name: morbidity_index
+    description: Morbidity of exchange members.
+  - name: back_half_surge_flag
+    description: Whether a fourth-quarter acuity surge is in the outlook.
+  entity_definitions:
+  - identity_id: exchange_morbidity_identity
+    dataset_columns:
+    - exchange_morbidity_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: line_of_business_identity
+    dataset_columns:
+    - line_of_business_id
+    entity_universe: partial
+  - identity_id: risk_pool_identity
+    dataset_columns:
+    - risk_pool_id
+    entity_universe: partial

@@ -1,0 +1,1470 @@
+schema_version: '3'
+nodes:
+- node_id: sf:device.price.dim_currency
+  descriptor:
+    qualified_name: device.price.dim_currency
+    display_name: Currency
+    description: A currency for a device price, a component cost, or a reported amount.
+    synonyms: []
+    tags:
+    - dimension
+    - price
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: PRICE
+      object: DIM_CURRENCY
+      format: table
+  grain:
+    description: One row is one currency.
+    components:
+    - identity_id: currency_identity
+      dataset_columns:
+      - currency_id
+      description: Identifier of the currency.
+  columns:
+  - name: currency_id
+    description: Identifier of the currency.
+  - name: currency_code
+    description: Currency code.
+  entity_definitions:
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: complete
+- node_id: sf:device.services.dim_service_family
+  descriptor:
+    qualified_name: device.services.dim_service_family
+    display_name: Service Family
+    description: A family of Device Inc services, distinct from a device family.
+    synonyms: []
+    tags:
+    - dimension
+    - price
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: SERVICES
+      object: DIM_SERVICE_FAMILY
+      format: table
+  grain:
+    description: One row is one service family.
+    components:
+    - identity_id: service_family_identity
+      dataset_columns:
+      - service_family_id
+      description: Identifier of the service family.
+  columns:
+  - name: service_family_id
+    description: Identifier of the service family.
+  - name: family_name
+    description: Name of the service family.
+  - name: family_code
+    description: Service family code.
+    value_description: app_store, cloud, care, advertising, assistant
+  entity_definitions:
+  - identity_id: service_family_identity
+    dataset_columns:
+    - service_family_id
+    entity_universe: complete
+- node_id: sf:device.services.dim_service_offering
+  descriptor:
+    qualified_name: device.services.dim_service_offering
+    display_name: Service Offering
+    description: An offering such as the App Store, iCloud+, AppleCare, Apple One, Maps ads, or Siri.
+    synonyms: []
+    tags:
+    - dimension
+    - price
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: SERVICES
+      object: DIM_SERVICE_OFFERING
+      format: table
+  grain:
+    description: One row is one service offering.
+    components:
+    - identity_id: service_offering_identity
+      dataset_columns:
+      - service_offering_id
+      description: Identifier of the service offering.
+  columns:
+  - name: service_offering_id
+    description: Identifier of the service offering.
+  - name: service_family_id
+    description: Service family of the offering.
+  - name: offering_name
+    description: Name of the offering.
+  - name: offering_code
+    description: Offering code.
+    value_description: app_store, app_store_ads, maps_ads, icloud_plus, applecare, apple_one, siri
+  entity_definitions:
+  - identity_id: service_offering_identity
+    dataset_columns:
+    - service_offering_id
+    entity_universe: complete
+  - identity_id: service_family_identity
+    dataset_columns:
+    - service_family_id
+    entity_universe: partial
+- node_id: sf:device.services.dim_service_plan
+  descriptor:
+    qualified_name: device.services.dim_service_plan
+    display_name: Service Plan
+    description: A plan term of a service offering. The plan is not a device SKU.
+    synonyms: []
+    tags:
+    - dimension
+    - price
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: SERVICES
+      object: DIM_SERVICE_PLAN
+      format: table
+  grain:
+    description: One row is one service plan.
+    components:
+    - identity_id: service_plan_identity
+      dataset_columns:
+      - service_plan_id
+      description: Identifier of the service plan.
+  columns:
+  - name: service_plan_id
+    description: Identifier of the service plan.
+  - name: service_offering_id
+    description: Offering the plan belongs to.
+  - name: plan_name
+    description: Name of the plan.
+  entity_definitions:
+  - identity_id: service_plan_identity
+    dataset_columns:
+    - service_plan_id
+    entity_universe: complete
+  - identity_id: service_offering_identity
+    dataset_columns:
+    - service_offering_id
+    entity_universe: partial
+- node_id: sf:device.services.dim_partner
+  descriptor:
+    qualified_name: device.services.dim_partner
+    display_name: Partner
+    description: A model or traffic partner, including the Google partnership named on the calls. The
+      partner is not a second device catalog.
+    synonyms: []
+    tags:
+    - dimension
+    - price
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: SERVICES
+      object: DIM_PARTNER
+      format: table
+  grain:
+    description: One row is one partner.
+    components:
+    - identity_id: partner_identity
+      dataset_columns:
+      - partner_id
+      description: Identifier of the partner.
+  columns:
+  - name: partner_id
+    description: Identifier of the partner.
+  - name: partner_name
+    description: Name of the partner.
+  - name: partner_role
+    description: Role of the partner.
+    value_description: model, search_traffic, other
+  entity_definitions:
+  - identity_id: partner_identity
+    dataset_columns:
+    - partner_id
+    entity_universe: complete
+- node_id: sf:device.services.dim_model_source
+  descriptor:
+    qualified_name: device.services.dim_model_source
+    display_name: Model Source
+    description: 'Where a foundation model comes from: Device Inc, a partner, or an acquisition.'
+    synonyms: []
+    tags:
+    - dimension
+    - price
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: SERVICES
+      object: DIM_MODEL_SOURCE
+      format: table
+  grain:
+    description: One row is one model source.
+    components:
+    - identity_id: model_source_identity
+      dataset_columns:
+      - model_source_id
+      description: Identifier of the model source.
+  columns:
+  - name: model_source_id
+    description: Identifier of the model source.
+  - name: source_name
+    description: Name of the model source.
+  - name: source_code
+    description: Source code.
+    value_description: apple, partner, acquisition
+  entity_definitions:
+  - identity_id: model_source_identity
+    dataset_columns:
+    - model_source_id
+    entity_universe: complete
+- node_id: sf:device.services.dim_compute_location
+  descriptor:
+    qualified_name: device.services.dim_compute_location
+    display_name: Compute Location
+    description: 'Where a request runs: on the device, in Device Inc''s cloud, or in a third-party cloud.'
+    synonyms: []
+    tags:
+    - dimension
+    - price
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: SERVICES
+      object: DIM_COMPUTE_LOCATION
+      format: table
+  grain:
+    description: One row is one compute location.
+    components:
+    - identity_id: compute_location_identity
+      dataset_columns:
+      - compute_location_id
+      description: Identifier of the compute location.
+  columns:
+  - name: compute_location_id
+    description: Identifier of the compute location.
+  - name: location_name
+    description: Name of the compute location.
+  - name: location_code
+    description: Location code.
+    value_description: on_device, first_party_cloud, third_party_cloud
+  entity_definitions:
+  - identity_id: compute_location_identity
+    dataset_columns:
+    - compute_location_id
+    entity_universe: complete
+- node_id: sf:device.services.dim_capex_project
+  descriptor:
+    qualified_name: device.services.dim_capex_project
+    display_name: Capex Project
+    description: A capital project, including private cloud compute.
+    synonyms: []
+    tags:
+    - dimension
+    - price
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: SERVICES
+      object: DIM_CAPEX_PROJECT
+      format: table
+  grain:
+    description: One row is one capex project.
+    components:
+    - identity_id: capex_project_identity
+      dataset_columns:
+      - capex_project_id
+      description: Identifier of the capital project.
+  columns:
+  - name: capex_project_id
+    description: Identifier of the capital project.
+  - name: project_name
+    description: Name of the project.
+  - name: project_type
+    description: Project type.
+    value_description: private_cloud, data_center, other
+  entity_definitions:
+  - identity_id: capex_project_identity
+    dataset_columns:
+    - capex_project_id
+    entity_universe: complete
+- node_id: sf:device.services.dim_opex_component
+  descriptor:
+    qualified_name: device.services.dim_opex_component
+    display_name: Opex Component
+    description: A component of operating expense, including the AI portion of a step-up.
+    synonyms: []
+    tags:
+    - dimension
+    - price
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: SERVICES
+      object: DIM_OPEX_COMPONENT
+      format: table
+  grain:
+    description: One row is one opex component.
+    components:
+    - identity_id: opex_component_identity
+      dataset_columns:
+      - opex_component_id
+      description: Identifier of the opex component.
+  columns:
+  - name: opex_component_id
+    description: Identifier of the opex component.
+  - name: component_name
+    description: Name of the opex component.
+  - name: component_code
+    description: Component code.
+    value_description: ai, research, sales, other
+  entity_definitions:
+  - identity_id: opex_component_identity
+    dataset_columns:
+    - opex_component_id
+    entity_universe: complete
+- node_id: sf:device.services.dim_stack_layer
+  descriptor:
+    qualified_name: device.services.dim_stack_layer
+    display_name: Stack Layer
+    description: A layer of an agentic stack Device Inc can build or take from a partner.
+    synonyms: []
+    tags:
+    - dimension
+    - price
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: SERVICES
+      object: DIM_STACK_LAYER
+      format: table
+  grain:
+    description: One row is one stack layer.
+    components:
+    - identity_id: stack_layer_identity
+      dataset_columns:
+      - stack_layer_id
+      description: Identifier of the stack layer.
+  columns:
+  - name: stack_layer_id
+    description: Identifier of the stack layer.
+  - name: layer_name
+    description: Name of the layer.
+  - name: layer_code
+    description: Layer code.
+    value_description: device, model, cloud, partner_service
+  entity_definitions:
+  - identity_id: stack_layer_identity
+    dataset_columns:
+    - stack_layer_id
+    entity_universe: complete
+- node_id: sf:device.price.fact_price_file
+  descriptor:
+    qualified_name: device.price.fact_price_file
+    display_name: Price File
+    description: Unit price of a device family for a channel, country, and day. This fact stores a price
+      and stores no demand quantity and no shipment quantity.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: PRICE
+      object: FACT_PRICE_FILE
+      format: table
+  grain:
+    description: One row is one price file.
+    components:
+    - identity_id: price_file_identity
+      dataset_columns:
+      - price_file_id
+      description: Identifier of the price-file row.
+  columns:
+  - name: price_file_id
+    description: Identifier of the price-file row.
+  - name: device_family_id
+    description: Device family for this row.
+  - name: channel_id
+    description: Route to market for this row.
+  - name: country_id
+    description: Selling country for this row.
+  - name: calendar_day_id
+    description: Calendar day for this row.
+  - name: currency_id
+    description: Currency of the unit price.
+  - name: unit_price
+    description: Unit price of the device family.
+  entity_definitions:
+  - identity_id: price_file_identity
+    dataset_columns:
+    - price_file_id
+    entity_universe: complete
+  - identity_id: device_family_identity
+    dataset_columns:
+    - device_family_id
+    entity_universe: partial
+  - identity_id: channel_identity
+    dataset_columns:
+    - channel_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    entity_universe: partial
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: partial
+- node_id: sf:device.price.fact_price_decision
+  descriptor:
+    qualified_name: device.price.fact_price_decision
+    display_name: Price Decision
+    description: Whether product price is being used as a lever, and for which reason. The decision references
+      the price file and does not replace it.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: PRICE
+      object: FACT_PRICE_DECISION
+      format: table
+  grain:
+    description: One row is one price decision.
+    components:
+    - identity_id: price_decision_identity
+      dataset_columns:
+      - price_decision_id
+      description: Identifier of the price decision.
+  columns:
+  - name: price_decision_id
+    description: Identifier of the price decision.
+  - name: device_family_id
+    description: Device family being priced.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: country_id
+    description: Country scope, when the decision is local.
+  - name: currency_id
+    description: Currency of the price change.
+  - name: used_price_lever_flag
+    description: Whether product price is being used as a lever.
+    value_description: true or false.
+  - name: disproportionate_increase_flag
+    description: Whether capability would force a disproportionate price increase.
+    value_description: true or false.
+  - name: lever_reason_code
+    description: Why price would move.
+    value_description: memory_cost, currency, component_cost, none
+  - name: product_price_change_amount
+    description: Product price change under the decision.
+  entity_definitions:
+  - identity_id: price_decision_identity
+    dataset_columns:
+    - price_decision_id
+    entity_universe: complete
+  - identity_id: device_family_identity
+    dataset_columns:
+    - device_family_id
+    entity_universe: partial
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: partial
+- node_id: sf:device.price.fact_product_margin
+  descriptor:
+    qualified_name: device.price.fact_product_margin
+    display_name: Product Margin
+    description: Product gross margin and the outlook band beyond the current quarter. Margin is not a
+      demand quantity.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: PRICE
+      object: FACT_PRODUCT_MARGIN
+      format: table
+  grain:
+    description: One row is one product margin.
+    components:
+    - identity_id: product_margin_identity
+      dataset_columns:
+      - product_margin_id
+      description: Identifier of the product-margin row.
+  columns:
+  - name: product_margin_id
+    description: Identifier of the product-margin row.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: currency_id
+    description: Currency of the margin amounts.
+  - name: product_gross_margin_rate
+    description: Product gross margin rate.
+  - name: margin_band_low
+    description: Low end of the margin band being held.
+  - name: margin_band_high
+    description: High end of the margin band being held.
+  - name: visibility_beyond_quarter_flag
+    description: Whether visibility beyond the quarter is long enough to hold the band.
+    value_description: true or false.
+  - name: sequential_change_amount
+    description: Sequential change in product margin.
+  - name: in_high_forties_flag
+    description: Whether the rate is in the high 40s.
+    value_description: true or false.
+  entity_definitions:
+  - identity_id: product_margin_identity
+    dataset_columns:
+    - product_margin_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: partial
+- node_id: sf:device.price.fact_margin_bridge
+  descriptor:
+    qualified_name: device.price.fact_margin_bridge
+    display_name: Margin Bridge
+    description: Separated effects on gross margin. Memory cost, NAND cost, mix, currency, Services mix,
+      and custom silicon each have their own amount.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: PRICE
+      object: FACT_MARGIN_BRIDGE
+      format: table
+  grain:
+    description: One row is one margin bridge.
+    components:
+    - identity_id: margin_bridge_identity
+      dataset_columns:
+      - margin_bridge_id
+      description: Identifier of the margin-bridge row.
+  columns:
+  - name: margin_bridge_id
+    description: Identifier of the margin-bridge row.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: currency_id
+    description: Currency of the effect amounts.
+  - name: memory_cost_effect_amount
+    description: Margin effect from memory cost.
+  - name: nand_cost_effect_amount
+    description: Margin effect from NAND cost.
+  - name: mix_effect_amount
+    description: Margin effect from mix.
+  - name: fx_effect_amount
+    description: Margin effect from currency.
+  - name: services_mix_effect_amount
+    description: Margin effect from Services mix.
+  - name: custom_silicon_effect_amount
+    description: Margin effect from custom silicon content.
+  - name: component_cost_effect_amount
+    description: Margin effect from component cost other than the named memory and NAND lines.
+  entity_definitions:
+  - identity_id: margin_bridge_identity
+    dataset_columns:
+    - margin_bridge_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: partial
+- node_id: sf:device.services.fact_services_growth
+  descriptor:
+    qualified_name: device.services.fact_services_growth
+    display_name: Services Growth
+    description: Services growth and the App Store's part of it, including the next-quarter outlook.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: SERVICES
+      object: FACT_SERVICES_GROWTH
+      format: table
+  grain:
+    description: One row is one services growth.
+    components:
+    - identity_id: services_growth_identity
+      dataset_columns:
+      - services_growth_id
+      description: Identifier of the Services-growth row.
+  columns:
+  - name: services_growth_id
+    description: Identifier of the Services-growth row.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: outlook_quarter_code
+    description: Quarter the outlook deceleration refers to.
+    value_description: FY2026Q3, FY2026Q4, FY2027Q1
+  - name: services_growth_rate
+    description: Services growth rate.
+  - name: app_store_growth_rate
+    description: App Store growth rate.
+  - name: outlook_growth_rate
+    description: Services growth rate in the outlook quarter.
+  - name: deceleration_driver_code
+    description: What is slowing Services.
+    value_description: app_store, other
+  - name: app_store_is_main_driver_flag
+    description: Whether the App Store is the main driver of the further deceleration.
+    value_description: true or false.
+  entity_definitions:
+  - identity_id: services_growth_identity
+    dataset_columns:
+    - services_growth_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+- node_id: sf:device.services.fact_services_margin
+  descriptor:
+    qualified_name: device.services.fact_services_margin
+    display_name: Services Margin
+    description: Services gross margin, with mix pressure, volume leverage, and loss improvement kept
+      apart.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: SERVICES
+      object: FACT_SERVICES_MARGIN
+      format: table
+  grain:
+    description: One row is one services margin.
+    components:
+    - identity_id: services_margin_identity
+      dataset_columns:
+      - services_margin_id
+      description: Identifier of the Services-margin row.
+  columns:
+  - name: services_margin_id
+    description: Identifier of the Services-margin row.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: services_gross_margin_rate
+    description: Services gross margin rate.
+  - name: mix_pressure_amount
+    description: Margin pressure from mix.
+  - name: volume_leverage_amount
+    description: Margin still available from volume leverage.
+  - name: loss_improvement_amount
+    description: Margin still available from loss improvement.
+  - name: expansion_harder_flag
+    description: Whether expansion is getting harder because of mix.
+    value_description: true or false.
+  entity_definitions:
+  - identity_id: services_margin_identity
+    dataset_columns:
+    - services_margin_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+- node_id: sf:device.services.fact_ad_inventory
+  descriptor:
+    qualified_name: device.services.fact_ad_inventory
+    display_name: Ad Inventory
+    description: Revenue from new ad inventory, including App Store ads and the planned Maps extension.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: SERVICES
+      object: FACT_AD_INVENTORY
+      format: table
+  grain:
+    description: One row is one ad inventory.
+    components:
+    - identity_id: ad_inventory_identity
+      dataset_columns:
+      - ad_inventory_id
+      description: Identifier of the ad-inventory row.
+  columns:
+  - name: ad_inventory_id
+    description: Identifier of the ad-inventory row.
+  - name: service_offering_id
+    description: Ad offering, App Store ads or Maps ads.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: revenue_amount
+    description: Ad revenue.
+  - name: share_of_services_growth
+    description: Share of Services growth from this inventory.
+  - name: meaningful_flag
+    description: Whether the inventory has been a meaningful piece of Services growth.
+    value_description: true or false.
+  - name: planned_extension_flag
+    description: Whether a further extension, such as Maps ads, is planned.
+    value_description: true or false.
+  entity_definitions:
+  - identity_id: ad_inventory_identity
+    dataset_columns:
+    - ad_inventory_id
+    entity_universe: complete
+  - identity_id: service_offering_identity
+    dataset_columns:
+    - service_offering_id
+    entity_universe: partial
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+- node_id: sf:device.services.fact_service_attachment
+  descriptor:
+    qualified_name: device.services.fact_service_attachment
+    display_name: Service Attachment
+    description: A service attached to a device family on a channel, in a country, on a day. Attachment
+      quantity is not a shipment quantity and not the device price.
+    synonyms:
+    - services attach
+    tags:
+    - fact
+    - price
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: SERVICES
+      object: FACT_SERVICE_ATTACHMENT
+      format: table
+  grain:
+    description: One row is one service attachment.
+    components:
+    - identity_id: service_attachment_identity
+      dataset_columns:
+      - service_attachment_id
+      description: Identifier of the service attachment.
+  columns:
+  - name: service_attachment_id
+    description: Identifier of the service attachment.
+  - name: service_plan_id
+    description: Service plan attached.
+  - name: service_offering_id
+    description: Service offering attached.
+  - name: device_family_id
+    description: Device family for this row.
+  - name: channel_id
+    description: Route to market for this row.
+  - name: country_id
+    description: Selling country for this row.
+  - name: calendar_day_id
+    description: Calendar day for this row.
+  - name: device_shipment_id
+    description: Shipment the attachment was sold with, when it was sold with a shipment.
+  - name: installed_base_id
+    description: Installed-base snapshot the attachment covers, when it is sold to the base.
+  - name: attached_quantity
+    description: Count of service plans attached.
+  entity_definitions:
+  - identity_id: service_attachment_identity
+    dataset_columns:
+    - service_attachment_id
+    entity_universe: complete
+  - identity_id: service_plan_identity
+    dataset_columns:
+    - service_plan_id
+    entity_universe: partial
+  - identity_id: service_offering_identity
+    dataset_columns:
+    - service_offering_id
+    entity_universe: partial
+  - identity_id: device_family_identity
+    dataset_columns:
+    - device_family_id
+    entity_universe: partial
+  - identity_id: channel_identity
+    dataset_columns:
+    - channel_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    entity_universe: partial
+  - identity_id: device_shipment_identity
+    dataset_columns:
+    - device_shipment_id
+    entity_universe: partial
+  - identity_id: installed_base_identity
+    dataset_columns:
+    - installed_base_id
+    entity_universe: partial
+- node_id: sf:device.services.fact_services_driver
+  descriptor:
+    qualified_name: device.services.fact_services_driver
+    display_name: Services Driver
+    description: 'What accelerated Services: new-iPhone cross-sell, installed-base growth, or a bundle.'
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: SERVICES
+      object: FACT_SERVICES_DRIVER
+      format: table
+  grain:
+    description: One row is one services driver.
+    components:
+    - identity_id: services_driver_identity
+      dataset_columns:
+      - services_driver_id
+      description: Identifier of the Services-driver row.
+  columns:
+  - name: services_driver_id
+    description: Identifier of the Services-driver row.
+  - name: service_offering_id
+    description: Offering the driver refers to, when it is a named service.
+  - name: device_family_id
+    description: Device family involved in cross-sell, when the driver is a device.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: driver_code
+    description: Services growth driver.
+    value_description: iphone_cross_sell, installed_base_growth, apple_one, applecare, app_store, other
+  - name: contribution_amount
+    description: Services revenue contribution of the driver.
+  entity_definitions:
+  - identity_id: services_driver_identity
+    dataset_columns:
+    - services_driver_id
+    entity_universe: complete
+  - identity_id: service_offering_identity
+    dataset_columns:
+    - service_offering_id
+    entity_universe: partial
+  - identity_id: device_family_identity
+    dataset_columns:
+    - device_family_id
+    entity_universe: partial
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+- node_id: sf:device.services.fact_partner_payment
+  descriptor:
+    qualified_name: device.services.fact_partner_payment
+    display_name: Partner Payment
+    description: A partner payment inside Services, including a one-time item or an antitrust outcome.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: SERVICES
+      object: FACT_PARTNER_PAYMENT
+      format: table
+  grain:
+    description: One row is one partner payment.
+    components:
+    - identity_id: partner_payment_identity
+      dataset_columns:
+      - partner_payment_id
+      description: Identifier of the partner payment.
+  columns:
+  - name: partner_payment_id
+    description: Identifier of the partner payment.
+  - name: partner_id
+    description: Partner that paid.
+  - name: service_offering_id
+    description: Service the payment sits in.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: currency_id
+    description: Currency of the payment.
+  - name: payment_amount
+    description: Payment amount.
+  - name: one_time_flag
+    description: Whether the payment is one-time.
+    value_description: true or false.
+  - name: antitrust_outcome_flag
+    description: Whether an antitrust outcome contributed.
+    value_description: true or false.
+  - name: organic_services_flag
+    description: Whether the Services result excluding this payment is the organic result.
+    value_description: true or false.
+  entity_definitions:
+  - identity_id: partner_payment_identity
+    dataset_columns:
+    - partner_payment_id
+    entity_universe: complete
+  - identity_id: partner_identity
+    dataset_columns:
+    - partner_id
+    entity_universe: partial
+  - identity_id: service_offering_identity
+    dataset_columns:
+    - service_offering_id
+    entity_universe: partial
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: partial
+- node_id: sf:device.services.fact_partnership_economics
+  descriptor:
+    qualified_name: device.services.fact_partnership_economics
+    display_name: Partnership Economics
+    description: Economics of the Siri partnership compared with the Search traffic arrangement.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: SERVICES
+      object: FACT_PARTNERSHIP_ECONOMICS
+      format: table
+  grain:
+    description: One row is one partnership economics.
+    components:
+    - identity_id: partnership_economics_identity
+      dataset_columns:
+      - partnership_economics_id
+      description: Identifier of the partnership-economics row.
+  columns:
+  - name: partnership_economics_id
+    description: Identifier of the partnership-economics row.
+  - name: partner_id
+    description: Partner, including Google.
+  - name: service_offering_id
+    description: Offering, including Siri.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: chosen_for_siri_flag
+    description: Whether this partner was the choice for Siri.
+    value_description: true or false.
+  - name: siri_revenue_share_rate
+    description: Revenue share on the Siri partnership.
+  - name: search_revenue_share_rate
+    description: Revenue share on the Search traffic arrangement.
+  - name: similar_to_search_flag
+    description: Whether the Siri economics are similar to Search.
+    value_description: true or false.
+  entity_definitions:
+  - identity_id: partnership_economics_identity
+    dataset_columns:
+    - partnership_economics_id
+    entity_universe: complete
+  - identity_id: partner_identity
+    dataset_columns:
+    - partner_id
+    entity_universe: partial
+  - identity_id: service_offering_identity
+    dataset_columns:
+    - service_offering_id
+    entity_universe: partial
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+- node_id: sf:device.services.fact_compute_economics
+  descriptor:
+    qualified_name: device.services.fact_compute_economics
+    display_name: Compute Economics
+    description: Compute cost of a feature by where the request runs, and how much iCloud+ or another
+      service recovers.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: SERVICES
+      object: FACT_COMPUTE_ECONOMICS
+      format: table
+  grain:
+    description: One row is one compute economics.
+    components:
+    - identity_id: compute_economics_identity
+      dataset_columns:
+      - compute_economics_id
+      description: Identifier of the compute-economics row.
+  columns:
+  - name: compute_economics_id
+    description: Identifier of the compute-economics row.
+  - name: feature_id
+    description: Feature, including Siri.
+  - name: compute_location_id
+    description: Where the request runs.
+  - name: service_offering_id
+    description: Service that may recover the cost, including iCloud+.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: request_share
+    description: Share of requests at this compute location.
+  - name: compute_cost_amount
+    description: Compute cost.
+  - name: recovered_through_service_amount
+    description: Cost recovered through the service.
+  - name: capital_intensity_rate
+    description: Capital intensity implied by this request mix.
+  entity_definitions:
+  - identity_id: compute_economics_identity
+    dataset_columns:
+    - compute_economics_id
+    entity_universe: complete
+  - identity_id: feature_identity
+    dataset_columns:
+    - feature_id
+    entity_universe: partial
+  - identity_id: compute_location_identity
+    dataset_columns:
+    - compute_location_id
+    entity_universe: partial
+  - identity_id: service_offering_identity
+    dataset_columns:
+    - service_offering_id
+    entity_universe: partial
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+- node_id: sf:device.services.fact_capital_plan
+  descriptor:
+    qualified_name: device.services.fact_capital_plan
+    display_name: Capital Plan
+    description: Capital spending for private cloud, first-party and third-party capacity, and the role
+      of M5 silicon.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: SERVICES
+      object: FACT_CAPITAL_PLAN
+      format: table
+  grain:
+    description: One row is one capital plan.
+    components:
+    - identity_id: capital_plan_identity
+      dataset_columns:
+      - capital_plan_id
+      description: Identifier of the capital-plan row.
+  columns:
+  - name: capital_plan_id
+    description: Identifier of the capital-plan row.
+  - name: capex_project_id
+    description: Capital project.
+  - name: compute_location_id
+    description: Compute location the spend supports.
+  - name: component_id
+    description: Silicon component in the plan, including M5.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: currency_id
+    description: Currency of the spend.
+  - name: capital_spend_amount
+    description: Capital spending.
+  - name: reserved_capacity_units
+    description: Data-center capacity reserved.
+  - name: reserved_for_wide_launch_flag
+    description: Whether reserved capacity covers a wide Siri launch.
+    value_description: true or false.
+  - name: hyperscale_surge_flag
+    description: Whether the plan is a hyperscale-style spending surge.
+    value_description: true or false.
+  - name: first_party_share
+    description: Share of capacity that is first-party.
+  - name: third_party_share
+    description: Share of capacity that is third-party.
+  - name: m5_in_data_center_flag
+    description: Whether M5 silicon is part of the data-center plan.
+    value_description: true or false.
+  entity_definitions:
+  - identity_id: capital_plan_identity
+    dataset_columns:
+    - capital_plan_id
+    entity_universe: complete
+  - identity_id: capex_project_identity
+    dataset_columns:
+    - capex_project_id
+    entity_universe: partial
+  - identity_id: compute_location_identity
+    dataset_columns:
+    - compute_location_id
+    entity_universe: partial
+  - identity_id: component_identity
+    dataset_columns:
+    - component_id
+    entity_universe: partial
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: partial
+- node_id: sf:device.services.fact_opex
+  descriptor:
+    qualified_name: device.services.fact_opex
+    display_name: Operating Expense
+    description: Operating expense and its step-up versus revenue growth.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: SERVICES
+      object: FACT_OPEX
+      format: table
+  grain:
+    description: One row is one operating expense.
+    components:
+    - identity_id: opex_identity
+      dataset_columns:
+      - opex_id
+      description: Identifier of the operating-expense row.
+  columns:
+  - name: opex_id
+    description: Identifier of the operating-expense row.
+  - name: opex_component_id
+    description: Component of the expense.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: currency_id
+    description: Currency of the expense.
+  - name: opex_amount
+    description: Operating expense amount.
+  - name: step_up_amount
+    description: Step-up versus the prior quarter.
+  - name: opex_growth_rate
+    description: Operating-expense growth rate.
+  - name: revenue_growth_rate
+    description: Revenue growth rate in the same quarter.
+  - name: expense_outruns_revenue_flag
+    description: Whether expense growth outruns revenue growth.
+    value_description: true or false.
+  entity_definitions:
+  - identity_id: opex_identity
+    dataset_columns:
+    - opex_id
+    entity_universe: complete
+  - identity_id: opex_component_identity
+    dataset_columns:
+    - opex_component_id
+    entity_universe: partial
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: partial
+- node_id: sf:device.services.fact_ai_pnl
+  descriptor:
+    qualified_name: device.services.fact_ai_pnl
+    display_name: AI Investment
+    description: AI revenue opportunity compared with AI operating cost, model spend, infrastructure,
+      and net cash.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: SERVICES
+      object: FACT_AI_PNL
+      format: table
+  grain:
+    description: One row is one ai investment.
+    components:
+    - identity_id: ai_pnl_identity
+      dataset_columns:
+      - ai_pnl_id
+      description: Identifier of the AI-investment row.
+  columns:
+  - name: ai_pnl_id
+    description: Identifier of the AI-investment row.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: model_source_id
+    description: Model source the spend refers to.
+  - name: partner_id
+    description: Partner when the spend is the collaboration.
+  - name: currency_id
+    description: Currency of the amounts.
+  - name: ai_revenue_opportunity_amount
+    description: AI revenue not yet in the run rate.
+  - name: ai_opex_amount
+    description: AI operating cost already visible.
+  - name: in_run_rate_flag
+    description: Whether the revenue is already in the run rate.
+    value_description: true or false.
+  - name: infrastructure_investment_amount
+    description: Infrastructure investment required.
+  - name: net_cash_amount
+    description: Net cash available beside that investment.
+  - name: requires_more_investment_flag
+    description: Whether the path requires more investment.
+    value_description: true or false.
+  - name: own_model_spend_amount
+    description: Spend on Device Inc's own models.
+  - name: partner_model_spend_amount
+    description: Spend on the partner model, including the Google collaboration.
+  entity_definitions:
+  - identity_id: ai_pnl_identity
+    dataset_columns:
+    - ai_pnl_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: model_source_identity
+    dataset_columns:
+    - model_source_id
+    entity_universe: partial
+  - identity_id: partner_identity
+    dataset_columns:
+    - partner_id
+    entity_universe: partial
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: partial
+- node_id: sf:device.services.fact_model_strategy
+  descriptor:
+    qualified_name: device.services.fact_model_strategy
+    display_name: Model Strategy
+    description: Emphasis across Device Inc's own models, partners, and acquisitions.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: SERVICES
+      object: FACT_MODEL_STRATEGY
+      format: table
+  grain:
+    description: One row is one model strategy.
+    components:
+    - identity_id: model_strategy_identity
+      dataset_columns:
+      - model_strategy_id
+      description: Identifier of the model-strategy row.
+  columns:
+  - name: model_strategy_id
+    description: Identifier of the model-strategy row.
+  - name: model_source_id
+    description: Model source.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: emphasis_share
+    description: Share of emphasis on this source.
+  - name: dominant_path_flag
+    description: Whether this source is expected to dominate.
+    value_description: true or false.
+  - name: includes_acquisition_flag
+    description: Whether acquisitions remain part of the mix.
+    value_description: true or false.
+  entity_definitions:
+  - identity_id: model_strategy_identity
+    dataset_columns:
+    - model_strategy_id
+    entity_universe: complete
+  - identity_id: model_source_identity
+    dataset_columns:
+    - model_source_id
+    entity_universe: partial
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+- node_id: sf:device.services.fact_agent_stack
+  descriptor:
+    qualified_name: device.services.fact_agent_stack
+    display_name: Agent Stack
+    description: Whether Device Inc builds a layer of the agentic stack or takes it from a partner, and whether
+      that needs Device Inc infrastructure.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - apple
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: SERVICES
+      object: FACT_AGENT_STACK
+      format: table
+  grain:
+    description: One row is one agent stack.
+    components:
+    - identity_id: agent_stack_identity
+      dataset_columns:
+      - agent_stack_id
+      description: Identifier of the agent-stack row.
+  columns:
+  - name: agent_stack_id
+    description: Identifier of the agent-stack row.
+  - name: stack_layer_id
+    description: Layer of the stack.
+  - name: model_source_id
+    description: Who provides the layer.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: apple_builds_flag
+    description: Whether Device Inc builds this layer.
+    value_description: true or false.
+  - name: requires_apple_infrastructure_flag
+    description: Whether the choice requires more of Device Inc's own infrastructure.
+    value_description: true or false.
+  entity_definitions:
+  - identity_id: agent_stack_identity
+    dataset_columns:
+    - agent_stack_id
+    entity_universe: complete
+  - identity_id: stack_layer_identity
+    dataset_columns:
+    - stack_layer_id
+    entity_universe: partial
+  - identity_id: model_source_identity
+    dataset_columns:
+    - model_source_id
+    entity_universe: partial
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial

@@ -1,0 +1,1441 @@
+schema_version: '3'
+nodes:
+- node_id: sf:food.price.dim_price_action
+  descriptor:
+    qualified_name: food.price.dim_price_action
+    display_name: Price Action
+    description: Price action Food Inc has taken or is negotiating.
+    synonyms: []
+    tags:
+    - dim
+    - price_margin
+    - food
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: food.us-east-1
+      database: FOOD
+      schema: PRICE
+      object: DIM_PRICE_ACTION
+      format: table
+  grain:
+    description: One row is one price action.
+    components:
+    - identity_id: price_action_identity
+      dataset_columns:
+      - price_action_id
+      description: Identifier of the price action.
+  columns:
+  - name: price_action_id
+    description: Identifier of the price action.
+  - name: region_id
+    description: Region.
+  - name: category_id
+    description: Category.
+  - name: action_name
+    description: Name of the action.
+  - name: action_code
+    description: Action code.
+    value_description: list_hold, list_cut, list_increase, negotiation, giveback, value_reset
+  - name: open_flag
+    description: Whether the negotiation is still open.
+  entity_definitions:
+  - identity_id: price_action_identity
+    dataset_columns:
+    - price_action_id
+    entity_universe: complete
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+  - identity_id: category_identity
+    dataset_columns:
+    - category_id
+    entity_universe: partial
+- node_id: sf:food.price.dim_price_pack
+  descriptor:
+    qualified_name: food.price.dim_price_pack
+    display_name: Price Pack
+    description: Price-pack architecture at Food Inc.
+    synonyms: []
+    tags:
+    - dim
+    - price_margin
+    - food
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: food.us-east-1
+      database: FOOD
+      schema: PRICE
+      object: DIM_PRICE_PACK
+      format: table
+  grain:
+    description: One row is one price pack.
+    components:
+    - identity_id: price_pack_identity
+      dataset_columns:
+      - price_pack_id
+      description: Identifier of the price pack.
+  columns:
+  - name: price_pack_id
+    description: Identifier of the price pack.
+  - name: category_id
+    description: Category.
+  - name: pack_name
+    description: Name of the pack.
+  - name: pack_code
+    description: Pack code.
+    value_description: entry_price, larger_format, everyday_low, high_low
+  entity_definitions:
+  - identity_id: price_pack_identity
+    dataset_columns:
+    - price_pack_id
+    entity_universe: complete
+  - identity_id: category_identity
+    dataset_columns:
+    - category_id
+    entity_universe: partial
+- node_id: sf:food.price.dim_promotion
+  descriptor:
+    qualified_name: food.price.dim_promotion
+    display_name: Promotion
+    description: Promotion Food Inc runs.
+    synonyms: []
+    tags:
+    - dim
+    - price_margin
+    - food
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: food.us-east-1
+      database: FOOD
+      schema: PRICE
+      object: DIM_PROMOTION
+      format: table
+  grain:
+    description: One row is one promotion.
+    components:
+    - identity_id: promotion_identity
+      dataset_columns:
+      - promotion_id
+      description: Identifier of the promotion.
+  columns:
+  - name: promotion_id
+    description: Identifier of the promotion.
+  - name: promotion_name
+    description: Name of the promotion.
+  - name: promotion_code
+    description: Promotion code.
+    value_description: high_low, everyday, deep_cut
+  entity_definitions:
+  - identity_id: promotion_identity
+    dataset_columns:
+    - promotion_id
+    entity_universe: complete
+- node_id: sf:food.price.dim_media_vehicle
+  descriptor:
+    qualified_name: food.price.dim_media_vehicle
+    display_name: Media Vehicle
+    description: Media or retail-media vehicle Food Inc buys.
+    synonyms: []
+    tags:
+    - dim
+    - price_margin
+    - food
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: food.us-east-1
+      database: FOOD
+      schema: PRICE
+      object: DIM_MEDIA_VEHICLE
+      format: table
+  grain:
+    description: One row is one media vehicle.
+    components:
+    - identity_id: media_vehicle_identity
+      dataset_columns:
+      - media_vehicle_id
+      description: Identifier of the media vehicle.
+  columns:
+  - name: media_vehicle_id
+    description: Identifier of the media vehicle.
+  - name: vehicle_name
+    description: Name of the vehicle.
+  - name: vehicle_code
+    description: Vehicle code.
+    value_description: brand_media, retail_media, digital_shelf
+  entity_definitions:
+  - identity_id: media_vehicle_identity
+    dataset_columns:
+    - media_vehicle_id
+    entity_universe: complete
+- node_id: sf:food.price.fact_list_price
+  descriptor:
+    qualified_name: food.price.fact_list_price
+    display_name: List Price
+    description: List price Food Inc posts. This fact stores price or margin, not a case quantity.
+    synonyms: []
+    tags:
+    - fact
+    - price_margin
+    - food
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: food.us-east-1
+      database: FOOD
+      schema: PRICE
+      object: FACT_LIST_PRICE
+      format: table
+  grain:
+    description: One row is one list price.
+    components:
+    - identity_id: list_price_identity
+      dataset_columns:
+      - list_price_id
+      description: Identifier of the list price.
+  columns:
+  - name: list_price_id
+    description: Identifier of the list price.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: category_id
+    description: Category.
+  - name: brand_id
+    description: Brand.
+  - name: price_action_id
+    description: Price action.
+  - name: region_id
+    description: Region.
+  - name: list_change_rate
+    description: List price change.
+  - name: held_flat_flag
+    description: Whether list price is being held.
+  - name: peer_raising_flag
+    description: Whether peers are raising list.
+  - name: share_gain_in_plan_rate
+    description: Share gain in the plan if peers raise and Food Inc holds.
+  - name: usable_after_reset_flag
+    description: Whether price is a usable lever after the value reset.
+  entity_definitions:
+  - identity_id: list_price_identity
+    dataset_columns:
+    - list_price_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: category_identity
+    dataset_columns:
+    - category_id
+    entity_universe: partial
+  - identity_id: brand_identity
+    dataset_columns:
+    - brand_id
+    entity_universe: partial
+  - identity_id: price_action_identity
+    dataset_columns:
+    - price_action_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:food.price.fact_realized_price
+  descriptor:
+    qualified_name: food.price.fact_realized_price
+    display_name: Realized Price
+    description: Price Food Inc realizes, including negotiations still open. This fact stores price or
+      margin, not a case quantity.
+    synonyms: []
+    tags:
+    - fact
+    - price_margin
+    - food
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: food.us-east-1
+      database: FOOD
+      schema: PRICE
+      object: FACT_REALIZED_PRICE
+      format: table
+  grain:
+    description: One row is one realized price.
+    components:
+    - identity_id: realized_price_identity
+      dataset_columns:
+      - realized_price_id
+      description: Identifier of the realized price.
+  columns:
+  - name: realized_price_id
+    description: Identifier of the realized price.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: category_id
+    description: Category.
+  - name: country_id
+    description: Country.
+  - name: region_id
+    description: Region.
+  - name: price_action_id
+    description: Price action.
+  - name: realized_change_rate
+    description: Realized price change.
+  - name: negotiation_open_flag
+    description: Whether the negotiation is still open.
+  - name: landed_rate
+    description: Share of planned price already landed.
+  - name: flat_while_cost_down_flag
+    description: Whether selling price is planned flat while commodity cost is down.
+  entity_definitions:
+  - identity_id: realized_price_identity
+    dataset_columns:
+    - realized_price_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: category_identity
+    dataset_columns:
+    - category_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+  - identity_id: price_action_identity
+    dataset_columns:
+    - price_action_id
+    entity_universe: partial
+- node_id: sf:food.price.fact_price_gap
+  descriptor:
+    qualified_name: food.price.fact_price_gap
+    display_name: Price Gap
+    description: Gap between Food Inc and a competitor or retailer brand. This fact stores price or margin,
+      not a case quantity.
+    synonyms: []
+    tags:
+    - fact
+    - price_margin
+    - food
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: food.us-east-1
+      database: FOOD
+      schema: PRICE
+      object: FACT_PRICE_GAP
+      format: table
+  grain:
+    description: One row is one price gap.
+    components:
+    - identity_id: price_gap_identity
+      dataset_columns:
+      - price_gap_id
+      description: Identifier of the price gap.
+  columns:
+  - name: price_gap_id
+    description: Identifier of the price gap.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: category_id
+    description: Category.
+  - name: country_id
+    description: Country.
+  - name: competitor_id
+    description: Competitor.
+  - name: gap_rate
+    description: Price gap.
+  - name: closed_flag
+    description: Whether the gap has closed.
+  - name: first_mover_flag
+    description: Whether Food Inc still has a first-mover advantage.
+  - name: followers_must_move_flag
+    description: Whether other competitors have to follow a peer cut.
+  - name: problem_flag
+    description: Whether the gap is a problem in this market.
+  entity_definitions:
+  - identity_id: price_gap_identity
+    dataset_columns:
+    - price_gap_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: category_identity
+    dataset_columns:
+    - category_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: competitor_identity
+    dataset_columns:
+    - competitor_id
+    entity_universe: partial
+- node_id: sf:food.price.fact_price_mix
+  descriptor:
+    qualified_name: food.price.fact_price_mix
+    display_name: Price Mix
+    description: Price/mix for Food Inc, separate from case volume. This fact stores price or margin,
+      not a case quantity.
+    synonyms: []
+    tags:
+    - fact
+    - price_margin
+    - food
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: food.us-east-1
+      database: FOOD
+      schema: PRICE
+      object: FACT_PRICE_MIX
+      format: table
+  grain:
+    description: One row is one price mix.
+    components:
+    - identity_id: price_mix_identity
+      dataset_columns:
+      - price_mix_id
+      description: Identifier of the price mix.
+  columns:
+  - name: price_mix_id
+    description: Identifier of the price mix.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: category_id
+    description: Category.
+  - name: competitor_id
+    description: Competitor.
+  - name: price_mix_rate
+    description: Price/mix rate.
+  - name: positive_flag
+    description: Whether category price/mix stayed positive.
+  - name: competitor_followed_flag
+    description: Whether competitors followed the investment.
+  - name: mix_pressure_rate
+    description: Margin-rate pressure from the mix being bought.
+  entity_definitions:
+  - identity_id: price_mix_identity
+    dataset_columns:
+    - price_mix_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: category_identity
+    dataset_columns:
+    - category_id
+    entity_universe: partial
+  - identity_id: competitor_identity
+    dataset_columns:
+    - competitor_id
+    entity_universe: partial
+- node_id: sf:food.price.fact_gross_margin
+  descriptor:
+    qualified_name: food.price.fact_gross_margin
+    display_name: Gross Margin
+    description: Gross margin for Food Inc. This fact stores price or margin, not a case quantity.
+    synonyms: []
+    tags:
+    - fact
+    - price_margin
+    - food
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: food.us-east-1
+      database: FOOD
+      schema: PRICE
+      object: FACT_GROSS_MARGIN
+      format: table
+  grain:
+    description: One row is one gross margin.
+    components:
+    - identity_id: gross_margin_identity
+      dataset_columns:
+      - gross_margin_id
+      description: Identifier of the gross margin.
+  columns:
+  - name: gross_margin_id
+    description: Identifier of the gross margin.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: category_id
+    description: Category.
+  - name: gross_margin_rate
+    description: Gross margin rate.
+  - name: inventory_phasing_drag_rate
+    description: Drag from inventory phasing.
+  - name: smaller_than_feared_flag
+    description: Whether the phasing effect was smaller than feared.
+  - name: flat_if_ranges_match_inflation_flag
+    description: Whether margin is roughly flat if ranges match inflation.
+  - name: mid_thirties_reachable_flag
+    description: Whether a stable sales case can return margin to the mid-30s.
+  - name: supported_level_code
+    description: Level the sales rate can support.
+    value_description: low_30s, mid_30s
+  entity_definitions:
+  - identity_id: gross_margin_identity
+    dataset_columns:
+    - gross_margin_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: category_identity
+    dataset_columns:
+    - category_id
+    entity_universe: partial
+- node_id: sf:food.price.fact_margin_bridge
+  descriptor:
+    qualified_name: food.price.fact_margin_bridge
+    display_name: Margin Bridge
+    description: One effect on the Food Inc margin bridge. This fact stores price or margin, not a case
+      quantity.
+    synonyms: []
+    tags:
+    - fact
+    - price_margin
+    - food
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: food.us-east-1
+      database: FOOD
+      schema: PRICE
+      object: FACT_MARGIN_BRIDGE
+      format: table
+  grain:
+    description: One row is one margin bridge.
+    components:
+    - identity_id: margin_bridge_identity
+      dataset_columns:
+      - margin_bridge_id
+      description: Identifier of the margin bridge.
+  columns:
+  - name: margin_bridge_id
+    description: Identifier of the margin bridge.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: category_id
+    description: Category.
+  - name: effect_rate
+    description: Effect on the margin rate.
+  - name: driver_code
+    description: Driver.
+    value_description: inflation, productivity, mix, price, cocoa, reinvestment
+  - name: quarter_code_within_year
+    description: Which quarter the effect lands in.
+    value_description: q1, q2, q3, q4
+  entity_definitions:
+  - identity_id: margin_bridge_identity
+    dataset_columns:
+    - margin_bridge_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: category_identity
+    dataset_columns:
+    - category_id
+    entity_universe: partial
+- node_id: sf:food.price.fact_chocolate_margin
+  descriptor:
+    qualified_name: food.price.fact_chocolate_margin
+    display_name: Chocolate Margin
+    description: Chocolate profit at Food Inc versus the pre-2025 run rate. This fact stores price or
+      margin, not a case quantity.
+    synonyms: []
+    tags:
+    - fact
+    - price_margin
+    - food
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: food.us-east-1
+      database: FOOD
+      schema: PRICE
+      object: FACT_CHOCOLATE_MARGIN
+      format: table
+  grain:
+    description: One row is one chocolate margin.
+    components:
+    - identity_id: chocolate_margin_identity
+      dataset_columns:
+      - chocolate_margin_id
+      description: Identifier of the chocolate margin.
+  columns:
+  - name: chocolate_margin_id
+    description: Identifier of the chocolate margin.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: category_id
+    description: Category.
+  - name: region_id
+    description: Region.
+  - name: profit_rate
+    description: Chocolate profit rate.
+  - name: back_to_pre_period_flag
+    description: Whether a path exists back to the pre-2025 level.
+  - name: recovery_starts_next_year_flag
+    description: Whether recovery starts as prices come down.
+  - name: neutral_after_hedge_flag
+    description: Whether price-cost is neutral after hedges and inventory accounting.
+  - name: still_a_benefit_flag
+    description: Whether price-cost is still a benefit.
+  entity_definitions:
+  - identity_id: chocolate_margin_identity
+    dataset_columns:
+    - chocolate_margin_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: category_identity
+    dataset_columns:
+    - category_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:food.price.fact_profit_pool
+  descriptor:
+    qualified_name: food.price.fact_profit_pool
+    display_name: Profit Pool
+    description: Whether Food Inc is protecting the profit pool while emphasizing value. This fact stores
+      price or margin, not a case quantity.
+    synonyms: []
+    tags:
+    - fact
+    - price_margin
+    - food
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: food.us-east-1
+      database: FOOD
+      schema: PRICE
+      object: FACT_PROFIT_POOL
+      format: table
+  grain:
+    description: One row is one profit pool.
+    components:
+    - identity_id: profit_pool_identity
+      dataset_columns:
+      - profit_pool_id
+      description: Identifier of the profit pool.
+  columns:
+  - name: profit_pool_id
+    description: Identifier of the profit pool.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: category_id
+    description: Category.
+  - name: channel_id
+    description: Channel.
+  - name: profit_amount
+    description: Profit amount.
+  - name: protect_pool_flag
+    description: Whether the stance is to protect the pool.
+  - name: tradeoff_required_flag
+    description: Whether price investment and profit protection must be traded off.
+  - name: growth_realistic_flag
+    description: Whether consumption trends make profit growth realistic.
+  entity_definitions:
+  - identity_id: profit_pool_identity
+    dataset_columns:
+    - profit_pool_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: category_identity
+    dataset_columns:
+    - category_id
+    entity_universe: partial
+  - identity_id: channel_identity
+    dataset_columns:
+    - channel_id
+    entity_universe: partial
+- node_id: sf:food.price.fact_advertising
+  descriptor:
+    qualified_name: food.price.fact_advertising
+    display_name: Advertising
+    description: Advertising and media spend at Food Inc. Spend, not a list price and not case volume.
+      This fact stores price or margin, not a case quantity.
+    synonyms: []
+    tags:
+    - fact
+    - price_margin
+    - food
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: food.us-east-1
+      database: FOOD
+      schema: PRICE
+      object: FACT_ADVERTISING
+      format: table
+  grain:
+    description: One row is one advertising.
+    components:
+    - identity_id: advertising_identity
+      dataset_columns:
+      - advertising_id
+      description: Identifier of the advertising.
+  columns:
+  - name: advertising_id
+    description: Identifier of the advertising.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: media_vehicle_id
+    description: Media vehicle.
+  - name: category_id
+    description: Category.
+  - name: spend_amount
+    description: Advertising spend.
+  - name: versus_normal_rate
+    description: Spend versus a normal level.
+  - name: step_up_rate
+    description: Step-up versus the recent quarter.
+  - name: holds_for_year_flag
+    description: Whether the quarterly rate holds for the rest of the year.
+  entity_definitions:
+  - identity_id: advertising_identity
+    dataset_columns:
+    - advertising_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: media_vehicle_identity
+    dataset_columns:
+    - media_vehicle_id
+    entity_universe: partial
+  - identity_id: category_identity
+    dataset_columns:
+    - category_id
+    entity_universe: partial
+- node_id: sf:food.price.fact_marketing_response
+  descriptor:
+    qualified_name: food.price.fact_marketing_response
+    display_name: Marketing Response
+    description: Response Food Inc is getting from marketing, promotion, and innovation spend versus a
+      pre-COVID baseline. This fact stores price or margin, not a case quantity.
+    synonyms: []
+    tags:
+    - fact
+    - price_margin
+    - food
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: food.us-east-1
+      database: FOOD
+      schema: PRICE
+      object: FACT_MARKETING_RESPONSE
+      format: table
+  grain:
+    description: One row is one marketing response.
+    components:
+    - identity_id: marketing_response_identity
+      dataset_columns:
+      - marketing_response_id
+      description: Identifier of the marketing response.
+  columns:
+  - name: marketing_response_id
+    description: Identifier of the marketing response.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: promotion_id
+    description: Promotion.
+  - name: category_id
+    description: Category.
+  - name: response_rate
+    description: Sales response rate.
+  - name: restored_flag
+    description: Whether the spend has been restored.
+  - name: pre_covid_comparable_flag
+    description: Whether the response matches the pre-COVID period.
+  - name: vehicle_code
+    description: Spend being judged.
+    value_description: innovation, promotion, marketing
+  entity_definitions:
+  - identity_id: marketing_response_identity
+    dataset_columns:
+    - marketing_response_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: promotion_identity
+    dataset_columns:
+    - promotion_id
+    entity_universe: partial
+  - identity_id: category_identity
+    dataset_columns:
+    - category_id
+    entity_universe: partial
+- node_id: sf:food.price.fact_competitor_price
+  descriptor:
+    qualified_name: food.price.fact_competitor_price
+    display_name: Competitor Price
+    description: Competitor price moves Food Inc is answering. This fact stores price or margin, not a
+      case quantity.
+    synonyms: []
+    tags:
+    - fact
+    - price_margin
+    - food
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: food.us-east-1
+      database: FOOD
+      schema: PRICE
+      object: FACT_COMPETITOR_PRICE
+      format: table
+  grain:
+    description: One row is one competitor price.
+    components:
+    - identity_id: competitor_price_identity
+      dataset_columns:
+      - competitor_price_id
+      description: Identifier of the competitor price.
+  columns:
+  - name: competitor_price_id
+    description: Identifier of the competitor price.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: competitor_id
+    description: Competitor.
+  - name: category_id
+    description: Category.
+  - name: competitor_change_rate
+    description: Competitor price change.
+  - name: sharp_cut_flag
+    description: Whether a large peer cut prices sharply.
+  - name: snack_cut_flag
+    description: Whether salty-snack price cuts are in market.
+  - name: adjacent_only_flag
+    description: Whether the cuts are only adjacent.
+  entity_definitions:
+  - identity_id: competitor_price_identity
+    dataset_columns:
+    - competitor_price_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: competitor_identity
+    dataset_columns:
+    - competitor_id
+    entity_universe: partial
+  - identity_id: category_identity
+    dataset_columns:
+    - category_id
+    entity_universe: partial
+- node_id: sf:food.price.fact_revenue_management
+  descriptor:
+    qualified_name: food.price.fact_revenue_management
+    display_name: Revenue Management
+    description: Revenue-growth management actions still needed at Food Inc. This fact stores price or
+      margin, not a case quantity.
+    synonyms: []
+    tags:
+    - fact
+    - price_margin
+    - food
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: food.us-east-1
+      database: FOOD
+      schema: PRICE
+      object: FACT_REVENUE_MANAGEMENT
+      format: table
+  grain:
+    description: One row is one revenue management.
+    components:
+    - identity_id: revenue_management_identity
+      dataset_columns:
+      - revenue_management_id
+      description: Identifier of the revenue management.
+  columns:
+  - name: revenue_management_id
+    description: Identifier of the revenue management.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: category_id
+    description: Category.
+  - name: price_action_id
+    description: Price action.
+  - name: action_still_needed_flag
+    description: Whether more pricing or revenue management is needed.
+  - name: higher_cost_scenario_flag
+    description: Whether the row is the higher-commodity scenario.
+  - name: back_half_flag
+    description: Whether the action sits in the back half.
+  entity_definitions:
+  - identity_id: revenue_management_identity
+    dataset_columns:
+    - revenue_management_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: category_identity
+    dataset_columns:
+    - category_id
+    entity_universe: partial
+  - identity_id: price_action_identity
+    dataset_columns:
+    - price_action_id
+    entity_universe: partial
+- node_id: sf:food.price.fact_price_investment
+  descriptor:
+    qualified_name: food.price.fact_price_investment
+    display_name: Price Investment
+    description: Price investment Food Inc has put into the portfolio. This fact stores price or margin,
+      not a case quantity.
+    synonyms: []
+    tags:
+    - fact
+    - price_margin
+    - food
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: food.us-east-1
+      database: FOOD
+      schema: PRICE
+      object: FACT_PRICE_INVESTMENT
+      format: table
+  grain:
+    description: One row is one price investment.
+    components:
+    - identity_id: price_investment_identity
+      dataset_columns:
+      - price_investment_id
+      description: Identifier of the price investment.
+  columns:
+  - name: price_investment_id
+    description: Identifier of the price investment.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: category_id
+    description: Category.
+  - name: brand_id
+    description: Brand.
+  - name: price_action_id
+    description: Price action.
+  - name: invested_share_rate
+    description: Share of the portfolio with price investment.
+  - name: untreated_share_rate
+    description: Share still untreated.
+  - name: lapped_flag
+    description: Whether last year's investment is being lapped.
+  - name: hit_rate
+    description: Hit rate of the adjustments.
+  - name: common_thread_flag
+    description: Whether the misses share a thread beyond one brand.
+  - name: supports_pivot_flag
+    description: Whether last year's result supports a pivot to innovation.
+  entity_definitions:
+  - identity_id: price_investment_identity
+    dataset_columns:
+    - price_investment_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: category_identity
+    dataset_columns:
+    - category_id
+    entity_universe: partial
+  - identity_id: brand_identity
+    dataset_columns:
+    - brand_id
+    entity_universe: partial
+  - identity_id: price_action_identity
+    dataset_columns:
+    - price_action_id
+    entity_universe: partial
+- node_id: sf:food.price.fact_architecture_result
+  descriptor:
+    qualified_name: food.price.fact_architecture_result
+    display_name: Architecture Result
+    description: Result of a Food Inc price-pack or promo architecture. This fact stores price or margin,
+      not a case quantity.
+    synonyms: []
+    tags:
+    - fact
+    - price_margin
+    - food
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: food.us-east-1
+      database: FOOD
+      schema: PRICE
+      object: FACT_ARCHITECTURE_RESULT
+      format: table
+  grain:
+    description: One row is one architecture result.
+    components:
+    - identity_id: architecture_result_identity
+      dataset_columns:
+      - architecture_result_id
+      description: Identifier of the architecture result.
+  columns:
+  - name: architecture_result_id
+    description: Identifier of the architecture result.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: price_pack_id
+    description: Price pack.
+  - name: category_id
+    description: Category.
+  - name: promotion_id
+    description: Promotion.
+  - name: result_rate
+    description: Result versus the comparison category.
+  - name: matched_cereal_flag
+    description: Whether results matched cereal.
+  - name: everyday_versus_high_low_code
+    description: Which architecture is working.
+    value_description: everyday_low, high_low
+  - name: deeper_promo_needed_flag
+    description: Whether deeper promotions are needed.
+  entity_definitions:
+  - identity_id: architecture_result_identity
+    dataset_columns:
+    - architecture_result_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: price_pack_identity
+    dataset_columns:
+    - price_pack_id
+    entity_universe: partial
+  - identity_id: category_identity
+    dataset_columns:
+    - category_id
+    entity_universe: partial
+  - identity_id: promotion_identity
+    dataset_columns:
+    - promotion_id
+    entity_universe: partial
+- node_id: sf:food.price.fact_operating_profit
+  descriptor:
+    qualified_name: food.price.fact_operating_profit
+    display_name: Operating Profit
+    description: Operating profit bridge for Food Inc. This fact stores price or margin, not a case quantity.
+    synonyms: []
+    tags:
+    - fact
+    - price_margin
+    - food
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: food.us-east-1
+      database: FOOD
+      schema: PRICE
+      object: FACT_OPERATING_PROFIT
+      format: table
+  grain:
+    description: One row is one operating profit.
+    components:
+    - identity_id: operating_profit_identity
+      dataset_columns:
+      - operating_profit_id
+      description: Identifier of the operating profit.
+  columns:
+  - name: operating_profit_id
+    description: Identifier of the operating profit.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: profit_change_rate
+    description: Operating profit change.
+  - name: inflation_offset_flag
+    description: Whether the sales and profit ranges match inflation.
+  - name: high_end_reachable_flag
+    description: Whether the high end of the sales range is reachable.
+  entity_definitions:
+  - identity_id: operating_profit_identity
+    dataset_columns:
+    - operating_profit_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+- node_id: sf:food.price.fact_earnings_outlook
+  descriptor:
+    qualified_name: food.price.fact_earnings_outlook
+    display_name: Earnings Outlook
+    description: Earnings outlook for Food Inc, including algorithm language and investment refill. This
+      fact stores price or margin, not a case quantity.
+    synonyms: []
+    tags:
+    - fact
+    - price_margin
+    - food
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: food.us-east-1
+      database: FOOD
+      schema: PRICE
+      object: FACT_EARNINGS_OUTLOOK
+      format: table
+  grain:
+    description: One row is one earnings outlook.
+    components:
+    - identity_id: earnings_outlook_identity
+      dataset_columns:
+      - earnings_outlook_id
+      description: Identifier of the earnings outlook.
+  columns:
+  - name: earnings_outlook_id
+    description: Identifier of the earnings outlook.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: in_algorithm_flag
+    description: Whether earnings can be described versus the algorithm.
+  - name: top_line_same_way_flag
+    description: Whether the top line should be thought of the same way.
+  - name: refill_enough_flag
+    description: Whether the outlook already refills spend so the next year needs no reset.
+  - name: pulled_forward_flag
+    description: Whether next-year investment is being pulled into this quarter.
+  - name: cocoa_savings_kept_as_flexibility_rate
+    description: Share of commodity savings kept as flexibility inside the guide.
+  entity_definitions:
+  - identity_id: earnings_outlook_identity
+    dataset_columns:
+    - earnings_outlook_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+- node_id: sf:food.price.fact_value_share
+  descriptor:
+    qualified_name: food.price.fact_value_share
+    display_name: Value Share
+    description: Value share and dollar share for Food Inc. This fact stores price or margin, not a case
+      quantity.
+    synonyms: []
+    tags:
+    - fact
+    - price_margin
+    - food
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: food.us-east-1
+      database: FOOD
+      schema: PRICE
+      object: FACT_VALUE_SHARE
+      format: table
+  grain:
+    description: One row is one value share.
+    components:
+    - identity_id: value_share_identity
+      dataset_columns:
+      - value_share_id
+      description: Identifier of the value share.
+  columns:
+  - name: value_share_id
+    description: Identifier of the value share.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: category_id
+    description: Category.
+  - name: channel_id
+    description: Channel.
+  - name: value_share_rate
+    description: Value share.
+  - name: dollar_share_rate
+    description: Dollar share.
+  - name: gap_to_volume_share_rate
+    description: Gap between value share and volume share.
+  - name: narrowing_flag
+    description: Whether the gap is narrowing.
+  - name: in_line_with_category_flag
+    description: Whether the guide assumes growth in line with the category.
+  entity_definitions:
+  - identity_id: value_share_identity
+    dataset_columns:
+    - value_share_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: category_identity
+    dataset_columns:
+    - category_id
+    entity_universe: partial
+  - identity_id: channel_identity
+    dataset_columns:
+    - channel_id
+    entity_universe: partial
+- node_id: sf:food.price.fact_flour_price
+  descriptor:
+    qualified_name: food.price.fact_flour_price
+    display_name: Flour Price
+    description: Indexed flour price pass-through in Food Inc foodservice. A price, not flour volume.
+      This fact stores price or margin, not a case quantity.
+    synonyms: []
+    tags:
+    - fact
+    - price_margin
+    - food
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: food.us-east-1
+      database: FOOD
+      schema: PRICE
+      object: FACT_FLOUR_PRICE
+      format: table
+  grain:
+    description: One row is one flour price.
+    components:
+    - identity_id: flour_price_identity
+      dataset_columns:
+      - flour_price_id
+      description: Identifier of the flour price.
+  columns:
+  - name: flour_price_id
+    description: Identifier of the flour price.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: channel_id
+    description: Channel.
+  - name: category_id
+    description: Category.
+  - name: pass_through_rate
+    description: Pass-through rate.
+  - name: indexed_flag
+    description: Whether foodservice price is indexed.
+  - name: better_than_plan_flag
+    description: Whether foodservice and pet pricing are better than the starting plan.
+  entity_definitions:
+  - identity_id: flour_price_identity
+    dataset_columns:
+    - flour_price_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: channel_identity
+    dataset_columns:
+    - channel_id
+    entity_universe: partial
+  - identity_id: category_identity
+    dataset_columns:
+    - category_id
+    entity_universe: partial
+- node_id: sf:food.price.fact_tariff_price
+  descriptor:
+    qualified_name: food.price.fact_tariff_price
+    display_name: Tariff Price
+    description: Tariff refunds inside the Food Inc inflation figure. A price/cost item, not volume. This
+      fact stores price or margin, not a case quantity.
+    synonyms: []
+    tags:
+    - fact
+    - price_margin
+    - food
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: food.us-east-1
+      database: FOOD
+      schema: PRICE
+      object: FACT_TARIFF_PRICE
+      format: table
+  grain:
+    description: One row is one tariff price.
+    components:
+    - identity_id: tariff_price_identity
+      dataset_columns:
+      - tariff_price_id
+      description: Identifier of the tariff price.
+  columns:
+  - name: tariff_price_id
+    description: Identifier of the tariff price.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: included_in_net_flag
+    description: Whether refunds are inside the net inflation figure.
+  - name: refund_timing_code
+    description: When refunds land.
+    value_description: this_year, next_year, unknown
+  entity_definitions:
+  - identity_id: tariff_price_identity
+    dataset_columns:
+    - tariff_price_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+- node_id: sf:food.price.fact_regional_price
+  descriptor:
+    qualified_name: food.price.fact_regional_price
+    display_name: Regional Price
+    description: Regional price stance for Food Inc, including Europe and North America. This fact stores
+      price or margin, not a case quantity.
+    synonyms: []
+    tags:
+    - fact
+    - price_margin
+    - food
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: food.us-east-1
+      database: FOOD
+      schema: PRICE
+      object: FACT_REGIONAL_PRICE
+      format: table
+  grain:
+    description: One row is one regional price.
+    components:
+    - identity_id: regional_price_identity
+      dataset_columns:
+      - regional_price_id
+      description: Identifier of the regional price.
+  columns:
+  - name: regional_price_id
+    description: Identifier of the regional price.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: region_id
+    description: Region.
+  - name: category_id
+    description: Category.
+  - name: price_action_id
+    description: Price action.
+  - name: planned_change_rate
+    description: Planned price change.
+  - name: flex_risk_flag
+    description: Whether the plan could flex the wrong way.
+  - name: competitive_response_code
+    description: Expected competitive look.
+    value_description: rational, volatile, aggressive
+  entity_definitions:
+  - identity_id: regional_price_identity
+    dataset_columns:
+    - regional_price_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+  - identity_id: category_identity
+    dataset_columns:
+    - category_id
+    entity_universe: partial
+  - identity_id: price_action_identity
+    dataset_columns:
+    - price_action_id
+    entity_universe: partial
+- node_id: sf:food.price.fact_pet_price
+  descriptor:
+    qualified_name: food.price.fact_pet_price
+    display_name: Pet Price
+    description: Pet and Wilderness price stance at Food Inc. This fact stores price or margin, not a
+      case quantity.
+    synonyms: []
+    tags:
+    - fact
+    - price_margin
+    - food
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: food.us-east-1
+      database: FOOD
+      schema: PRICE
+      object: FACT_PET_PRICE
+      format: table
+  grain:
+    description: One row is one pet price.
+    components:
+    - identity_id: pet_price_identity
+      dataset_columns:
+      - pet_price_id
+      description: Identifier of the pet price.
+  columns:
+  - name: pet_price_id
+    description: Identifier of the pet price.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter of the row.
+  - name: brand_id
+    description: Brand.
+  - name: category_id
+    description: Category.
+  - name: planned_change_rate
+    description: Planned pet price change.
+  - name: strategy_code
+    description: Current strategy.
+    value_description: hold, tweak, invest
+  - name: change_possible_flag
+    description: Whether a change is possible.
+  entity_definitions:
+  - identity_id: pet_price_identity
+    dataset_columns:
+    - pet_price_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: brand_identity
+    dataset_columns:
+    - brand_id
+    entity_universe: partial
+  - identity_id: category_identity
+    dataset_columns:
+    - category_id
+    entity_universe: partial

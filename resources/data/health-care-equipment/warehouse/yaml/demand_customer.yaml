@@ -1,0 +1,249 @@
+schema_version: '3'
+nodes:
+- node_id: sf:surgicalsupply.customer.dim_country
+  descriptor:
+    qualified_name: surgicalsupply.customer.dim_country
+    display_name: Country
+    description: Country where Surgical Supply Inc sells devices or manufactures. Includes the United States, international
+      markets, Europe, and China.
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: CUSTOMER
+      object: DIM_COUNTRY
+      format: table
+  grain:
+    description: One row is one country.
+    components:
+    - identity_id: country_identity
+      dataset_columns:
+      - country_id
+  columns:
+  - name: country_id
+    description: Identifier of the country. This dataset holds the complete population.
+  - name: country_name
+    description: Name of the country.
+  - name: country_code
+    description: Short code used to filter geography.
+    value_description: us, international, europe, china, japan, other
+  entity_definitions:
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: complete
+- node_id: sf:surgicalsupply.customer.dim_region
+  descriptor:
+    qualified_name: surgicalsupply.customer.dim_region
+    display_name: Region
+    description: Geographic region inside a country. Every country in this catalog has at least one region.
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: CUSTOMER
+      object: DIM_REGION
+      format: table
+  grain:
+    description: One row is one region.
+    components:
+    - identity_id: region_identity
+      dataset_columns:
+      - region_id
+  columns:
+  - name: region_id
+    description: Identifier of the region. This dataset holds the complete population.
+  - name: country_id
+    description: Country that contains the region. The complete population is not re-authored on this
+      dataset.
+  - name: region_name
+    description: Name of the region.
+  entity_definitions:
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: complete
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+- node_id: sf:surgicalsupply.customer.dim_health_system
+  descriptor:
+    qualified_name: surgicalsupply.customer.dim_health_system
+    display_name: Health system
+    description: A health system that owns or manages hospital customers.
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: CUSTOMER
+      object: DIM_HEALTH_SYSTEM
+      format: table
+  grain:
+    description: One row is one health system.
+    components:
+    - identity_id: health_system_identity
+      dataset_columns:
+      - health_system_id
+  columns:
+  - name: health_system_id
+    description: Identifier of the health system. This dataset holds the complete population.
+  - name: country_id
+    description: Country where the health system is based. The complete population is not re-authored
+      on this dataset.
+  - name: health_system_name
+    description: Name of the health system.
+  entity_definitions:
+  - identity_id: health_system_identity
+    dataset_columns:
+    - health_system_id
+    entity_universe: complete
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+- node_id: sf:surgicalsupply.customer.dim_site_of_care
+  descriptor:
+    qualified_name: surgicalsupply.customer.dim_site_of_care
+    display_name: Site of care
+    description: Where a procedure or capital placement happens.
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: CUSTOMER
+      object: DIM_SITE_OF_CARE
+      format: table
+  grain:
+    description: One row is one site of care.
+    components:
+    - identity_id: site_of_care_identity
+      dataset_columns:
+      - site_of_care_id
+  columns:
+  - name: site_of_care_id
+    description: Identifier of the site of care. This dataset holds the complete population.
+  - name: site_name
+    description: Name of the site of care.
+  - name: site_code
+    description: Site-of-care code.
+    value_description: inpatient, hospital, ambulatory_surgery_center
+  entity_definitions:
+  - identity_id: site_of_care_identity
+    dataset_columns:
+    - site_of_care_id
+    entity_universe: complete
+- node_id: sf:surgicalsupply.customer.dim_hospital
+  descriptor:
+    qualified_name: surgicalsupply.customer.dim_hospital
+    display_name: Hospital
+    description: A hospital customer that buys Surgical Supply Inc capital equipment and uses Surgical Supply Inc implants and
+      disposables.
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: CUSTOMER
+      object: DIM_HOSPITAL
+      format: table
+  grain:
+    description: One row is one hospital.
+    components:
+    - identity_id: hospital_identity
+      dataset_columns:
+      - hospital_id
+  columns:
+  - name: hospital_id
+    description: Identifier of the hospital. This dataset holds the complete population.
+  - name: region_id
+    description: Geographic region of the hospital. The complete population is not re-authored on this
+      dataset.
+  - name: country_id
+    description: Country of the hospital. The complete population is not re-authored on this dataset.
+  - name: health_system_id
+    description: Health system, when the hospital is a member. The complete population is not re-authored
+      on this dataset.
+  - name: hospital_name
+    description: Name of the hospital customer.
+  entity_definitions:
+  - identity_id: hospital_identity
+    dataset_columns:
+    - hospital_id
+    entity_universe: complete
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: health_system_identity
+    dataset_columns:
+    - health_system_id
+    entity_universe: partial
+- node_id: sf:surgicalsupply.customer.dim_hospital_site
+  descriptor:
+    qualified_name: surgicalsupply.customer.dim_hospital_site
+    display_name: Hospital site
+    description: A campus of a hospital. Every hospital has at least one site.
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: CUSTOMER
+      object: DIM_HOSPITAL_SITE
+      format: table
+  grain:
+    description: One row is one hospital site.
+    components:
+    - identity_id: hospital_site_identity
+      dataset_columns:
+      - hospital_site_id
+  columns:
+  - name: hospital_site_id
+    description: Identifier of the hospital site. This dataset holds the complete population.
+  - name: hospital_id
+    description: Hospital that owns the site. The complete population is not re-authored on this dataset.
+  - name: region_id
+    description: Geographic region of the site. The complete population is not re-authored on this dataset.
+  - name: site_of_care_id
+    description: Predominant site of care at this campus. The complete population is not re-authored on
+      this dataset.
+  - name: site_name
+    description: Name of the hospital site.
+  entity_definitions:
+  - identity_id: hospital_site_identity
+    dataset_columns:
+    - hospital_site_id
+    entity_universe: complete
+  - identity_id: hospital_identity
+    dataset_columns:
+    - hospital_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+  - identity_id: site_of_care_identity
+    dataset_columns:
+    - site_of_care_id
+    entity_universe: partial

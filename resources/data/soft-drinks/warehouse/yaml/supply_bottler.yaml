@@ -1,0 +1,716 @@
+schema_version: '3'
+nodes:
+- node_id: sf:beverage.supply.dim_bottler
+  descriptor:
+    qualified_name: beverage.supply.dim_bottler
+    display_name: Bottler
+    description: Bottler in the Beverage Inc system, including the India partner.
+    synonyms: []
+    tags:
+    - dimension
+    - supply_bottler
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: SUPPLY
+      object: DIM_BOTTLER
+      format: table
+  grain:
+    description: One row is one bottler.
+    components:
+    - identity_id: bottler_identity
+      dataset_columns:
+      - bottler_id
+      description: Identifier of the bottler.
+  columns:
+  - name: bottler_id
+    description: Identifier of the bottler.
+  - name: bottler_name
+    description: Name of the bottler.
+  - name: bottler_code
+    description: Code of the bottler.
+    value_description: owned, refranchised, india_partner, north_america_system
+  - name: country_id
+    description: Identifier of the country.
+  entity_definitions:
+  - identity_id: bottler_identity
+    dataset_columns:
+    - bottler_id
+    entity_universe: complete
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+- node_id: sf:beverage.supply.dim_plant
+  descriptor:
+    qualified_name: beverage.supply.dim_plant
+    display_name: Plant
+    description: Plant that holds Beverage Inc capacity, including dairy capacity for fairlife.
+    synonyms: []
+    tags:
+    - dimension
+    - supply_bottler
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: SUPPLY
+      object: DIM_PLANT
+      format: table
+  grain:
+    description: One row is one plant.
+    components:
+    - identity_id: plant_identity
+      dataset_columns:
+      - plant_id
+      description: Identifier of the plant.
+  columns:
+  - name: plant_id
+    description: Identifier of the plant.
+  - name: plant_name
+    description: Name of the plant.
+  - name: plant_code
+    description: Code of the plant.
+    value_description: dairy, concentrate, snack, beverage
+  - name: country_id
+    description: Identifier of the country.
+  - name: bottler_id
+    description: Identifier of the bottler.
+  entity_definitions:
+  - identity_id: plant_identity
+    dataset_columns:
+    - plant_id
+    entity_universe: complete
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: bottler_identity
+    dataset_columns:
+    - bottler_id
+    entity_universe: partial
+- node_id: sf:beverage.supply.dim_commodity
+  descriptor:
+    qualified_name: beverage.supply.dim_commodity
+    display_name: Commodity
+    description: 'Purchased commodity: coffee, tea, aluminum, plastic, or the conflict cost basket.'
+    synonyms: []
+    tags:
+    - dimension
+    - supply_bottler
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: SUPPLY
+      object: DIM_COMMODITY
+      format: table
+  grain:
+    description: One row is one commodity.
+    components:
+    - identity_id: commodity_identity
+      dataset_columns:
+      - commodity_id
+      description: Identifier of the commodity.
+  columns:
+  - name: commodity_id
+    description: Identifier of the commodity.
+  - name: commodity_name
+    description: Name of the commodity.
+  - name: commodity_code
+    description: Code of the commodity.
+    value_description: coffee, tea, aluminum, plastic, sweetener, cooking_oil
+  entity_definitions:
+  - identity_id: commodity_identity
+    dataset_columns:
+    - commodity_id
+    entity_universe: complete
+- node_id: sf:beverage.supply.dim_currency
+  descriptor:
+    qualified_name: beverage.supply.dim_currency
+    display_name: Currency
+    description: Currency Beverage Inc hedges or translates.
+    synonyms: []
+    tags:
+    - dimension
+    - supply_bottler
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: SUPPLY
+      object: DIM_CURRENCY
+      format: table
+  grain:
+    description: One row is one currency.
+    components:
+    - identity_id: currency_identity
+      dataset_columns:
+      - currency_id
+      description: Identifier of the currency.
+  columns:
+  - name: currency_id
+    description: Identifier of the currency.
+  - name: currency_name
+    description: Name of the currency.
+  - name: currency_code
+    description: Code of the currency.
+    value_description: usd, peso, euro, basket
+  - name: country_id
+    description: Identifier of the country.
+  entity_definitions:
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: complete
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+- node_id: sf:beverage.supply.fact_plant_capacity
+  descriptor:
+    qualified_name: beverage.supply.fact_plant_capacity
+    display_name: Plant Capacity
+    description: Capacity added at a plant. The row stores capacity, not the brand's unit cases and not
+      a price.
+    synonyms: []
+    tags:
+    - capacity
+    - supply_bottler
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: SUPPLY
+      object: FACT_PLANT_CAPACITY
+      format: table
+  grain:
+    description: One row is one plant capacity.
+    components:
+    - identity_id: plant_capacity_identity
+      dataset_columns:
+      - plant_capacity_id
+      description: Identifier of the plant capacity.
+  columns:
+  - name: plant_capacity_id
+    description: Identifier of the plant capacity.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: plant_id
+    description: Identifier of the plant.
+  - name: brand_id
+    description: Identifier of the brand.
+  - name: country_id
+    description: Identifier of the country.
+  - name: capacity_quantity
+    description: Capacity available.
+  - name: unlocked_flag
+    description: Whether the addition is available to sell.
+  - name: replicable_abroad_flag
+    description: Whether the plant model can be replicated outside North America.
+  entity_definitions:
+  - identity_id: plant_capacity_identity
+    dataset_columns:
+    - plant_capacity_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: plant_identity
+    dataset_columns:
+    - plant_id
+    entity_universe: partial
+  - identity_id: brand_identity
+    dataset_columns:
+    - brand_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+- node_id: sf:beverage.supply.fact_bottler_capacity
+  descriptor:
+    qualified_name: beverage.supply.fact_bottler_capacity
+    display_name: Bottler Capacity
+    description: Bottler capacity and the ability to execute a second trademark.
+    synonyms: []
+    tags:
+    - capacity
+    - supply_bottler
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: SUPPLY
+      object: FACT_BOTTLER_CAPACITY
+      format: table
+  grain:
+    description: One row is one bottler capacity.
+    components:
+    - identity_id: bottler_capacity_identity
+      dataset_columns:
+      - bottler_capacity_id
+      description: Identifier of the bottler capacity.
+  columns:
+  - name: bottler_capacity_id
+    description: Identifier of the bottler capacity.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: bottler_id
+    description: Identifier of the bottler.
+  - name: country_id
+    description: Identifier of the country.
+  - name: brand_id
+    description: Identifier of the brand.
+  - name: execution_slot_count
+    description: Execution slots the bottler can give a trademark.
+  - name: higher_cost_ready_flag
+    description: Whether the system is set for a higher-cost year.
+  entity_definitions:
+  - identity_id: bottler_capacity_identity
+    dataset_columns:
+    - bottler_capacity_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: bottler_identity
+    dataset_columns:
+    - bottler_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: brand_identity
+    dataset_columns:
+    - brand_id
+    entity_universe: partial
+- node_id: sf:beverage.supply.fact_commodity_cover
+  descriptor:
+    qualified_name: beverage.supply.fact_commodity_cover
+    display_name: Commodity Cover
+    description: How much of the cost basket is locked. The price of the commodity sits on the price slice.
+    synonyms: []
+    tags:
+    - capacity
+    - supply_bottler
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: SUPPLY
+      object: FACT_COMMODITY_COVER
+      format: table
+  grain:
+    description: One row is one commodity cover.
+    components:
+    - identity_id: commodity_cover_identity
+      dataset_columns:
+      - commodity_cover_id
+      description: Identifier of the commodity cover.
+  columns:
+  - name: commodity_cover_id
+    description: Identifier of the commodity cover.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: commodity_id
+    description: Identifier of the commodity.
+  - name: currency_id
+    description: Identifier of the currency.
+  - name: coverage_months
+    description: Months of cover already locked.
+  - name: locked_share
+    description: Share of the basket under hedge or contract.
+  entity_definitions:
+  - identity_id: commodity_cover_identity
+    dataset_columns:
+    - commodity_cover_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: commodity_identity
+    dataset_columns:
+    - commodity_id
+    entity_universe: partial
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: partial
+- node_id: sf:beverage.supply.fact_service_level
+  descriptor:
+    qualified_name: beverage.supply.fact_service_level
+    display_name: Service Level
+    description: Service level. Fill rate is capacity to serve, not a price and not sell-out volume.
+    synonyms: []
+    tags:
+    - capacity
+    - supply_bottler
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: SUPPLY
+      object: FACT_SERVICE_LEVEL
+      format: table
+  grain:
+    description: One row is one service level.
+    components:
+    - identity_id: service_level_identity
+      dataset_columns:
+      - service_level_id
+      description: Identifier of the service level.
+  columns:
+  - name: service_level_id
+    description: Identifier of the service level.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: country_id
+    description: Identifier of the country.
+  - name: brand_id
+    description: Identifier of the brand.
+  - name: customer_id
+    description: Identifier of the customer.
+  - name: fill_rate
+    description: Case fill rate.
+  - name: recovered_flag
+    description: Whether service has recovered.
+  entity_definitions:
+  - identity_id: service_level_identity
+    dataset_columns:
+    - service_level_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: brand_identity
+    dataset_columns:
+    - brand_id
+    entity_universe: partial
+  - identity_id: customer_identity
+    dataset_columns:
+    - customer_id
+    entity_universe: partial
+- node_id: sf:beverage.supply.fact_packaging_mix
+  descriptor:
+    qualified_name: beverage.supply.fact_packaging_mix
+    display_name: Packaging Mix
+    description: Share of volume in cans versus plastic. Can cost sits on the price slice.
+    synonyms: []
+    tags:
+    - quantity
+    - supply_bottler
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: SUPPLY
+      object: FACT_PACKAGING_MIX
+      format: table
+  grain:
+    description: One row is one packaging mix.
+    components:
+    - identity_id: packaging_mix_identity
+      dataset_columns:
+      - packaging_mix_id
+      description: Identifier of the packaging mix.
+  columns:
+  - name: packaging_mix_id
+    description: Identifier of the packaging mix.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: commodity_id
+    description: Identifier of the commodity.
+  - name: brand_id
+    description: Identifier of the brand.
+  - name: country_id
+    description: Identifier of the country.
+  - name: can_share
+    description: Share of volume in aluminum cans.
+  - name: plastic_share
+    description: Share of volume in plastic.
+  - name: shift_required_share
+    description: Mix shift required to offset the can-cost increase.
+  entity_definitions:
+  - identity_id: packaging_mix_identity
+    dataset_columns:
+    - packaging_mix_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: commodity_identity
+    dataset_columns:
+    - commodity_id
+    entity_universe: partial
+  - identity_id: brand_identity
+    dataset_columns:
+    - brand_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+- node_id: sf:beverage.supply.fact_trade_lane
+  descriptor:
+    qualified_name: beverage.supply.fact_trade_lane
+    display_name: Trade Lane
+    description: Import and export exposure of a mostly local supply chain.
+    synonyms: []
+    tags:
+    - status
+    - supply_bottler
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: SUPPLY
+      object: FACT_TRADE_LANE
+      format: table
+  grain:
+    description: One row is one trade lane.
+    components:
+    - identity_id: trade_lane_identity
+      dataset_columns:
+      - trade_lane_id
+      description: Identifier of the trade lane.
+  columns:
+  - name: trade_lane_id
+    description: Identifier of the trade lane.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: country_id
+    description: Identifier of the country.
+  - name: commodity_id
+    description: Identifier of the commodity.
+  - name: plant_id
+    description: Identifier of the plant.
+  - name: import_exposed_flag
+    description: Whether the lane is an import.
+  - name: export_exposed_flag
+    description: Whether the lane is an export.
+  - name: local_flag
+    description: Whether supply is local.
+  entity_definitions:
+  - identity_id: trade_lane_identity
+    dataset_columns:
+    - trade_lane_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: commodity_identity
+    dataset_columns:
+    - commodity_id
+    entity_universe: partial
+  - identity_id: plant_identity
+    dataset_columns:
+    - plant_id
+    entity_universe: partial
+- node_id: sf:beverage.supply.fact_sku_supply
+  descriptor:
+    qualified_name: beverage.supply.fact_sku_supply
+    display_name: SKU Supply
+    description: Whether a more complex supply chain is required for smaller innovation runs.
+    synonyms: []
+    tags:
+    - capacity
+    - supply_bottler
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: SUPPLY
+      object: FACT_SKU_SUPPLY
+      format: table
+  grain:
+    description: One row is one sku supply.
+    components:
+    - identity_id: sku_supply_identity
+      dataset_columns:
+      - sku_supply_id
+      description: Identifier of the sku supply.
+  columns:
+  - name: sku_supply_id
+    description: Identifier of the sku supply.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: plant_id
+    description: Identifier of the plant.
+  - name: brand_id
+    description: Identifier of the brand.
+  - name: small_run_slot_count
+    description: Slots available for small innovation runs.
+  - name: complexity_flag
+    description: Whether the supply chain has to get more complex.
+  entity_definitions:
+  - identity_id: sku_supply_identity
+    dataset_columns:
+    - sku_supply_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: plant_identity
+    dataset_columns:
+    - plant_id
+    entity_universe: partial
+  - identity_id: brand_identity
+    dataset_columns:
+    - brand_id
+    entity_universe: partial
+- node_id: sf:beverage.supply.fact_bottler_partner
+  descriptor:
+    qualified_name: beverage.supply.fact_bottler_partner
+    display_name: Bottler Partner
+    description: What the local partner brings in a refranchised bottling business.
+    synonyms: []
+    tags:
+    - status
+    - supply_bottler
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: SUPPLY
+      object: FACT_BOTTLER_PARTNER
+      format: table
+  grain:
+    description: One row is one bottler partner.
+    components:
+    - identity_id: bottler_partner_identity
+      dataset_columns:
+      - bottler_partner_id
+      description: Identifier of the bottler partner.
+  columns:
+  - name: bottler_partner_id
+    description: Identifier of the bottler partner.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: bottler_id
+    description: Identifier of the bottler.
+  - name: country_id
+    description: Identifier of the country.
+  - name: ownership_share
+    description: Share the partner holds.
+  - name: accelerates_flag
+    description: Whether the partner is expected to accelerate the market.
+  entity_definitions:
+  - identity_id: bottler_partner_identity
+    dataset_columns:
+    - bottler_partner_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: bottler_identity
+    dataset_columns:
+    - bottler_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+- node_id: sf:beverage.supply.fact_bottler_review
+  descriptor:
+    qualified_name: beverage.supply.fact_bottler_review
+    display_name: Bottler Review
+    description: Whether the strategic review covers share recovery as well as the bottler network.
+    synonyms: []
+    tags:
+    - status
+    - supply_bottler
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: SUPPLY
+      object: FACT_BOTTLER_REVIEW
+      format: table
+  grain:
+    description: One row is one bottler review.
+    components:
+    - identity_id: bottler_review_identity
+      dataset_columns:
+      - bottler_review_id
+      description: Identifier of the bottler review.
+  columns:
+  - name: bottler_review_id
+    description: Identifier of the bottler review.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: bottler_id
+    description: Identifier of the bottler.
+  - name: region_id
+    description: Identifier of the region.
+  - name: brand_id
+    description: Identifier of the brand.
+  - name: covers_share_flag
+    description: Whether the review covers share recovery.
+  - name: covers_network_flag
+    description: Whether the review covers the bottler network.
+  entity_definitions:
+  - identity_id: bottler_review_identity
+    dataset_columns:
+    - bottler_review_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: bottler_identity
+    dataset_columns:
+    - bottler_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+  - identity_id: brand_identity
+    dataset_columns:
+    - brand_id
+    entity_universe: partial

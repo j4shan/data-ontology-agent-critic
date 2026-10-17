@@ -1,0 +1,405 @@
+schema_version: '3'
+nodes:
+- node_id: sf:burger.finance.dim_currency
+  descriptor:
+    qualified_name: burger.finance.dim_currency
+    display_name: Currency
+    description: Currency catalog for local books, daily exchange rates, and segment translation into
+      the reporting currency.
+    tags:
+    - ledger
+    - finance
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: burger.us-east-1
+      database: BURGER
+      schema: FINANCE
+      object: DIM_CURRENCY
+      format: table
+  grain:
+    description: One row is one currency.
+    components:
+    - identity_id: currency_identity
+      dataset_columns:
+      - currency_id
+  columns:
+  - name: currency_id
+    description: Surrogate key of the currency.
+  - name: currency_code
+    description: ISO currency code.
+  - name: currency_name
+    description: Business name of the currency.
+  entity_definitions:
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: complete
+- node_id: sf:burger.finance.dim_legal_entity
+  descriptor:
+    qualified_name: burger.finance.dim_legal_entity
+    display_name: Legal entity
+    description: Burger Inc legal entity that owns a book of record. Country and segment locate the entity
+      in the organization hierarchy owned outside this slice.
+    tags:
+    - ledger
+    - finance
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: burger.us-east-1
+      database: BURGER
+      schema: FINANCE
+      object: DIM_LEGAL_ENTITY
+      format: table
+  grain:
+    description: One row is one Burger Inc legal entity.
+    components:
+    - identity_id: legal_entity_identity
+      dataset_columns:
+      - legal_entity_id
+  columns:
+  - name: legal_entity_id
+    description: Surrogate key of the legal entity.
+  - name: legal_entity_name
+    description: Legal name of the entity.
+  - name: country_id
+    description: Country of the legal entity. Partial reference to the organization country dimension.
+  - name: segment_id
+    description: Operating segment of the legal entity. Partial reference to the organization segment
+      dimension.
+  - name: segment_code
+    description: Finance segment code for the row, used to separate the U.S., international operated markets,
+      and developmental license markets.
+    value_description: us, international_operated, or developmental_license
+    synonyms:
+    - operating segment
+  - name: currency_id
+    description: Local book currency of the legal entity.
+  entity_definitions:
+  - identity_id: legal_entity_identity
+    dataset_columns:
+    - legal_entity_id
+    entity_universe: complete
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: partial
+  - identity_id: segment_identity
+    dataset_columns:
+    - segment_id
+    entity_universe: partial
+- node_id: sf:burger.finance.dim_gl_account
+  descriptor:
+    qualified_name: burger.finance.dim_gl_account
+    display_name: GL account
+    description: Chart of accounts for the ledger, including the statement lines used for sales, restaurant
+      costs, franchise royalty income, rent income, G&A, and company-operated margin.
+    tags:
+    - ledger
+    - finance
+    synonyms:
+    - chart of accounts
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: burger.us-east-1
+      database: BURGER
+      schema: FINANCE
+      object: DIM_GL_ACCOUNT
+      format: table
+  grain:
+    description: One row is one general-ledger account.
+    components:
+    - identity_id: gl_account_identity
+      dataset_columns:
+      - gl_account_id
+  columns:
+  - name: gl_account_id
+    description: Surrogate key of the general-ledger account.
+  - name: account_code
+    description: Account number in the chart of accounts.
+  - name: account_name
+    description: Account name.
+  - name: statement_line
+    description: Finance statement line this account rolls into.
+    value_description: sales, food_cost, paper_cost, labor_cost, occupancy, franchise_royalty_income,
+      rent_income, general_admin, or company_operated_margin
+    synonyms:
+    - statement caption
+  entity_definitions:
+  - identity_id: gl_account_identity
+    dataset_columns:
+    - gl_account_id
+    entity_universe: complete
+- node_id: sf:burger.finance.dim_cost_element
+  descriptor:
+    qualified_name: burger.finance.dim_cost_element
+    display_name: Cost element
+    description: Cost classification shared by journal lines, G&A, and company-operated restaurant cost
+      detail so food, paper, labor, occupancy, and G&A stay separable.
+    tags:
+    - ledger
+    - finance
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: burger.us-east-1
+      database: BURGER
+      schema: FINANCE
+      object: DIM_COST_ELEMENT
+      format: table
+  grain:
+    description: One row is one cost element.
+    components:
+    - identity_id: cost_element_identity
+      dataset_columns:
+      - cost_element_id
+  columns:
+  - name: cost_element_id
+    description: Surrogate key of the cost element.
+  - name: cost_element_code
+    description: Cost element code.
+  - name: cost_element_name
+    description: Cost element name.
+  - name: cost_element_group
+    description: Cost family used to separate operations cost, commodity cost, and G&A.
+    value_description: food, paper, labor, occupancy, general_admin, or commodity
+  entity_definitions:
+  - identity_id: cost_element_identity
+    dataset_columns:
+    - cost_element_id
+    entity_universe: complete
+- node_id: sf:burger.finance.fact_journal_line
+  descriptor:
+    qualified_name: burger.finance.fact_journal_line
+    display_name: Journal line
+    description: Posted general-ledger line. Restaurant is optional because corporate ledger lines are
+      not all restaurant-level. Royalty and rent charges may reference a line when the subledger has been
+      posted.
+    tags:
+    - ledger
+    - finance
+    synonyms:
+    - general ledger line
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: burger.us-east-1
+      database: BURGER
+      schema: FINANCE
+      object: FACT_JOURNAL_LINE
+      format: table
+  grain:
+    description: One row is one posted journal line.
+    components:
+    - identity_id: journal_line_identity
+      dataset_columns:
+      - journal_line_id
+  columns:
+  - name: journal_line_id
+    description: Surrogate key of the posted journal line.
+  - name: legal_entity_id
+    description: Legal entity whose book contains the line.
+  - name: gl_account_id
+    description: General-ledger account posted.
+  - name: cost_element_id
+    description: Cost element posted on the line.
+  - name: accounting_period_id
+    description: Accounting period of the posting.
+  - name: currency_id
+    description: Currency of the signed amount.
+  - name: calendar_day_id
+    description: Posting calendar day.
+  - name: restaurant_id
+    description: Restaurant charged on the line when the posting is restaurant-level. Empty for corporate
+      lines. Partial reference to the restaurant master.
+  - name: signed_amount
+    description: Signed ledger amount in the line currency.
+    synonyms:
+    - journal amount
+  entity_definitions:
+  - identity_id: journal_line_identity
+    dataset_columns:
+    - journal_line_id
+    entity_universe: complete
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    entity_universe: partial
+  - identity_id: cost_element_identity
+    dataset_columns:
+    - cost_element_id
+    entity_universe: partial
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: partial
+  - identity_id: gl_account_identity
+    dataset_columns:
+    - gl_account_id
+    entity_universe: partial
+  - identity_id: legal_entity_identity
+    dataset_columns:
+    - legal_entity_id
+    entity_universe: partial
+  - identity_id: restaurant_identity
+    dataset_columns:
+    - restaurant_id
+    entity_universe: partial
+- node_id: sf:burger.finance.fact_ga_expense
+  descriptor:
+    qualified_name: burger.finance.fact_ga_expense
+    display_name: G&A expense
+    description: General and administrative expense by legal entity, account, cost element, segment, period,
+      and currency. This is corporate G&A, not company-operated restaurant margin.
+    tags:
+    - ledger
+    - finance
+    synonyms:
+    - general and administrative expense
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: burger.us-east-1
+      database: BURGER
+      schema: FINANCE
+      object: FACT_GA_EXPENSE
+      format: table
+  grain:
+    description: One row is the G&A amount for one legal entity, account, cost element, segment, accounting
+      period, and currency.
+    components:
+    - identity_id: accounting_period_identity
+      dataset_columns:
+      - accounting_period_id
+    - identity_id: cost_element_identity
+      dataset_columns:
+      - cost_element_id
+    - identity_id: currency_identity
+      dataset_columns:
+      - currency_id
+    - identity_id: gl_account_identity
+      dataset_columns:
+      - gl_account_id
+    - identity_id: legal_entity_identity
+      dataset_columns:
+      - legal_entity_id
+    - identity_id: segment_identity
+      dataset_columns:
+      - segment_id
+  columns:
+  - name: legal_entity_id
+    description: Legal entity that incurred the G&A.
+  - name: gl_account_id
+    description: G&A general-ledger account.
+  - name: cost_element_id
+    description: G&A cost element.
+  - name: accounting_period_id
+    description: Accounting period of the G&A amount.
+  - name: currency_id
+    description: Currency of the G&A amount.
+  - name: segment_id
+    description: Operating segment charged with the G&A. Partial reference to the organization segment
+      dimension.
+  - name: segment_code
+    description: Finance segment code for the row, used to separate the U.S., international operated markets,
+      and developmental license markets.
+    value_description: us, international_operated, or developmental_license
+    synonyms:
+    - operating segment
+  - name: ga_amount
+    description: General and administrative expense for the legal entity, account, cost element, segment,
+      and period.
+    synonyms:
+    - G&A
+    - general and administrative expense
+  entity_definitions:
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: cost_element_identity
+    dataset_columns:
+    - cost_element_id
+    entity_universe: partial
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: partial
+  - identity_id: gl_account_identity
+    dataset_columns:
+    - gl_account_id
+    entity_universe: partial
+  - identity_id: legal_entity_identity
+    dataset_columns:
+    - legal_entity_id
+    entity_universe: partial
+  - identity_id: segment_identity
+    dataset_columns:
+    - segment_id
+    entity_universe: partial
+- node_id: sf:burger.finance.fact_exchange_rate
+  descriptor:
+    qualified_name: burger.finance.fact_exchange_rate
+    display_name: Exchange rate
+    description: Daily rate used to translate a local currency into another currency, including the reporting
+      currency used in segment consolidation.
+    tags:
+    - ledger
+    - finance
+    synonyms:
+    - fx rate
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: burger.us-east-1
+      database: BURGER
+      schema: FINANCE
+      object: FACT_EXCHANGE_RATE
+      format: table
+  grain:
+    description: One row is the exchange rate from one currency into another on one calendar day.
+    components:
+    - identity_id: calendar_day_identity
+      dataset_columns:
+      - calendar_day_id
+    - identity_id: currency_identity
+      dataset_columns:
+      - from_currency_id
+    - identity_id: currency_identity
+      dataset_columns:
+      - to_currency_id
+  columns:
+  - name: from_currency_id
+    description: Currency being translated.
+  - name: to_currency_id
+    description: Currency the rate translates into.
+  - name: calendar_day_id
+    description: Calendar day the rate applies to.
+  - name: rate_amount
+    description: Units of the to-currency per one unit of the from-currency on the calendar day.
+    synonyms:
+    - exchange rate
+    - fx rate
+  entity_definitions:
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    entity_universe: partial
+  - identity_id: currency_identity
+    dataset_columns:
+    - from_currency_id
+    entity_universe: partial
+  - identity_id: currency_identity
+    dataset_columns:
+    - to_currency_id
+    entity_universe: partial

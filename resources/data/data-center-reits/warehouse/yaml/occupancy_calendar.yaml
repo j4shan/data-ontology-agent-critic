@@ -1,0 +1,118 @@
+schema_version: '3'
+nodes:
+- node_id: sf:colocation.calendar.dim_fiscal_year
+  descriptor:
+    qualified_name: colocation.calendar.dim_fiscal_year
+    display_name: Fiscal Year
+    description: A fiscal year used for Colocation Inc guidance, development spend, and multi-year revenue bridges.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: colocation.us-west-1
+      database: COLOCATION
+      schema: CALENDAR
+      object: DIM_FISCAL_YEAR
+      format: table
+  grain:
+    description: One row is one fiscal year.
+    components:
+    - identity_id: fiscal_year_identity
+      dataset_columns:
+      - fiscal_year_id
+      description: Identifier of the fiscal year.
+  columns:
+  - name: fiscal_year_id
+    description: Identifier of the fiscal year. This dataset holds the complete population.
+  - name: year_number
+    description: Calendar year number of the fiscal year.
+  entity_definitions:
+  - identity_id: fiscal_year_identity
+    dataset_columns:
+    - fiscal_year_id
+    entity_universe: complete
+- node_id: sf:colocation.calendar.dim_fiscal_quarter
+  descriptor:
+    qualified_name: colocation.calendar.dim_fiscal_quarter
+    display_name: Fiscal Quarter
+    description: A fiscal quarter, the grain of bookings, churn, revenue, and interconnection results.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: colocation.us-west-1
+      database: COLOCATION
+      schema: CALENDAR
+      object: DIM_FISCAL_QUARTER
+      format: table
+  grain:
+    description: One row is one fiscal quarter.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter. This dataset holds the complete population.
+  - name: fiscal_year_id
+    description: Fiscal year that contains the quarter. The population is owned by its complete dataset.
+  - name: quarter_label
+    description: Label of the quarter, such as the year and quarter number.
+  - name: quarter_number
+    description: Quarter number within the fiscal year.
+  - name: season_code
+    description: Season used to test whether a bookings dip is seasonal.
+    value_description: q1, q2, q3, or q4.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: complete
+  - identity_id: fiscal_year_identity
+    dataset_columns:
+    - fiscal_year_id
+    entity_universe: partial
+- node_id: sf:colocation.calendar.dim_calendar_day
+  descriptor:
+    qualified_name: colocation.calendar.dim_calendar_day
+    display_name: Calendar Day
+    description: A calendar day inside a fiscal quarter.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: colocation.us-west-1
+      database: COLOCATION
+      schema: CALENDAR
+      object: DIM_CALENDAR_DAY
+      format: table
+  grain:
+    description: One row is one calendar day.
+    components:
+    - identity_id: calendar_day_identity
+      dataset_columns:
+      - calendar_day_id
+      description: Identifier of the calendar day.
+  columns:
+  - name: calendar_day_id
+    description: Identifier of the calendar day. This dataset holds the complete population.
+  - name: fiscal_quarter_id
+    description: Fiscal quarter that contains the day. The population is owned by its complete dataset.
+  - name: day_date
+    description: Calendar date.
+  entity_definitions:
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial

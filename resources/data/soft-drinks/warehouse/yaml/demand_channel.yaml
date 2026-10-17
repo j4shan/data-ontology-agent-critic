@@ -1,0 +1,3227 @@
+schema_version: '3'
+nodes:
+- node_id: sf:beverage.time.dim_fiscal_quarter
+  descriptor:
+    qualified_name: beverage.time.dim_fiscal_quarter
+    display_name: Fiscal Quarter
+    description: Beverage Inc fiscal quarter used on the earnings calendar.
+    synonyms: []
+    tags:
+    - dimension
+    - demand_channel
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: TIME
+      object: DIM_FISCAL_QUARTER
+      format: table
+  grain:
+    description: One row is one fiscal quarter.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: fiscal_quarter_name
+    description: Name of the fiscal quarter.
+  - name: fiscal_quarter_code
+    description: Code of the fiscal quarter.
+    value_description: 2024Q4, 2025Q2, 2025Q3, 2025Q4, 2026Q1, 2026Q2
+  - name: guidance_horizon
+    description: Reported quarter or a later plan year.
+    value_description: reported, guided_next, year_2026, year_2027
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: complete
+- node_id: sf:beverage.time.dim_calendar_day
+  descriptor:
+    qualified_name: beverage.time.dim_calendar_day
+    display_name: Calendar Day
+    description: Calendar day for Beverage Inc demand, supply, and price.
+    synonyms: []
+    tags:
+    - dimension
+    - demand_channel
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: TIME
+      object: DIM_CALENDAR_DAY
+      format: table
+  grain:
+    description: One row is one calendar day.
+    components:
+    - identity_id: calendar_day_identity
+      dataset_columns:
+      - calendar_day_id
+      description: Identifier of the calendar day.
+  columns:
+  - name: calendar_day_id
+    description: Identifier of the calendar day.
+  - name: calendar_day_name
+    description: Name of the calendar day.
+  - name: calendar_day_code
+    description: Code of the calendar day.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: calendar_date
+    description: Civil date.
+  - name: month_code
+    description: Month used for June, July, and September reads.
+    value_description: june, july, september
+  entity_definitions:
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+- node_id: sf:beverage.geography.dim_region
+  descriptor:
+    qualified_name: beverage.geography.dim_region
+    display_name: Region
+    description: Selling region for Beverage Inc.
+    synonyms: []
+    tags:
+    - dimension
+    - demand_channel
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: GEOGRAPHY
+      object: DIM_REGION
+      format: table
+  grain:
+    description: One row is one region.
+    components:
+    - identity_id: region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+  columns:
+  - name: region_id
+    description: Identifier of the region.
+  - name: region_name
+    description: Name of the region.
+  - name: region_code
+    description: Code of the region.
+    value_description: north_america, asia_pacific, emea, latin_america, europe
+  entity_definitions:
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: complete
+- node_id: sf:beverage.geography.dim_country
+  descriptor:
+    qualified_name: beverage.geography.dim_country
+    display_name: Country
+    description: Selling country, including China, India, Mexico, the United States, and the Asia Pacific
+      countries named on the calls.
+    synonyms: []
+    tags:
+    - dimension
+    - demand_channel
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: GEOGRAPHY
+      object: DIM_COUNTRY
+      format: table
+  grain:
+    description: One row is one country.
+    components:
+    - identity_id: country_identity
+      dataset_columns:
+      - country_id
+      description: Identifier of the country.
+  columns:
+  - name: country_id
+    description: Identifier of the country.
+  - name: country_name
+    description: Name of the country.
+  - name: country_code
+    description: Code of the country.
+    value_description: china, india, mexico, united_states, south_korea, japan, indonesia, bangladesh
+  - name: region_id
+    description: Identifier of the region.
+  entity_definitions:
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: complete
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:beverage.channel.dim_channel
+  descriptor:
+    qualified_name: beverage.channel.dim_channel
+    display_name: Channel
+    description: Route to the Beverage Inc drinker or shopper.
+    synonyms: []
+    tags:
+    - dimension
+    - demand_channel
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: CHANNEL
+      object: DIM_CHANNEL
+      format: table
+  grain:
+    description: One row is one channel.
+    components:
+    - identity_id: channel_identity
+      dataset_columns:
+      - channel_id
+      description: Identifier of the channel.
+  columns:
+  - name: channel_id
+    description: Identifier of the channel.
+  - name: channel_name
+    description: Name of the channel.
+  - name: channel_code
+    description: Code of the channel.
+    value_description: retail, foodservice, away_from_home, convenience, fountain, drive_thru
+  entity_definitions:
+  - identity_id: channel_identity
+    dataset_columns:
+    - channel_id
+    entity_universe: complete
+- node_id: sf:beverage.customer.dim_customer
+  descriptor:
+    qualified_name: beverage.customer.dim_customer
+    display_name: Customer
+    description: Retail or foodservice customer, including the largest U.S. customer and Walmart.
+    synonyms: []
+    tags:
+    - dimension
+    - demand_channel
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: CUSTOMER
+      object: DIM_CUSTOMER
+      format: table
+  grain:
+    description: One row is one customer.
+    components:
+    - identity_id: customer_identity
+      dataset_columns:
+      - customer_id
+      description: Identifier of the customer.
+  columns:
+  - name: customer_id
+    description: Identifier of the customer.
+  - name: customer_name
+    description: Name of the customer.
+  - name: customer_code
+    description: Code of the customer.
+    value_description: walmart, largest_us_customer, convenience_chain, foodservice_operator
+  - name: channel_id
+    description: Identifier of the channel.
+  entity_definitions:
+  - identity_id: customer_identity
+    dataset_columns:
+    - customer_id
+    entity_universe: complete
+  - identity_id: channel_identity
+    dataset_columns:
+    - channel_id
+    entity_universe: partial
+- node_id: sf:beverage.product.dim_category
+  descriptor:
+    qualified_name: beverage.product.dim_category
+    display_name: Category
+    description: Beverage Inc category across drinks and salty snacks.
+    synonyms: []
+    tags:
+    - dimension
+    - demand_channel
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: PRODUCT
+      object: DIM_CATEGORY
+      format: table
+  grain:
+    description: One row is one category.
+    components:
+    - identity_id: category_identity
+      dataset_columns:
+      - category_id
+      description: Identifier of the category.
+  columns:
+  - name: category_id
+    description: Identifier of the category.
+  - name: category_name
+    description: Name of the category.
+  - name: category_code
+    description: Code of the category.
+    value_description: sparkling, juice, dairy, coffee, tea, salty_snack, energy, protein, prebiotic,
+      modern_soda
+  entity_definitions:
+  - identity_id: category_identity
+    dataset_columns:
+    - category_id
+    entity_universe: complete
+- node_id: sf:beverage.product.dim_brand
+  descriptor:
+    qualified_name: beverage.product.dim_brand
+    display_name: Brand
+    description: Brand Beverage Inc sells. Codes include the trademarks named on the Coca-Cola and PepsiCo
+      calls.
+    synonyms: []
+    tags:
+    - dimension
+    - demand_channel
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: PRODUCT
+      object: DIM_BRAND
+      format: table
+  grain:
+    description: One row is one brand.
+    components:
+    - identity_id: brand_identity
+      dataset_columns:
+      - brand_id
+      description: Identifier of the brand.
+  columns:
+  - name: brand_id
+    description: Identifier of the brand.
+  - name: brand_name
+    description: Name of the brand.
+  - name: brand_code
+    description: Code of the brand.
+    value_description: coca_cola, coke_zero, diet_coke, fairlife, simply_pop, coffee, tea, pepsi, mountain_dew,
+      frito_lay, muscle_milk, propel
+  - name: category_id
+    description: Identifier of the category.
+  entity_definitions:
+  - identity_id: brand_identity
+    dataset_columns:
+    - brand_id
+    entity_universe: complete
+  - identity_id: category_identity
+    dataset_columns:
+    - category_id
+    entity_universe: partial
+- node_id: sf:beverage.product.dim_trademark
+  descriptor:
+    qualified_name: beverage.product.dim_trademark
+    display_name: Trademark
+    description: Trademark inside a no-sugar or core portfolio.
+    synonyms: []
+    tags:
+    - dimension
+    - demand_channel
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: PRODUCT
+      object: DIM_TRADEMARK
+      format: table
+  grain:
+    description: One row is one trademark.
+    components:
+    - identity_id: trademark_identity
+      dataset_columns:
+      - trademark_id
+      description: Identifier of the trademark.
+  columns:
+  - name: trademark_id
+    description: Identifier of the trademark.
+  - name: trademark_name
+    description: Name of the trademark.
+  - name: trademark_code
+    description: Code of the trademark.
+    value_description: coke_zero, diet_coke, core_cola, no_sugar
+  - name: brand_id
+    description: Identifier of the brand.
+  entity_definitions:
+  - identity_id: trademark_identity
+    dataset_columns:
+    - trademark_id
+    entity_universe: complete
+  - identity_id: brand_identity
+    dataset_columns:
+    - brand_id
+    entity_universe: partial
+- node_id: sf:beverage.product.dim_pack
+  descriptor:
+    qualified_name: beverage.product.dim_pack
+    display_name: Pack
+    description: Pack architecture, including smaller bags and entry price packs.
+    synonyms: []
+    tags:
+    - dimension
+    - demand_channel
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: PRODUCT
+      object: DIM_PACK
+      format: table
+  grain:
+    description: One row is one pack.
+    components:
+    - identity_id: pack_identity
+      dataset_columns:
+      - pack_id
+      description: Identifier of the pack.
+  columns:
+  - name: pack_id
+    description: Identifier of the pack.
+  - name: pack_name
+    description: Name of the pack.
+  - name: pack_code
+    description: Code of the pack.
+    value_description: small_bag, entry_price, multi_serve, immediate_consumption
+  - name: brand_id
+    description: Identifier of the brand.
+  entity_definitions:
+  - identity_id: pack_identity
+    dataset_columns:
+    - pack_id
+    entity_universe: complete
+  - identity_id: brand_identity
+    dataset_columns:
+    - brand_id
+    entity_universe: partial
+- node_id: sf:beverage.product.dim_consumer_segment
+  descriptor:
+    qualified_name: beverage.product.dim_consumer_segment
+    display_name: Consumer Segment
+    description: Drinker or shopper segment.
+    synonyms: []
+    tags:
+    - dimension
+    - demand_channel
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: PRODUCT
+      object: DIM_CONSUMER_SEGMENT
+      format: table
+  grain:
+    description: One row is one consumer segment.
+    components:
+    - identity_id: consumer_segment_identity
+      dataset_columns:
+      - consumer_segment_id
+      description: Identifier of the consumer segment.
+  columns:
+  - name: consumer_segment_id
+    description: Identifier of the consumer segment.
+  - name: consumer_segment_name
+    description: Name of the consumer segment.
+  - name: consumer_segment_code
+    description: Code of the consumer segment.
+    value_description: hispanic, low_end, core_user, new_occasion, glp1_user
+  entity_definitions:
+  - identity_id: consumer_segment_identity
+    dataset_columns:
+    - consumer_segment_id
+    entity_universe: complete
+- node_id: sf:beverage.demand.dim_event
+  descriptor:
+    qualified_name: beverage.demand.dim_event
+    display_name: Event
+    description: Demand event such as the World Cup or the Easter lift.
+    synonyms: []
+    tags:
+    - dimension
+    - demand_channel
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: DEMAND
+      object: DIM_EVENT
+      format: table
+  grain:
+    description: One row is one event.
+    components:
+    - identity_id: event_identity
+      dataset_columns:
+      - event_id
+      description: Identifier of the event.
+  columns:
+  - name: event_id
+    description: Identifier of the event.
+  - name: event_name
+    description: Name of the event.
+  - name: event_code
+    description: Code of the event.
+    value_description: world_cup, easter
+  entity_definitions:
+  - identity_id: event_identity
+    dataset_columns:
+    - event_id
+    entity_universe: complete
+- node_id: sf:beverage.demand.fact_unit_case
+  descriptor:
+    qualified_name: beverage.demand.fact_unit_case
+    display_name: Unit Case
+    description: Unit-case quantity. The row does not store a price.
+    synonyms: []
+    tags:
+    - quantity
+    - demand_channel
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: DEMAND
+      object: FACT_UNIT_CASE
+      format: table
+  grain:
+    description: One row is one unit case.
+    components:
+    - identity_id: unit_case_identity
+      dataset_columns:
+      - unit_case_id
+      description: Identifier of the unit case.
+  columns:
+  - name: unit_case_id
+    description: Identifier of the unit case.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: region_id
+    description: Identifier of the region.
+  - name: country_id
+    description: Identifier of the country.
+  - name: brand_id
+    description: Identifier of the brand.
+  - name: channel_id
+    description: Identifier of the channel.
+  - name: unit_case_quantity
+    description: Unit cases.
+  - name: volume_growth_rate
+    description: Unit-case growth.
+  - name: consistent_after_event_flag
+    description: Whether growth holds after a holiday lift.
+  entity_definitions:
+  - identity_id: unit_case_identity
+    dataset_columns:
+    - unit_case_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: brand_identity
+    dataset_columns:
+    - brand_id
+    entity_universe: partial
+  - identity_id: channel_identity
+    dataset_columns:
+    - channel_id
+    entity_universe: partial
+- node_id: sf:beverage.demand.fact_brand_volume
+  descriptor:
+    qualified_name: beverage.demand.fact_brand_volume
+    display_name: Brand Volume
+    description: Volume for one brand or fairlife line. Price is not stored here.
+    synonyms: []
+    tags:
+    - quantity
+    - demand_channel
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: DEMAND
+      object: FACT_BRAND_VOLUME
+      format: table
+  grain:
+    description: One row is one brand volume.
+    components:
+    - identity_id: brand_volume_identity
+      dataset_columns:
+      - brand_volume_id
+      description: Identifier of the brand volume.
+  columns:
+  - name: brand_volume_id
+    description: Identifier of the brand volume.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: brand_id
+    description: Identifier of the brand.
+  - name: country_id
+    description: Identifier of the country.
+  - name: product_line_id
+    description: Identifier of the product line.
+  - name: unit_case_quantity
+    description: Brand unit cases.
+  - name: line_managed_separately_flag
+    description: Whether the line can be managed on its own.
+  entity_definitions:
+  - identity_id: brand_volume_identity
+    dataset_columns:
+    - brand_volume_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: brand_identity
+    dataset_columns:
+    - brand_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: product_line_identity
+    dataset_columns:
+    - product_line_id
+    entity_universe: partial
+- node_id: sf:beverage.product.dim_product_line
+  descriptor:
+    qualified_name: beverage.product.dim_product_line
+    display_name: Product Line
+    description: Line inside a brand, including the fairlife lines.
+    synonyms: []
+    tags:
+    - dimension
+    - demand_channel
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: PRODUCT
+      object: DIM_PRODUCT_LINE
+      format: table
+  grain:
+    description: One row is one product line.
+    components:
+    - identity_id: product_line_identity
+      dataset_columns:
+      - product_line_id
+      description: Identifier of the product line.
+  columns:
+  - name: product_line_id
+    description: Identifier of the product line.
+  - name: product_line_name
+    description: Name of the product line.
+  - name: product_line_code
+    description: Code of the product line.
+    value_description: fairlife_core, fairlife_nutrition, fairlife_other
+  - name: brand_id
+    description: Identifier of the brand.
+  entity_definitions:
+  - identity_id: product_line_identity
+    dataset_columns:
+    - product_line_id
+    entity_universe: complete
+  - identity_id: brand_identity
+    dataset_columns:
+    - brand_id
+    entity_universe: partial
+- node_id: sf:beverage.demand.fact_country_volume
+  descriptor:
+    qualified_name: beverage.demand.fact_country_volume
+    display_name: Country Volume
+    description: Volume in a country. Used for China, India, Mexico, Europe, and the international demand
+      reads.
+    synonyms: []
+    tags:
+    - quantity
+    - demand_channel
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: DEMAND
+      object: FACT_COUNTRY_VOLUME
+      format: table
+  grain:
+    description: One row is one country volume.
+    components:
+    - identity_id: country_volume_identity
+      dataset_columns:
+      - country_volume_id
+      description: Identifier of the country volume.
+  columns:
+  - name: country_volume_id
+    description: Identifier of the country volume.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: country_id
+    description: Identifier of the country.
+  - name: region_id
+    description: Identifier of the region.
+  - name: brand_id
+    description: Identifier of the brand.
+  - name: unit_case_quantity
+    description: Unit cases in the country.
+  - name: rebound_timing_code
+    description: When a rebound is expected.
+    value_description: second_half, next_year, not_expected
+  - name: sustainable_flag
+    description: Whether the growth is expected to hold.
+  entity_definitions:
+  - identity_id: country_volume_identity
+    dataset_columns:
+    - country_volume_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+  - identity_id: brand_identity
+    dataset_columns:
+    - brand_id
+    entity_universe: partial
+- node_id: sf:beverage.demand.fact_channel_volume
+  descriptor:
+    qualified_name: beverage.demand.fact_channel_volume
+    display_name: Channel Volume
+    description: Volume by channel, including foodservice, convenience, and away-from-home.
+    synonyms: []
+    tags:
+    - quantity
+    - demand_channel
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: DEMAND
+      object: FACT_CHANNEL_VOLUME
+      format: table
+  grain:
+    description: One row is one channel volume.
+    components:
+    - identity_id: channel_volume_identity
+      dataset_columns:
+      - channel_volume_id
+      description: Identifier of the channel volume.
+  columns:
+  - name: channel_volume_id
+    description: Identifier of the channel volume.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: channel_id
+    description: Identifier of the channel.
+  - name: country_id
+    description: Identifier of the country.
+  - name: brand_id
+    description: Identifier of the brand.
+  - name: customer_id
+    description: Identifier of the customer.
+  - name: unit_case_quantity
+    description: Unit cases in the channel.
+  - name: newer_format_flag
+    description: Whether the channel is a newer away-from-home format.
+  - name: response_flag
+    description: Whether volume responded in this channel.
+  entity_definitions:
+  - identity_id: channel_volume_identity
+    dataset_columns:
+    - channel_volume_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: channel_identity
+    dataset_columns:
+    - channel_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: brand_identity
+    dataset_columns:
+    - brand_id
+    entity_universe: partial
+  - identity_id: customer_identity
+    dataset_columns:
+    - customer_id
+    entity_universe: partial
+- node_id: sf:beverage.demand.fact_division_volume
+  descriptor:
+    qualified_name: beverage.demand.fact_division_volume
+    display_name: Division Volume
+    description: Volume for the snack or beverage division in North America.
+    synonyms: []
+    tags:
+    - quantity
+    - demand_channel
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: DEMAND
+      object: FACT_DIVISION_VOLUME
+      format: table
+  grain:
+    description: One row is one division volume.
+    components:
+    - identity_id: division_volume_identity
+      dataset_columns:
+      - division_volume_id
+      description: Identifier of the division volume.
+  columns:
+  - name: division_volume_id
+    description: Identifier of the division volume.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: category_id
+    description: Identifier of the category.
+  - name: region_id
+    description: Identifier of the region.
+  - name: brand_id
+    description: Identifier of the brand.
+  - name: unit_case_quantity
+    description: Division volume.
+  - name: initiative_shortfall_flag
+    description: Whether the miss was the initiative rather than the consumer.
+  - name: consumer_backdrop_flag
+    description: Whether the miss was the consumer backdrop.
+  entity_definitions:
+  - identity_id: division_volume_identity
+    dataset_columns:
+    - division_volume_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: category_identity
+    dataset_columns:
+    - category_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+  - identity_id: brand_identity
+    dataset_columns:
+    - brand_id
+    entity_universe: partial
+- node_id: sf:beverage.demand.fact_event_volume
+  descriptor:
+    qualified_name: beverage.demand.fact_event_volume
+    display_name: Event Volume
+    description: Volume attributed to an event such as the World Cup or Easter. It is a quantity, not
+      a price.
+    synonyms: []
+    tags:
+    - quantity
+    - demand_channel
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: DEMAND
+      object: FACT_EVENT_VOLUME
+      format: table
+  grain:
+    description: One row is one event volume.
+    components:
+    - identity_id: event_volume_identity
+      dataset_columns:
+      - event_volume_id
+      description: Identifier of the event volume.
+  columns:
+  - name: event_volume_id
+    description: Identifier of the event volume.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: event_id
+    description: Identifier of the event.
+  - name: region_id
+    description: Identifier of the region.
+  - name: brand_id
+    description: Identifier of the brand.
+  - name: category_id
+    description: Identifier of the category.
+  - name: uplift_quantity
+    description: Extra unit cases attributed to the event.
+  - name: in_outlook_flag
+    description: Whether the uplift is inside the outlook.
+  - name: versus_past_event_code
+    description: How the activation compares with past events.
+    value_description: larger, similar, smaller
+  entity_definitions:
+  - identity_id: event_volume_identity
+    dataset_columns:
+    - event_volume_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: event_identity
+    dataset_columns:
+    - event_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+  - identity_id: brand_identity
+    dataset_columns:
+    - brand_id
+    entity_universe: partial
+  - identity_id: category_identity
+    dataset_columns:
+    - category_id
+    entity_universe: partial
+- node_id: sf:beverage.demand.fact_consumer_group
+  descriptor:
+    qualified_name: beverage.demand.fact_consumer_group
+    display_name: Consumer Group
+    description: Volume in a consumer group, including the Hispanic-consumer comparison.
+    synonyms: []
+    tags:
+    - quantity
+    - demand_channel
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: DEMAND
+      object: FACT_CONSUMER_GROUP
+      format: table
+  grain:
+    description: One row is one consumer group.
+    components:
+    - identity_id: consumer_group_identity
+      dataset_columns:
+      - consumer_group_id
+      description: Identifier of the consumer group.
+  columns:
+  - name: consumer_group_id
+    description: Identifier of the consumer group.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: consumer_segment_id
+    description: Identifier of the consumer segment.
+  - name: country_id
+    description: Identifier of the country.
+  - name: brand_id
+    description: Identifier of the brand.
+  - name: unit_case_quantity
+    description: Unit cases in the group.
+  - name: prior_disruption_flag
+    description: Whether the year-ago period had a temporary disruption.
+  - name: comparison_help_flag
+    description: Whether the comparison helps the current period.
+  entity_definitions:
+  - identity_id: consumer_group_identity
+    dataset_columns:
+    - consumer_group_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: consumer_segment_identity
+    dataset_columns:
+    - consumer_segment_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: brand_identity
+    dataset_columns:
+    - brand_id
+    entity_universe: partial
+- node_id: sf:beverage.demand.fact_program_volume
+  descriptor:
+    qualified_name: beverage.demand.fact_program_volume
+    display_name: Program Volume
+    description: Volume exposed to a shopper program such as SNAP.
+    synonyms: []
+    tags:
+    - quantity
+    - demand_channel
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: DEMAND
+      object: FACT_PROGRAM_VOLUME
+      format: table
+  grain:
+    description: One row is one program volume.
+    components:
+    - identity_id: program_volume_identity
+      dataset_columns:
+      - program_volume_id
+      description: Identifier of the program volume.
+  columns:
+  - name: program_volume_id
+    description: Identifier of the program volume.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: country_id
+    description: Identifier of the country.
+  - name: consumer_segment_id
+    description: Identifier of the consumer segment.
+  - name: brand_id
+    description: Identifier of the brand.
+  - name: exposed_quantity
+    description: Unit cases exposed to the program.
+  - name: demand_effect_code
+    description: Direction of the program effect.
+    value_description: down, unchanged, unclear
+  entity_definitions:
+  - identity_id: program_volume_identity
+    dataset_columns:
+    - program_volume_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: consumer_segment_identity
+    dataset_columns:
+    - consumer_segment_id
+    entity_universe: partial
+  - identity_id: brand_identity
+    dataset_columns:
+    - brand_id
+    entity_universe: partial
+- node_id: sf:beverage.demand.fact_concentrate_shipment
+  descriptor:
+    qualified_name: beverage.demand.fact_concentrate_shipment
+    display_name: Concentrate Shipment
+    description: Concentrate shipments. They are not the unit-case sell-out.
+    synonyms: []
+    tags:
+    - quantity
+    - demand_channel
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: DEMAND
+      object: FACT_CONCENTRATE_SHIPMENT
+      format: table
+  grain:
+    description: One row is one concentrate shipment.
+    components:
+    - identity_id: concentrate_shipment_identity
+      dataset_columns:
+      - concentrate_shipment_id
+      description: Identifier of the concentrate shipment.
+  columns:
+  - name: concentrate_shipment_id
+    description: Identifier of the concentrate shipment.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: country_id
+    description: Identifier of the country.
+  - name: bottler_id
+    description: Identifier of the bottler.
+  - name: brand_id
+    description: Identifier of the brand.
+  - name: shipment_quantity
+    description: Concentrate shipments.
+  - name: turns_positive_flag
+    description: Whether shipments are expected to turn positive.
+  - name: tough_comparison_flag
+    description: Whether the comparison is especially difficult.
+  entity_definitions:
+  - identity_id: concentrate_shipment_identity
+    dataset_columns:
+    - concentrate_shipment_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: bottler_identity
+    dataset_columns:
+    - bottler_id
+    entity_universe: partial
+  - identity_id: brand_identity
+    dataset_columns:
+    - brand_id
+    entity_universe: partial
+- node_id: sf:beverage.demand.fact_industry_volume
+  descriptor:
+    qualified_name: beverage.demand.fact_industry_volume
+    display_name: Industry Volume
+    description: Category or industry volume used as the comparison for Beverage Inc.
+    synonyms: []
+    tags:
+    - quantity
+    - demand_channel
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: DEMAND
+      object: FACT_INDUSTRY_VOLUME
+      format: table
+  grain:
+    description: One row is one industry volume.
+    components:
+    - identity_id: industry_volume_identity
+      dataset_columns:
+      - industry_volume_id
+      description: Identifier of the industry volume.
+  columns:
+  - name: industry_volume_id
+    description: Identifier of the industry volume.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: category_id
+    description: Identifier of the category.
+  - name: region_id
+    description: Identifier of the region.
+  - name: industry_growth_rate
+    description: Industry growth rate.
+  - name: exit_rate
+    description: Growth rate as the year exited.
+  - name: company_gap_rate
+    description: Company outlook minus industry growth.
+  entity_definitions:
+  - identity_id: industry_volume_identity
+    dataset_columns:
+    - industry_volume_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: category_identity
+    dataset_columns:
+    - category_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:beverage.demand.fact_occasion
+  descriptor:
+    qualified_name: beverage.demand.fact_occasion
+    display_name: Consumption Occasion
+    description: Who is adding consumption occasions and whether they differ from the core user.
+    synonyms: []
+    tags:
+    - quantity
+    - demand_channel
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: DEMAND
+      object: FACT_OCCASION
+      format: table
+  grain:
+    description: One row is one consumption occasion.
+    components:
+    - identity_id: occasion_identity
+      dataset_columns:
+      - occasion_id
+      description: Identifier of the consumption occasion.
+  columns:
+  - name: occasion_id
+    description: Identifier of the consumption occasion.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: consumer_segment_id
+    description: Identifier of the consumer segment.
+  - name: category_id
+    description: Identifier of the category.
+  - name: brand_id
+    description: Identifier of the brand.
+  - name: occasion_count
+    description: Occasions.
+  - name: new_user_flag
+    description: Whether the occasion is a new user rather than the core.
+  - name: lost_to_cheaper_food_flag
+    description: Whether snacks lost a meal occasion to cheaper food.
+  entity_definitions:
+  - identity_id: occasion_identity
+    dataset_columns:
+    - occasion_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: consumer_segment_identity
+    dataset_columns:
+    - consumer_segment_id
+    entity_universe: partial
+  - identity_id: category_identity
+    dataset_columns:
+    - category_id
+    entity_universe: partial
+  - identity_id: brand_identity
+    dataset_columns:
+    - brand_id
+    entity_universe: partial
+- node_id: sf:beverage.demand.fact_distribution
+  descriptor:
+    qualified_name: beverage.demand.fact_distribution
+    display_name: Distribution
+    description: Distribution gains. They are a count of placements, not a price.
+    synonyms: []
+    tags:
+    - quantity
+    - demand_channel
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: DEMAND
+      object: FACT_DISTRIBUTION
+      format: table
+  grain:
+    description: One row is one distribution.
+    components:
+    - identity_id: distribution_identity
+      dataset_columns:
+      - distribution_id
+      description: Identifier of the distribution.
+  columns:
+  - name: distribution_id
+    description: Identifier of the distribution.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: brand_id
+    description: Identifier of the brand.
+  - name: customer_id
+    description: Identifier of the customer.
+  - name: country_id
+    description: Identifier of the country.
+  - name: placement_count
+    description: New placements.
+  - name: versus_innovation_code
+    description: Whether the quarter is distribution or innovation led.
+    value_description: distribution, innovation
+  entity_definitions:
+  - identity_id: distribution_identity
+    dataset_columns:
+    - distribution_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: brand_identity
+    dataset_columns:
+    - brand_id
+    entity_universe: partial
+  - identity_id: customer_identity
+    dataset_columns:
+    - customer_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+- node_id: sf:beverage.demand.fact_pack_mix
+  descriptor:
+    qualified_name: beverage.demand.fact_pack_mix
+    display_name: Pack Mix
+    description: Share of volume in smaller packs. The price of the pack is not stored here.
+    synonyms: []
+    tags:
+    - quantity
+    - demand_channel
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: DEMAND
+      object: FACT_PACK_MIX
+      format: table
+  grain:
+    description: One row is one pack mix.
+    components:
+    - identity_id: pack_mix_identity
+      dataset_columns:
+      - pack_mix_id
+      description: Identifier of the pack mix.
+  columns:
+  - name: pack_mix_id
+    description: Identifier of the pack mix.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: pack_id
+    description: Identifier of the pack.
+  - name: brand_id
+    description: Identifier of the brand.
+  - name: region_id
+    description: Identifier of the region.
+  - name: category_id
+    description: Identifier of the category.
+  - name: pack_share
+    description: Share of volume in the pack.
+  - name: decline_moderates_flag
+    description: Whether the volume decline is expected to moderate.
+  entity_definitions:
+  - identity_id: pack_mix_identity
+    dataset_columns:
+    - pack_mix_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: pack_identity
+    dataset_columns:
+    - pack_id
+    entity_universe: partial
+  - identity_id: brand_identity
+    dataset_columns:
+    - brand_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+  - identity_id: category_identity
+    dataset_columns:
+    - category_id
+    entity_universe: partial
+- node_id: sf:beverage.demand.fact_sku_count
+  descriptor:
+    qualified_name: beverage.demand.fact_sku_count
+    display_name: SKU Count
+    description: SKU count and the organic-growth headwind is not stored here; the discontinued count
+      is.
+    synonyms: []
+    tags:
+    - quantity
+    - demand_channel
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: DEMAND
+      object: FACT_SKU_COUNT
+      format: table
+  grain:
+    description: One row is one sku count.
+    components:
+    - identity_id: sku_count_identity
+      dataset_columns:
+      - sku_count_id
+      description: Identifier of the sku count.
+  columns:
+  - name: sku_count_id
+    description: Identifier of the sku count.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: brand_id
+    description: Identifier of the brand.
+  - name: category_id
+    description: Identifier of the category.
+  - name: region_id
+    description: Identifier of the region.
+  - name: discontinued_sku_count
+    description: SKUs discontinued.
+  - name: remaining_sku_count
+    description: SKUs still in the portfolio.
+  entity_definitions:
+  - identity_id: sku_count_identity
+    dataset_columns:
+    - sku_count_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: brand_identity
+    dataset_columns:
+    - brand_id
+    entity_universe: partial
+  - identity_id: category_identity
+    dataset_columns:
+    - category_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:beverage.demand.fact_value_share
+  descriptor:
+    qualified_name: beverage.demand.fact_value_share
+    display_name: Value Share
+    description: Value share. It is a share, not a price file.
+    synonyms: []
+    tags:
+    - quantity
+    - demand_channel
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: DEMAND
+      object: FACT_VALUE_SHARE
+      format: table
+  grain:
+    description: One row is one value share.
+    components:
+    - identity_id: value_share_identity
+      dataset_columns:
+      - value_share_id
+      description: Identifier of the value share.
+  columns:
+  - name: value_share_id
+    description: Identifier of the value share.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: brand_id
+    description: Identifier of the brand.
+  - name: region_id
+    description: Identifier of the region.
+  - name: category_id
+    description: Identifier of the category.
+  - name: value_share_rate
+    description: Value share.
+  - name: declining_flag
+    description: Whether value share is still declining.
+  entity_definitions:
+  - identity_id: value_share_identity
+    dataset_columns:
+    - value_share_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: brand_identity
+    dataset_columns:
+    - brand_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+  - identity_id: category_identity
+    dataset_columns:
+    - category_id
+    entity_universe: partial
+- node_id: sf:beverage.demand.fact_country_share
+  descriptor:
+    qualified_name: beverage.demand.fact_country_share
+    display_name: Country Share
+    description: Share by country, including South Korea, Japan, Indonesia, and Bangladesh.
+    synonyms: []
+    tags:
+    - quantity
+    - demand_channel
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: DEMAND
+      object: FACT_COUNTRY_SHARE
+      format: table
+  grain:
+    description: One row is one country share.
+    components:
+    - identity_id: country_share_identity
+      dataset_columns:
+      - country_share_id
+      description: Identifier of the country share.
+  columns:
+  - name: country_share_id
+    description: Identifier of the country share.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: country_id
+    description: Identifier of the country.
+  - name: brand_id
+    description: Identifier of the brand.
+  - name: share_change_rate
+    description: Change in share.
+  - name: gaining_flag
+    description: Whether share was gained.
+  entity_definitions:
+  - identity_id: country_share_identity
+    dataset_columns:
+    - country_share_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: brand_identity
+    dataset_columns:
+    - brand_id
+    entity_universe: partial
+- node_id: sf:beverage.demand.fact_recent_volume
+  descriptor:
+    qualified_name: beverage.demand.fact_recent_volume
+    display_name: Recent Volume
+    description: Volume over the last four weeks, by whether service has recovered.
+    synonyms: []
+    tags:
+    - quantity
+    - demand_channel
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: DEMAND
+      object: FACT_RECENT_VOLUME
+      format: table
+  grain:
+    description: One row is one recent volume.
+    components:
+    - identity_id: recent_volume_identity
+      dataset_columns:
+      - recent_volume_id
+      description: Identifier of the recent volume.
+  columns:
+  - name: recent_volume_id
+    description: Identifier of the recent volume.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: region_id
+    description: Identifier of the region.
+  - name: country_id
+    description: Identifier of the country.
+  - name: calendar_day_id
+    description: Identifier of the calendar day.
+  - name: four_week_quantity
+    description: Volume in the last four weeks.
+  - name: positive_flag
+    description: Whether volume turned positive.
+  - name: service_recovered_only_flag
+    description: Whether the turn is only where service recovered.
+  entity_definitions:
+  - identity_id: recent_volume_identity
+    dataset_columns:
+    - recent_volume_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    entity_universe: partial
+- node_id: sf:beverage.demand.fact_repeat
+  descriptor:
+    qualified_name: beverage.demand.fact_repeat
+    display_name: Repeat
+    description: Repeat on refill orders after a ship-ahead.
+    synonyms: []
+    tags:
+    - quantity
+    - demand_channel
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: DEMAND
+      object: FACT_REPEAT
+      format: table
+  grain:
+    description: One row is one repeat.
+    components:
+    - identity_id: repeat_identity
+      dataset_columns:
+      - repeat_id
+      description: Identifier of the repeat.
+  columns:
+  - name: repeat_id
+    description: Identifier of the repeat.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: brand_id
+    description: Identifier of the brand.
+  - name: customer_id
+    description: Identifier of the customer.
+  - name: repeat_rate
+    description: Repeat rate on the refill.
+  - name: consumer_repeat_flag
+    description: Whether the repeat is consumer demand rather than a shipment timing effect.
+  entity_definitions:
+  - identity_id: repeat_identity
+    dataset_columns:
+    - repeat_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: brand_identity
+    dataset_columns:
+    - brand_id
+    entity_universe: partial
+  - identity_id: customer_identity
+    dataset_columns:
+    - customer_id
+    entity_universe: partial
+- node_id: sf:beverage.demand.fact_shipment_timing
+  descriptor:
+    qualified_name: beverage.demand.fact_shipment_timing
+    display_name: Shipment Timing
+    description: Ship-ahead and storm effects. The row stores timing, not a price.
+    synonyms: []
+    tags:
+    - quantity
+    - demand_channel
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: DEMAND
+      object: FACT_SHIPMENT_TIMING
+      format: table
+  grain:
+    description: One row is one shipment timing.
+    components:
+    - identity_id: shipment_timing_identity
+      dataset_columns:
+      - shipment_timing_id
+      description: Identifier of the shipment timing.
+  columns:
+  - name: shipment_timing_id
+    description: Identifier of the shipment timing.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: brand_id
+    description: Identifier of the brand.
+  - name: region_id
+    description: Identifier of the region.
+  - name: customer_id
+    description: Identifier of the customer.
+  - name: ship_ahead_quantity
+    description: Quantity shipped ahead of consumption.
+  - name: storm_quantity
+    description: Quantity delayed or pulled by weather.
+  - name: inflection_durable_flag
+    description: Whether the volume inflection is expected to hold.
+  entity_definitions:
+  - identity_id: shipment_timing_identity
+    dataset_columns:
+    - shipment_timing_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: brand_identity
+    dataset_columns:
+    - brand_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+  - identity_id: customer_identity
+    dataset_columns:
+    - customer_id
+    entity_universe: partial
+- node_id: sf:beverage.demand.fact_innovation_volume
+  descriptor:
+    qualified_name: beverage.demand.fact_innovation_volume
+    display_name: Innovation Volume
+    description: Volume from items shipping, including protein and better-for-you snacks.
+    synonyms: []
+    tags:
+    - quantity
+    - demand_channel
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: DEMAND
+      object: FACT_INNOVATION_VOLUME
+      format: table
+  grain:
+    description: One row is one innovation volume.
+    components:
+    - identity_id: innovation_volume_identity
+      dataset_columns:
+      - innovation_volume_id
+      description: Identifier of the innovation volume.
+  columns:
+  - name: innovation_volume_id
+    description: Identifier of the innovation volume.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: brand_id
+    description: Identifier of the brand.
+  - name: category_id
+    description: Identifier of the category.
+  - name: country_id
+    description: Identifier of the country.
+  - name: innovation_quantity
+    description: Volume from innovation items.
+  - name: pipeline_ready_flag
+    description: Whether the pipeline is in market.
+  entity_definitions:
+  - identity_id: innovation_volume_identity
+    dataset_columns:
+    - innovation_volume_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: brand_identity
+    dataset_columns:
+    - brand_id
+    entity_universe: partial
+  - identity_id: category_identity
+    dataset_columns:
+    - category_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+- node_id: sf:beverage.demand.fact_glp1_demand
+  descriptor:
+    qualified_name: beverage.demand.fact_glp1_demand
+    display_name: GLP-1 Demand
+    description: Demand change in occasions exposed to GLP-1 use. It is a quantity effect, not a price.
+    synonyms: []
+    tags:
+    - quantity
+    - demand_channel
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: DEMAND
+      object: FACT_GLP1_DEMAND
+      format: table
+  grain:
+    description: One row is one glp-1 demand.
+    components:
+    - identity_id: glp1_demand_identity
+      dataset_columns:
+      - glp1_demand_id
+      description: Identifier of the glp-1 demand.
+  columns:
+  - name: glp1_demand_id
+    description: Identifier of the glp-1 demand.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: consumer_segment_id
+    description: Identifier of the consumer segment.
+  - name: category_id
+    description: Identifier of the category.
+  - name: brand_id
+    description: Identifier of the brand.
+  - name: exposed_quantity
+    description: Volume in occasions exposed to GLP-1 use.
+  - name: explains_slowdown_flag
+    description: Whether GLP-1 use explains the category slowdown.
+  - name: strategy_changed_flag
+    description: Whether innovation strategy changed because of it.
+  entity_definitions:
+  - identity_id: glp1_demand_identity
+    dataset_columns:
+    - glp1_demand_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: consumer_segment_identity
+    dataset_columns:
+    - consumer_segment_id
+    entity_universe: partial
+  - identity_id: category_identity
+    dataset_columns:
+    - category_id
+    entity_universe: partial
+  - identity_id: brand_identity
+    dataset_columns:
+    - brand_id
+    entity_universe: partial
+- node_id: sf:beverage.demand.fact_volume_bridge
+  descriptor:
+    qualified_name: beverage.demand.fact_volume_bridge
+    display_name: Volume Bridge
+    description: How volume pressure splits across pack shift, category trend, and share.
+    synonyms: []
+    tags:
+    - quantity
+    - demand_channel
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: DEMAND
+      object: FACT_VOLUME_BRIDGE
+      format: table
+  grain:
+    description: One row is one volume bridge.
+    components:
+    - identity_id: volume_bridge_identity
+      dataset_columns:
+      - volume_bridge_id
+      description: Identifier of the volume bridge.
+  columns:
+  - name: volume_bridge_id
+    description: Identifier of the volume bridge.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: category_id
+    description: Identifier of the category.
+  - name: pack_id
+    description: Identifier of the pack.
+  - name: region_id
+    description: Identifier of the region.
+  - name: pack_contribution_share
+    description: Share of the pressure from smaller packs.
+  - name: category_contribution_share
+    description: Share of the pressure from the category.
+  - name: share_loss_contribution_share
+    description: Share of the pressure from share loss.
+  entity_definitions:
+  - identity_id: volume_bridge_identity
+    dataset_columns:
+    - volume_bridge_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: category_identity
+    dataset_columns:
+    - category_id
+    entity_universe: partial
+  - identity_id: pack_identity
+    dataset_columns:
+    - pack_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:beverage.demand.fact_consumer_demand
+  descriptor:
+    qualified_name: beverage.demand.fact_consumer_demand
+    display_name: Consumer Demand
+    description: Consumer demand index by region, including June, July, September, and fuel.
+    synonyms: []
+    tags:
+    - status
+    - demand_channel
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: DEMAND
+      object: FACT_CONSUMER_DEMAND
+      format: table
+  grain:
+    description: One row is one consumer demand.
+    components:
+    - identity_id: consumer_demand_identity
+      dataset_columns:
+      - consumer_demand_id
+      description: Identifier of the consumer demand.
+  columns:
+  - name: consumer_demand_id
+    description: Identifier of the consumer demand.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: region_id
+    description: Identifier of the region.
+  - name: country_id
+    description: Identifier of the country.
+  - name: calendar_day_id
+    description: Identifier of the calendar day.
+  - name: demand_index
+    description: Demand index versus the prior read.
+  - name: tougher_flag
+    description: Whether the environment feels tougher.
+  - name: improved_flag
+    description: Whether behavior improved as inflation eased.
+  entity_definitions:
+  - identity_id: consumer_demand_identity
+    dataset_columns:
+    - consumer_demand_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    entity_universe: partial
+- node_id: sf:beverage.demand.fact_category_health
+  descriptor:
+    qualified_name: beverage.demand.fact_category_health
+    display_name: Category Health
+    description: Category growth and consumer health by region, including salty snacks.
+    synonyms: []
+    tags:
+    - quantity
+    - demand_channel
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: DEMAND
+      object: FACT_CATEGORY_HEALTH
+      format: table
+  grain:
+    description: One row is one category health.
+    components:
+    - identity_id: category_health_identity
+      dataset_columns:
+      - category_health_id
+      description: Identifier of the category health.
+  columns:
+  - name: category_health_id
+    description: Identifier of the category health.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: category_id
+    description: Identifier of the category.
+  - name: region_id
+    description: Identifier of the region.
+  - name: category_growth_rate
+    description: Category growth.
+  - name: better_footing_flag
+    description: Whether the category is on better footing than the false starts.
+  - name: extrapolate_flag
+    description: Whether the quarter should be extrapolated.
+  entity_definitions:
+  - identity_id: category_health_identity
+    dataset_columns:
+    - category_health_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: category_identity
+    dataset_columns:
+    - category_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:beverage.demand.fact_brand_trend
+  descriptor:
+    qualified_name: beverage.demand.fact_brand_trend
+    display_name: Brand Trend
+    description: Volume trend for a named brand such as Pepsi or Mountain Dew.
+    synonyms: []
+    tags:
+    - quantity
+    - demand_channel
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: DEMAND
+      object: FACT_BRAND_TREND
+      format: table
+  grain:
+    description: One row is one brand trend.
+    components:
+    - identity_id: brand_trend_identity
+      dataset_columns:
+      - brand_trend_id
+      description: Identifier of the brand trend.
+  columns:
+  - name: brand_trend_id
+    description: Identifier of the brand trend.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: brand_id
+    description: Identifier of the brand.
+  - name: country_id
+    description: Identifier of the country.
+  - name: volume_growth_rate
+    description: Brand volume growth.
+  - name: message_driven_flag
+    description: Whether momentum is messaging rather than more marketing.
+  entity_definitions:
+  - identity_id: brand_trend_identity
+    dataset_columns:
+    - brand_trend_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: brand_identity
+    dataset_columns:
+    - brand_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+- node_id: sf:beverage.demand.fact_partnership_volume
+  descriptor:
+    qualified_name: beverage.demand.fact_partnership_volume
+    display_name: Partnership Volume
+    description: Incremental volume from a beverage partnership. It is not the brand's price.
+    synonyms: []
+    tags:
+    - quantity
+    - demand_channel
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: DEMAND
+      object: FACT_PARTNERSHIP_VOLUME
+      format: table
+  grain:
+    description: One row is one partnership volume.
+    components:
+    - identity_id: partnership_volume_identity
+      dataset_columns:
+      - partnership_volume_id
+      description: Identifier of the partnership volume.
+  columns:
+  - name: partnership_volume_id
+    description: Identifier of the partnership volume.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: brand_id
+    description: Identifier of the brand.
+  - name: country_id
+    description: Identifier of the country.
+  - name: bottler_id
+    description: Identifier of the bottler.
+  - name: incremental_quantity
+    description: Volume that is incremental.
+  - name: incremental_flag
+    description: Whether the partnership volume is incremental.
+  entity_definitions:
+  - identity_id: partnership_volume_identity
+    dataset_columns:
+    - partnership_volume_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: brand_identity
+    dataset_columns:
+    - brand_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: bottler_identity
+    dataset_columns:
+    - bottler_id
+    entity_universe: partial
+- node_id: sf:beverage.demand.fact_refranchising
+  descriptor:
+    qualified_name: beverage.demand.fact_refranchising
+    display_name: Refranchising
+    description: Refranchising progress and whether marketing steps up as it proceeds.
+    synonyms: []
+    tags:
+    - status
+    - demand_channel
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: DEMAND
+      object: FACT_REFRANCHISING
+      format: table
+  grain:
+    description: One row is one refranchising.
+    components:
+    - identity_id: refranchising_identity
+      dataset_columns:
+      - refranchising_id
+      description: Identifier of the refranchising.
+  columns:
+  - name: refranchising_id
+    description: Identifier of the refranchising.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: country_id
+    description: Identifier of the country.
+  - name: bottler_id
+    description: Identifier of the bottler.
+  - name: remaining_share
+    description: Share of the business still owned.
+  - name: marketing_steps_up_flag
+    description: Whether marketing and innovation step up as refranchising proceeds.
+  entity_definitions:
+  - identity_id: refranchising_identity
+    dataset_columns:
+    - refranchising_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: bottler_identity
+    dataset_columns:
+    - bottler_id
+    entity_universe: partial
+- node_id: sf:beverage.demand.fact_demand_creation
+  descriptor:
+    qualified_name: beverage.demand.fact_demand_creation
+    display_name: Demand Creation
+    description: Demand creation retained after bottlers take fulfillment.
+    synonyms: []
+    tags:
+    - status
+    - demand_channel
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: DEMAND
+      object: FACT_DEMAND_CREATION
+      format: table
+  grain:
+    description: One row is one demand creation.
+    components:
+    - identity_id: demand_creation_identity
+      dataset_columns:
+      - demand_creation_id
+      description: Identifier of the demand creation.
+  columns:
+  - name: demand_creation_id
+    description: Identifier of the demand creation.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: bottler_id
+    description: Identifier of the bottler.
+  - name: country_id
+    description: Identifier of the country.
+  - name: brand_id
+    description: Identifier of the brand.
+  - name: retained_flag
+    description: Whether Beverage Inc still creates demand after refranchising.
+  - name: recruiting_flag
+    description: Whether consumer recruitment intensified.
+  entity_definitions:
+  - identity_id: demand_creation_identity
+    dataset_columns:
+    - demand_creation_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: bottler_identity
+    dataset_columns:
+    - bottler_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: brand_identity
+    dataset_columns:
+    - brand_id
+    entity_universe: partial
+- node_id: sf:beverage.demand.fact_digital_execution
+  descriptor:
+    qualified_name: beverage.demand.fact_digital_execution
+    display_name: Digital Execution
+    description: B2B digital and store-level analytics before the bottler takes fulfillment.
+    synonyms: []
+    tags:
+    - status
+    - demand_channel
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: DEMAND
+      object: FACT_DIGITAL_EXECUTION
+      format: table
+  grain:
+    description: One row is one digital execution.
+    components:
+    - identity_id: digital_execution_identity
+      dataset_columns:
+      - digital_execution_id
+      description: Identifier of the digital execution.
+  columns:
+  - name: digital_execution_id
+    description: Identifier of the digital execution.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: country_id
+    description: Identifier of the country.
+  - name: bottler_id
+    description: Identifier of the bottler.
+  - name: customer_id
+    description: Identifier of the customer.
+  - name: in_place_flag
+    description: Whether store-level digital execution is already in place.
+  - name: coverage_share
+    description: Share of stores on the platform.
+  entity_definitions:
+  - identity_id: digital_execution_identity
+    dataset_columns:
+    - digital_execution_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: bottler_identity
+    dataset_columns:
+    - bottler_id
+    entity_universe: partial
+  - identity_id: customer_identity
+    dataset_columns:
+    - customer_id
+    entity_universe: partial
+- node_id: sf:beverage.demand.fact_trademark_attention
+  descriptor:
+    qualified_name: beverage.demand.fact_trademark_attention
+    display_name: Trademark Attention
+    description: Whether a relaunch starves another trademark of bottler attention.
+    synonyms: []
+    tags:
+    - status
+    - demand_channel
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: DEMAND
+      object: FACT_TRADEMARK_ATTENTION
+      format: table
+  grain:
+    description: One row is one trademark attention.
+    components:
+    - identity_id: trademark_attention_identity
+      dataset_columns:
+      - trademark_attention_id
+      description: Identifier of the trademark attention.
+  columns:
+  - name: trademark_attention_id
+    description: Identifier of the trademark attention.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: trademark_id
+    description: Identifier of the trademark.
+  - name: country_id
+    description: Identifier of the country.
+  - name: bottler_id
+    description: Identifier of the bottler.
+  - name: attention_share
+    description: Share of execution time on the trademark.
+  - name: starved_flag
+    description: Whether the other trademark is starved.
+  entity_definitions:
+  - identity_id: trademark_attention_identity
+    dataset_columns:
+    - trademark_attention_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: trademark_identity
+    dataset_columns:
+    - trademark_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: bottler_identity
+    dataset_columns:
+    - bottler_id
+    entity_universe: partial
+- node_id: sf:beverage.demand.fact_innovation
+  descriptor:
+    qualified_name: beverage.demand.fact_innovation
+    display_name: Innovation
+    description: Innovation pipeline versus a weaker consumer, including cane, fiber, and new occasions.
+    synonyms: []
+    tags:
+    - status
+    - demand_channel
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: DEMAND
+      object: FACT_INNOVATION
+      format: table
+  grain:
+    description: One row is one innovation.
+    components:
+    - identity_id: innovation_identity
+      dataset_columns:
+      - innovation_id
+      description: Identifier of the innovation.
+  columns:
+  - name: innovation_id
+    description: Identifier of the innovation.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: brand_id
+    description: Identifier of the brand.
+  - name: category_id
+    description: Identifier of the category.
+  - name: country_id
+    description: Identifier of the country.
+  - name: opportunity_code
+    description: Where the largest opportunity sits.
+    value_description: cane, fiber, protein, prebiotic, pack
+  - name: in_market_flag
+    description: Whether the item is already in market.
+  - name: weaker_consumer_fit_flag
+    description: Whether the item is aimed at a weaker consumer.
+  entity_definitions:
+  - identity_id: innovation_identity
+    dataset_columns:
+    - innovation_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: brand_identity
+    dataset_columns:
+    - brand_id
+    entity_universe: partial
+  - identity_id: category_identity
+    dataset_columns:
+    - category_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+- node_id: sf:beverage.demand.fact_shelf_set
+  descriptor:
+    qualified_name: beverage.demand.fact_shelf_set
+    display_name: Shelf Set
+    description: Whether a modern-soda shelf is a fad, and which Beverage Inc brands sit on it.
+    synonyms: []
+    tags:
+    - status
+    - demand_channel
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: DEMAND
+      object: FACT_SHELF_SET
+      format: table
+  grain:
+    description: One row is one shelf set.
+    components:
+    - identity_id: shelf_set_identity
+      dataset_columns:
+      - shelf_set_id
+      description: Identifier of the shelf set.
+  columns:
+  - name: shelf_set_id
+    description: Identifier of the shelf set.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: customer_id
+    description: Identifier of the customer.
+  - name: brand_id
+    description: Identifier of the brand.
+  - name: category_id
+    description: Identifier of the category.
+  - name: fad_flag
+    description: Whether the shelf is treated as a fad.
+  - name: repeat_flag
+    description: Whether the consumer repeats.
+  - name: company_present_flag
+    description: Whether a Beverage Inc brand is in the set.
+  entity_definitions:
+  - identity_id: shelf_set_identity
+    dataset_columns:
+    - shelf_set_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: customer_identity
+    dataset_columns:
+    - customer_id
+    entity_universe: partial
+  - identity_id: brand_identity
+    dataset_columns:
+    - brand_id
+    entity_universe: partial
+  - identity_id: category_identity
+    dataset_columns:
+    - category_id
+    entity_universe: partial
+- node_id: sf:beverage.demand.fact_competitor_set
+  descriptor:
+    qualified_name: beverage.demand.fact_competitor_set
+    display_name: Competitor Set
+    description: Performance against competitors launching into the same occasion.
+    synonyms: []
+    tags:
+    - status
+    - demand_channel
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: DEMAND
+      object: FACT_COMPETITOR_SET
+      format: table
+  grain:
+    description: One row is one competitor set.
+    components:
+    - identity_id: competitor_set_identity
+      dataset_columns:
+      - competitor_set_id
+      description: Identifier of the competitor set.
+  columns:
+  - name: competitor_set_id
+    description: Identifier of the competitor set.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: brand_id
+    description: Identifier of the brand.
+  - name: category_id
+    description: Identifier of the category.
+  - name: country_id
+    description: Identifier of the country.
+  - name: ahead_flag
+    description: Whether the Beverage Inc item is ahead of the competitor launch.
+  - name: same_occasion_flag
+    description: Whether the competitor is in the same occasion.
+  entity_definitions:
+  - identity_id: competitor_set_identity
+    dataset_columns:
+    - competitor_set_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: brand_identity
+    dataset_columns:
+    - brand_id
+    entity_universe: partial
+  - identity_id: category_identity
+    dataset_columns:
+    - category_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+- node_id: sf:beverage.demand.fact_make_or_partner
+  descriptor:
+    qualified_name: beverage.demand.fact_make_or_partner
+    display_name: Make or Partner
+    description: Whether a category is built in-house or by buying or partnering.
+    synonyms: []
+    tags:
+    - status
+    - demand_channel
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: DEMAND
+      object: FACT_MAKE_OR_PARTNER
+      format: table
+  grain:
+    description: One row is one make or partner.
+    components:
+    - identity_id: make_or_partner_identity
+      dataset_columns:
+      - make_or_partner_id
+      description: Identifier of the make or partner.
+  columns:
+  - name: make_or_partner_id
+    description: Identifier of the make or partner.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: brand_id
+    description: Identifier of the brand.
+  - name: category_id
+    description: Identifier of the category.
+  - name: route_code
+    description: Route used.
+    value_description: in_house, acquire, partner
+  - name: different_from_adjacent_flag
+    description: Whether the route differs from energy or prebiotic.
+  entity_definitions:
+  - identity_id: make_or_partner_identity
+    dataset_columns:
+    - make_or_partner_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: brand_identity
+    dataset_columns:
+    - brand_id
+    entity_universe: partial
+  - identity_id: category_identity
+    dataset_columns:
+    - category_id
+    entity_universe: partial
+- node_id: sf:beverage.demand.fact_protein_push
+  descriptor:
+    qualified_name: beverage.demand.fact_protein_push
+    display_name: Protein Push
+    description: How hard Beverage Inc pushes protein drinks given category growth.
+    synonyms: []
+    tags:
+    - status
+    - demand_channel
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: DEMAND
+      object: FACT_PROTEIN_PUSH
+      format: table
+  grain:
+    description: One row is one protein push.
+    components:
+    - identity_id: protein_push_identity
+      dataset_columns:
+      - protein_push_id
+      description: Identifier of the protein push.
+  columns:
+  - name: protein_push_id
+    description: Identifier of the protein push.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: category_id
+    description: Identifier of the category.
+  - name: brand_id
+    description: Identifier of the brand.
+  - name: push_code
+    description: Planned push.
+    value_description: light, moderate, aggressive
+  - name: participation_share
+    description: Current participation in the segment.
+  entity_definitions:
+  - identity_id: protein_push_identity
+    dataset_columns:
+    - protein_push_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: category_identity
+    dataset_columns:
+    - category_id
+    entity_universe: partial
+  - identity_id: brand_identity
+    dataset_columns:
+    - brand_id
+    entity_universe: partial
+- node_id: sf:beverage.demand.fact_energy_platform
+  descriptor:
+    qualified_name: beverage.demand.fact_energy_platform
+    display_name: Energy Platform
+    description: Whether the energy-drink view or platform has changed.
+    synonyms: []
+    tags:
+    - status
+    - demand_channel
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: DEMAND
+      object: FACT_ENERGY_PLATFORM
+      format: table
+  grain:
+    description: One row is one energy platform.
+    components:
+    - identity_id: energy_platform_identity
+      dataset_columns:
+      - energy_platform_id
+      description: Identifier of the energy platform.
+  columns:
+  - name: energy_platform_id
+    description: Identifier of the energy platform.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: category_id
+    description: Identifier of the category.
+  - name: brand_id
+    description: Identifier of the brand.
+  - name: bottler_id
+    description: Identifier of the bottler.
+  - name: view_changed_flag
+    description: Whether the category view changed.
+  - name: partner_action_flag
+    description: Whether a partner action is planned.
+  entity_definitions:
+  - identity_id: energy_platform_identity
+    dataset_columns:
+    - energy_platform_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: category_identity
+    dataset_columns:
+    - category_id
+    entity_universe: partial
+  - identity_id: brand_identity
+    dataset_columns:
+    - brand_id
+    entity_universe: partial
+  - identity_id: bottler_identity
+    dataset_columns:
+    - bottler_id
+    entity_universe: partial
+- node_id: sf:beverage.demand.fact_regulatory_exposure
+  descriptor:
+    qualified_name: beverage.demand.fact_regulatory_exposure
+    display_name: Regulatory Exposure
+    description: Share of the U.S. portfolio a regulatory change could touch.
+    synonyms: []
+    tags:
+    - status
+    - demand_channel
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: DEMAND
+      object: FACT_REGULATORY_EXPOSURE
+      format: table
+  grain:
+    description: One row is one regulatory exposure.
+    components:
+    - identity_id: regulatory_exposure_identity
+      dataset_columns:
+      - regulatory_exposure_id
+      description: Identifier of the regulatory exposure.
+  columns:
+  - name: regulatory_exposure_id
+    description: Identifier of the regulatory exposure.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: brand_id
+    description: Identifier of the brand.
+  - name: country_id
+    description: Identifier of the country.
+  - name: exposed_share
+    description: Share of the portfolio exposed.
+  - name: adapt_months
+    description: Months needed to reformulate or shift mix.
+  entity_definitions:
+  - identity_id: regulatory_exposure_identity
+    dataset_columns:
+    - regulatory_exposure_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: brand_identity
+    dataset_columns:
+    - brand_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+- node_id: sf:beverage.demand.fact_preference_shift
+  descriptor:
+    qualified_name: beverage.demand.fact_preference_shift
+    display_name: Preference Shift
+    description: Whether the slowdown is structural healthier eating or cyclical value-seeking.
+    synonyms: []
+    tags:
+    - status
+    - demand_channel
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: DEMAND
+      object: FACT_PREFERENCE_SHIFT
+      format: table
+  grain:
+    description: One row is one preference shift.
+    components:
+    - identity_id: preference_shift_identity
+      dataset_columns:
+      - preference_shift_id
+      description: Identifier of the preference shift.
+  columns:
+  - name: preference_shift_id
+    description: Identifier of the preference shift.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: region_id
+    description: Identifier of the region.
+  - name: category_id
+    description: Identifier of the category.
+  - name: consumer_segment_id
+    description: Identifier of the consumer segment.
+  - name: driver_code
+    description: Leading explanation.
+    value_description: healthier_eating, value_seeking, both
+  - name: international_same_flag
+    description: Whether international markets show the same shift.
+  entity_definitions:
+  - identity_id: preference_shift_identity
+    dataset_columns:
+    - preference_shift_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+  - identity_id: category_identity
+    dataset_columns:
+    - category_id
+    entity_universe: partial
+  - identity_id: consumer_segment_identity
+    dataset_columns:
+    - consumer_segment_id
+    entity_universe: partial
+- node_id: sf:beverage.demand.fact_snack_driver
+  descriptor:
+    qualified_name: beverage.demand.fact_snack_driver
+    display_name: Snack Driver
+    description: 'Which explanation leads for the snack slowdown: price versus wallet, healthier choices,
+      or lost meal occasions.'
+    synonyms: []
+    tags:
+    - status
+    - demand_channel
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: DEMAND
+      object: FACT_SNACK_DRIVER
+      format: table
+  grain:
+    description: One row is one snack driver.
+    components:
+    - identity_id: snack_driver_identity
+      dataset_columns:
+      - snack_driver_id
+      description: Identifier of the snack driver.
+  columns:
+  - name: snack_driver_id
+    description: Identifier of the snack driver.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: category_id
+    description: Identifier of the category.
+  - name: consumer_segment_id
+    description: Identifier of the consumer segment.
+  - name: leading_driver_code
+    description: Leading explanation.
+    value_description: wallet, healthier, meal_occasion
+  - name: confidence_code
+    description: Confidence in that explanation.
+    value_description: low, moderate, high
+  entity_definitions:
+  - identity_id: snack_driver_identity
+    dataset_columns:
+    - snack_driver_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: category_identity
+    dataset_columns:
+    - category_id
+    entity_universe: partial
+  - identity_id: consumer_segment_identity
+    dataset_columns:
+    - consumer_segment_id
+    entity_universe: partial
+- node_id: sf:beverage.demand.fact_initiative_stage
+  descriptor:
+    qualified_name: beverage.demand.fact_initiative_stage
+    display_name: Initiative Stage
+    description: Whether affordability, pack, and innovation actions are already in market or still ahead.
+    synonyms: []
+    tags:
+    - status
+    - demand_channel
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: DEMAND
+      object: FACT_INITIATIVE_STAGE
+      format: table
+  grain:
+    description: One row is one initiative stage.
+    components:
+    - identity_id: initiative_stage_identity
+      dataset_columns:
+      - initiative_stage_id
+      description: Identifier of the initiative stage.
+  columns:
+  - name: initiative_stage_id
+    description: Identifier of the initiative stage.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: brand_id
+    description: Identifier of the brand.
+  - name: region_id
+    description: Identifier of the region.
+  - name: pack_id
+    description: Identifier of the pack.
+  - name: in_market_flag
+    description: Whether the action is already in market.
+  - name: catalyst_still_ahead_flag
+    description: Whether a further catalyst is still ahead.
+  entity_definitions:
+  - identity_id: initiative_stage_identity
+    dataset_columns:
+    - initiative_stage_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: brand_identity
+    dataset_columns:
+    - brand_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+  - identity_id: pack_identity
+    dataset_columns:
+    - pack_id
+    entity_universe: partial
+- node_id: sf:beverage.demand.fact_plan_pivot
+  descriptor:
+    qualified_name: beverage.demand.fact_plan_pivot
+    display_name: Plan Pivot
+    description: What is being pivoted in the second-half plan, and what is being managed differently.
+    synonyms: []
+    tags:
+    - status
+    - demand_channel
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: DEMAND
+      object: FACT_PLAN_PIVOT
+      format: table
+  grain:
+    description: One row is one plan pivot.
+    components:
+    - identity_id: plan_pivot_identity
+      dataset_columns:
+      - plan_pivot_id
+      description: Identifier of the plan pivot.
+  columns:
+  - name: plan_pivot_id
+    description: Identifier of the plan pivot.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: region_id
+    description: Identifier of the region.
+  - name: category_id
+    description: Identifier of the category.
+  - name: pivot_flag
+    description: Whether the plan changed.
+  - name: tougher_flag
+    description: Whether the environment feels tougher.
+  - name: emphasis_code
+    description: What the plan now emphasizes.
+    value_description: innovation, price, productivity
+  entity_definitions:
+  - identity_id: plan_pivot_identity
+    dataset_columns:
+    - plan_pivot_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+  - identity_id: category_identity
+    dataset_columns:
+    - category_id
+    entity_universe: partial
+- node_id: sf:beverage.demand.fact_comparison_base
+  descriptor:
+    qualified_name: beverage.demand.fact_comparison_base
+    display_name: Comparison Base
+    description: Whether a return to growth is an easier comparison or execution.
+    synonyms: []
+    tags:
+    - status
+    - demand_channel
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: DEMAND
+      object: FACT_COMPARISON_BASE
+      format: table
+  grain:
+    description: One row is one comparison base.
+    components:
+    - identity_id: comparison_base_identity
+      dataset_columns:
+      - comparison_base_id
+      description: Identifier of the comparison base.
+  columns:
+  - name: comparison_base_id
+    description: Identifier of the comparison base.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: category_id
+    description: Identifier of the category.
+  - name: region_id
+    description: Identifier of the region.
+  - name: easier_comparison_flag
+    description: Whether the growth is mostly the year-ago lap.
+  - name: execution_flag
+    description: Whether innovation and everyday execution are the driver.
+  entity_definitions:
+  - identity_id: comparison_base_identity
+    dataset_columns:
+    - comparison_base_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: category_identity
+    dataset_columns:
+    - category_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:beverage.demand.fact_division_path
+  descriptor:
+    qualified_name: beverage.demand.fact_division_path
+    display_name: Division Path
+    description: Whether sequential improvement is broad-based, and the guardrails for the rest of the
+      year.
+    synonyms: []
+    tags:
+    - status
+    - demand_channel
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: DEMAND
+      object: FACT_DIVISION_PATH
+      format: table
+  grain:
+    description: One row is one division path.
+    components:
+    - identity_id: division_path_identity
+      dataset_columns:
+      - division_path_id
+      description: Identifier of the division path.
+  columns:
+  - name: division_path_id
+    description: Identifier of the division path.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: category_id
+    description: Identifier of the category.
+  - name: region_id
+    description: Identifier of the region.
+  - name: broad_based_flag
+    description: Whether the improvement is broad-based.
+  - name: guardrail_code
+    description: Guardrail on the rest of the year.
+    value_description: hold, raise_spend, cut_price
+  entity_definitions:
+  - identity_id: division_path_identity
+    dataset_columns:
+    - division_path_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: category_identity
+    dataset_columns:
+    - category_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:beverage.demand.fact_growth_lever
+  descriptor:
+    qualified_name: beverage.demand.fact_growth_lever
+    display_name: Growth Lever
+    description: Which lever matters most for a return toward the long-term growth algorithm.
+    synonyms: []
+    tags:
+    - status
+    - demand_channel
+    - soft-drinks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: beverage.us-east-1
+      database: BEVERAGE
+      schema: DEMAND
+      object: FACT_GROWTH_LEVER
+      format: table
+  grain:
+    description: One row is one growth lever.
+    components:
+    - identity_id: growth_lever_identity
+      dataset_columns:
+      - growth_lever_id
+      description: Identifier of the growth lever.
+  columns:
+  - name: growth_lever_id
+    description: Identifier of the growth lever.
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: category_id
+    description: Identifier of the category.
+  - name: brand_id
+    description: Identifier of the brand.
+  - name: leading_lever_code
+    description: Leading lever.
+    value_description: innovation, functional, portfolio, price_pack
+  - name: visible_in_year_flag
+    description: Whether the long-term algorithm is visible inside the year.
+  entity_definitions:
+  - identity_id: growth_lever_identity
+    dataset_columns:
+    - growth_lever_id
+    entity_universe: complete
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: category_identity
+    dataset_columns:
+    - category_id
+    entity_universe: partial
+  - identity_id: brand_identity
+    dataset_columns:
+    - brand_id
+    entity_universe: partial
