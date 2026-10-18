@@ -1,54 +1,10 @@
 schema_version: '3'
 nodes:
-- node_id: sf:energy.resource.dim_play
+- node_id: sf:energy.supply.dim_field
   descriptor:
-    qualified_name: energy.resource.dim_play
-    display_name: Resource Play
-    description: Resource play Energy Inc operates or studies.
-    synonyms: []
-    tags:
-    - dimension
-    - supply
-    - energy
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: energy.us-central-1
-      database: ENERGY
-      schema: RESOURCE
-      object: DIM_PLAY
-      format: table
-  grain:
-    description: One row is one resource play.
-    components:
-    - identity_id: dim_play_identity
-      dataset_columns:
-      - play_id
-      description: Identifier of the resource play.
-  columns:
-  - name: play_id
-    description: Identifier of the resource play.
-  - name: play_code
-    description: Play code.
-    value_description: permian, bakken, dj, vaca_muerta, rockies, gulf_of_mexico, stabroek
-  - name: play_name
-    description: Play name.
-  - name: country_id
-    description: Identifier of the related country.
-  entity_definitions:
-  - identity_id: dim_play_identity
-    dataset_columns:
-    - play_id
-    entity_universe: complete
-  - identity_id: dim_country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
-- node_id: sf:energy.resource.dim_field
-  descriptor:
-    qualified_name: energy.resource.dim_field
+    qualified_name: energy.supply.dim_field
     display_name: Field
-    description: Field such as Tengiz.
+    description: Oil or gas field, such as Tengiz.
     synonyms: []
     tags:
     - dimension
@@ -59,7 +15,7 @@ nodes:
     properties:
       account: energy.us-central-1
       database: ENERGY
-      schema: RESOURCE
+      schema: SUPPLY
       object: DIM_FIELD
       format: table
   grain:
@@ -72,13 +28,8 @@ nodes:
   columns:
   - name: field_id
     description: Identifier of the field.
-  - name: field_code
-    description: Field code.
-    value_description: tengiz, tco
   - name: field_name
     description: Field name.
-  - name: play_id
-    description: Identifier of the related play.
   - name: country_id
     description: Identifier of the related country.
   entity_definitions:
@@ -86,19 +37,15 @@ nodes:
     dataset_columns:
     - field_id
     entity_universe: complete
-  - identity_id: dim_play_identity
-    dataset_columns:
-    - play_id
-    entity_universe: partial
   - identity_id: dim_country_identity
     dataset_columns:
     - country_id
     entity_universe: partial
-- node_id: sf:energy.resource.dim_asset
+- node_id: sf:energy.supply.dim_play
   descriptor:
-    qualified_name: energy.resource.dim_asset
-    display_name: Asset
-    description: Named upstream or midstream asset.
+    qualified_name: energy.supply.dim_play
+    display_name: Play
+    description: Geologic play or shale play. A play is not a field, asset, or project.
     synonyms: []
     tags:
     - dimension
@@ -109,7 +56,48 @@ nodes:
     properties:
       account: energy.us-central-1
       database: ENERGY
-      schema: RESOURCE
+      schema: SUPPLY
+      object: DIM_PLAY
+      format: table
+  grain:
+    description: One row is one play.
+    components:
+    - identity_id: dim_play_identity
+      dataset_columns:
+      - play_id
+      description: Identifier of the play.
+  columns:
+  - name: play_id
+    description: Identifier of the play.
+  - name: play_name
+    description: Play name.
+  - name: region_id
+    description: Identifier of the related region.
+  entity_definitions:
+  - identity_id: dim_play_identity
+    dataset_columns:
+    - play_id
+    entity_universe: complete
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:energy.supply.dim_asset
+  descriptor:
+    qualified_name: energy.supply.dim_asset
+    display_name: Asset
+    description: Block, concession, or producing asset, such as a named offshore block. An asset is not a play or a project.
+    synonyms: []
+    tags:
+    - dimension
+    - supply
+    - energy
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: energy.us-central-1
+      database: ENERGY
+      schema: SUPPLY
       object: DIM_ASSET
       format: table
   grain:
@@ -122,15 +110,12 @@ nodes:
   columns:
   - name: asset_id
     description: Identifier of the asset.
-  - name: asset_code
-    description: Asset code.
-    value_description: leviathan, tamar, aphrodite, aspen, stabroek
   - name: asset_name
     description: Asset name.
   - name: country_id
     description: Identifier of the related country.
-  - name: play_id
-    description: Identifier of the related play.
+  - name: field_id
+    description: Identifier of the related field.
   entity_definitions:
   - identity_id: dim_asset_identity
     dataset_columns:
@@ -140,15 +125,15 @@ nodes:
     dataset_columns:
     - country_id
     entity_universe: partial
-  - identity_id: dim_play_identity
+  - identity_id: dim_field_identity
     dataset_columns:
-    - play_id
+    - field_id
     entity_universe: partial
-- node_id: sf:energy.resource.dim_project
+- node_id: sf:energy.supply.dim_project
   descriptor:
-    qualified_name: energy.resource.dim_project
+    qualified_name: energy.supply.dim_project
     display_name: Project
-    description: Project such as a new LNG train, Project Kilby, or a start-up.
+    description: Capital project under development. A project is not a field, play, or asset.
     synonyms: []
     tags:
     - dimension
@@ -159,7 +144,7 @@ nodes:
     properties:
       account: energy.us-central-1
       database: ENERGY
-      schema: RESOURCE
+      schema: SUPPLY
       object: DIM_PROJECT
       format: table
   grain:
@@ -172,33 +157,30 @@ nodes:
   columns:
   - name: project_id
     description: Identifier of the project.
-  - name: project_code
-    description: Project code.
-    value_description: project_kilby, papua_lng, mozambique_lng, aspen
   - name: project_name
     description: Project name.
-  - name: country_id
-    description: Identifier of the related country.
   - name: asset_id
     description: Identifier of the related asset.
+  - name: field_id
+    description: Identifier of the related field.
   entity_definitions:
   - identity_id: dim_project_identity
     dataset_columns:
     - project_id
     entity_universe: complete
-  - identity_id: dim_country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
   - identity_id: dim_asset_identity
     dataset_columns:
     - asset_id
     entity_universe: partial
-- node_id: sf:energy.resource.dim_facility
+  - identity_id: dim_field_identity
+    dataset_columns:
+    - field_id
+    entity_universe: partial
+- node_id: sf:energy.supply.dim_operator_affiliate
   descriptor:
-    qualified_name: energy.resource.dim_facility
-    display_name: Facility
-    description: Refinery, LNG plant, or chemical complex.
+    qualified_name: energy.supply.dim_operator_affiliate
+    display_name: Operator Affiliate
+    description: Affiliate or operator that operates an asset, such as TCO for Tengiz.
     synonyms: []
     tags:
     - dimension
@@ -209,46 +191,37 @@ nodes:
     properties:
       account: energy.us-central-1
       database: ENERGY
-      schema: RESOURCE
-      object: DIM_FACILITY
+      schema: SUPPLY
+      object: DIM_OPERATOR_AFFILIATE
       format: table
   grain:
-    description: One row is one facility.
+    description: One row is one operator affiliate.
     components:
-    - identity_id: dim_facility_identity
+    - identity_id: dim_operator_affiliate_identity
       dataset_columns:
-      - facility_id
-      description: Identifier of the facility.
+      - operator_affiliate_id
+      description: Identifier of the operator affiliate.
   columns:
-  - name: facility_id
-    description: Identifier of the facility.
-  - name: facility_code
-    description: Facility code.
-    value_description: gorgon, wheatstone, gulf_coast_refinery, california_refinery, china_complex
-  - name: facility_name
-    description: Facility name.
+  - name: operator_affiliate_id
+    description: Identifier of the operator affiliate.
+  - name: operator_affiliate_name
+    description: Operator Affiliate name.
   - name: country_id
     description: Identifier of the related country.
-  - name: market_id
-    description: Identifier of the related market.
   entity_definitions:
-  - identity_id: dim_facility_identity
+  - identity_id: dim_operator_affiliate_identity
     dataset_columns:
-    - facility_id
+    - operator_affiliate_id
     entity_universe: complete
   - identity_id: dim_country_identity
     dataset_columns:
     - country_id
     entity_universe: partial
-  - identity_id: dim_market_identity
-    dataset_columns:
-    - market_id
-    entity_universe: partial
-- node_id: sf:energy.resource.dim_technology
+- node_id: sf:energy.supply.dim_segment
   descriptor:
-    qualified_name: energy.resource.dim_technology
-    display_name: Technology
-    description: Technology Energy Inc can apply, including proppant, surfactant, and heavy-oil tools.
+    qualified_name: energy.supply.dim_segment
+    display_name: Segment
+    description: Reporting segment.
     synonyms: []
     tags:
     - dimension
@@ -259,34 +232,34 @@ nodes:
     properties:
       account: energy.us-central-1
       database: ENERGY
-      schema: RESOURCE
-      object: DIM_TECHNOLOGY
+      schema: SUPPLY
+      object: DIM_SEGMENT
       format: table
   grain:
-    description: One row is one technology.
+    description: One row is one segment.
     components:
-    - identity_id: dim_technology_identity
+    - identity_id: dim_segment_identity
       dataset_columns:
-      - technology_id
-      description: Identifier of the technology.
+      - segment_id
+      description: Identifier of the segment.
   columns:
-  - name: technology_id
-    description: Identifier of the technology.
-  - name: technology_code
-    description: Technology code.
-    value_description: proppant, surfactant, heavy_oil, shale_toolkit
-  - name: technology_name
-    description: Technology name.
+  - name: segment_id
+    description: Identifier of the segment.
+  - name: segment_code
+    description: Segment code.
+    value_description: upstream, downstream, chemicals, corporate
+  - name: segment_name
+    description: Segment name.
   entity_definitions:
-  - identity_id: dim_technology_identity
+  - identity_id: dim_segment_identity
     dataset_columns:
-    - technology_id
+    - segment_id
     entity_universe: complete
-- node_id: sf:energy.resource.dim_pipeline
+- node_id: sf:energy.supply.dim_refinery
   descriptor:
-    qualified_name: energy.resource.dim_pipeline
-    display_name: Pipeline
-    description: Export pipeline, including the CPC pipeline.
+    qualified_name: energy.supply.dim_refinery
+    display_name: Refinery
+    description: Refinery facility that processes crude.
     synonyms: []
     tags:
     - dimension
@@ -297,7 +270,168 @@ nodes:
     properties:
       account: energy.us-central-1
       database: ENERGY
-      schema: RESOURCE
+      schema: SUPPLY
+      object: DIM_REFINERY
+      format: table
+  grain:
+    description: One row is one refinery.
+    components:
+    - identity_id: dim_refinery_identity
+      dataset_columns:
+      - refinery_id
+      description: Identifier of the refinery.
+  columns:
+  - name: refinery_id
+    description: Identifier of the refinery.
+  - name: refinery_name
+    description: Refinery name.
+  - name: country_id
+    description: Identifier of the related country.
+  entity_definitions:
+  - identity_id: dim_refinery_identity
+    dataset_columns:
+    - refinery_id
+    entity_universe: complete
+  - identity_id: dim_country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+- node_id: sf:energy.supply.dim_lng_terminal
+  descriptor:
+    qualified_name: energy.supply.dim_lng_terminal
+    display_name: LNG Terminal
+    description: Liquefied natural gas terminal with liquefaction trains.
+    synonyms: []
+    tags:
+    - dimension
+    - supply
+    - energy
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: energy.us-central-1
+      database: ENERGY
+      schema: SUPPLY
+      object: DIM_LNG_TERMINAL
+      format: table
+  grain:
+    description: One row is one lng terminal.
+    components:
+    - identity_id: dim_lng_terminal_identity
+      dataset_columns:
+      - lng_terminal_id
+      description: Identifier of the lng terminal.
+  columns:
+  - name: lng_terminal_id
+    description: Identifier of the lng terminal.
+  - name: lng_terminal_name
+    description: LNG Terminal name.
+  - name: country_id
+    description: Identifier of the related country.
+  entity_definitions:
+  - identity_id: dim_lng_terminal_identity
+    dataset_columns:
+    - lng_terminal_id
+    entity_universe: complete
+  - identity_id: dim_country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+- node_id: sf:energy.supply.dim_chemical_plant
+  descriptor:
+    qualified_name: energy.supply.dim_chemical_plant
+    display_name: Chemical Plant
+    description: Chemical plant or cracker facility.
+    synonyms: []
+    tags:
+    - dimension
+    - supply
+    - energy
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: energy.us-central-1
+      database: ENERGY
+      schema: SUPPLY
+      object: DIM_CHEMICAL_PLANT
+      format: table
+  grain:
+    description: One row is one chemical plant.
+    components:
+    - identity_id: dim_chemical_plant_identity
+      dataset_columns:
+      - chemical_plant_id
+      description: Identifier of the chemical plant.
+  columns:
+  - name: chemical_plant_id
+    description: Identifier of the chemical plant.
+  - name: chemical_plant_name
+    description: Chemical Plant name.
+  - name: country_id
+    description: Identifier of the related country.
+  entity_definitions:
+  - identity_id: dim_chemical_plant_identity
+    dataset_columns:
+    - chemical_plant_id
+    entity_universe: complete
+  - identity_id: dim_country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+- node_id: sf:energy.supply.dim_facility_type
+  descriptor:
+    qualified_name: energy.supply.dim_facility_type
+    display_name: Facility Type
+    description: Type of downstream or midstream facility for capacity reporting where the specific facility is not the grain.
+    synonyms: []
+    tags:
+    - dimension
+    - supply
+    - energy
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: energy.us-central-1
+      database: ENERGY
+      schema: SUPPLY
+      object: DIM_FACILITY_TYPE
+      format: table
+  grain:
+    description: One row is one facility type.
+    components:
+    - identity_id: dim_facility_type_identity
+      dataset_columns:
+      - facility_type_id
+      description: Identifier of the facility type.
+  columns:
+  - name: facility_type_id
+    description: Identifier of the facility type.
+  - name: facility_type_code
+    description: Facility Type code.
+    value_description: refinery, lng_terminal, chemical_plant, terminal, pipeline
+  - name: facility_type_name
+    description: Facility Type name.
+  entity_definitions:
+  - identity_id: dim_facility_type_identity
+    dataset_columns:
+    - facility_type_id
+    entity_universe: complete
+- node_id: sf:energy.supply.dim_pipeline
+  descriptor:
+    qualified_name: energy.supply.dim_pipeline
+    display_name: Pipeline
+    description: Pipeline that transports hydrocarbons.
+    synonyms: []
+    tags:
+    - dimension
+    - supply
+    - energy
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: energy.us-central-1
+      database: ENERGY
+      schema: SUPPLY
       object: DIM_PIPELINE
       format: table
   grain:
@@ -310,27 +444,24 @@ nodes:
   columns:
   - name: pipeline_id
     description: Identifier of the pipeline.
-  - name: pipeline_code
-    description: Pipeline code.
-    value_description: cpc, other
   - name: pipeline_name
     description: Pipeline name.
-  - name: country_id
-    description: Identifier of the related country.
+  - name: region_id
+    description: Identifier of the related region.
   entity_definitions:
   - identity_id: dim_pipeline_identity
     dataset_columns:
     - pipeline_id
     entity_universe: complete
-  - identity_id: dim_country_identity
+  - identity_id: dim_region_identity
     dataset_columns:
-    - country_id
+    - region_id
     entity_universe: partial
-- node_id: sf:energy.resource.dim_well_type
+- node_id: sf:energy.supply.dim_storage_terminal
   descriptor:
-    qualified_name: energy.resource.dim_well_type
-    display_name: Well Type
-    description: Well type, including operated, non-operated, and royalty wells.
+    qualified_name: energy.supply.dim_storage_terminal
+    display_name: Storage Terminal
+    description: Storage or export terminal.
     synonyms: []
     tags:
     - dimension
@@ -341,7 +472,48 @@ nodes:
     properties:
       account: energy.us-central-1
       database: ENERGY
-      schema: RESOURCE
+      schema: SUPPLY
+      object: DIM_STORAGE_TERMINAL
+      format: table
+  grain:
+    description: One row is one storage terminal.
+    components:
+    - identity_id: dim_storage_terminal_identity
+      dataset_columns:
+      - storage_terminal_id
+      description: Identifier of the storage terminal.
+  columns:
+  - name: storage_terminal_id
+    description: Identifier of the storage terminal.
+  - name: storage_terminal_name
+    description: Storage Terminal name.
+  - name: country_id
+    description: Identifier of the related country.
+  entity_definitions:
+  - identity_id: dim_storage_terminal_identity
+    dataset_columns:
+    - storage_terminal_id
+    entity_universe: complete
+  - identity_id: dim_country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+- node_id: sf:energy.supply.dim_well_type
+  descriptor:
+    qualified_name: energy.supply.dim_well_type
+    display_name: Well Type
+    description: Type of well drilled or completed.
+    synonyms: []
+    tags:
+    - dimension
+    - supply
+    - energy
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: energy.us-central-1
+      database: ENERGY
+      schema: SUPPLY
       object: DIM_WELL_TYPE
       format: table
   grain:
@@ -355,20 +527,20 @@ nodes:
   - name: well_type_id
     description: Identifier of the well type.
   - name: well_type_code
-    description: Well type code.
-    value_description: operated, nonoperated, royalty
+    description: Well Type code.
+    value_description: oil, gas, injection, appraisal
   - name: well_type_name
-    description: Well type name.
+    description: Well Type name.
   entity_definitions:
   - identity_id: dim_well_type_identity
     dataset_columns:
     - well_type_id
     entity_universe: complete
-- node_id: sf:energy.resource.dim_operator_role
+- node_id: sf:energy.supply.dim_rig_type
   descriptor:
-    qualified_name: energy.resource.dim_operator_role
-    display_name: Operator Role
-    description: Whether Energy Inc operates the asset.
+    qualified_name: energy.supply.dim_rig_type
+    display_name: Rig Type
+    description: Type of drilling rig.
     synonyms: []
     tags:
     - dimension
@@ -379,34 +551,34 @@ nodes:
     properties:
       account: energy.us-central-1
       database: ENERGY
-      schema: RESOURCE
-      object: DIM_OPERATOR_ROLE
+      schema: SUPPLY
+      object: DIM_RIG_TYPE
       format: table
   grain:
-    description: One row is one operator role.
+    description: One row is one rig type.
     components:
-    - identity_id: dim_operator_role_identity
+    - identity_id: dim_rig_type_identity
       dataset_columns:
-      - operator_role_id
-      description: Identifier of the operator role.
+      - rig_type_id
+      description: Identifier of the rig type.
   columns:
-  - name: operator_role_id
-    description: Identifier of the operator role.
-  - name: role_code
-    description: Role code.
-    value_description: operated, nonoperated
-  - name: role_name
-    description: Role name.
+  - name: rig_type_id
+    description: Identifier of the rig type.
+  - name: rig_type_code
+    description: Rig Type code.
+    value_description: land, offshore, other
+  - name: rig_type_name
+    description: Rig Type name.
   entity_definitions:
-  - identity_id: dim_operator_role_identity
+  - identity_id: dim_rig_type_identity
     dataset_columns:
-    - operator_role_id
+    - rig_type_id
     entity_universe: complete
-- node_id: sf:energy.resource.dim_train
+- node_id: sf:energy.supply.dim_basin
   descriptor:
-    qualified_name: energy.resource.dim_train
-    display_name: LNG Train
-    description: LNG train, including trains under force majeure.
+    qualified_name: energy.supply.dim_basin
+    display_name: Basin
+    description: Sedimentary basin containing fields and plays.
     synonyms: []
     tags:
     - dimension
@@ -417,39 +589,120 @@ nodes:
     properties:
       account: energy.us-central-1
       database: ENERGY
-      schema: RESOURCE
-      object: DIM_TRAIN
+      schema: SUPPLY
+      object: DIM_BASIN
       format: table
   grain:
-    description: One row is one lng train.
+    description: One row is one basin.
     components:
-    - identity_id: dim_train_identity
+    - identity_id: dim_basin_identity
       dataset_columns:
-      - train_id
-      description: Identifier of the lng train.
+      - basin_id
+      description: Identifier of the basin.
   columns:
-  - name: train_id
-    description: Identifier of the lng train.
-  - name: train_code
-    description: Train code.
-  - name: train_name
-    description: Train name.
-  - name: facility_id
-    description: Identifier of the related facility.
+  - name: basin_id
+    description: Identifier of the basin.
+  - name: basin_name
+    description: Basin name.
+  - name: region_id
+    description: Identifier of the related region.
   entity_definitions:
-  - identity_id: dim_train_identity
+  - identity_id: dim_basin_identity
     dataset_columns:
-    - train_id
+    - basin_id
     entity_universe: complete
-  - identity_id: dim_facility_identity
+  - identity_id: dim_region_identity
     dataset_columns:
-    - facility_id
+    - region_id
     entity_universe: partial
-- node_id: sf:energy.supply.fact_production
+- node_id: sf:energy.supply.dim_power_plant
   descriptor:
-    qualified_name: energy.supply.fact_production
-    display_name: Production
-    description: Production quantity. Price and margin are not stored here.
+    qualified_name: energy.supply.dim_power_plant
+    display_name: Power Plant
+    description: Power generation facility owned or contracted by Energy Inc.
+    synonyms: []
+    tags:
+    - dimension
+    - supply
+    - energy
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: energy.us-central-1
+      database: ENERGY
+      schema: SUPPLY
+      object: DIM_POWER_PLANT
+      format: table
+  grain:
+    description: One row is one power plant.
+    components:
+    - identity_id: dim_power_plant_identity
+      dataset_columns:
+      - power_plant_id
+      description: Identifier of the power plant.
+  columns:
+  - name: power_plant_id
+    description: Identifier of the power plant.
+  - name: power_plant_name
+    description: Power Plant name.
+  - name: country_id
+    description: Identifier of the related country.
+  entity_definitions:
+  - identity_id: dim_power_plant_identity
+    dataset_columns:
+    - power_plant_id
+    entity_universe: complete
+  - identity_id: dim_country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+- node_id: sf:energy.supply.dim_low_carbon_project
+  descriptor:
+    qualified_name: energy.supply.dim_low_carbon_project
+    display_name: Low Carbon Project
+    description: Carbon capture, hydrogen, or other low-carbon project. A low-carbon project is not a hydrocarbon field.
+    synonyms: []
+    tags:
+    - dimension
+    - supply
+    - energy
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: energy.us-central-1
+      database: ENERGY
+      schema: SUPPLY
+      object: DIM_LOW_CARBON_PROJECT
+      format: table
+  grain:
+    description: One row is one low carbon project.
+    components:
+    - identity_id: dim_low_carbon_project_identity
+      dataset_columns:
+      - low_carbon_project_id
+      description: Identifier of the low carbon project.
+  columns:
+  - name: low_carbon_project_id
+    description: Identifier of the low carbon project.
+  - name: low_carbon_project_name
+    description: Low Carbon Project name.
+  - name: asset_id
+    description: Identifier of the related asset.
+  entity_definitions:
+  - identity_id: dim_low_carbon_project_identity
+    dataset_columns:
+    - low_carbon_project_id
+    entity_universe: complete
+  - identity_id: dim_asset_identity
+    dataset_columns:
+    - asset_id
+    entity_universe: partial
+- node_id: sf:energy.supply.fact_production_quantity
+  descriptor:
+    qualified_name: energy.supply.fact_production_quantity
+    display_name: Production Quantity
+    description: Production quantity by hydrocarbon, field, play, asset, and country. Gross operated and net entitlement are
+      separate measures. Stores crude and NGL in barrels and natural gas in thousand cubic feet as labelled by hydrocarbon.
     synonyms: []
     tags:
     - fact
@@ -461,40 +714,72 @@ nodes:
       account: energy.us-central-1
       database: ENERGY
       schema: SUPPLY
-      object: FACT_PRODUCTION
+      object: FACT_PRODUCTION_QUANTITY
       format: table
   grain:
-    description: One row is one production.
+    description: One row is one combination of fiscal quarter, scenario, hydrocarbon, field, play, asset, country.
     components:
-    - identity_id: fact_production_identity
+    - identity_id: dim_fiscal_quarter_identity
       dataset_columns:
-      - production_id
-      description: Identifier of the production.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_hydrocarbon_identity
+      dataset_columns:
+      - hydrocarbon_id
+      description: Identifier of the hydrocarbon.
+    - identity_id: dim_field_identity
+      dataset_columns:
+      - field_id
+      description: Identifier of the field.
+    - identity_id: dim_play_identity
+      dataset_columns:
+      - play_id
+      description: Identifier of the play.
+    - identity_id: dim_asset_identity
+      dataset_columns:
+      - asset_id
+      description: Identifier of the asset.
+    - identity_id: dim_country_identity
+      dataset_columns:
+      - country_id
+      description: Identifier of the country.
   columns:
-  - name: production_id
-    description: Identifier of the production.
-  - name: production_quantity
-    description: Production quantity on this row. The value is a quantity, not a price.
-  - name: above_nameplate_flag
-    description: Whether this row is marked above nameplate.
-  - name: sequential_increase_flag
-    description: Whether this row is marked sequential increase.
+  - name: production_record_id
+    description: Surrogate record identifier for this production quantity row. It is not the grain.
   - name: fiscal_quarter_id
     description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: hydrocarbon_id
+    description: Identifier of the related hydrocarbon.
   - name: field_id
     description: Identifier of the related field.
   - name: play_id
     description: Identifier of the related play.
+  - name: asset_id
+    description: Identifier of the related asset.
   - name: country_id
     description: Identifier of the related country.
+  - name: gross_operated_production_quantity
+    description: Gross operated production quantity in barrels for crude and NGL and in thousand cubic feet for natural gas.
+  - name: net_entitlement_production_quantity
+    description: Net entitlement production quantity in barrels for crude and NGL and in thousand cubic feet for natural gas.
   entity_definitions:
-  - identity_id: fact_production_identity
-    dataset_columns:
-    - production_id
-    entity_universe: complete
   - identity_id: dim_fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_hydrocarbon_identity
+    dataset_columns:
+    - hydrocarbon_id
     entity_universe: partial
   - identity_id: dim_field_identity
     dataset_columns:
@@ -504,15 +789,20 @@ nodes:
     dataset_columns:
     - play_id
     entity_universe: partial
+  - identity_id: dim_asset_identity
+    dataset_columns:
+    - asset_id
+    entity_universe: partial
   - identity_id: dim_country_identity
     dataset_columns:
     - country_id
     entity_universe: partial
-- node_id: sf:energy.supply.fact_acquired_volume
+- node_id: sf:energy.supply.fact_monthly_production_quantity
   descriptor:
-    qualified_name: energy.supply.fact_acquired_volume
-    display_name: Acquired Production
-    description: Acquired production versus the volume expected at closing.
+    qualified_name: energy.supply.fact_monthly_production_quantity
+    display_name: Monthly Production Quantity
+    description: Production quantity by calendar month inside a quarter, by hydrocarbon and field. Stores quantity in barrels
+      for crude and NGL and in thousand cubic feet for natural gas.
     synonyms: []
     tags:
     - fact
@@ -524,101 +814,85 @@ nodes:
       account: energy.us-central-1
       database: ENERGY
       schema: SUPPLY
-      object: FACT_ACQUIRED_VOLUME
+      object: FACT_MONTHLY_PRODUCTION_QUANTITY
       format: table
   grain:
-    description: One row is one acquired production.
+    description: One row is one combination of fiscal quarter, scenario, calendar month, hydrocarbon, field, asset.
     components:
-    - identity_id: fact_acquired_volume_identity
+    - identity_id: dim_fiscal_quarter_identity
       dataset_columns:
-      - acquired_volume_id
-      description: Identifier of the acquired production.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_calendar_month_identity
+      dataset_columns:
+      - calendar_month_id
+      description: Identifier of the calendar month.
+    - identity_id: dim_hydrocarbon_identity
+      dataset_columns:
+      - hydrocarbon_id
+      description: Identifier of the hydrocarbon.
+    - identity_id: dim_field_identity
+      dataset_columns:
+      - field_id
+      description: Identifier of the field.
+    - identity_id: dim_asset_identity
+      dataset_columns:
+      - asset_id
+      description: Identifier of the asset.
   columns:
-  - name: acquired_volume_id
-    description: Identifier of the acquired production.
-  - name: acquired_quantity
-    description: Acquired quantity on this row. The value is a quantity, not a price.
-  - name: at_high_end_flag
-    description: Whether this row is marked at high end.
   - name: fiscal_quarter_id
     description: Identifier of the related fiscal quarter.
-  - name: play_id
-    description: Identifier of the related play.
-  - name: country_id
-    description: Identifier of the related country.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: calendar_month_id
+    description: Identifier of the related calendar month.
+  - name: hydrocarbon_id
+    description: Identifier of the related hydrocarbon.
+  - name: field_id
+    description: Identifier of the related field.
+  - name: asset_id
+    description: Identifier of the related asset.
+  - name: monthly_gross_production_quantity
+    description: Monthly gross operated production quantity in barrels for crude and NGL and in thousand cubic feet for natural
+      gas.
+  - name: monthly_net_production_quantity
+    description: Monthly net entitlement production quantity in barrels for crude and NGL and in thousand cubic feet for natural
+      gas.
   entity_definitions:
-  - identity_id: fact_acquired_volume_identity
-    dataset_columns:
-    - acquired_volume_id
-    entity_universe: complete
   - identity_id: dim_fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: dim_play_identity
+  - identity_id: dim_scenario_identity
     dataset_columns:
-    - play_id
+    - scenario_id
     entity_universe: partial
-  - identity_id: dim_country_identity
+  - identity_id: dim_calendar_month_identity
     dataset_columns:
-    - country_id
+    - calendar_month_id
     entity_universe: partial
-- node_id: sf:energy.supply.fact_base_production
+  - identity_id: dim_hydrocarbon_identity
+    dataset_columns:
+    - hydrocarbon_id
+    entity_universe: partial
+  - identity_id: dim_field_identity
+    dataset_columns:
+    - field_id
+    entity_universe: partial
+  - identity_id: dim_asset_identity
+    dataset_columns:
+    - asset_id
+    entity_universe: partial
+- node_id: sf:energy.supply.fact_production_capacity
   descriptor:
-    qualified_name: energy.supply.fact_base_production
-    display_name: Base Production
-    description: Base production and whether the new operating model is repeatable.
-    synonyms: []
-    tags:
-    - fact
-    - supply
-    - energy
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: energy.us-central-1
-      database: ENERGY
-      schema: SUPPLY
-      object: FACT_BASE_PRODUCTION
-      format: table
-  grain:
-    description: One row is one base production.
-    components:
-    - identity_id: fact_base_production_identity
-      dataset_columns:
-      - base_production_id
-      description: Identifier of the base production.
-  columns:
-  - name: base_production_id
-    description: Identifier of the base production.
-  - name: base_quantity
-    description: Base quantity on this row. The value is a quantity, not a price.
-  - name: managed_differently_flag
-    description: Whether this row is marked managed differently.
-  - name: repeatable_flag
-    description: Whether this row is marked repeatable.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: play_id
-    description: Identifier of the related play.
-  entity_definitions:
-  - identity_id: fact_base_production_identity
-    dataset_columns:
-    - base_production_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_play_identity
-    dataset_columns:
-    - play_id
-    entity_universe: partial
-- node_id: sf:energy.supply.fact_capacity
-  descriptor:
-    qualified_name: energy.supply.fact_capacity
+    qualified_name: energy.supply.fact_production_capacity
     display_name: Production Capacity
-    description: Nameplate and remaining capacity. Not a price.
+    description: Production capacity by field and hydrocarbon. Stores capacity in barrels per day for crude and NGL and in
+      thousand cubic feet per day for natural gas.
     synonyms: []
     tags:
     - fact
@@ -630,427 +904,71 @@ nodes:
       account: energy.us-central-1
       database: ENERGY
       schema: SUPPLY
-      object: FACT_CAPACITY
+      object: FACT_PRODUCTION_CAPACITY
       format: table
   grain:
-    description: One row is one production capacity.
+    description: One row is one combination of fiscal quarter, scenario, field, asset, hydrocarbon.
     components:
-    - identity_id: fact_capacity_identity
+    - identity_id: dim_fiscal_quarter_identity
       dataset_columns:
-      - capacity_id
-      description: Identifier of the production capacity.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_field_identity
+      dataset_columns:
+      - field_id
+      description: Identifier of the field.
+    - identity_id: dim_asset_identity
+      dataset_columns:
+      - asset_id
+      description: Identifier of the asset.
+    - identity_id: dim_hydrocarbon_identity
+      dataset_columns:
+      - hydrocarbon_id
+      description: Identifier of the hydrocarbon.
   columns:
-  - name: capacity_id
-    description: Identifier of the production capacity.
-  - name: nameplate_quantity
-    description: Nameplate quantity on this row. The value is a quantity, not a price.
-  - name: remaining_quantity
-    description: Remaining quantity on this row. The value is a quantity, not a price.
-  - name: at_capacity_flag
-    description: Whether this row is marked at capacity.
   - name: fiscal_quarter_id
     description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
   - name: field_id
     description: Identifier of the related field.
-  - name: facility_id
-    description: Identifier of the related facility.
-  entity_definitions:
-  - identity_id: fact_capacity_identity
-    dataset_columns:
-    - capacity_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_field_identity
-    dataset_columns:
-    - field_id
-    entity_universe: partial
-  - identity_id: dim_facility_identity
-    dataset_columns:
-    - facility_id
-    entity_universe: partial
-- node_id: sf:energy.supply.fact_debottleneck
-  descriptor:
-    qualified_name: energy.supply.fact_debottleneck
-    display_name: Debottlenecking
-    description: Debottlenecking still available above nameplate.
-    synonyms: []
-    tags:
-    - fact
-    - supply
-    - energy
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: energy.us-central-1
-      database: ENERGY
-      schema: SUPPLY
-      object: FACT_DEBOTTLENECK
-      format: table
-  grain:
-    description: One row is one debottlenecking.
-    components:
-    - identity_id: fact_debottleneck_identity
-      dataset_columns:
-      - debottleneck_id
-      description: Identifier of the debottlenecking.
-  columns:
-  - name: debottleneck_id
-    description: Identifier of the debottlenecking.
-  - name: remaining_quantity
-    description: Remaining quantity on this row. The value is a quantity, not a price.
-  - name: underway_flag
-    description: Whether this row is marked underway.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: field_id
-    description: Identifier of the related field.
-  entity_definitions:
-  - identity_id: fact_debottleneck_identity
-    dataset_columns:
-    - debottleneck_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_field_identity
-    dataset_columns:
-    - field_id
-    entity_universe: partial
-- node_id: sf:energy.supply.fact_maintenance
-  descriptor:
-    qualified_name: energy.supply.fact_maintenance
-    display_name: Maintenance
-    description: Maintenance and turnaround schedule that changes available volume.
-    synonyms: []
-    tags:
-    - fact
-    - supply
-    - energy
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: energy.us-central-1
-      database: ENERGY
-      schema: SUPPLY
-      object: FACT_MAINTENANCE
-      format: table
-  grain:
-    description: One row is one maintenance.
-    components:
-    - identity_id: fact_maintenance_identity
-      dataset_columns:
-      - maintenance_id
-      description: Identifier of the maintenance.
-  columns:
-  - name: maintenance_id
-    description: Identifier of the maintenance.
-  - name: downtime_days
-    description: Downtime days.
-  - name: on_schedule_flag
-    description: Whether this row is marked on schedule.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: field_id
-    description: Identifier of the related field.
-  - name: facility_id
-    description: Identifier of the related facility.
-  entity_definitions:
-  - identity_id: fact_maintenance_identity
-    dataset_columns:
-    - maintenance_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_field_identity
-    dataset_columns:
-    - field_id
-    entity_universe: partial
-  - identity_id: dim_facility_identity
-    dataset_columns:
-    - facility_id
-    entity_universe: partial
-- node_id: sf:energy.supply.fact_turnaround
-  descriptor:
-    qualified_name: energy.supply.fact_turnaround
-    display_name: Turnaround
-    description: Turnaround underway and whether the field is still at capacity.
-    synonyms: []
-    tags:
-    - fact
-    - supply
-    - energy
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: energy.us-central-1
-      database: ENERGY
-      schema: SUPPLY
-      object: FACT_TURNAROUND
-      format: table
-  grain:
-    description: One row is one turnaround.
-    components:
-    - identity_id: fact_turnaround_identity
-      dataset_columns:
-      - turnaround_id
-      description: Identifier of the turnaround.
-  columns:
-  - name: turnaround_id
-    description: Identifier of the turnaround.
-  - name: turnaround_days
-    description: Turnaround days.
-  - name: still_at_capacity_flag
-    description: Whether this row is marked still at capacity.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: field_id
-    description: Identifier of the related field.
-  entity_definitions:
-  - identity_id: fact_turnaround_identity
-    dataset_columns:
-    - turnaround_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_field_identity
-    dataset_columns:
-    - field_id
-    entity_universe: partial
-- node_id: sf:energy.supply.fact_route_capacity
-  descriptor:
-    qualified_name: energy.supply.fact_route_capacity
-    display_name: Alternate Route Capacity
-    description: Volume other export routes can take if a pipeline is closed.
-    synonyms: []
-    tags:
-    - fact
-    - supply
-    - energy
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: energy.us-central-1
-      database: ENERGY
-      schema: SUPPLY
-      object: FACT_ROUTE_CAPACITY
-      format: table
-  grain:
-    description: One row is one alternate route capacity.
-    components:
-    - identity_id: fact_route_capacity_identity
-      dataset_columns:
-      - route_capacity_id
-      description: Identifier of the alternate route capacity.
-  columns:
-  - name: route_capacity_id
-    description: Identifier of the alternate route capacity.
-  - name: alternate_quantity
-    description: Alternate quantity on this row. The value is a quantity, not a price.
-  - name: long_outage_flag
-    description: Whether this row is marked long outage.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: pipeline_id
-    description: Identifier of the related pipeline.
-  - name: field_id
-    description: Identifier of the related field.
-  entity_definitions:
-  - identity_id: fact_route_capacity_identity
-    dataset_columns:
-    - route_capacity_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_pipeline_identity
-    dataset_columns:
-    - pipeline_id
-    entity_universe: partial
-  - identity_id: dim_field_identity
-    dataset_columns:
-    - field_id
-    entity_universe: partial
-- node_id: sf:energy.supply.fact_uncommitted_lng
-  descriptor:
-    qualified_name: energy.supply.fact_uncommitted_lng
-    display_name: Uncommitted LNG
-    description: Uncommitted LNG available for a tight market. The price is separate.
-    synonyms: []
-    tags:
-    - fact
-    - supply
-    - energy
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: energy.us-central-1
-      database: ENERGY
-      schema: SUPPLY
-      object: FACT_UNCOMMITTED_LNG
-      format: table
-  grain:
-    description: One row is one uncommitted lng.
-    components:
-    - identity_id: fact_uncommitted_lng_identity
-      dataset_columns:
-      - uncommitted_lng_id
-      description: Identifier of the uncommitted lng.
-  columns:
-  - name: uncommitted_lng_id
-    description: Identifier of the uncommitted lng.
-  - name: uncommitted_quantity
-    description: Uncommitted quantity on this row. The value is a quantity, not a price.
-  - name: available_for_arbitrage_flag
-    description: Whether this row is marked available for arbitrage.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: facility_id
-    description: Identifier of the related facility.
-  - name: train_id
-    description: Identifier of the related train.
-  entity_definitions:
-  - identity_id: fact_uncommitted_lng_identity
-    dataset_columns:
-    - uncommitted_lng_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_facility_identity
-    dataset_columns:
-    - facility_id
-    entity_universe: partial
-  - identity_id: dim_train_identity
-    dataset_columns:
-    - train_id
-    entity_universe: partial
-- node_id: sf:energy.supply.fact_exploration
-  descriptor:
-    qualified_name: energy.supply.fact_exploration
-    display_name: Exploration
-    description: Exploration campaign status by country.
-    synonyms: []
-    tags:
-    - fact
-    - supply
-    - energy
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: energy.us-central-1
-      database: ENERGY
-      schema: SUPPLY
-      object: FACT_EXPLORATION
-      format: table
-  grain:
-    description: One row is one exploration.
-    components:
-    - identity_id: fact_exploration_identity
-      dataset_columns:
-      - exploration_id
-      description: Identifier of the exploration.
-  columns:
-  - name: exploration_id
-    description: Identifier of the exploration.
-  - name: campaign_status_code
-    description: Campaign status code.
-  - name: well_result_code
-    description: Well result code.
-  - name: industry_push_flag
-    description: Whether this row is marked industry push.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: country_id
-    description: Identifier of the related country.
-  - name: play_id
-    description: Identifier of the related play.
-  entity_definitions:
-  - identity_id: fact_exploration_identity
-    dataset_columns:
-    - exploration_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
-  - identity_id: dim_play_identity
-    dataset_columns:
-    - play_id
-    entity_universe: partial
-- node_id: sf:energy.supply.fact_reserves
-  descriptor:
-    qualified_name: energy.supply.fact_reserves
-    display_name: Reserves
-    description: Resource size and asset condition.
-    synonyms: []
-    tags:
-    - fact
-    - supply
-    - energy
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: energy.us-central-1
-      database: ENERGY
-      schema: SUPPLY
-      object: FACT_RESERVES
-      format: table
-  grain:
-    description: One row is one reserves.
-    components:
-    - identity_id: fact_reserves_identity
-      dataset_columns:
-      - reserves_id
-      description: Identifier of the reserves.
-  columns:
-  - name: reserves_id
-    description: Identifier of the reserves.
-  - name: resource_quantity
-    description: Resource quantity on this row. The value is a quantity, not a price.
-  - name: condition_code
-    description: Condition code.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: country_id
-    description: Identifier of the related country.
   - name: asset_id
     description: Identifier of the related asset.
+  - name: hydrocarbon_id
+    description: Identifier of the related hydrocarbon.
+  - name: production_capacity_quantity
+    description: Production capacity in barrels per day for crude and NGL and in thousand cubic feet per day for natural gas.
   entity_definitions:
-  - identity_id: fact_reserves_identity
-    dataset_columns:
-    - reserves_id
-    entity_universe: complete
   - identity_id: dim_fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: dim_country_identity
+  - identity_id: dim_scenario_identity
     dataset_columns:
-    - country_id
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_field_identity
+    dataset_columns:
+    - field_id
     entity_universe: partial
   - identity_id: dim_asset_identity
     dataset_columns:
     - asset_id
     entity_universe: partial
-- node_id: sf:energy.supply.fact_well_productivity
+  - identity_id: dim_hydrocarbon_identity
+    dataset_columns:
+    - hydrocarbon_id
+    entity_universe: partial
+- node_id: sf:energy.supply.fact_refinery_throughput
   descriptor:
-    qualified_name: energy.supply.fact_well_productivity
-    display_name: Well Productivity
-    description: Well productivity for a short-cycle asset. Capital per unit sits on the price slice.
+    qualified_name: energy.supply.fact_refinery_throughput
+    display_name: Refinery Throughput
+    description: Crude throughput and utilization by refinery. Stores throughput in barrels and utilization in percent. Stores
+      no price.
     synonyms: []
     tags:
     - fact
@@ -1062,835 +980,52 @@ nodes:
       account: energy.us-central-1
       database: ENERGY
       schema: SUPPLY
-      object: FACT_WELL_PRODUCTIVITY
+      object: FACT_REFINERY_THROUGHPUT
       format: table
   grain:
-    description: One row is one well productivity.
+    description: One row is one combination of fiscal quarter, scenario, refinery.
     components:
-    - identity_id: fact_well_productivity_identity
+    - identity_id: dim_fiscal_quarter_identity
       dataset_columns:
-      - well_productivity_id
-      description: Identifier of the well productivity.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_refinery_identity
+      dataset_columns:
+      - refinery_id
+      description: Identifier of the refinery.
   columns:
-  - name: well_productivity_id
-    description: Identifier of the well productivity.
-  - name: productivity_index
-    description: Productivity index.
-  - name: short_cycle_flag
-    description: Whether this row is marked short cycle.
   - name: fiscal_quarter_id
     description: Identifier of the related fiscal quarter.
-  - name: play_id
-    description: Identifier of the related play.
-  - name: well_type_id
-    description: Identifier of the related well type.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: refinery_id
+    description: Identifier of the related refinery.
+  - name: refinery_throughput_quantity
+    description: Refinery throughput in barrels.
+  - name: refinery_utilization_percent
+    description: Refinery utilization in percent.
   entity_definitions:
-  - identity_id: fact_well_productivity_identity
-    dataset_columns:
-    - well_productivity_id
-    entity_universe: complete
   - identity_id: dim_fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: dim_play_identity
+  - identity_id: dim_scenario_identity
     dataset_columns:
-    - play_id
+    - scenario_id
     entity_universe: partial
-  - identity_id: dim_well_type_identity
+  - identity_id: dim_refinery_identity
     dataset_columns:
-    - well_type_id
-    entity_universe: partial
-- node_id: sf:energy.supply.fact_rigs
-  descriptor:
-    qualified_name: energy.supply.fact_rigs
-    display_name: Rig Count
-    description: Rigs running versus smaller peers that are dropping rigs.
-    synonyms: []
-    tags:
-    - fact
-    - supply
-    - energy
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: energy.us-central-1
-      database: ENERGY
-      schema: SUPPLY
-      object: FACT_RIGS
-      format: table
-  grain:
-    description: One row is one rig count.
-    components:
-    - identity_id: fact_rigs_identity
-      dataset_columns:
-      - rigs_id
-      description: Identifier of the rig count.
-  columns:
-  - name: rigs_id
-    description: Identifier of the rig count.
-  - name: rig_quantity
-    description: Rig quantity on this row. The value is a quantity, not a price.
-  - name: peers_dropping_flag
-    description: Whether this row is marked peers dropping.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: play_id
-    description: Identifier of the related play.
-  entity_definitions:
-  - identity_id: fact_rigs_identity
-    dataset_columns:
-    - rigs_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_play_identity
-    dataset_columns:
-    - play_id
-    entity_universe: partial
-- node_id: sf:energy.supply.fact_completion_crews
-  descriptor:
-    qualified_name: energy.supply.fact_completion_crews
-    display_name: Completion Crews
-    description: Completion crews still working.
-    synonyms: []
-    tags:
-    - fact
-    - supply
-    - energy
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: energy.us-central-1
-      database: ENERGY
-      schema: SUPPLY
-      object: FACT_COMPLETION_CREWS
-      format: table
-  grain:
-    description: One row is one completion crews.
-    components:
-    - identity_id: fact_completion_crews_identity
-      dataset_columns:
-      - completion_crews_id
-      description: Identifier of the completion crews.
-  columns:
-  - name: completion_crews_id
-    description: Identifier of the completion crews.
-  - name: crew_quantity
-    description: Crew quantity on this row. The value is a quantity, not a price.
-  - name: peers_dropping_flag
-    description: Whether this row is marked peers dropping.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: play_id
-    description: Identifier of the related play.
-  entity_definitions:
-  - identity_id: fact_completion_crews_identity
-    dataset_columns:
-    - completion_crews_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_play_identity
-    dataset_columns:
-    - play_id
-    entity_universe: partial
-- node_id: sf:energy.supply.fact_proppant
-  descriptor:
-    qualified_name: energy.supply.fact_proppant
-    display_name: Proppant Recovery
-    description: Where proppant improves recovery, including gassier zones.
-    synonyms: []
-    tags:
-    - fact
-    - supply
-    - energy
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: energy.us-central-1
-      database: ENERGY
-      schema: SUPPLY
-      object: FACT_PROPPANT
-      format: table
-  grain:
-    description: One row is one proppant recovery.
-    components:
-    - identity_id: fact_proppant_identity
-      dataset_columns:
-      - proppant_id
-      description: Identifier of the proppant recovery.
-  columns:
-  - name: proppant_id
-    description: Identifier of the proppant recovery.
-  - name: recovery_uplift_quantity
-    description: Recovery uplift quantity on this row. The value is a quantity, not a price.
-  - name: gassy_zone_flag
-    description: Whether this row is marked gassy zone.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: play_id
-    description: Identifier of the related play.
-  - name: technology_id
-    description: Identifier of the related technology.
-  entity_definitions:
-  - identity_id: fact_proppant_identity
-    dataset_columns:
-    - proppant_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_play_identity
-    dataset_columns:
-    - play_id
-    entity_universe: partial
-  - identity_id: dim_technology_identity
-    dataset_columns:
-    - technology_id
-    entity_universe: partial
-- node_id: sf:energy.supply.fact_spacing
-  descriptor:
-    qualified_name: energy.supply.fact_spacing
-    display_name: Well Spacing
-    description: How much of a production beat is spacing rather than proppant.
-    synonyms: []
-    tags:
-    - fact
-    - supply
-    - energy
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: energy.us-central-1
-      database: ENERGY
-      schema: SUPPLY
-      object: FACT_SPACING
-      format: table
-  grain:
-    description: One row is one well spacing.
-    components:
-    - identity_id: fact_spacing_identity
-      dataset_columns:
-      - spacing_id
-      description: Identifier of the well spacing.
-  columns:
-  - name: spacing_id
-    description: Identifier of the well spacing.
-  - name: spacing_share_rate
-    description: Spacing share rate.
-  - name: changed_flag
-    description: Whether this row is marked changed.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: play_id
-    description: Identifier of the related play.
-  entity_definitions:
-  - identity_id: fact_spacing_identity
-    dataset_columns:
-    - spacing_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_play_identity
-    dataset_columns:
-    - play_id
-    entity_universe: partial
-- node_id: sf:energy.supply.fact_decline
-  descriptor:
-    qualified_name: energy.supply.fact_decline
-    display_name: Base Decline
-    description: Base decline assumed for the upstream.
-    synonyms: []
-    tags:
-    - fact
-    - supply
-    - energy
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: energy.us-central-1
-      database: ENERGY
-      schema: SUPPLY
-      object: FACT_DECLINE
-      format: table
-  grain:
-    description: One row is one base decline.
-    components:
-    - identity_id: fact_decline_identity
-      dataset_columns:
-      - decline_id
-      description: Identifier of the base decline.
-  columns:
-  - name: decline_id
-    description: Identifier of the base decline.
-  - name: decline_rate
-    description: Decline rate.
-  - name: assumption_rate
-    description: Assumption rate.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: play_id
-    description: Identifier of the related play.
-  entity_definitions:
-  - identity_id: fact_decline_identity
-    dataset_columns:
-    - decline_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_play_identity
-    dataset_columns:
-    - play_id
-    entity_universe: partial
-- node_id: sf:energy.supply.fact_startup
-  descriptor:
-    qualified_name: energy.supply.fact_startup
-    display_name: Project Start-up
-    description: Start-up milestones and whether the asset is tracking the plan.
-    synonyms: []
-    tags:
-    - fact
-    - supply
-    - energy
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: energy.us-central-1
-      database: ENERGY
-      schema: SUPPLY
-      object: FACT_STARTUP
-      format: table
-  grain:
-    description: One row is one project start-up.
-    components:
-    - identity_id: fact_startup_identity
-      dataset_columns:
-      - startup_id
-      description: Identifier of the project start-up.
-  columns:
-  - name: startup_id
-    description: Identifier of the project start-up.
-  - name: milestone_code
-    description: Milestone code.
-  - name: on_plan_flag
-    description: Whether this row is marked on plan.
-  - name: months_to_start
-    description: Months to start.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: project_id
-    description: Identifier of the related project.
-  - name: asset_id
-    description: Identifier of the related asset.
-  entity_definitions:
-  - identity_id: fact_startup_identity
-    dataset_columns:
-    - startup_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_project_identity
-    dataset_columns:
-    - project_id
-    entity_universe: partial
-  - identity_id: dim_asset_identity
-    dataset_columns:
-    - asset_id
-    entity_universe: partial
-- node_id: sf:energy.supply.fact_license_term
-  descriptor:
-    qualified_name: energy.supply.fact_license_term
-    display_name: License Term
-    description: Years left on a license such as Stabroek, and whether growth continues into expiry.
-    synonyms: []
-    tags:
-    - fact
-    - supply
-    - energy
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: energy.us-central-1
-      database: ENERGY
-      schema: SUPPLY
-      object: FACT_LICENSE_TERM
-      format: table
-  grain:
-    description: One row is one license term.
-    components:
-    - identity_id: fact_license_term_identity
-      dataset_columns:
-      - license_term_id
-      description: Identifier of the license term.
-  columns:
-  - name: license_term_id
-    description: Identifier of the license term.
-  - name: years_remaining
-    description: Years remaining.
-  - name: growth_continues_flag
-    description: Whether this row is marked growth continues.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: asset_id
-    description: Identifier of the related asset.
-  - name: country_id
-    description: Identifier of the related country.
-  entity_definitions:
-  - identity_id: fact_license_term_identity
-    dataset_columns:
-    - license_term_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_asset_identity
-    dataset_columns:
-    - asset_id
-    entity_universe: partial
-  - identity_id: dim_country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
-- node_id: sf:energy.supply.fact_force_majeure
-  descriptor:
-    qualified_name: energy.supply.fact_force_majeure
-    display_name: Force Majeure
-    description: Force majeure on a train and whether the contract term still covers the repair.
-    synonyms: []
-    tags:
-    - fact
-    - supply
-    - energy
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: energy.us-central-1
-      database: ENERGY
-      schema: SUPPLY
-      object: FACT_FORCE_MAJEURE
-      format: table
-  grain:
-    description: One row is one force majeure.
-    components:
-    - identity_id: fact_force_majeure_identity
-      dataset_columns:
-      - force_majeure_id
-      description: Identifier of the force majeure.
-  columns:
-  - name: force_majeure_id
-    description: Identifier of the force majeure.
-  - name: in_force_flag
-    description: Whether this row is marked in force.
-  - name: term_covers_repair_flag
-    description: Whether this row is marked term covers repair.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: train_id
-    description: Identifier of the related train.
-  - name: contract_id
-    description: Identifier of the related contract.
-  entity_definitions:
-  - identity_id: fact_force_majeure_identity
-    dataset_columns:
-    - force_majeure_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_train_identity
-    dataset_columns:
-    - train_id
-    entity_universe: partial
-  - identity_id: dim_contract_identity
-    dataset_columns:
-    - contract_id
-    entity_universe: partial
-- node_id: sf:energy.supply.fact_lead_time
-  descriptor:
-    qualified_name: energy.supply.fact_lead_time
-    display_name: Equipment Lead Time
-    description: Whether equipment lead time sets a three-to-five-year return.
-    synonyms: []
-    tags:
-    - fact
-    - supply
-    - energy
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: energy.us-central-1
-      database: ENERGY
-      schema: SUPPLY
-      object: FACT_LEAD_TIME
-      format: table
-  grain:
-    description: One row is one equipment lead time.
-    components:
-    - identity_id: fact_lead_time_identity
-      dataset_columns:
-      - lead_time_id
-      description: Identifier of the equipment lead time.
-  columns:
-  - name: lead_time_id
-    description: Identifier of the equipment lead time.
-  - name: lead_time_years
-    description: Lead time years.
-  - name: is_critical_path_flag
-    description: Whether this row is marked is critical path.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: train_id
-    description: Identifier of the related train.
-  - name: facility_id
-    description: Identifier of the related facility.
-  entity_definitions:
-  - identity_id: fact_lead_time_identity
-    dataset_columns:
-    - lead_time_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_train_identity
-    dataset_columns:
-    - train_id
-    entity_universe: partial
-  - identity_id: dim_facility_identity
-    dataset_columns:
-    - facility_id
-    entity_universe: partial
-- node_id: sf:energy.supply.fact_security
-  descriptor:
-    qualified_name: energy.supply.fact_security
-    display_name: Security Status
-    description: Security status and whether an early investment decision is still likely.
-    synonyms: []
-    tags:
-    - fact
-    - supply
-    - energy
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: energy.us-central-1
-      database: ENERGY
-      schema: SUPPLY
-      object: FACT_SECURITY
-      format: table
-  grain:
-    description: One row is one security status.
-    components:
-    - identity_id: fact_security_identity
-      dataset_columns:
-      - security_id
-      description: Identifier of the security status.
-  columns:
-  - name: security_id
-    description: Identifier of the security status.
-  - name: security_status_code
-    description: Security status code.
-  - name: early_decision_likely_flag
-    description: Whether this row is marked early decision likely.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: project_id
-    description: Identifier of the related project.
-  - name: country_id
-    description: Identifier of the related country.
-  entity_definitions:
-  - identity_id: fact_security_identity
-    dataset_columns:
-    - security_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_project_identity
-    dataset_columns:
-    - project_id
-    entity_universe: partial
-  - identity_id: dim_country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
-- node_id: sf:energy.supply.fact_org_capacity
-  descriptor:
-    qualified_name: energy.supply.fact_org_capacity
-    display_name: Organizational Capacity
-    description: Whether the project load is at the organization's limit.
-    synonyms: []
-    tags:
-    - fact
-    - supply
-    - energy
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: energy.us-central-1
-      database: ENERGY
-      schema: SUPPLY
-      object: FACT_ORG_CAPACITY
-      format: table
-  grain:
-    description: One row is one organizational capacity.
-    components:
-    - identity_id: fact_org_capacity_identity
-      dataset_columns:
-      - org_capacity_id
-      description: Identifier of the organizational capacity.
-  columns:
-  - name: org_capacity_id
-    description: Identifier of the organizational capacity.
-  - name: at_limit_flag
-    description: Whether this row is marked at limit.
-  - name: active_project_count
-    description: Active project count.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  entity_definitions:
-  - identity_id: fact_org_capacity_identity
-    dataset_columns:
-    - org_capacity_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-- node_id: sf:energy.supply.fact_graphite
-  descriptor:
-    qualified_name: energy.supply.fact_graphite
-    display_name: Graphite Tie
-    description: Whether the graphite acquisition brought facilities, technology, or both.
-    synonyms: []
-    tags:
-    - fact
-    - supply
-    - energy
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: energy.us-central-1
-      database: ENERGY
-      schema: SUPPLY
-      object: FACT_GRAPHITE
-      format: table
-  grain:
-    description: One row is one graphite tie.
-    components:
-    - identity_id: fact_graphite_identity
-      dataset_columns:
-      - graphite_id
-      description: Identifier of the graphite tie.
-  columns:
-  - name: graphite_id
-    description: Identifier of the graphite tie.
-  - name: facilities_flag
-    description: Whether this row is marked facilities.
-  - name: technology_flag
-    description: Whether this row is marked technology.
-  - name: tie_to_refining_flag
-    description: Whether this row is marked tie to refining.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: technology_id
-    description: Identifier of the related technology.
-  - name: facility_id
-    description: Identifier of the related facility.
-  entity_definitions:
-  - identity_id: fact_graphite_identity
-    dataset_columns:
-    - graphite_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_technology_identity
-    dataset_columns:
-    - technology_id
-    entity_universe: partial
-  - identity_id: dim_facility_identity
-    dataset_columns:
-    - facility_id
-    entity_universe: partial
-- node_id: sf:energy.supply.fact_lithium_output
-  descriptor:
-    qualified_name: energy.supply.fact_lithium_output
-    display_name: Lithium Output
-    description: Lithium output capacity. The lithium price sits on the price slice.
-    synonyms: []
-    tags:
-    - fact
-    - supply
-    - energy
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: energy.us-central-1
-      database: ENERGY
-      schema: SUPPLY
-      object: FACT_LITHIUM_OUTPUT
-      format: table
-  grain:
-    description: One row is one lithium output.
-    components:
-    - identity_id: fact_lithium_output_identity
-      dataset_columns:
-      - lithium_output_id
-      description: Identifier of the lithium output.
-  columns:
-  - name: lithium_output_id
-    description: Identifier of the lithium output.
-  - name: output_quantity
-    description: Output quantity on this row. The value is a quantity, not a price.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: facility_id
-    description: Identifier of the related facility.
-  entity_definitions:
-  - identity_id: fact_lithium_output_identity
-    dataset_columns:
-    - lithium_output_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_facility_identity
-    dataset_columns:
-    - facility_id
-    entity_universe: partial
-- node_id: sf:energy.supply.fact_capture_volume
-  descriptor:
-    qualified_name: energy.supply.fact_capture_volume
-    display_name: Capture Volume
-    description: Carbon-capture volume. Commercial terms sit on the price slice.
-    synonyms: []
-    tags:
-    - fact
-    - supply
-    - energy
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: energy.us-central-1
-      database: ENERGY
-      schema: SUPPLY
-      object: FACT_CAPTURE_VOLUME
-      format: table
-  grain:
-    description: One row is one capture volume.
-    components:
-    - identity_id: fact_capture_volume_identity
-      dataset_columns:
-      - capture_volume_id
-      description: Identifier of the capture volume.
-  columns:
-  - name: capture_volume_id
-    description: Identifier of the capture volume.
-  - name: capture_quantity
-    description: Capture quantity on this row. The value is a quantity, not a price.
-  - name: offset_use_flag
-    description: Whether this row is marked offset use.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: facility_id
-    description: Identifier of the related facility.
-  - name: customer_id
-    description: Identifier of the related customer.
-  entity_definitions:
-  - identity_id: fact_capture_volume_identity
-    dataset_columns:
-    - capture_volume_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_facility_identity
-    dataset_columns:
-    - facility_id
-    entity_universe: partial
-  - identity_id: dim_customer_identity
-    dataset_columns:
-    - customer_id
-    entity_universe: partial
-- node_id: sf:energy.supply.fact_heavy_intake
-  descriptor:
-    qualified_name: energy.supply.fact_heavy_intake
-    display_name: Heavy Intake Capacity
-    description: Heavy-crude intake before other heavy grades are backed out.
-    synonyms: []
-    tags:
-    - fact
-    - supply
-    - energy
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: energy.us-central-1
-      database: ENERGY
-      schema: SUPPLY
-      object: FACT_HEAVY_INTAKE
-      format: table
-  grain:
-    description: One row is one heavy intake capacity.
-    components:
-    - identity_id: fact_heavy_intake_identity
-      dataset_columns:
-      - heavy_intake_id
-      description: Identifier of the heavy intake capacity.
-  columns:
-  - name: heavy_intake_id
-    description: Identifier of the heavy intake capacity.
-  - name: intake_quantity
-    description: Intake quantity on this row. The value is a quantity, not a price.
-  - name: backs_out_other_flag
-    description: Whether this row is marked backs out other.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: facility_id
-    description: Identifier of the related facility.
-  - name: product_id
-    description: Identifier of the related product.
-  entity_definitions:
-  - identity_id: fact_heavy_intake_identity
-    dataset_columns:
-    - heavy_intake_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_facility_identity
-    dataset_columns:
-    - facility_id
-    entity_universe: partial
-  - identity_id: dim_product_identity
-    dataset_columns:
-    - product_id
+    - refinery_id
     entity_universe: partial
 - node_id: sf:energy.supply.fact_refinery_capacity
   descriptor:
     qualified_name: energy.supply.fact_refinery_capacity
     display_name: Refinery Capacity
-    description: Refining throughput capacity, including heavy and waterborne slates.
+    description: Refining capacity by refinery. Stores capacity in barrels per day.
     synonyms: []
     tags:
     - fact
@@ -1905,49 +1040,226 @@ nodes:
       object: FACT_REFINERY_CAPACITY
       format: table
   grain:
-    description: One row is one refinery capacity.
+    description: One row is one combination of fiscal quarter, scenario, refinery.
     components:
-    - identity_id: fact_refinery_capacity_identity
+    - identity_id: dim_fiscal_quarter_identity
       dataset_columns:
-      - refinery_capacity_id
-      description: Identifier of the refinery capacity.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_refinery_identity
+      dataset_columns:
+      - refinery_id
+      description: Identifier of the refinery.
   columns:
-  - name: refinery_capacity_id
-    description: Identifier of the refinery capacity.
-  - name: throughput_quantity
-    description: Throughput quantity on this row. The value is a quantity, not a price.
-  - name: can_run_heavy_flag
-    description: Whether this row is marked can run heavy.
-  - name: operating_change_flag
-    description: Whether this row is marked operating change.
   - name: fiscal_quarter_id
     description: Identifier of the related fiscal quarter.
-  - name: facility_id
-    description: Identifier of the related facility.
-  - name: market_id
-    description: Identifier of the related market.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: refinery_id
+    description: Identifier of the related refinery.
+  - name: refinery_capacity_quantity
+    description: Refinery capacity in barrels per day.
   entity_definitions:
-  - identity_id: fact_refinery_capacity_identity
-    dataset_columns:
-    - refinery_capacity_id
-    entity_universe: complete
   - identity_id: dim_fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: dim_facility_identity
+  - identity_id: dim_scenario_identity
     dataset_columns:
-    - facility_id
+    - scenario_id
     entity_universe: partial
-  - identity_id: dim_market_identity
+  - identity_id: dim_refinery_identity
     dataset_columns:
-    - market_id
+    - refinery_id
+    entity_universe: partial
+- node_id: sf:energy.supply.fact_lng_production
+  descriptor:
+    qualified_name: energy.supply.fact_lng_production
+    display_name: LNG Production
+    description: LNG production by terminal. Stores quantity in cargoes and million tonnes and trains in trains.
+    synonyms: []
+    tags:
+    - fact
+    - supply
+    - energy
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: energy.us-central-1
+      database: ENERGY
+      schema: SUPPLY
+      object: FACT_LNG_PRODUCTION
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, lng terminal.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_lng_terminal_identity
+      dataset_columns:
+      - lng_terminal_id
+      description: Identifier of the lng terminal.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: lng_terminal_id
+    description: Identifier of the related lng terminal.
+  - name: lng_production_quantity
+    description: LNG production in million tonnes.
+  - name: lng_cargo_quantity
+    description: LNG cargoes in cargoes.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_lng_terminal_identity
+    dataset_columns:
+    - lng_terminal_id
+    entity_universe: partial
+- node_id: sf:energy.supply.fact_lng_capacity
+  descriptor:
+    qualified_name: energy.supply.fact_lng_capacity
+    display_name: LNG Capacity
+    description: LNG liquefaction capacity by terminal. Stores capacity in million tonnes per year and trains in trains.
+    synonyms: []
+    tags:
+    - fact
+    - supply
+    - energy
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: energy.us-central-1
+      database: ENERGY
+      schema: SUPPLY
+      object: FACT_LNG_CAPACITY
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, lng terminal.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_lng_terminal_identity
+      dataset_columns:
+      - lng_terminal_id
+      description: Identifier of the lng terminal.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: lng_terminal_id
+    description: Identifier of the related lng terminal.
+  - name: lng_capacity_quantity
+    description: LNG capacity in million tonnes per year.
+  - name: lng_train_quantity
+    description: LNG trains in trains.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_lng_terminal_identity
+    dataset_columns:
+    - lng_terminal_id
+    entity_universe: partial
+- node_id: sf:energy.supply.fact_chemical_production
+  descriptor:
+    qualified_name: energy.supply.fact_chemical_production
+    display_name: Chemical Production
+    description: Chemical production by plant and product. Stores quantity in pounds.
+    synonyms: []
+    tags:
+    - fact
+    - supply
+    - energy
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: energy.us-central-1
+      database: ENERGY
+      schema: SUPPLY
+      object: FACT_CHEMICAL_PRODUCTION
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, chemical plant, chemical product.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_chemical_plant_identity
+      dataset_columns:
+      - chemical_plant_id
+      description: Identifier of the chemical plant.
+    - identity_id: dim_chemical_product_identity
+      dataset_columns:
+      - chemical_product_id
+      description: Identifier of the chemical product.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: chemical_plant_id
+    description: Identifier of the related chemical plant.
+  - name: chemical_product_id
+    description: Identifier of the related chemical product.
+  - name: chemical_production_quantity
+    description: Chemical production in pounds.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_chemical_plant_identity
+    dataset_columns:
+    - chemical_plant_id
+    entity_universe: partial
+  - identity_id: dim_chemical_product_identity
+    dataset_columns:
+    - chemical_product_id
     entity_universe: partial
 - node_id: sf:energy.supply.fact_chemical_capacity
   descriptor:
     qualified_name: energy.supply.fact_chemical_capacity
     display_name: Chemical Capacity
-    description: Chemical system capacity, including a U.S.-heavy system versus naphtha crackers.
+    description: Chemical production capacity by plant and product. Stores capacity in pounds per year.
     synonyms: []
     tags:
     - fact
@@ -1962,49 +1274,57 @@ nodes:
       object: FACT_CHEMICAL_CAPACITY
       format: table
   grain:
-    description: One row is one chemical capacity.
+    description: One row is one combination of fiscal quarter, scenario, chemical plant, chemical product.
     components:
-    - identity_id: fact_chemical_capacity_identity
+    - identity_id: dim_fiscal_quarter_identity
       dataset_columns:
-      - chemical_capacity_id
-      description: Identifier of the chemical capacity.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_chemical_plant_identity
+      dataset_columns:
+      - chemical_plant_id
+      description: Identifier of the chemical plant.
+    - identity_id: dim_chemical_product_identity
+      dataset_columns:
+      - chemical_product_id
+      description: Identifier of the chemical product.
   columns:
-  - name: chemical_capacity_id
-    description: Identifier of the chemical capacity.
-  - name: capacity_quantity
-    description: Capacity quantity on this row. The value is a quantity, not a price.
-  - name: us_heavy_flag
-    description: Whether this row is marked us heavy.
-  - name: feedstock_advantage_flag
-    description: Whether this row is marked feedstock advantage.
   - name: fiscal_quarter_id
     description: Identifier of the related fiscal quarter.
-  - name: facility_id
-    description: Identifier of the related facility.
-  - name: country_id
-    description: Identifier of the related country.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: chemical_plant_id
+    description: Identifier of the related chemical plant.
+  - name: chemical_product_id
+    description: Identifier of the related chemical product.
+  - name: chemical_capacity_quantity
+    description: Chemical capacity in pounds per year.
   entity_definitions:
-  - identity_id: fact_chemical_capacity_identity
-    dataset_columns:
-    - chemical_capacity_id
-    entity_universe: complete
   - identity_id: dim_fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: dim_facility_identity
+  - identity_id: dim_scenario_identity
     dataset_columns:
-    - facility_id
+    - scenario_id
     entity_universe: partial
-  - identity_id: dim_country_identity
+  - identity_id: dim_chemical_plant_identity
     dataset_columns:
-    - country_id
+    - chemical_plant_id
     entity_universe: partial
-- node_id: sf:energy.supply.fact_affiliate_volume
+  - identity_id: dim_chemical_product_identity
+    dataset_columns:
+    - chemical_product_id
+    entity_universe: partial
+- node_id: sf:energy.supply.fact_well_activity
   descriptor:
-    qualified_name: energy.supply.fact_affiliate_volume
-    display_name: Affiliate Volume
-    description: Affiliate volume behind a distribution. The dollars sit on the price slice.
+    qualified_name: energy.supply.fact_well_activity
+    display_name: Well Activity
+    description: Wells drilled and completed by play and well type. Stores quantity in wells and rigs in rigs.
     synonyms: []
     tags:
     - fact
@@ -2016,1295 +1336,83 @@ nodes:
       account: energy.us-central-1
       database: ENERGY
       schema: SUPPLY
-      object: FACT_AFFILIATE_VOLUME
+      object: FACT_WELL_ACTIVITY
       format: table
   grain:
-    description: One row is one affiliate volume.
+    description: One row is one combination of fiscal quarter, scenario, play, field, well type, rig type.
     components:
-    - identity_id: fact_affiliate_volume_identity
+    - identity_id: dim_fiscal_quarter_identity
       dataset_columns:
-      - affiliate_volume_id
-      description: Identifier of the affiliate volume.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_play_identity
+      dataset_columns:
+      - play_id
+      description: Identifier of the play.
+    - identity_id: dim_field_identity
+      dataset_columns:
+      - field_id
+      description: Identifier of the field.
+    - identity_id: dim_well_type_identity
+      dataset_columns:
+      - well_type_id
+      description: Identifier of the well type.
+    - identity_id: dim_rig_type_identity
+      dataset_columns:
+      - rig_type_id
+      description: Identifier of the rig type.
   columns:
-  - name: affiliate_volume_id
-    description: Identifier of the affiliate volume.
-  - name: affiliate_quantity
-    description: Affiliate quantity on this row. The value is a quantity, not a price.
-  - name: mostly_field_flag
-    description: Whether this row is marked mostly field.
   - name: fiscal_quarter_id
     description: Identifier of the related fiscal quarter.
-  - name: field_id
-    description: Identifier of the related field.
-  entity_definitions:
-  - identity_id: fact_affiliate_volume_identity
-    dataset_columns:
-    - affiliate_volume_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_field_identity
-    dataset_columns:
-    - field_id
-    entity_universe: partial
-- node_id: sf:energy.supply.fact_kazakhstan_limit
-  descriptor:
-    qualified_name: energy.supply.fact_kazakhstan_limit
-    display_name: Kazakhstan Limit
-    description: National compensation cuts versus the field's own maintenance.
-    synonyms: []
-    tags:
-    - fact
-    - supply
-    - energy
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: energy.us-central-1
-      database: ENERGY
-      schema: SUPPLY
-      object: FACT_KAZAKHSTAN_LIMIT
-      format: table
-  grain:
-    description: One row is one kazakhstan limit.
-    components:
-    - identity_id: fact_kazakhstan_limit_identity
-      dataset_columns:
-      - kazakhstan_limit_id
-      description: Identifier of the kazakhstan limit.
-  columns:
-  - name: kazakhstan_limit_id
-    description: Identifier of the kazakhstan limit.
-  - name: cut_quantity
-    description: Cut quantity on this row. The value is a quantity, not a price.
-  - name: overlaps_maintenance_flag
-    description: Whether this row is marked overlaps maintenance.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: field_id
-    description: Identifier of the related field.
-  - name: country_id
-    description: Identifier of the related country.
-  entity_definitions:
-  - identity_id: fact_kazakhstan_limit_identity
-    dataset_columns:
-    - kazakhstan_limit_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_field_identity
-    dataset_columns:
-    - field_id
-    entity_universe: partial
-  - identity_id: dim_country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
-- node_id: sf:energy.supply.fact_activity
-  descriptor:
-    qualified_name: energy.supply.fact_activity
-    display_name: Activity
-    description: Activity level, and whether it changes with the need for barrels.
-    synonyms: []
-    tags:
-    - fact
-    - supply
-    - energy
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: energy.us-central-1
-      database: ENERGY
-      schema: SUPPLY
-      object: FACT_ACTIVITY
-      format: table
-  grain:
-    description: One row is one activity.
-    components:
-    - identity_id: fact_activity_identity
-      dataset_columns:
-      - activity_id
-      description: Identifier of the activity.
-  columns:
-  - name: activity_id
-    description: Identifier of the activity.
-  - name: activity_index
-    description: Activity index.
-  - name: changed_flag
-    description: Whether this row is marked changed.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
   - name: play_id
     description: Identifier of the related play.
-  entity_definitions:
-  - identity_id: fact_activity_identity
-    dataset_columns:
-    - activity_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_play_identity
-    dataset_columns:
-    - play_id
-    entity_universe: partial
-- node_id: sf:energy.supply.fact_shale_position
-  descriptor:
-    qualified_name: energy.supply.fact_shale_position
-    display_name: Shale Position
-    description: How a shale play sits in the portfolio, including core status and cross-learnings.
-    synonyms: []
-    tags:
-    - fact
-    - supply
-    - energy
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: energy.us-central-1
-      database: ENERGY
-      schema: SUPPLY
-      object: FACT_SHALE_POSITION
-      format: table
-  grain:
-    description: One row is one shale position.
-    components:
-    - identity_id: fact_shale_position_identity
-      dataset_columns:
-      - shale_position_id
-      description: Identifier of the shale position.
-  columns:
-  - name: shale_position_id
-    description: Identifier of the shale position.
-  - name: core_flag
-    description: Whether this row is marked core.
-  - name: learnings_applied_flag
-    description: Whether this row is marked learnings applied.
-  - name: paused_growth_flag
-    description: Whether this row is marked paused growth.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: play_id
-    description: Identifier of the related play.
-  - name: country_id
-    description: Identifier of the related country.
-  entity_definitions:
-  - identity_id: fact_shale_position_identity
-    dataset_columns:
-    - shale_position_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_play_identity
-    dataset_columns:
-    - play_id
-    entity_universe: partial
-  - identity_id: dim_country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
-- node_id: sf:energy.supply.fact_acreage
-  descriptor:
-    qualified_name: energy.supply.fact_acreage
-    display_name: Acreage and Wells
-    description: Acreage and well counts, operated or not.
-    synonyms: []
-    tags:
-    - fact
-    - supply
-    - energy
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: energy.us-central-1
-      database: ENERGY
-      schema: SUPPLY
-      object: FACT_ACREAGE
-      format: table
-  grain:
-    description: One row is one acreage and wells.
-    components:
-    - identity_id: fact_acreage_identity
-      dataset_columns:
-      - acreage_id
-      description: Identifier of the acreage and wells.
-  columns:
-  - name: acreage_id
-    description: Identifier of the acreage and wells.
-  - name: acreage_quantity
-    description: Acreage quantity on this row. The value is a quantity, not a price.
+  - name: field_id
+    description: Identifier of the related field.
+  - name: well_type_id
+    description: Identifier of the related well type.
+  - name: rig_type_id
+    description: Identifier of the related rig type.
   - name: well_quantity
-    description: Well quantity on this row. The value is a quantity, not a price.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: play_id
-    description: Identifier of the related play.
-  - name: well_type_id
-    description: Identifier of the related well type.
+    description: Wells in wells.
+  - name: rig_quantity
+    description: Rigs in rigs.
   entity_definitions:
-  - identity_id: fact_acreage_identity
-    dataset_columns:
-    - acreage_id
-    entity_universe: complete
   - identity_id: dim_fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
     entity_universe: partial
   - identity_id: dim_play_identity
     dataset_columns:
     - play_id
-    entity_universe: partial
-  - identity_id: dim_well_type_identity
-    dataset_columns:
-    - well_type_id
-    entity_universe: partial
-- node_id: sf:energy.supply.fact_operated_split
-  descriptor:
-    qualified_name: energy.supply.fact_operated_split
-    display_name: Operated Split
-    description: Operated versus non-operated quantities.
-    synonyms: []
-    tags:
-    - fact
-    - supply
-    - energy
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: energy.us-central-1
-      database: ENERGY
-      schema: SUPPLY
-      object: FACT_OPERATED_SPLIT
-      format: table
-  grain:
-    description: One row is one operated split.
-    components:
-    - identity_id: fact_operated_split_identity
-      dataset_columns:
-      - operated_split_id
-      description: Identifier of the operated split.
-  columns:
-  - name: operated_split_id
-    description: Identifier of the operated split.
-  - name: operated_quantity
-    description: Operated quantity on this row. The value is a quantity, not a price.
-  - name: nonoperated_quantity
-    description: Nonoperated quantity on this row. The value is a quantity, not a price.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: play_id
-    description: Identifier of the related play.
-  - name: operator_role_id
-    description: Identifier of the related operator role.
-  entity_definitions:
-  - identity_id: fact_operated_split_identity
-    dataset_columns:
-    - operated_split_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_play_identity
-    dataset_columns:
-    - play_id
-    entity_universe: partial
-  - identity_id: dim_operator_role_identity
-    dataset_columns:
-    - operator_role_id
-    entity_universe: partial
-- node_id: sf:energy.supply.fact_argentina_ramp
-  descriptor:
-    qualified_name: energy.supply.fact_argentina_ramp
-    display_name: Argentina Ramp
-    description: What Argentina production can become and what gates it.
-    synonyms: []
-    tags:
-    - fact
-    - supply
-    - energy
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: energy.us-central-1
-      database: ENERGY
-      schema: SUPPLY
-      object: FACT_ARGENTINA_RAMP
-      format: table
-  grain:
-    description: One row is one argentina ramp.
-    components:
-    - identity_id: fact_argentina_ramp_identity
-      dataset_columns:
-      - argentina_ramp_id
-      description: Identifier of the argentina ramp.
-  columns:
-  - name: argentina_ramp_id
-    description: Identifier of the argentina ramp.
-  - name: ramp_quantity
-    description: Ramp quantity on this row. The value is a quantity, not a price.
-  - name: gate_code
-    description: Gate code.
-  - name: comparable_to_peer_flag
-    description: Whether this row is marked comparable to peer.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: play_id
-    description: Identifier of the related play.
-  - name: country_id
-    description: Identifier of the related country.
-  entity_definitions:
-  - identity_id: fact_argentina_ramp_identity
-    dataset_columns:
-    - argentina_ramp_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_play_identity
-    dataset_columns:
-    - play_id
-    entity_universe: partial
-  - identity_id: dim_country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
-- node_id: sf:energy.supply.fact_deepwater
-  descriptor:
-    qualified_name: energy.supply.fact_deepwater
-    display_name: Deepwater Position
-    description: Deepwater position, including why one basin stays small.
-    synonyms: []
-    tags:
-    - fact
-    - supply
-    - energy
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: energy.us-central-1
-      database: ENERGY
-      schema: SUPPLY
-      object: FACT_DEEPWATER
-      format: table
-  grain:
-    description: One row is one deepwater position.
-    components:
-    - identity_id: fact_deepwater_identity
-      dataset_columns:
-      - deepwater_id
-      description: Identifier of the deepwater position.
-  columns:
-  - name: deepwater_id
-    description: Identifier of the deepwater position.
-  - name: position_quantity
-    description: Position quantity on this row. The value is a quantity, not a price.
-  - name: small_versus_peers_flag
-    description: Whether this row is marked small versus peers.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: play_id
-    description: Identifier of the related play.
-  - name: country_id
-    description: Identifier of the related country.
-  entity_definitions:
-  - identity_id: fact_deepwater_identity
-    dataset_columns:
-    - deepwater_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_play_identity
-    dataset_columns:
-    - play_id
-    entity_universe: partial
-  - identity_id: dim_country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
-- node_id: sf:energy.supply.fact_heavy_oil
-  descriptor:
-    qualified_name: energy.supply.fact_heavy_oil
-    display_name: Heavy Oil
-    description: Heavy-oil capacity and whether technology brings it back faster.
-    synonyms: []
-    tags:
-    - fact
-    - supply
-    - energy
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: energy.us-central-1
-      database: ENERGY
-      schema: SUPPLY
-      object: FACT_HEAVY_OIL
-      format: table
-  grain:
-    description: One row is one heavy oil.
-    components:
-    - identity_id: fact_heavy_oil_identity
-      dataset_columns:
-      - heavy_oil_id
-      description: Identifier of the heavy oil.
-  columns:
-  - name: heavy_oil_id
-    description: Identifier of the heavy oil.
-  - name: capacity_quantity
-    description: Capacity quantity on this row. The value is a quantity, not a price.
-  - name: restart_faster_flag
-    description: Whether this row is marked restart faster.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: asset_id
-    description: Identifier of the related asset.
-  - name: technology_id
-    description: Identifier of the related technology.
-  - name: country_id
-    description: Identifier of the related country.
-  entity_definitions:
-  - identity_id: fact_heavy_oil_identity
-    dataset_columns:
-    - heavy_oil_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_asset_identity
-    dataset_columns:
-    - asset_id
-    entity_universe: partial
-  - identity_id: dim_technology_identity
-    dataset_columns:
-    - technology_id
-    entity_universe: partial
-  - identity_id: dim_country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
-- node_id: sf:energy.supply.fact_lng_train
-  descriptor:
-    qualified_name: energy.supply.fact_lng_train
-    display_name: LNG Train Status
-    description: Train status and whether one country dominates the LNG portfolio.
-    synonyms: []
-    tags:
-    - fact
-    - supply
-    - energy
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: energy.us-central-1
-      database: ENERGY
-      schema: SUPPLY
-      object: FACT_LNG_TRAIN
-      format: table
-  grain:
-    description: One row is one lng train status.
-    components:
-    - identity_id: fact_lng_train_identity
-      dataset_columns:
-      - lng_train_id
-      description: Identifier of the lng train status.
-  columns:
-  - name: lng_train_id
-    description: Identifier of the lng train status.
-  - name: trains_down_quantity
-    description: Trains down quantity on this row. The value is a quantity, not a price.
-  - name: concentrated_flag
-    description: Whether this row is marked concentrated.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: train_id
-    description: Identifier of the related train.
-  - name: country_id
-    description: Identifier of the related country.
-  - name: facility_id
-    description: Identifier of the related facility.
-  entity_definitions:
-  - identity_id: fact_lng_train_identity
-    dataset_columns:
-    - lng_train_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_train_identity
-    dataset_columns:
-    - train_id
-    entity_universe: partial
-  - identity_id: dim_country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
-  - identity_id: dim_facility_identity
-    dataset_columns:
-    - facility_id
-    entity_universe: partial
-- node_id: sf:energy.supply.fact_gas_priority
-  descriptor:
-    qualified_name: energy.supply.fact_gas_priority
-    display_name: Gas Asset Priority
-    description: How operated and non-operated gas assets are prioritized.
-    synonyms: []
-    tags:
-    - fact
-    - supply
-    - energy
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: energy.us-central-1
-      database: ENERGY
-      schema: SUPPLY
-      object: FACT_GAS_PRIORITY
-      format: table
-  grain:
-    description: One row is one gas asset priority.
-    components:
-    - identity_id: fact_gas_priority_identity
-      dataset_columns:
-      - gas_priority_id
-      description: Identifier of the gas asset priority.
-  columns:
-  - name: gas_priority_id
-    description: Identifier of the gas asset priority.
-  - name: priority_code
-    description: Priority code.
-  - name: operatorship_code
-    description: Operatorship code.
-  - name: conflict_flag
-    description: Whether this row is marked conflict.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: asset_id
-    description: Identifier of the related asset.
-  - name: operator_role_id
-    description: Identifier of the related operator role.
-  entity_definitions:
-  - identity_id: fact_gas_priority_identity
-    dataset_columns:
-    - gas_priority_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_asset_identity
-    dataset_columns:
-    - asset_id
-    entity_universe: partial
-  - identity_id: dim_operator_role_identity
-    dataset_columns:
-    - operator_role_id
-    entity_universe: partial
-- node_id: sf:energy.supply.fact_portfolio_volume
-  descriptor:
-    qualified_name: energy.supply.fact_portfolio_volume
-    display_name: Portfolio Volume Mix
-    description: Upstream versus other production quantities. Earnings mix is on the price slice.
-    synonyms: []
-    tags:
-    - fact
-    - supply
-    - energy
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: energy.us-central-1
-      database: ENERGY
-      schema: SUPPLY
-      object: FACT_PORTFOLIO_VOLUME
-      format: table
-  grain:
-    description: One row is one portfolio volume mix.
-    components:
-    - identity_id: fact_portfolio_volume_identity
-      dataset_columns:
-      - portfolio_volume_id
-      description: Identifier of the portfolio volume mix.
-  columns:
-  - name: portfolio_volume_id
-    description: Identifier of the portfolio volume mix.
-  - name: upstream_quantity
-    description: Upstream quantity on this row. The value is a quantity, not a price.
-  - name: other_quantity
-    description: Other quantity on this row. The value is a quantity, not a price.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: product_id
-    description: Identifier of the related product.
-  entity_definitions:
-  - identity_id: fact_portfolio_volume_identity
-    dataset_columns:
-    - portfolio_volume_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_product_identity
-    dataset_columns:
-    - product_id
-    entity_universe: partial
-- node_id: sf:energy.supply.fact_power_capacity
-  descriptor:
-    qualified_name: energy.supply.fact_power_capacity
-    display_name: Power Capacity
-    description: Power generation capacity beyond the first project.
-    synonyms: []
-    tags:
-    - fact
-    - supply
-    - energy
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: energy.us-central-1
-      database: ENERGY
-      schema: SUPPLY
-      object: FACT_POWER_CAPACITY
-      format: table
-  grain:
-    description: One row is one power capacity.
-    components:
-    - identity_id: fact_power_capacity_identity
-      dataset_columns:
-      - power_capacity_id
-      description: Identifier of the power capacity.
-  columns:
-  - name: power_capacity_id
-    description: Identifier of the power capacity.
-  - name: capacity_quantity
-    description: Capacity quantity on this row. The value is a quantity, not a price.
-  - name: later_project_flag
-    description: Whether this row is marked later project.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: project_id
-    description: Identifier of the related project.
-  - name: facility_id
-    description: Identifier of the related facility.
-  entity_definitions:
-  - identity_id: fact_power_capacity_identity
-    dataset_columns:
-    - power_capacity_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_project_identity
-    dataset_columns:
-    - project_id
-    entity_universe: partial
-  - identity_id: dim_facility_identity
-    dataset_columns:
-    - facility_id
-    entity_universe: partial
-- node_id: sf:energy.supply.fact_surfactant_trial
-  descriptor:
-    qualified_name: energy.supply.fact_surfactant_trial
-    display_name: Surfactant Trial
-    description: Whether early surfactant results outside the first basin look similar.
-    synonyms: []
-    tags:
-    - fact
-    - supply
-    - energy
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: energy.us-central-1
-      database: ENERGY
-      schema: SUPPLY
-      object: FACT_SURFACTANT_TRIAL
-      format: table
-  grain:
-    description: One row is one surfactant trial.
-    components:
-    - identity_id: fact_surfactant_trial_identity
-      dataset_columns:
-      - surfactant_trial_id
-      description: Identifier of the surfactant trial.
-  columns:
-  - name: surfactant_trial_id
-    description: Identifier of the surfactant trial.
-  - name: similar_result_flag
-    description: Whether this row is marked similar result.
-  - name: trial_status_code
-    description: Trial status code.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: play_id
-    description: Identifier of the related play.
-  - name: technology_id
-    description: Identifier of the related technology.
-  entity_definitions:
-  - identity_id: fact_surfactant_trial_identity
-    dataset_columns:
-    - surfactant_trial_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_play_identity
-    dataset_columns:
-    - play_id
-    entity_universe: partial
-  - identity_id: dim_technology_identity
-    dataset_columns:
-    - technology_id
-    entity_universe: partial
-- node_id: sf:energy.supply.fact_new_country
-  descriptor:
-    qualified_name: energy.supply.fact_new_country
-    display_name: New-Country Queue
-    description: Whether the exploration queue changed to get oil to market faster.
-    synonyms: []
-    tags:
-    - fact
-    - supply
-    - energy
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: energy.us-central-1
-      database: ENERGY
-      schema: SUPPLY
-      object: FACT_NEW_COUNTRY
-      format: table
-  grain:
-    description: One row is one new-country queue.
-    components:
-    - identity_id: fact_new_country_identity
-      dataset_columns:
-      - new_country_id
-      description: Identifier of the new-country queue.
-  columns:
-  - name: new_country_id
-    description: Identifier of the new-country queue.
-  - name: queue_changed_flag
-    description: Whether this row is marked queue changed.
-  - name: accelerated_flag
-    description: Whether this row is marked accelerated.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: country_id
-    description: Identifier of the related country.
-  entity_definitions:
-  - identity_id: fact_new_country_identity
-    dataset_columns:
-    - new_country_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
-- node_id: sf:energy.supply.fact_venezuela_asset
-  descriptor:
-    qualified_name: energy.supply.fact_venezuela_asset
-    display_name: Venezuela Asset
-    description: Condition and resource of the Venezuela position.
-    synonyms: []
-    tags:
-    - fact
-    - supply
-    - energy
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: energy.us-central-1
-      database: ENERGY
-      schema: SUPPLY
-      object: FACT_VENEZUELA_ASSET
-      format: table
-  grain:
-    description: One row is one venezuela asset.
-    components:
-    - identity_id: fact_venezuela_asset_identity
-      dataset_columns:
-      - venezuela_asset_id
-      description: Identifier of the venezuela asset.
-  columns:
-  - name: venezuela_asset_id
-    description: Identifier of the venezuela asset.
-  - name: condition_code
-    description: Condition code.
-  - name: resource_quantity
-    description: Resource quantity on this row. The value is a quantity, not a price.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: country_id
-    description: Identifier of the related country.
-  - name: asset_id
-    description: Identifier of the related asset.
-  entity_definitions:
-  - identity_id: fact_venezuela_asset_identity
-    dataset_columns:
-    - venezuela_asset_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
-  - identity_id: dim_asset_identity
-    dataset_columns:
-    - asset_id
-    entity_universe: partial
-- node_id: sf:energy.supply.fact_royalty
-  descriptor:
-    qualified_name: energy.supply.fact_royalty
-    display_name: Royalty Volume
-    description: Royalty barrels. Not a price.
-    synonyms: []
-    tags:
-    - fact
-    - supply
-    - energy
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: energy.us-central-1
-      database: ENERGY
-      schema: SUPPLY
-      object: FACT_ROYALTY
-      format: table
-  grain:
-    description: One row is one royalty volume.
-    components:
-    - identity_id: fact_royalty_identity
-      dataset_columns:
-      - royalty_id
-      description: Identifier of the royalty volume.
-  columns:
-  - name: royalty_id
-    description: Identifier of the royalty volume.
-  - name: royalty_quantity
-    description: Royalty quantity on this row. The value is a quantity, not a price.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: play_id
-    description: Identifier of the related play.
-  - name: well_type_id
-    description: Identifier of the related well type.
-  entity_definitions:
-  - identity_id: fact_royalty_identity
-    dataset_columns:
-    - royalty_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_play_identity
-    dataset_columns:
-    - play_id
-    entity_universe: partial
-  - identity_id: dim_well_type_identity
-    dataset_columns:
-    - well_type_id
-    entity_universe: partial
-- node_id: sf:energy.supply.fact_third_party_lng
-  descriptor:
-    qualified_name: energy.supply.fact_third_party_lng
-    display_name: Third-Party LNG
-    description: Third-party and portfolio LNG supply quantity. Contract price is separate.
-    synonyms: []
-    tags:
-    - fact
-    - supply
-    - energy
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: energy.us-central-1
-      database: ENERGY
-      schema: SUPPLY
-      object: FACT_THIRD_PARTY_LNG
-      format: table
-  grain:
-    description: One row is one third-party lng.
-    components:
-    - identity_id: fact_third_party_lng_identity
-      dataset_columns:
-      - third_party_lng_id
-      description: Identifier of the third-party lng.
-  columns:
-  - name: third_party_lng_id
-    description: Identifier of the third-party lng.
-  - name: supply_quantity
-    description: Supply quantity on this row. The value is a quantity, not a price.
-  - name: oversupplied_flag
-    description: Whether this row is marked oversupplied.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: contract_id
-    description: Identifier of the related contract.
-  - name: country_id
-    description: Identifier of the related country.
-  entity_definitions:
-  - identity_id: fact_third_party_lng_identity
-    dataset_columns:
-    - third_party_lng_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_contract_identity
-    dataset_columns:
-    - contract_id
-    entity_universe: partial
-  - identity_id: dim_country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
-- node_id: sf:energy.supply.fact_project_load
-  descriptor:
-    qualified_name: energy.supply.fact_project_load
-    display_name: Project Load
-    description: Projects underway versus the ability to add more.
-    synonyms: []
-    tags:
-    - fact
-    - supply
-    - energy
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: energy.us-central-1
-      database: ENERGY
-      schema: SUPPLY
-      object: FACT_PROJECT_LOAD
-      format: table
-  grain:
-    description: One row is one project load.
-    components:
-    - identity_id: fact_project_load_identity
-      dataset_columns:
-      - project_load_id
-      description: Identifier of the project load.
-  columns:
-  - name: project_load_id
-    description: Identifier of the project load.
-  - name: active_project_count
-    description: Active project count.
-  - name: can_add_more_flag
-    description: Whether this row is marked can add more.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: project_id
-    description: Identifier of the related project.
-  entity_definitions:
-  - identity_id: fact_project_load_identity
-    dataset_columns:
-    - project_load_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_project_identity
-    dataset_columns:
-    - project_id
-    entity_universe: partial
-- node_id: sf:energy.supply.fact_gas_resource
-  descriptor:
-    qualified_name: energy.supply.fact_gas_resource
-    display_name: Gas Resource
-    description: Gas resource, including gassier zones and the long-term gas outlook's physical base.
-    synonyms: []
-    tags:
-    - fact
-    - supply
-    - energy
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: energy.us-central-1
-      database: ENERGY
-      schema: SUPPLY
-      object: FACT_GAS_RESOURCE
-      format: table
-  grain:
-    description: One row is one gas resource.
-    components:
-    - identity_id: fact_gas_resource_identity
-      dataset_columns:
-      - gas_resource_id
-      description: Identifier of the gas resource.
-  columns:
-  - name: gas_resource_id
-    description: Identifier of the gas resource.
-  - name: resource_quantity
-    description: Resource quantity on this row. The value is a quantity, not a price.
-  - name: gassy_flag
-    description: Whether this row is marked gassy.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: play_id
-    description: Identifier of the related play.
-  - name: product_id
-    description: Identifier of the related product.
-  entity_definitions:
-  - identity_id: fact_gas_resource_identity
-    dataset_columns:
-    - gas_resource_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_play_identity
-    dataset_columns:
-    - play_id
-    entity_universe: partial
-  - identity_id: dim_product_identity
-    dataset_columns:
-    - product_id
-    entity_universe: partial
-- node_id: sf:energy.supply.fact_waterborne
-  descriptor:
-    qualified_name: energy.supply.fact_waterborne
-    display_name: Waterborne Crude
-    description: Waterborne crude available to the refining system.
-    synonyms: []
-    tags:
-    - fact
-    - supply
-    - energy
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: energy.us-central-1
-      database: ENERGY
-      schema: SUPPLY
-      object: FACT_WATERBORNE
-      format: table
-  grain:
-    description: One row is one waterborne crude.
-    components:
-    - identity_id: fact_waterborne_identity
-      dataset_columns:
-      - waterborne_id
-      description: Identifier of the waterborne crude.
-  columns:
-  - name: waterborne_id
-    description: Identifier of the waterborne crude.
-  - name: available_quantity
-    description: Available quantity on this row. The value is a quantity, not a price.
-  - name: in_slate_flag
-    description: Whether this row is marked in slate.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: product_id
-    description: Identifier of the related product.
-  - name: facility_id
-    description: Identifier of the related facility.
-  entity_definitions:
-  - identity_id: fact_waterborne_identity
-    dataset_columns:
-    - waterborne_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_product_identity
-    dataset_columns:
-    - product_id
-    entity_universe: partial
-  - identity_id: dim_facility_identity
-    dataset_columns:
-    - facility_id
-    entity_universe: partial
-- node_id: sf:energy.supply.fact_shale_toolkit
-  descriptor:
-    qualified_name: energy.supply.fact_shale_toolkit
-    display_name: Shale Toolkit
-    description: How far the shale technology toolkit extends beyond U.S. shale.
-    synonyms: []
-    tags:
-    - fact
-    - supply
-    - energy
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: energy.us-central-1
-      database: ENERGY
-      schema: SUPPLY
-      object: FACT_SHALE_TOOLKIT
-      format: table
-  grain:
-    description: One row is one shale toolkit.
-    components:
-    - identity_id: fact_shale_toolkit_identity
-      dataset_columns:
-      - shale_toolkit_id
-      description: Identifier of the shale toolkit.
-  columns:
-  - name: shale_toolkit_id
-    description: Identifier of the shale toolkit.
-  - name: extends_beyond_shale_flag
-    description: Whether this row is marked extends beyond shale.
-  - name: resource_type_code
-    description: Resource type code.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: technology_id
-    description: Identifier of the related technology.
-  - name: play_id
-    description: Identifier of the related play.
-  entity_definitions:
-  - identity_id: fact_shale_toolkit_identity
-    dataset_columns:
-    - shale_toolkit_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_technology_identity
-    dataset_columns:
-    - technology_id
-    entity_universe: partial
-  - identity_id: dim_play_identity
-    dataset_columns:
-    - play_id
-    entity_universe: partial
-- node_id: sf:energy.supply.fact_inventory
-  descriptor:
-    qualified_name: energy.supply.fact_inventory
-    display_name: Inventory
-    description: Product inventory used to keep a market supplied.
-    synonyms: []
-    tags:
-    - fact
-    - supply
-    - energy
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: energy.us-central-1
-      database: ENERGY
-      schema: SUPPLY
-      object: FACT_INVENTORY
-      format: table
-  grain:
-    description: One row is one inventory.
-    components:
-    - identity_id: fact_inventory_identity
-      dataset_columns:
-      - inventory_id
-      description: Identifier of the inventory.
-  columns:
-  - name: inventory_id
-    description: Identifier of the inventory.
-  - name: inventory_quantity
-    description: Inventory quantity on this row. The value is a quantity, not a price.
-  - name: drawn_flag
-    description: Whether this row is marked drawn.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: market_id
-    description: Identifier of the related market.
-  - name: product_id
-    description: Identifier of the related product.
-  entity_definitions:
-  - identity_id: fact_inventory_identity
-    dataset_columns:
-    - inventory_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_market_identity
-    dataset_columns:
-    - market_id
-    entity_universe: partial
-  - identity_id: dim_product_identity
-    dataset_columns:
-    - product_id
-    entity_universe: partial
-- node_id: sf:energy.supply.fact_power_distribution
-  descriptor:
-    qualified_name: energy.supply.fact_power_distribution
-    display_name: Power Distribution
-    description: Power-distribution constraint on a field.
-    synonyms: []
-    tags:
-    - fact
-    - supply
-    - energy
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: energy.us-central-1
-      database: ENERGY
-      schema: SUPPLY
-      object: FACT_POWER_DISTRIBUTION
-      format: table
-  grain:
-    description: One row is one power distribution.
-    components:
-    - identity_id: fact_power_distribution_identity
-      dataset_columns:
-      - power_distribution_id
-      description: Identifier of the power distribution.
-  columns:
-  - name: power_distribution_id
-    description: Identifier of the power distribution.
-  - name: constrained_flag
-    description: Whether this row is marked constrained.
-  - name: issue_open_flag
-    description: Whether this row is marked issue open.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: field_id
-    description: Identifier of the related field.
-  entity_definitions:
-  - identity_id: fact_power_distribution_identity
-    dataset_columns:
-    - power_distribution_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
     entity_universe: partial
   - identity_id: dim_field_identity
     dataset_columns:
     - field_id
     entity_universe: partial
-- node_id: sf:energy.supply.fact_peer_activity
+  - identity_id: dim_well_type_identity
+    dataset_columns:
+    - well_type_id
+    entity_universe: partial
+  - identity_id: dim_rig_type_identity
+    dataset_columns:
+    - rig_type_id
+    entity_universe: partial
+- node_id: sf:energy.supply.fact_reserves_quantity
   descriptor:
-    qualified_name: energy.supply.fact_peer_activity
-    display_name: Peer Activity
-    description: Peer interest in a country versus Energy Inc.
+    qualified_name: energy.supply.fact_reserves_quantity
+    display_name: Reserves Quantity
+    description: Proved reserves by field and hydrocarbon. Stores quantity in barrels for crude and NGL and in thousand cubic
+      feet for natural gas.
     synonyms: []
     tags:
     - fact
@@ -3316,36 +1424,602 @@ nodes:
       account: energy.us-central-1
       database: ENERGY
       schema: SUPPLY
-      object: FACT_PEER_ACTIVITY
+      object: FACT_RESERVES_QUANTITY
       format: table
   grain:
-    description: One row is one peer activity.
+    description: One row is one combination of fiscal quarter, scenario, field, hydrocarbon.
     components:
-    - identity_id: fact_peer_activity_identity
+    - identity_id: dim_fiscal_quarter_identity
       dataset_columns:
-      - peer_activity_id
-      description: Identifier of the peer activity.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_field_identity
+      dataset_columns:
+      - field_id
+      description: Identifier of the field.
+    - identity_id: dim_hydrocarbon_identity
+      dataset_columns:
+      - hydrocarbon_id
+      description: Identifier of the hydrocarbon.
   columns:
-  - name: peer_activity_id
-    description: Identifier of the peer activity.
-  - name: peer_interest_code
-    description: Peer interest code.
-  - name: different_lng_view_flag
-    description: Whether this row is marked different lng view.
   - name: fiscal_quarter_id
     description: Identifier of the related fiscal quarter.
-  - name: country_id
-    description: Identifier of the related country.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: field_id
+    description: Identifier of the related field.
+  - name: hydrocarbon_id
+    description: Identifier of the related hydrocarbon.
+  - name: proved_reserves_quantity
+    description: Proved reserves in barrels for crude and NGL and in thousand cubic feet for natural gas.
   entity_definitions:
-  - identity_id: fact_peer_activity_identity
-    dataset_columns:
-    - peer_activity_id
-    entity_universe: complete
   - identity_id: dim_fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_field_identity
+    dataset_columns:
+    - field_id
+    entity_universe: partial
+  - identity_id: dim_hydrocarbon_identity
+    dataset_columns:
+    - hydrocarbon_id
+    entity_universe: partial
+- node_id: sf:energy.supply.fact_pipeline_throughput
+  descriptor:
+    qualified_name: energy.supply.fact_pipeline_throughput
+    display_name: Pipeline Throughput
+    description: Pipeline throughput by pipeline and hydrocarbon. Stores quantity in barrels for liquids and in thousand cubic
+      feet for gas.
+    synonyms: []
+    tags:
+    - fact
+    - supply
+    - energy
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: energy.us-central-1
+      database: ENERGY
+      schema: SUPPLY
+      object: FACT_PIPELINE_THROUGHPUT
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, pipeline, hydrocarbon.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_pipeline_identity
+      dataset_columns:
+      - pipeline_id
+      description: Identifier of the pipeline.
+    - identity_id: dim_hydrocarbon_identity
+      dataset_columns:
+      - hydrocarbon_id
+      description: Identifier of the hydrocarbon.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: pipeline_id
+    description: Identifier of the related pipeline.
+  - name: hydrocarbon_id
+    description: Identifier of the related hydrocarbon.
+  - name: pipeline_throughput_quantity
+    description: Pipeline throughput in barrels for liquids and in thousand cubic feet for gas.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_pipeline_identity
+    dataset_columns:
+    - pipeline_id
+    entity_universe: partial
+  - identity_id: dim_hydrocarbon_identity
+    dataset_columns:
+    - hydrocarbon_id
+    entity_universe: partial
+- node_id: sf:energy.supply.fact_storage_inventory
+  descriptor:
+    qualified_name: energy.supply.fact_storage_inventory
+    display_name: Storage Inventory
+    description: Hydrocarbon inventory at a storage terminal. Stores quantity in barrels.
+    synonyms: []
+    tags:
+    - fact
+    - supply
+    - energy
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: energy.us-central-1
+      database: ENERGY
+      schema: SUPPLY
+      object: FACT_STORAGE_INVENTORY
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, storage terminal, hydrocarbon.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_storage_terminal_identity
+      dataset_columns:
+      - storage_terminal_id
+      description: Identifier of the storage terminal.
+    - identity_id: dim_hydrocarbon_identity
+      dataset_columns:
+      - hydrocarbon_id
+      description: Identifier of the hydrocarbon.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: storage_terminal_id
+    description: Identifier of the related storage terminal.
+  - name: hydrocarbon_id
+    description: Identifier of the related hydrocarbon.
+  - name: inventory_quantity
+    description: Inventory in barrels.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_storage_terminal_identity
+    dataset_columns:
+    - storage_terminal_id
+    entity_universe: partial
+  - identity_id: dim_hydrocarbon_identity
+    dataset_columns:
+    - hydrocarbon_id
+    entity_universe: partial
+- node_id: sf:energy.supply.fact_project_progress
+  descriptor:
+    qualified_name: energy.supply.fact_project_progress
+    display_name: Project Progress
+    description: Progress of a capital project. Stores completion in percent.
+    synonyms: []
+    tags:
+    - fact
+    - supply
+    - energy
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: energy.us-central-1
+      database: ENERGY
+      schema: SUPPLY
+      object: FACT_PROJECT_PROGRESS
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, project, asset.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_project_identity
+      dataset_columns:
+      - project_id
+      description: Identifier of the project.
+    - identity_id: dim_asset_identity
+      dataset_columns:
+      - asset_id
+      description: Identifier of the asset.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: project_id
+    description: Identifier of the related project.
+  - name: asset_id
+    description: Identifier of the related asset.
+  - name: project_completion_percent
+    description: Project completion in percent.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_project_identity
+    dataset_columns:
+    - project_id
+    entity_universe: partial
+  - identity_id: dim_asset_identity
+    dataset_columns:
+    - asset_id
+    entity_universe: partial
+- node_id: sf:energy.supply.fact_affiliate_production_quantity
+  descriptor:
+    qualified_name: energy.supply.fact_affiliate_production_quantity
+    display_name: Affiliate Production Quantity
+    description: Production quantity operated by an affiliate or operator, by hydrocarbon and asset. Stores quantity in barrels
+      for crude and NGL and in thousand cubic feet for natural gas.
+    synonyms: []
+    tags:
+    - fact
+    - supply
+    - energy
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: energy.us-central-1
+      database: ENERGY
+      schema: SUPPLY
+      object: FACT_AFFILIATE_PRODUCTION_QUANTITY
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, operator affiliate, hydrocarbon, asset, country.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_operator_affiliate_identity
+      dataset_columns:
+      - operator_affiliate_id
+      description: Identifier of the operator affiliate.
+    - identity_id: dim_hydrocarbon_identity
+      dataset_columns:
+      - hydrocarbon_id
+      description: Identifier of the hydrocarbon.
+    - identity_id: dim_asset_identity
+      dataset_columns:
+      - asset_id
+      description: Identifier of the asset.
+    - identity_id: dim_country_identity
+      dataset_columns:
+      - country_id
+      description: Identifier of the country.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: operator_affiliate_id
+    description: Identifier of the related operator affiliate.
+  - name: hydrocarbon_id
+    description: Identifier of the related hydrocarbon.
+  - name: asset_id
+    description: Identifier of the related asset.
+  - name: country_id
+    description: Identifier of the related country.
+  - name: affiliate_gross_production_quantity
+    description: Affiliate gross operated production quantity in barrels for crude and NGL and in thousand cubic feet for
+      natural gas.
+  - name: affiliate_net_production_quantity
+    description: Affiliate net entitlement production quantity in barrels for crude and NGL and in thousand cubic feet for
+      natural gas.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_operator_affiliate_identity
+    dataset_columns:
+    - operator_affiliate_id
+    entity_universe: partial
+  - identity_id: dim_hydrocarbon_identity
+    dataset_columns:
+    - hydrocarbon_id
+    entity_universe: partial
+  - identity_id: dim_asset_identity
+    dataset_columns:
+    - asset_id
+    entity_universe: partial
   - identity_id: dim_country_identity
     dataset_columns:
     - country_id
+    entity_universe: partial
+- node_id: sf:energy.supply.fact_facility_capacity
+  descriptor:
+    qualified_name: energy.supply.fact_facility_capacity
+    display_name: Facility Capacity
+    description: Capacity by facility type and country where the specific facility is not the grain. Stores capacity in barrels
+      per day for refining and in million tonnes per year for LNG as labelled by facility type.
+    synonyms: []
+    tags:
+    - fact
+    - supply
+    - energy
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: energy.us-central-1
+      database: ENERGY
+      schema: SUPPLY
+      object: FACT_FACILITY_CAPACITY
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, facility type, country.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_facility_type_identity
+      dataset_columns:
+      - facility_type_id
+      description: Identifier of the facility type.
+    - identity_id: dim_country_identity
+      dataset_columns:
+      - country_id
+      description: Identifier of the country.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: facility_type_id
+    description: Identifier of the related facility type.
+  - name: country_id
+    description: Identifier of the related country.
+  - name: facility_capacity_quantity
+    description: Facility capacity in barrels per day for refining and in million tonnes per year for LNG as labelled by facility
+      type.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_facility_type_identity
+    dataset_columns:
+    - facility_type_id
+    entity_universe: partial
+  - identity_id: dim_country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+- node_id: sf:energy.supply.fact_power_generation
+  descriptor:
+    qualified_name: energy.supply.fact_power_generation
+    display_name: Power Generation
+    description: Electric power generated by a power plant. Stores energy in megawatt-hours.
+    synonyms: []
+    tags:
+    - fact
+    - supply
+    - energy
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: energy.us-central-1
+      database: ENERGY
+      schema: SUPPLY
+      object: FACT_POWER_GENERATION
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, power plant.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_power_plant_identity
+      dataset_columns:
+      - power_plant_id
+      description: Identifier of the power plant.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: power_plant_id
+    description: Identifier of the related power plant.
+  - name: power_generation_quantity
+    description: Power generation in megawatt-hours.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_power_plant_identity
+    dataset_columns:
+    - power_plant_id
+    entity_universe: partial
+- node_id: sf:energy.supply.fact_carbon_capture
+  descriptor:
+    qualified_name: energy.supply.fact_carbon_capture
+    display_name: Carbon Capture
+    description: Carbon dioxide captured by a low-carbon project. Stores quantity in tonnes.
+    synonyms: []
+    tags:
+    - fact
+    - supply
+    - energy
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: energy.us-central-1
+      database: ENERGY
+      schema: SUPPLY
+      object: FACT_CARBON_CAPTURE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, low carbon project, asset.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_low_carbon_project_identity
+      dataset_columns:
+      - low_carbon_project_id
+      description: Identifier of the low carbon project.
+    - identity_id: dim_asset_identity
+      dataset_columns:
+      - asset_id
+      description: Identifier of the asset.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: low_carbon_project_id
+    description: Identifier of the related low carbon project.
+  - name: asset_id
+    description: Identifier of the related asset.
+  - name: captured_carbon_quantity
+    description: Captured carbon dioxide in tonnes.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_low_carbon_project_identity
+    dataset_columns:
+    - low_carbon_project_id
+    entity_universe: partial
+  - identity_id: dim_asset_identity
+    dataset_columns:
+    - asset_id
+    entity_universe: partial
+- node_id: sf:energy.supply.fact_basin_production_capacity
+  descriptor:
+    qualified_name: energy.supply.fact_basin_production_capacity
+    display_name: Basin Production Capacity
+    description: Production capacity by basin and hydrocarbon. Stores capacity in barrels per day for crude and NGL and in
+      thousand cubic feet per day for natural gas.
+    synonyms: []
+    tags:
+    - fact
+    - supply
+    - energy
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: energy.us-central-1
+      database: ENERGY
+      schema: SUPPLY
+      object: FACT_BASIN_PRODUCTION_CAPACITY
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, basin, hydrocarbon, play.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_basin_identity
+      dataset_columns:
+      - basin_id
+      description: Identifier of the basin.
+    - identity_id: dim_hydrocarbon_identity
+      dataset_columns:
+      - hydrocarbon_id
+      description: Identifier of the hydrocarbon.
+    - identity_id: dim_play_identity
+      dataset_columns:
+      - play_id
+      description: Identifier of the play.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: basin_id
+    description: Identifier of the related basin.
+  - name: hydrocarbon_id
+    description: Identifier of the related hydrocarbon.
+  - name: play_id
+    description: Identifier of the related play.
+  - name: basin_capacity_quantity
+    description: Basin production capacity in barrels per day for crude and NGL and in thousand cubic feet per day for natural
+      gas.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_basin_identity
+    dataset_columns:
+    - basin_id
+    entity_universe: partial
+  - identity_id: dim_hydrocarbon_identity
+    dataset_columns:
+    - hydrocarbon_id
+    entity_universe: partial
+  - identity_id: dim_play_identity
+    dataset_columns:
+    - play_id
     entity_universe: partial

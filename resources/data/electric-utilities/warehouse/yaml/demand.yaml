@@ -1,92 +1,10 @@
 schema_version: '3'
 nodes:
-- node_id: sf:utility.geography.dim_region
+- node_id: sf:utility.demand.dim_fiscal_quarter
   descriptor:
-    qualified_name: utility.geography.dim_region
-    display_name: Region
-    description: Region in which Utility Inc serves load.
-    synonyms: []
-    tags:
-    - dimension
-    - demand
-    - utility
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: utility.us-east-1
-      database: UTILITY
-      schema: GEOGRAPHY
-      object: DIM_REGION
-      format: table
-  grain:
-    description: One row is one region.
-    components:
-    - identity_id: dim_region_identity
-      dataset_columns:
-      - region_id
-      description: Identifier of the region.
-  columns:
-  - name: region_id
-    description: Identifier of the region.
-  - name: region_code
-    description: Region code.
-    value_description: carolinas, florida, indiana, southeast
-  - name: region_name
-    description: Region name.
-  entity_definitions:
-  - identity_id: dim_region_identity
-    dataset_columns:
-    - region_id
-    entity_universe: complete
-- node_id: sf:utility.geography.dim_state
-  descriptor:
-    qualified_name: utility.geography.dim_state
-    display_name: State
-    description: State served by Utility Inc.
-    synonyms: []
-    tags:
-    - dimension
-    - demand
-    - utility
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: utility.us-east-1
-      database: UTILITY
-      schema: GEOGRAPHY
-      object: DIM_STATE
-      format: table
-  grain:
-    description: One row is one state.
-    components:
-    - identity_id: dim_state_identity
-      dataset_columns:
-      - state_id
-      description: Identifier of the state.
-  columns:
-  - name: state_id
-    description: Identifier of the state.
-  - name: state_code
-    description: State code.
-    value_description: indiana, florida, north_carolina, south_carolina, alabama, georgia, mississippi
-  - name: state_name
-    description: State name.
-  - name: region_id
-    description: Identifier of the related region.
-  entity_definitions:
-  - identity_id: dim_state_identity
-    dataset_columns:
-    - state_id
-    entity_universe: complete
-  - identity_id: dim_region_identity
-    dataset_columns:
-    - region_id
-    entity_universe: partial
-- node_id: sf:utility.geography.dim_fiscal_quarter
-  descriptor:
-    qualified_name: utility.geography.dim_fiscal_quarter
+    qualified_name: utility.demand.dim_fiscal_quarter
     display_name: Fiscal Quarter
-    description: Fiscal quarter on the Utility Inc earnings calendar.
+    description: Fiscal quarter in which Utility Inc reports results.
     synonyms: []
     tags:
     - dimension
@@ -97,7 +15,7 @@ nodes:
     properties:
       account: utility.us-east-1
       database: UTILITY
-      schema: GEOGRAPHY
+      schema: DEMAND
       object: DIM_FISCAL_QUARTER
       format: table
   grain:
@@ -110,24 +28,25 @@ nodes:
   columns:
   - name: fiscal_quarter_id
     description: Identifier of the fiscal quarter.
-  - name: quarter_code
-    description: Quarter code.
+  - name: fiscal_quarter_code
+    description: Fiscal Quarter code.
     value_description: 2025Q2, 2025Q3, 2025Q4, 2026Q1, 2026Q2
-  - name: quarter_label
-    description: Quarter label.
-  - name: guidance_horizon
-    description: Guidance horizon.
-    value_description: reported, guided_next
+  - name: fiscal_quarter_name
+    description: Fiscal Quarter name.
+  - name: fiscal_year
+    description: Fiscal year number.
+  - name: quarter_number
+    description: Quarter number within the fiscal year.
   entity_definitions:
   - identity_id: dim_fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: complete
-- node_id: sf:utility.geography.dim_calendar_day
+- node_id: sf:utility.demand.dim_scenario
   descriptor:
-    qualified_name: utility.geography.dim_calendar_day
-    display_name: Calendar Day
-    description: Calendar day used to place load, construction, and rates on one time axis.
+    qualified_name: utility.demand.dim_scenario
+    display_name: Scenario
+    description: Reporting scenario for a row. The same fiscal quarter can be a reported result and a later guide.
     synonyms: []
     tags:
     - dimension
@@ -138,37 +57,75 @@ nodes:
     properties:
       account: utility.us-east-1
       database: UTILITY
-      schema: GEOGRAPHY
-      object: DIM_CALENDAR_DAY
+      schema: DEMAND
+      object: DIM_SCENARIO
       format: table
   grain:
-    description: One row is one calendar day.
+    description: One row is one scenario.
     components:
-    - identity_id: dim_calendar_day_identity
+    - identity_id: dim_scenario_identity
       dataset_columns:
-      - calendar_day_id
-      description: Identifier of the calendar day.
+      - scenario_id
+      description: Identifier of the scenario.
   columns:
-  - name: calendar_day_id
-    description: Identifier of the calendar day.
-  - name: calendar_date
-    description: Calendar date.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: scenario_code
+    description: Scenario code.
+    value_description: reported, guide
+  - name: scenario_name
+    description: Scenario name.
+  entity_definitions:
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: complete
+- node_id: sf:utility.demand.dim_calendar_month
+  descriptor:
+    qualified_name: utility.demand.dim_calendar_month
+    display_name: Calendar Month
+    description: Calendar month inside a fiscal quarter.
+    synonyms: []
+    tags:
+    - dimension
+    - demand
+    - utility
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: utility.us-east-1
+      database: UTILITY
+      schema: DEMAND
+      object: DIM_CALENDAR_MONTH
+      format: table
+  grain:
+    description: One row is one calendar month.
+    components:
+    - identity_id: dim_calendar_month_identity
+      dataset_columns:
+      - calendar_month_id
+      description: Identifier of the calendar month.
+  columns:
+  - name: calendar_month_id
+    description: Identifier of the calendar month.
+  - name: calendar_month_name
+    description: Calendar Month name.
   - name: fiscal_quarter_id
     description: Identifier of the related fiscal quarter.
   entity_definitions:
-  - identity_id: dim_calendar_day_identity
+  - identity_id: dim_calendar_month_identity
     dataset_columns:
-    - calendar_day_id
+    - calendar_month_id
     entity_universe: complete
   - identity_id: dim_fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-- node_id: sf:utility.customer.dim_customer_segment
+- node_id: sf:utility.demand.dim_rate_class
   descriptor:
-    qualified_name: utility.customer.dim_customer_segment
-    display_name: Customer Segment
-    description: Customer segment, including residential, data center, and industrial load.
+    qualified_name: utility.demand.dim_rate_class
+    display_name: Rate Class
+    description: Rate class a customer is billed under.
     synonyms: []
     tags:
     - dimension
@@ -179,7 +136,317 @@ nodes:
     properties:
       account: utility.us-east-1
       database: UTILITY
-      schema: CUSTOMER
+      schema: DEMAND
+      object: DIM_RATE_CLASS
+      format: table
+  grain:
+    description: One row is one rate class.
+    components:
+    - identity_id: dim_rate_class_identity
+      dataset_columns:
+      - rate_class_id
+      description: Identifier of the rate class.
+  columns:
+  - name: rate_class_id
+    description: Identifier of the rate class.
+  - name: rate_class_code
+    description: Rate Class code.
+    value_description: residential, commercial, industrial, wholesale
+  - name: rate_class_name
+    description: Rate Class name.
+  entity_definitions:
+  - identity_id: dim_rate_class_identity
+    dataset_columns:
+    - rate_class_id
+    entity_universe: complete
+- node_id: sf:utility.demand.dim_end_use
+  descriptor:
+    qualified_name: utility.demand.dim_end_use
+    display_name: End Use
+    description: End use of electricity or gas by a customer. Data center is an end use.
+    synonyms: []
+    tags:
+    - dimension
+    - demand
+    - utility
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: utility.us-east-1
+      database: UTILITY
+      schema: DEMAND
+      object: DIM_END_USE
+      format: table
+  grain:
+    description: One row is one end use.
+    components:
+    - identity_id: dim_end_use_identity
+      dataset_columns:
+      - end_use_id
+      description: Identifier of the end use.
+  columns:
+  - name: end_use_id
+    description: Identifier of the end use.
+  - name: end_use_code
+    description: End Use code.
+    value_description: data_center, residential_use, commercial_use, industrial_process, other_use
+  - name: end_use_name
+    description: End Use name.
+  entity_definitions:
+  - identity_id: dim_end_use_identity
+    dataset_columns:
+    - end_use_id
+    entity_universe: complete
+- node_id: sf:utility.demand.dim_pipeline_stage
+  descriptor:
+    qualified_name: utility.demand.dim_pipeline_stage
+    display_name: Pipeline Stage
+    description: Stage of a large-load sales opportunity in the pipeline.
+    synonyms: []
+    tags:
+    - dimension
+    - demand
+    - utility
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: utility.us-east-1
+      database: UTILITY
+      schema: DEMAND
+      object: DIM_PIPELINE_STAGE
+      format: table
+  grain:
+    description: One row is one pipeline stage.
+    components:
+    - identity_id: dim_pipeline_stage_identity
+      dataset_columns:
+      - pipeline_stage_id
+      description: Identifier of the pipeline stage.
+  columns:
+  - name: pipeline_stage_id
+    description: Identifier of the pipeline stage.
+  - name: pipeline_stage_code
+    description: Pipeline Stage code.
+    value_description: inquiry, qualified, committed, contracted, energized
+  - name: pipeline_stage_name
+    description: Pipeline Stage name.
+  entity_definitions:
+  - identity_id: dim_pipeline_stage_identity
+    dataset_columns:
+    - pipeline_stage_id
+    entity_universe: complete
+- node_id: sf:utility.demand.dim_operating_company
+  descriptor:
+    qualified_name: utility.demand.dim_operating_company
+    display_name: Operating Company
+    description: Regulated operating company of Utility Inc.
+    synonyms: []
+    tags:
+    - dimension
+    - demand
+    - utility
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: utility.us-east-1
+      database: UTILITY
+      schema: DEMAND
+      object: DIM_OPERATING_COMPANY
+      format: table
+  grain:
+    description: One row is one operating company.
+    components:
+    - identity_id: dim_operating_company_identity
+      dataset_columns:
+      - operating_company_id
+      description: Identifier of the operating company.
+  columns:
+  - name: operating_company_id
+    description: Identifier of the operating company.
+  - name: operating_company_code
+    description: Operating Company code.
+    value_description: electric_operating_company, gas_operating_company, combined_operating_company
+  - name: operating_company_name
+    description: Operating Company name.
+  entity_definitions:
+  - identity_id: dim_operating_company_identity
+    dataset_columns:
+    - operating_company_id
+    entity_universe: complete
+- node_id: sf:utility.demand.dim_jurisdiction
+  descriptor:
+    qualified_name: utility.demand.dim_jurisdiction
+    display_name: Jurisdiction
+    description: Regulatory jurisdiction, normally a state commission.
+    synonyms: []
+    tags:
+    - dimension
+    - demand
+    - utility
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: utility.us-east-1
+      database: UTILITY
+      schema: DEMAND
+      object: DIM_JURISDICTION
+      format: table
+  grain:
+    description: One row is one jurisdiction.
+    components:
+    - identity_id: dim_jurisdiction_identity
+      dataset_columns:
+      - jurisdiction_id
+      description: Identifier of the jurisdiction.
+  columns:
+  - name: jurisdiction_id
+    description: Identifier of the jurisdiction.
+  - name: jurisdiction_name
+    description: Jurisdiction name.
+  entity_definitions:
+  - identity_id: dim_jurisdiction_identity
+    dataset_columns:
+    - jurisdiction_id
+    entity_universe: complete
+- node_id: sf:utility.demand.dim_state
+  descriptor:
+    qualified_name: utility.demand.dim_state
+    display_name: State
+    description: State in the Utility Inc service territory.
+    synonyms: []
+    tags:
+    - dimension
+    - demand
+    - utility
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: utility.us-east-1
+      database: UTILITY
+      schema: DEMAND
+      object: DIM_STATE
+      format: table
+  grain:
+    description: One row is one state.
+    components:
+    - identity_id: dim_state_identity
+      dataset_columns:
+      - state_id
+      description: Identifier of the state.
+  columns:
+  - name: state_id
+    description: Identifier of the state.
+  - name: state_name
+    description: State name.
+  entity_definitions:
+  - identity_id: dim_state_identity
+    dataset_columns:
+    - state_id
+    entity_universe: complete
+- node_id: sf:utility.demand.dim_service_territory
+  descriptor:
+    qualified_name: utility.demand.dim_service_territory
+    display_name: Service Territory
+    description: Service territory served by an operating company.
+    synonyms: []
+    tags:
+    - dimension
+    - demand
+    - utility
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: utility.us-east-1
+      database: UTILITY
+      schema: DEMAND
+      object: DIM_SERVICE_TERRITORY
+      format: table
+  grain:
+    description: One row is one service territory.
+    components:
+    - identity_id: dim_service_territory_identity
+      dataset_columns:
+      - service_territory_id
+      description: Identifier of the service territory.
+  columns:
+  - name: service_territory_id
+    description: Identifier of the service territory.
+  - name: service_territory_name
+    description: Service Territory name.
+  - name: operating_company_id
+    description: Identifier of the related operating company.
+  - name: state_id
+    description: Identifier of the related state.
+  entity_definitions:
+  - identity_id: dim_service_territory_identity
+    dataset_columns:
+    - service_territory_id
+    entity_universe: complete
+  - identity_id: dim_operating_company_identity
+    dataset_columns:
+    - operating_company_id
+    entity_universe: partial
+  - identity_id: dim_state_identity
+    dataset_columns:
+    - state_id
+    entity_universe: partial
+- node_id: sf:utility.demand.dim_weather_zone
+  descriptor:
+    qualified_name: utility.demand.dim_weather_zone
+    display_name: Weather Zone
+    description: Weather zone used for degree-day reporting.
+    synonyms: []
+    tags:
+    - dimension
+    - demand
+    - utility
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: utility.us-east-1
+      database: UTILITY
+      schema: DEMAND
+      object: DIM_WEATHER_ZONE
+      format: table
+  grain:
+    description: One row is one weather zone.
+    components:
+    - identity_id: dim_weather_zone_identity
+      dataset_columns:
+      - weather_zone_id
+      description: Identifier of the weather zone.
+  columns:
+  - name: weather_zone_id
+    description: Identifier of the weather zone.
+  - name: weather_zone_name
+    description: Weather Zone name.
+  - name: state_id
+    description: Identifier of the related state.
+  entity_definitions:
+  - identity_id: dim_weather_zone_identity
+    dataset_columns:
+    - weather_zone_id
+    entity_universe: complete
+  - identity_id: dim_state_identity
+    dataset_columns:
+    - state_id
+    entity_universe: partial
+- node_id: sf:utility.demand.dim_customer_segment
+  descriptor:
+    qualified_name: utility.demand.dim_customer_segment
+    display_name: Customer Segment
+    description: Customer segment for counts and sales where rate class alone is not the grain.
+    synonyms: []
+    tags:
+    - dimension
+    - demand
+    - utility
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: utility.us-east-1
+      database: UTILITY
+      schema: DEMAND
       object: DIM_CUSTOMER_SEGMENT
       format: table
   grain:
@@ -192,21 +459,21 @@ nodes:
   columns:
   - name: customer_segment_id
     description: Identifier of the customer segment.
-  - name: segment_code
-    description: Segment code.
-    value_description: residential, data_center, industrial, wholesale
-  - name: segment_name
-    description: Segment name.
+  - name: customer_segment_code
+    description: Customer Segment code.
+    value_description: residential_segment, commercial_segment, industrial_segment, wholesale_segment
+  - name: customer_segment_name
+    description: Customer Segment name.
   entity_definitions:
   - identity_id: dim_customer_segment_identity
     dataset_columns:
     - customer_segment_id
     entity_universe: complete
-- node_id: sf:utility.customer.dim_customer
+- node_id: sf:utility.demand.dim_county
   descriptor:
-    qualified_name: utility.customer.dim_customer
-    display_name: Customer
-    description: Customer that takes Utility Inc service, including a hyperscaler.
+    qualified_name: utility.demand.dim_county
+    display_name: County
+    description: County in the service territory.
     synonyms: []
     tags:
     - dimension
@@ -217,39 +484,37 @@ nodes:
     properties:
       account: utility.us-east-1
       database: UTILITY
-      schema: CUSTOMER
-      object: DIM_CUSTOMER
+      schema: DEMAND
+      object: DIM_COUNTY
       format: table
   grain:
-    description: One row is one customer.
+    description: One row is one county.
     components:
-    - identity_id: dim_customer_identity
+    - identity_id: dim_county_identity
       dataset_columns:
-      - customer_id
-      description: Identifier of the customer.
+      - county_id
+      description: Identifier of the county.
   columns:
-  - name: customer_id
-    description: Identifier of the customer.
-  - name: customer_name
-    description: Customer name.
-  - name: customer_code
-    description: Customer code.
-  - name: customer_segment_id
-    description: Identifier of the related customer segment.
+  - name: county_id
+    description: Identifier of the county.
+  - name: county_name
+    description: County name.
+  - name: state_id
+    description: Identifier of the related state.
   entity_definitions:
-  - identity_id: dim_customer_identity
+  - identity_id: dim_county_identity
     dataset_columns:
-    - customer_id
+    - county_id
     entity_universe: complete
-  - identity_id: dim_customer_segment_identity
+  - identity_id: dim_state_identity
     dataset_columns:
-    - customer_segment_id
+    - state_id
     entity_universe: partial
-- node_id: sf:utility.customer.dim_load_class
+- node_id: sf:utility.demand.dim_meter_type
   descriptor:
-    qualified_name: utility.customer.dim_load_class
-    display_name: Load Class
-    description: How mature a large-load request is.
+    qualified_name: utility.demand.dim_meter_type
+    display_name: Meter Type
+    description: Type of customer meter.
     synonyms: []
     tags:
     - dimension
@@ -260,127 +525,35 @@ nodes:
     properties:
       account: utility.us-east-1
       database: UTILITY
-      schema: CUSTOMER
-      object: DIM_LOAD_CLASS
+      schema: DEMAND
+      object: DIM_METER_TYPE
       format: table
   grain:
-    description: One row is one load class.
+    description: One row is one meter type.
     components:
-    - identity_id: dim_load_class_identity
+    - identity_id: dim_meter_type_identity
       dataset_columns:
-      - load_class_id
-      description: Identifier of the load class.
+      - meter_type_id
+      description: Identifier of the meter type.
   columns:
-  - name: load_class_id
-    description: Identifier of the load class.
-  - name: class_code
-    description: Class code.
-    value_description: top_of_funnel, committed, contracted, signed
-  - name: class_name
-    description: Class name.
+  - name: meter_type_id
+    description: Identifier of the meter type.
+  - name: meter_type_code
+    description: Meter Type code.
+    value_description: residential_meter, commercial_meter, industrial_meter, smart_meter
+  - name: meter_type_name
+    description: Meter Type name.
   entity_definitions:
-  - identity_id: dim_load_class_identity
+  - identity_id: dim_meter_type_identity
     dataset_columns:
-    - load_class_id
+    - meter_type_id
     entity_universe: complete
-- node_id: sf:utility.customer.dim_contract
+- node_id: sf:utility.demand.fact_electricity_sales_energy
   descriptor:
-    qualified_name: utility.customer.dim_contract
-    display_name: Contract
-    description: Large-load or wholesale contract.
-    synonyms: []
-    tags:
-    - dimension
-    - demand
-    - utility
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: utility.us-east-1
-      database: UTILITY
-      schema: CUSTOMER
-      object: DIM_CONTRACT
-      format: table
-  grain:
-    description: One row is one contract.
-    components:
-    - identity_id: dim_contract_identity
-      dataset_columns:
-      - contract_id
-      description: Identifier of the contract.
-  columns:
-  - name: contract_id
-    description: Identifier of the contract.
-  - name: contract_code
-    description: Contract code.
-  - name: contract_name
-    description: Contract name.
-  - name: customer_id
-    description: Identifier of the related customer.
-  - name: load_class_id
-    description: Identifier of the related load class.
-  entity_definitions:
-  - identity_id: dim_contract_identity
-    dataset_columns:
-    - contract_id
-    entity_universe: complete
-  - identity_id: dim_customer_identity
-    dataset_columns:
-    - customer_id
-    entity_universe: partial
-  - identity_id: dim_load_class_identity
-    dataset_columns:
-    - load_class_id
-    entity_universe: partial
-- node_id: sf:utility.customer.dim_tariff
-  descriptor:
-    qualified_name: utility.customer.dim_tariff
-    display_name: Tariff
-    description: Large-load tariff, including Georgia, South Carolina, and North Carolina.
-    synonyms: []
-    tags:
-    - dimension
-    - demand
-    - utility
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: utility.us-east-1
-      database: UTILITY
-      schema: CUSTOMER
-      object: DIM_TARIFF
-      format: table
-  grain:
-    description: One row is one tariff.
-    components:
-    - identity_id: dim_tariff_identity
-      dataset_columns:
-      - tariff_id
-      description: Identifier of the tariff.
-  columns:
-  - name: tariff_id
-    description: Identifier of the tariff.
-  - name: tariff_code
-    description: Tariff code.
-    value_description: georgia_large_load, south_carolina, north_carolina
-  - name: tariff_name
-    description: Tariff name.
-  - name: state_id
-    description: Identifier of the related state.
-  entity_definitions:
-  - identity_id: dim_tariff_identity
-    dataset_columns:
-    - tariff_id
-    entity_universe: complete
-  - identity_id: dim_state_identity
-    dataset_columns:
-    - state_id
-    entity_universe: partial
-- node_id: sf:utility.demand.fact_large_load
-  descriptor:
-    qualified_name: utility.demand.fact_large_load
-    display_name: Large Load
-    description: Large-load quantity. Capital dollars and rates are not stored here.
+    qualified_name: utility.demand.fact_electricity_sales_energy
+    display_name: Electricity Sales Energy
+    description: Electricity sold by rate class, end use, operating company, and jurisdiction. Stores energy in megawatt-hours.
+      Stores no capacity in megawatts and no price.
     synonyms: []
     tags:
     - fact
@@ -392,52 +565,80 @@ nodes:
       account: utility.us-east-1
       database: UTILITY
       schema: DEMAND
-      object: FACT_LARGE_LOAD
+      object: FACT_ELECTRICITY_SALES_ENERGY
       format: table
   grain:
-    description: One row is one large load.
+    description: One row is one combination of fiscal quarter, scenario, rate class, end use, operating company, jurisdiction.
     components:
-    - identity_id: fact_large_load_identity
+    - identity_id: dim_fiscal_quarter_identity
       dataset_columns:
-      - large_load_id
-      description: Identifier of the large load.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_rate_class_identity
+      dataset_columns:
+      - rate_class_id
+      description: Identifier of the rate class.
+    - identity_id: dim_end_use_identity
+      dataset_columns:
+      - end_use_id
+      description: Identifier of the end use.
+    - identity_id: dim_operating_company_identity
+      dataset_columns:
+      - operating_company_id
+      description: Identifier of the operating company.
+    - identity_id: dim_jurisdiction_identity
+      dataset_columns:
+      - jurisdiction_id
+      description: Identifier of the jurisdiction.
   columns:
-  - name: large_load_id
-    description: Identifier of the large load.
-  - name: load_quantity
-    description: Load quantity on this row. The value is a quantity, not a price.
-  - name: top_of_range_flag
-    description: Whether this row is marked top of range.
-  - name: incremental_flag
-    description: Whether this row is marked incremental.
   - name: fiscal_quarter_id
     description: Identifier of the related fiscal quarter.
-  - name: state_id
-    description: Identifier of the related state.
-  - name: customer_id
-    description: Identifier of the related customer.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: rate_class_id
+    description: Identifier of the related rate class.
+  - name: end_use_id
+    description: Identifier of the related end use.
+  - name: operating_company_id
+    description: Identifier of the related operating company.
+  - name: jurisdiction_id
+    description: Identifier of the related jurisdiction.
+  - name: electricity_sales_quantity
+    description: Electricity sales in megawatt-hours.
   entity_definitions:
-  - identity_id: fact_large_load_identity
-    dataset_columns:
-    - large_load_id
-    entity_universe: complete
   - identity_id: dim_fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: dim_state_identity
+  - identity_id: dim_scenario_identity
     dataset_columns:
-    - state_id
+    - scenario_id
     entity_universe: partial
-  - identity_id: dim_customer_identity
+  - identity_id: dim_rate_class_identity
     dataset_columns:
-    - customer_id
+    - rate_class_id
     entity_universe: partial
-- node_id: sf:utility.demand.fact_load_pipeline
+  - identity_id: dim_end_use_identity
+    dataset_columns:
+    - end_use_id
+    entity_universe: partial
+  - identity_id: dim_operating_company_identity
+    dataset_columns:
+    - operating_company_id
+    entity_universe: partial
+  - identity_id: dim_jurisdiction_identity
+    dataset_columns:
+    - jurisdiction_id
+    entity_universe: partial
+- node_id: sf:utility.demand.fact_customer_count
   descriptor:
-    qualified_name: utility.demand.fact_load_pipeline
-    display_name: Load Pipeline
-    description: Load pipeline by stage. Not a price.
+    qualified_name: utility.demand.fact_customer_count
+    display_name: Customer Count
+    description: Customers by rate class, operating company, and jurisdiction. Stores quantity in customers.
     synonyms: []
     tags:
     - fact
@@ -449,170 +650,83 @@ nodes:
       account: utility.us-east-1
       database: UTILITY
       schema: DEMAND
-      object: FACT_LOAD_PIPELINE
+      object: FACT_CUSTOMER_COUNT
       format: table
   grain:
-    description: One row is one load pipeline.
+    description: One row is one combination of fiscal quarter, scenario, rate class, operating company, jurisdiction, customer
+      segment.
     components:
-    - identity_id: fact_load_pipeline_identity
+    - identity_id: dim_fiscal_quarter_identity
       dataset_columns:
-      - load_pipeline_id
-      description: Identifier of the load pipeline.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_rate_class_identity
+      dataset_columns:
+      - rate_class_id
+      description: Identifier of the rate class.
+    - identity_id: dim_operating_company_identity
+      dataset_columns:
+      - operating_company_id
+      description: Identifier of the operating company.
+    - identity_id: dim_jurisdiction_identity
+      dataset_columns:
+      - jurisdiction_id
+      description: Identifier of the jurisdiction.
+    - identity_id: dim_customer_segment_identity
+      dataset_columns:
+      - customer_segment_id
+      description: Identifier of the customer segment.
   columns:
-  - name: load_pipeline_id
-    description: Identifier of the load pipeline.
-  - name: pipeline_quantity
-    description: Pipeline quantity on this row. The value is a quantity, not a price.
-  - name: high_confidence_quantity
-    description: High confidence quantity on this row. The value is a quantity, not a price.
-  - name: advanced_quantity
-    description: Advanced quantity on this row. The value is a quantity, not a price.
   - name: fiscal_quarter_id
     description: Identifier of the related fiscal quarter.
-  - name: load_class_id
-    description: Identifier of the related load class.
-  - name: state_id
-    description: Identifier of the related state.
-  entity_definitions:
-  - identity_id: fact_load_pipeline_identity
-    dataset_columns:
-    - load_pipeline_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_load_class_identity
-    dataset_columns:
-    - load_class_id
-    entity_universe: partial
-  - identity_id: dim_state_identity
-    dataset_columns:
-    - state_id
-    entity_universe: partial
-- node_id: sf:utility.demand.fact_data_center_load
-  descriptor:
-    qualified_name: utility.demand.fact_data_center_load
-    display_name: Data-Center Load
-    description: Data-center load and whether the funnel has accelerated.
-    synonyms: []
-    tags:
-    - fact
-    - demand
-    - utility
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: utility.us-east-1
-      database: UTILITY
-      schema: DEMAND
-      object: FACT_DATA_CENTER_LOAD
-      format: table
-  grain:
-    description: One row is one data-center load.
-    components:
-    - identity_id: fact_data_center_load_identity
-      dataset_columns:
-      - data_center_load_id
-      description: Identifier of the data-center load.
-  columns:
-  - name: data_center_load_id
-    description: Identifier of the data-center load.
-  - name: load_quantity
-    description: Load quantity on this row. The value is a quantity, not a price.
-  - name: funnel_accelerated_flag
-    description: Whether this row is marked funnel accelerated.
-  - name: in_sales_range_flag
-    description: Whether this row is marked in sales range.
-  - name: joint_announcement_flag
-    description: Whether this row is marked joint announcement.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: state_id
-    description: Identifier of the related state.
-  - name: customer_id
-    description: Identifier of the related customer.
-  entity_definitions:
-  - identity_id: fact_data_center_load_identity
-    dataset_columns:
-    - data_center_load_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_state_identity
-    dataset_columns:
-    - state_id
-    entity_universe: partial
-  - identity_id: dim_customer_identity
-    dataset_columns:
-    - customer_id
-    entity_universe: partial
-- node_id: sf:utility.demand.fact_sales
-  descriptor:
-    qualified_name: utility.demand.fact_sales
-    display_name: Sales
-    description: Sales quantity and the year the growth target is reached.
-    synonyms: []
-    tags:
-    - fact
-    - demand
-    - utility
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: utility.us-east-1
-      database: UTILITY
-      schema: DEMAND
-      object: FACT_SALES
-      format: table
-  grain:
-    description: One row is one sales.
-    components:
-    - identity_id: fact_sales_identity
-      dataset_columns:
-      - sales_id
-      description: Identifier of the sales.
-  columns:
-  - name: sales_id
-    description: Identifier of the sales.
-  - name: sales_quantity
-    description: Sales quantity on this row. The value is a quantity, not a price.
-  - name: growth_rate
-    description: Growth rate.
-  - name: target_year_code
-    description: Target year code.
-  - name: in_range_flag
-    description: Whether this row is marked in range.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: state_id
-    description: Identifier of the related state.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: rate_class_id
+    description: Identifier of the related rate class.
+  - name: operating_company_id
+    description: Identifier of the related operating company.
+  - name: jurisdiction_id
+    description: Identifier of the related jurisdiction.
   - name: customer_segment_id
     description: Identifier of the related customer segment.
+  - name: customer_quantity
+    description: Customers in customers.
+  - name: new_customer_quantity
+    description: New customers in customers.
   entity_definitions:
-  - identity_id: fact_sales_identity
-    dataset_columns:
-    - sales_id
-    entity_universe: complete
   - identity_id: dim_fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: dim_state_identity
+  - identity_id: dim_scenario_identity
     dataset_columns:
-    - state_id
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_rate_class_identity
+    dataset_columns:
+    - rate_class_id
+    entity_universe: partial
+  - identity_id: dim_operating_company_identity
+    dataset_columns:
+    - operating_company_id
+    entity_universe: partial
+  - identity_id: dim_jurisdiction_identity
+    dataset_columns:
+    - jurisdiction_id
     entity_universe: partial
   - identity_id: dim_customer_segment_identity
     dataset_columns:
     - customer_segment_id
     entity_universe: partial
-- node_id: sf:utility.demand.fact_contracted_load
+- node_id: sf:utility.demand.fact_large_load_pipeline
   descriptor:
-    qualified_name: utility.demand.fact_contracted_load
-    display_name: Contracted Load
-    description: Contracted large-load quantity, separate from committed load.
+    qualified_name: utility.demand.fact_large_load_pipeline
+    display_name: Large Load Pipeline
+    description: Large-load sales pipeline by stage and end use. Stores pipeline load in megawatts. Stores no megawatt-hours.
     synonyms: []
     tags:
     - fact
@@ -624,50 +738,83 @@ nodes:
       account: utility.us-east-1
       database: UTILITY
       schema: DEMAND
-      object: FACT_CONTRACTED_LOAD
+      object: FACT_LARGE_LOAD_PIPELINE
       format: table
   grain:
-    description: One row is one contracted load.
+    description: One row is one combination of fiscal quarter, scenario, pipeline stage, end use, operating company, service
+      territory.
     components:
-    - identity_id: fact_contracted_load_identity
+    - identity_id: dim_fiscal_quarter_identity
       dataset_columns:
-      - contracted_load_id
-      description: Identifier of the contracted load.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_pipeline_stage_identity
+      dataset_columns:
+      - pipeline_stage_id
+      description: Identifier of the pipeline stage.
+    - identity_id: dim_end_use_identity
+      dataset_columns:
+      - end_use_id
+      description: Identifier of the end use.
+    - identity_id: dim_operating_company_identity
+      dataset_columns:
+      - operating_company_id
+      description: Identifier of the operating company.
+    - identity_id: dim_service_territory_identity
+      dataset_columns:
+      - service_territory_id
+      description: Identifier of the service territory.
   columns:
-  - name: contracted_load_id
-    description: Identifier of the contracted load.
-  - name: contracted_quantity
-    description: Contracted quantity on this row. The value is a quantity, not a price.
-  - name: still_finalizing_flag
-    description: Whether this row is marked still finalizing.
   - name: fiscal_quarter_id
     description: Identifier of the related fiscal quarter.
-  - name: contract_id
-    description: Identifier of the related contract.
-  - name: state_id
-    description: Identifier of the related state.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: pipeline_stage_id
+    description: Identifier of the related pipeline stage.
+  - name: end_use_id
+    description: Identifier of the related end use.
+  - name: operating_company_id
+    description: Identifier of the related operating company.
+  - name: service_territory_id
+    description: Identifier of the related service territory.
+  - name: pipeline_load_quantity
+    description: Large-load pipeline in megawatts.
+  - name: contracted_load_quantity
+    description: Contracted large load in megawatts.
   entity_definitions:
-  - identity_id: fact_contracted_load_identity
-    dataset_columns:
-    - contracted_load_id
-    entity_universe: complete
   - identity_id: dim_fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: dim_contract_identity
+  - identity_id: dim_scenario_identity
     dataset_columns:
-    - contract_id
+    - scenario_id
     entity_universe: partial
-  - identity_id: dim_state_identity
+  - identity_id: dim_pipeline_stage_identity
     dataset_columns:
-    - state_id
+    - pipeline_stage_id
     entity_universe: partial
-- node_id: sf:utility.demand.fact_committed_load
+  - identity_id: dim_end_use_identity
+    dataset_columns:
+    - end_use_id
+    entity_universe: partial
+  - identity_id: dim_operating_company_identity
+    dataset_columns:
+    - operating_company_id
+    entity_universe: partial
+  - identity_id: dim_service_territory_identity
+    dataset_columns:
+    - service_territory_id
+    entity_universe: partial
+- node_id: sf:utility.demand.fact_weather
   descriptor:
-    qualified_name: utility.demand.fact_committed_load
-    display_name: Committed Load
-    description: Committed load that is not yet contracted.
+    qualified_name: utility.demand.fact_weather
+    display_name: Weather
+    description: Weather by zone. Stores heating degree days and cooling degree days in degree days.
     synonyms: []
     tags:
     - fact
@@ -679,50 +826,53 @@ nodes:
       account: utility.us-east-1
       database: UTILITY
       schema: DEMAND
-      object: FACT_COMMITTED_LOAD
+      object: FACT_WEATHER
       format: table
   grain:
-    description: One row is one committed load.
+    description: One row is one combination of fiscal quarter, scenario, weather zone.
     components:
-    - identity_id: fact_committed_load_identity
+    - identity_id: dim_fiscal_quarter_identity
       dataset_columns:
-      - committed_load_id
-      description: Identifier of the committed load.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_weather_zone_identity
+      dataset_columns:
+      - weather_zone_id
+      description: Identifier of the weather zone.
   columns:
-  - name: committed_load_id
-    description: Identifier of the committed load.
-  - name: committed_quantity
-    description: Committed quantity on this row. The value is a quantity, not a price.
-  - name: stage_gap_quantity
-    description: Stage gap quantity on this row. The value is a quantity, not a price.
   - name: fiscal_quarter_id
     description: Identifier of the related fiscal quarter.
-  - name: load_class_id
-    description: Identifier of the related load class.
-  - name: state_id
-    description: Identifier of the related state.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: weather_zone_id
+    description: Identifier of the related weather zone.
+  - name: heating_degree_day_quantity
+    description: Heating degree days in degree days.
+  - name: cooling_degree_day_quantity
+    description: Cooling degree days in degree days.
   entity_definitions:
-  - identity_id: fact_committed_load_identity
-    dataset_columns:
-    - committed_load_id
-    entity_universe: complete
   - identity_id: dim_fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: dim_load_class_identity
+  - identity_id: dim_scenario_identity
     dataset_columns:
-    - load_class_id
+    - scenario_id
     entity_universe: partial
-  - identity_id: dim_state_identity
+  - identity_id: dim_weather_zone_identity
     dataset_columns:
-    - state_id
+    - weather_zone_id
     entity_universe: partial
-- node_id: sf:utility.demand.fact_demand_response
+- node_id: sf:utility.demand.fact_gas_throughput
   descriptor:
-    qualified_name: utility.demand.fact_demand_response
-    display_name: Demand Response
-    description: Demand-response quantity, including a data-center commitment.
+    qualified_name: utility.demand.fact_gas_throughput
+    display_name: Gas Throughput
+    description: Gas local distribution throughput by rate class and operating company. Stores quantity in therms. This is
+      gas delivered to distribution customers, not gas burned for generation.
     synonyms: []
     tags:
     - fact
@@ -734,52 +884,70 @@ nodes:
       account: utility.us-east-1
       database: UTILITY
       schema: DEMAND
-      object: FACT_DEMAND_RESPONSE
+      object: FACT_GAS_THROUGHPUT
       format: table
   grain:
-    description: One row is one demand response.
+    description: One row is one combination of fiscal quarter, scenario, rate class, operating company, jurisdiction.
     components:
-    - identity_id: fact_demand_response_identity
+    - identity_id: dim_fiscal_quarter_identity
       dataset_columns:
-      - demand_response_id
-      description: Identifier of the demand response.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_rate_class_identity
+      dataset_columns:
+      - rate_class_id
+      description: Identifier of the rate class.
+    - identity_id: dim_operating_company_identity
+      dataset_columns:
+      - operating_company_id
+      description: Identifier of the operating company.
+    - identity_id: dim_jurisdiction_identity
+      dataset_columns:
+      - jurisdiction_id
+      description: Identifier of the jurisdiction.
   columns:
-  - name: demand_response_id
-    description: Identifier of the demand response.
-  - name: response_quantity
-    description: Response quantity on this row. The value is a quantity, not a price.
-  - name: first_of_kind_flag
-    description: Whether this row is marked first of kind.
-  - name: in_pipeline_flag
-    description: Whether this row is marked in pipeline.
   - name: fiscal_quarter_id
     description: Identifier of the related fiscal quarter.
-  - name: customer_id
-    description: Identifier of the related customer.
-  - name: state_id
-    description: Identifier of the related state.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: rate_class_id
+    description: Identifier of the related rate class.
+  - name: operating_company_id
+    description: Identifier of the related operating company.
+  - name: jurisdiction_id
+    description: Identifier of the related jurisdiction.
+  - name: gas_throughput_quantity
+    description: Gas distribution throughput in therms.
   entity_definitions:
-  - identity_id: fact_demand_response_identity
-    dataset_columns:
-    - demand_response_id
-    entity_universe: complete
   - identity_id: dim_fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: dim_customer_identity
+  - identity_id: dim_scenario_identity
     dataset_columns:
-    - customer_id
+    - scenario_id
     entity_universe: partial
-  - identity_id: dim_state_identity
+  - identity_id: dim_rate_class_identity
     dataset_columns:
-    - state_id
+    - rate_class_id
     entity_universe: partial
-- node_id: sf:utility.demand.fact_state_load
+  - identity_id: dim_operating_company_identity
+    dataset_columns:
+    - operating_company_id
+    entity_universe: partial
+  - identity_id: dim_jurisdiction_identity
+    dataset_columns:
+    - jurisdiction_id
+    entity_universe: partial
+- node_id: sf:utility.demand.fact_gas_customer_count
   descriptor:
-    qualified_name: utility.demand.fact_state_load
-    display_name: State Load
-    description: High-confidence load by state.
+    qualified_name: utility.demand.fact_gas_customer_count
+    display_name: Gas Customer Count
+    description: Gas distribution customers by rate class and operating company. Stores quantity in customers.
     synonyms: []
     tags:
     - fact
@@ -791,52 +959,60 @@ nodes:
       account: utility.us-east-1
       database: UTILITY
       schema: DEMAND
-      object: FACT_STATE_LOAD
+      object: FACT_GAS_CUSTOMER_COUNT
       format: table
   grain:
-    description: One row is one state load.
+    description: One row is one combination of fiscal quarter, scenario, rate class, operating company.
     components:
-    - identity_id: fact_state_load_identity
+    - identity_id: dim_fiscal_quarter_identity
       dataset_columns:
-      - state_load_id
-      description: Identifier of the state load.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_rate_class_identity
+      dataset_columns:
+      - rate_class_id
+      description: Identifier of the rate class.
+    - identity_id: dim_operating_company_identity
+      dataset_columns:
+      - operating_company_id
+      description: Identifier of the operating company.
   columns:
-  - name: state_load_id
-    description: Identifier of the state load.
-  - name: load_quantity
-    description: Load quantity on this row. The value is a quantity, not a price.
-  - name: softer_flag
-    description: Whether this row is marked softer.
-  - name: still_finalizing_flag
-    description: Whether this row is marked still finalizing.
   - name: fiscal_quarter_id
     description: Identifier of the related fiscal quarter.
-  - name: state_id
-    description: Identifier of the related state.
-  - name: load_class_id
-    description: Identifier of the related load class.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: rate_class_id
+    description: Identifier of the related rate class.
+  - name: operating_company_id
+    description: Identifier of the related operating company.
+  - name: gas_customer_quantity
+    description: Gas customers in customers.
   entity_definitions:
-  - identity_id: fact_state_load_identity
-    dataset_columns:
-    - state_load_id
-    entity_universe: complete
   - identity_id: dim_fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: dim_state_identity
+  - identity_id: dim_scenario_identity
     dataset_columns:
-    - state_id
+    - scenario_id
     entity_universe: partial
-  - identity_id: dim_load_class_identity
+  - identity_id: dim_rate_class_identity
     dataset_columns:
-    - load_class_id
+    - rate_class_id
     entity_universe: partial
-- node_id: sf:utility.demand.fact_project_ramp
+  - identity_id: dim_operating_company_identity
+    dataset_columns:
+    - operating_company_id
+    entity_universe: partial
+- node_id: sf:utility.demand.fact_monthly_electricity_sales
   descriptor:
-    qualified_name: utility.demand.fact_project_ramp
-    display_name: Project Ramp
-    description: How much of a later-year load figure is the same projects ramping.
+    qualified_name: utility.demand.fact_monthly_electricity_sales
+    display_name: Monthly Electricity Sales
+    description: Monthly electricity sales by calendar month and rate class. Stores energy in megawatt-hours.
     synonyms: []
     tags:
     - fact
@@ -848,52 +1024,70 @@ nodes:
       account: utility.us-east-1
       database: UTILITY
       schema: DEMAND
-      object: FACT_PROJECT_RAMP
+      object: FACT_MONTHLY_ELECTRICITY_SALES
       format: table
   grain:
-    description: One row is one project ramp.
+    description: One row is one combination of fiscal quarter, scenario, calendar month, rate class, operating company.
     components:
-    - identity_id: fact_project_ramp_identity
+    - identity_id: dim_fiscal_quarter_identity
       dataset_columns:
-      - project_ramp_id
-      description: Identifier of the project ramp.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_calendar_month_identity
+      dataset_columns:
+      - calendar_month_id
+      description: Identifier of the calendar month.
+    - identity_id: dim_rate_class_identity
+      dataset_columns:
+      - rate_class_id
+      description: Identifier of the rate class.
+    - identity_id: dim_operating_company_identity
+      dataset_columns:
+      - operating_company_id
+      description: Identifier of the operating company.
   columns:
-  - name: project_ramp_id
-    description: Identifier of the project ramp.
-  - name: ramp_quantity
-    description: Ramp quantity on this row. The value is a quantity, not a price.
-  - name: same_projects_flag
-    description: Whether this row is marked same projects.
-  - name: new_project_quantity
-    description: New project quantity on this row. The value is a quantity, not a price.
   - name: fiscal_quarter_id
     description: Identifier of the related fiscal quarter.
-  - name: state_id
-    description: Identifier of the related state.
-  - name: project_id
-    description: Identifier of the related project.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: calendar_month_id
+    description: Identifier of the related calendar month.
+  - name: rate_class_id
+    description: Identifier of the related rate class.
+  - name: operating_company_id
+    description: Identifier of the related operating company.
+  - name: monthly_electricity_sales_quantity
+    description: Monthly electricity sales in megawatt-hours.
   entity_definitions:
-  - identity_id: fact_project_ramp_identity
-    dataset_columns:
-    - project_ramp_id
-    entity_universe: complete
   - identity_id: dim_fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: dim_state_identity
+  - identity_id: dim_scenario_identity
     dataset_columns:
-    - state_id
+    - scenario_id
     entity_universe: partial
-  - identity_id: dim_project_identity
+  - identity_id: dim_calendar_month_identity
     dataset_columns:
-    - project_id
+    - calendar_month_id
     entity_universe: partial
-- node_id: sf:utility.demand.fact_project_size
+  - identity_id: dim_rate_class_identity
+    dataset_columns:
+    - rate_class_id
+    entity_universe: partial
+  - identity_id: dim_operating_company_identity
+    dataset_columns:
+    - operating_company_id
+    entity_universe: partial
+- node_id: sf:utility.demand.fact_peak_demand
   descriptor:
-    qualified_name: utility.demand.fact_project_size
-    display_name: Project Size
-    description: Count and size of large-load projects.
+    qualified_name: utility.demand.fact_peak_demand
+    display_name: Peak Demand
+    description: Peak demand by operating company and service territory. Stores demand in megawatts.
     synonyms: []
     tags:
     - fact
@@ -905,50 +1099,60 @@ nodes:
       account: utility.us-east-1
       database: UTILITY
       schema: DEMAND
-      object: FACT_PROJECT_SIZE
+      object: FACT_PEAK_DEMAND
       format: table
   grain:
-    description: One row is one project size.
+    description: One row is one combination of fiscal quarter, scenario, operating company, service territory.
     components:
-    - identity_id: fact_project_size_identity
+    - identity_id: dim_fiscal_quarter_identity
       dataset_columns:
-      - project_size_id
-      description: Identifier of the project size.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_operating_company_identity
+      dataset_columns:
+      - operating_company_id
+      description: Identifier of the operating company.
+    - identity_id: dim_service_territory_identity
+      dataset_columns:
+      - service_territory_id
+      description: Identifier of the service territory.
   columns:
-  - name: project_size_id
-    description: Identifier of the project size.
-  - name: project_count
-    description: Project count.
-  - name: average_mw_quantity
-    description: Average mw quantity on this row. The value is a quantity, not a price.
   - name: fiscal_quarter_id
     description: Identifier of the related fiscal quarter.
-  - name: state_id
-    description: Identifier of the related state.
-  - name: site_id
-    description: Identifier of the related site.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: operating_company_id
+    description: Identifier of the related operating company.
+  - name: service_territory_id
+    description: Identifier of the related service territory.
+  - name: peak_demand_quantity
+    description: Peak demand in megawatts.
   entity_definitions:
-  - identity_id: fact_project_size_identity
-    dataset_columns:
-    - project_size_id
-    entity_universe: complete
   - identity_id: dim_fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: dim_state_identity
+  - identity_id: dim_scenario_identity
     dataset_columns:
-    - state_id
+    - scenario_id
     entity_universe: partial
-  - identity_id: dim_site_identity
+  - identity_id: dim_operating_company_identity
     dataset_columns:
-    - site_id
+    - operating_company_id
     entity_universe: partial
-- node_id: sf:utility.demand.fact_demand_outlook
+  - identity_id: dim_service_territory_identity
+    dataset_columns:
+    - service_territory_id
+    entity_universe: partial
+- node_id: sf:utility.demand.fact_meter_count
   descriptor:
-    qualified_name: utility.demand.fact_demand_outlook
-    display_name: Demand Outlook
-    description: Whether the demand outlook is durable after the resource-plan process.
+    qualified_name: utility.demand.fact_meter_count
+    display_name: Meter Count
+    description: Meters by type, rate class, and operating company. Stores quantity in meters.
     synonyms: []
     tags:
     - fact
@@ -960,44 +1164,70 @@ nodes:
       account: utility.us-east-1
       database: UTILITY
       schema: DEMAND
-      object: FACT_DEMAND_OUTLOOK
+      object: FACT_METER_COUNT
       format: table
   grain:
-    description: One row is one demand outlook.
+    description: One row is one combination of fiscal quarter, scenario, meter type, rate class, operating company.
     components:
-    - identity_id: fact_demand_outlook_identity
+    - identity_id: dim_fiscal_quarter_identity
       dataset_columns:
-      - demand_outlook_id
-      description: Identifier of the demand outlook.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_meter_type_identity
+      dataset_columns:
+      - meter_type_id
+      description: Identifier of the meter type.
+    - identity_id: dim_rate_class_identity
+      dataset_columns:
+      - rate_class_id
+      description: Identifier of the rate class.
+    - identity_id: dim_operating_company_identity
+      dataset_columns:
+      - operating_company_id
+      description: Identifier of the operating company.
   columns:
-  - name: demand_outlook_id
-    description: Identifier of the demand outlook.
-  - name: outlook_quantity
-    description: Outlook quantity on this row. The value is a quantity, not a price.
-  - name: durable_flag
-    description: Whether this row is marked durable.
   - name: fiscal_quarter_id
     description: Identifier of the related fiscal quarter.
-  - name: state_id
-    description: Identifier of the related state.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: meter_type_id
+    description: Identifier of the related meter type.
+  - name: rate_class_id
+    description: Identifier of the related rate class.
+  - name: operating_company_id
+    description: Identifier of the related operating company.
+  - name: meter_quantity
+    description: Meters in meters.
   entity_definitions:
-  - identity_id: fact_demand_outlook_identity
-    dataset_columns:
-    - demand_outlook_id
-    entity_universe: complete
   - identity_id: dim_fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: dim_state_identity
+  - identity_id: dim_scenario_identity
     dataset_columns:
-    - state_id
+    - scenario_id
     entity_universe: partial
-- node_id: sf:utility.demand.fact_energy_services
+  - identity_id: dim_meter_type_identity
+    dataset_columns:
+    - meter_type_id
+    entity_universe: partial
+  - identity_id: dim_rate_class_identity
+    dataset_columns:
+    - rate_class_id
+    entity_universe: partial
+  - identity_id: dim_operating_company_identity
+    dataset_columns:
+    - operating_company_id
+    entity_universe: partial
+- node_id: sf:utility.demand.fact_county_customer_count
   descriptor:
-    qualified_name: utility.demand.fact_energy_services
-    display_name: Energy-Services Pipeline
-    description: Energy-services agreements signed and still in the pipeline.
+    qualified_name: utility.demand.fact_county_customer_count
+    display_name: County Customer Count
+    description: Customers by county and rate class. Stores quantity in customers.
     synonyms: []
     tags:
     - fact
@@ -1009,201 +1239,62 @@ nodes:
       account: utility.us-east-1
       database: UTILITY
       schema: DEMAND
-      object: FACT_ENERGY_SERVICES
+      object: FACT_COUNTY_CUSTOMER_COUNT
       format: table
   grain:
-    description: One row is one energy-services pipeline.
+    description: One row is one combination of fiscal quarter, scenario, county, rate class, operating company.
     components:
-    - identity_id: fact_energy_services_identity
+    - identity_id: dim_fiscal_quarter_identity
       dataset_columns:
-      - energy_services_id
-      description: Identifier of the energy-services pipeline.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_county_identity
+      dataset_columns:
+      - county_id
+      description: Identifier of the county.
+    - identity_id: dim_rate_class_identity
+      dataset_columns:
+      - rate_class_id
+      description: Identifier of the rate class.
+    - identity_id: dim_operating_company_identity
+      dataset_columns:
+      - operating_company_id
+      description: Identifier of the operating company.
   columns:
-  - name: energy_services_id
-    description: Identifier of the energy-services pipeline.
-  - name: signed_quantity
-    description: Signed quantity on this row. The value is a quantity, not a price.
-  - name: pipeline_quantity
-    description: Pipeline quantity on this row. The value is a quantity, not a price.
-  - name: not_yet_started_flag
-    description: Whether this row is marked not yet started.
   - name: fiscal_quarter_id
     description: Identifier of the related fiscal quarter.
-  - name: contract_id
-    description: Identifier of the related contract.
-  - name: state_id
-    description: Identifier of the related state.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: county_id
+    description: Identifier of the related county.
+  - name: rate_class_id
+    description: Identifier of the related rate class.
+  - name: operating_company_id
+    description: Identifier of the related operating company.
+  - name: county_customer_quantity
+    description: Customers in customers.
   entity_definitions:
-  - identity_id: fact_energy_services_identity
-    dataset_columns:
-    - energy_services_id
-    entity_universe: complete
   - identity_id: dim_fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: dim_contract_identity
+  - identity_id: dim_scenario_identity
     dataset_columns:
-    - contract_id
+    - scenario_id
     entity_universe: partial
-  - identity_id: dim_state_identity
+  - identity_id: dim_county_identity
     dataset_columns:
-    - state_id
+    - county_id
     entity_universe: partial
-- node_id: sf:utility.demand.fact_funnel
-  descriptor:
-    qualified_name: utility.demand.fact_funnel
-    display_name: Load Funnel
-    description: Top-of-funnel interest and whether a region is becoming a hub.
-    synonyms: []
-    tags:
-    - fact
-    - demand
-    - utility
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: utility.us-east-1
-      database: UTILITY
-      schema: DEMAND
-      object: FACT_FUNNEL
-      format: table
-  grain:
-    description: One row is one load funnel.
-    components:
-    - identity_id: fact_funnel_identity
-      dataset_columns:
-      - funnel_id
-      description: Identifier of the load funnel.
-  columns:
-  - name: funnel_id
-    description: Identifier of the load funnel.
-  - name: interest_quantity
-    description: Interest quantity on this row. The value is a quantity, not a price.
-  - name: hub_flag
-    description: Whether this row is marked hub.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: state_id
-    description: Identifier of the related state.
-  - name: customer_segment_id
-    description: Identifier of the related customer segment.
-  entity_definitions:
-  - identity_id: fact_funnel_identity
+  - identity_id: dim_rate_class_identity
     dataset_columns:
-    - funnel_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
+    - rate_class_id
     entity_universe: partial
-  - identity_id: dim_state_identity
+  - identity_id: dim_operating_company_identity
     dataset_columns:
-    - state_id
-    entity_universe: partial
-  - identity_id: dim_customer_segment_identity
-    dataset_columns:
-    - customer_segment_id
-    entity_universe: partial
-- node_id: sf:utility.demand.fact_residential_load
-  descriptor:
-    qualified_name: utility.demand.fact_residential_load
-    display_name: Residential Load
-    description: Residential sales quantity. Bill protection sits on the price slice.
-    synonyms: []
-    tags:
-    - fact
-    - demand
-    - utility
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: utility.us-east-1
-      database: UTILITY
-      schema: DEMAND
-      object: FACT_RESIDENTIAL_LOAD
-      format: table
-  grain:
-    description: One row is one residential load.
-    components:
-    - identity_id: fact_residential_load_identity
-      dataset_columns:
-      - residential_load_id
-      description: Identifier of the residential load.
-  columns:
-  - name: residential_load_id
-    description: Identifier of the residential load.
-  - name: residential_quantity
-    description: Residential quantity on this row. The value is a quantity, not a price.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: state_id
-    description: Identifier of the related state.
-  - name: customer_segment_id
-    description: Identifier of the related customer segment.
-  entity_definitions:
-  - identity_id: fact_residential_load_identity
-    dataset_columns:
-    - residential_load_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_state_identity
-    dataset_columns:
-    - state_id
-    entity_universe: partial
-  - identity_id: dim_customer_segment_identity
-    dataset_columns:
-    - customer_segment_id
-    entity_universe: partial
-- node_id: sf:utility.demand.fact_visibility
-  descriptor:
-    qualified_name: utility.demand.fact_visibility
-    display_name: Load Visibility
-    description: Whether contracted load is visible ahead of the plan used for regulatory stay-outs.
-    synonyms: []
-    tags:
-    - fact
-    - demand
-    - utility
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: utility.us-east-1
-      database: UTILITY
-      schema: DEMAND
-      object: FACT_VISIBILITY
-      format: table
-  grain:
-    description: One row is one load visibility.
-    components:
-    - identity_id: fact_visibility_identity
-      dataset_columns:
-      - visibility_id
-      description: Identifier of the load visibility.
-  columns:
-  - name: visibility_id
-    description: Identifier of the load visibility.
-  - name: ahead_of_plan_flag
-    description: Whether this row is marked ahead of plan.
-  - name: visibility_quantity
-    description: Visibility quantity on this row. The value is a quantity, not a price.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: state_id
-    description: Identifier of the related state.
-  entity_definitions:
-  - identity_id: fact_visibility_identity
-    dataset_columns:
-    - visibility_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_state_identity
-    dataset_columns:
-    - state_id
+    - operating_company_id
     entity_universe: partial

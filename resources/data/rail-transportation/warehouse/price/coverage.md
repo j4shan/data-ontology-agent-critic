@@ -1,424 +1,666 @@
-# Railroad Inc price, cost, and margin
+# Railroad Inc price slice
 
-This slice is part of the Railroad Inc warehouse. Demand quantity, supply or capacity, and price or margin stay on separate facts. A quantity row does not store a price. A price row does not store the unit quantity.
-
-Identifiers owned by another slice are partial here. Their complete populations are not re-authored in this slice.
-
-| Identity | Column on this slice | Complete population |
-| --- | --- | --- |
-| `dim_fiscal_quarter_identity` | `fiscal_quarter_id` | `railroad.geography.dim_fiscal_quarter` `fiscal_quarter_id` |
-| `dim_traffic_type_identity` | `traffic_type_id` | `railroad.customer.dim_traffic_type` `traffic_type_id` |
-| `dim_commodity_identity` | `commodity_id` | `railroad.customer.dim_commodity` `commodity_id` |
-| `dim_contract_identity` | `contract_id` | `railroad.customer.dim_contract` `contract_id` |
-| `dim_technology_identity` | `technology_id` | `railroad.network.dim_technology` `technology_id` |
-| `dim_initiative_identity` | `initiative_id` | `railroad.network.dim_initiative` `initiative_id` |
-| `dim_gateway_identity` | `gateway_id` | `railroad.geography.dim_gateway` `gateway_id` |
-| `dim_service_metric_identity` | `service_metric_id` | `railroad.network.dim_service_metric` `service_metric_id` |
-| `dim_shipper_identity` | `shipper_id` | `railroad.customer.dim_shipper` `shipper_id` |
-| `dim_calendar_day_identity` | `calendar_day_id` | `railroad.geography.dim_calendar_day` `calendar_day_id` |
+This slice is part of the Railroad Inc warehouse. Demand quantity, supply or capacity, and price or margin stay on separate facts. A quantity fact does not store a price. A price fact does not store the unit quantity; the denominator the price needs is a quantity or supply measure on its own fact, joined by the shared grain keys of fiscal quarter, scenario, and the business keys.
 
 ## Numbered questions
 
 ### Q1 2026 (1) — CSX
 
-For CSX, what offsets the operating-ratio hit from higher fuel so the full-year ratio can still be held, with a bias to the high end?
+For CSX, What offsets the operating-ratio hit from higher fuel so the full-year ratio can still be held, with a bias to the high end?
 
-- `railroad.price.fact_operating_ratio`: `operating_ratio`, `full_year_target_ratio`, `high_end_bias_flag`, `fuel_headwind_amount`, `fiscal_quarter_id`, `cost_bucket_id`
-- `railroad.price.fact_fuel_cost`: `fuel_cost_amount`, `diesel_headwind_amount`, `half_versus_half_amount`, `fiscal_quarter_id`, `fuel_grade_id`, `benchmark_id`
-- `railroad.supply.fact_workforce_productivity`: `productivity_index`, `further_gain_flag`, `volume_growth_compatible_flag`, `fiscal_quarter_id`, `resource_pool_id`
-- `railroad.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `railroad.price.dim_cost_bucket`: `cost_bucket_id`, `bucket_code`, `bucket_name`
-- `railroad.price.dim_fuel_grade`: `fuel_grade_id`, `grade_code`, `grade_name`
-- `railroad.price.dim_benchmark`: `benchmark_id`, `benchmark_code`, `benchmark_name`
-- `railroad.network.dim_resource_pool`: `resource_pool_id`, `pool_code`, `pool_name`
+- `railroad.price.fact_operating_ratio`: `fiscal_quarter_id`, `scenario_id`, `operating_ratio_percent`, `operating_income_amount`
+- `railroad.price.dim_cost_bucket`: `cost_bucket_id`, `cost_bucket_code`, `cost_bucket_name`
+- `railroad.price.fact_operating_expense`: `fiscal_quarter_id`, `scenario_id`, `cost_bucket_id`, `operating_expense_amount`
+- `railroad.price.fact_productivity_savings`: `fiscal_quarter_id`, `scenario_id`, `productivity_initiative_id`, `cost_bucket_id`, `productivity_savings_amount`
+- `railroad.price.dim_fuel_type`: `fuel_type_id`, `fuel_type_code`, `fuel_type_name`
+- `railroad.price.fact_enterprise_revenue`: `fiscal_quarter_id`, `scenario_id`, `total_revenue_amount`
+- `railroad.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `railroad.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
 
 ### Q1 2026 (3) — CSX
 
-For CSX, is the first-quarter improvement in purchased services and other the run rate, or is there more to take out?
+For CSX, Is the first-quarter improvement in purchased services and other the run rate, or is there more to take out?
 
-- `railroad.price.fact_purchased_services`: `expense_amount`, `is_run_rate_flag`, `remaining_opportunity_amount`, `fiscal_quarter_id`, `cost_bucket_id`
-- `railroad.price.fact_operating_cost`: `operating_cost_amount`, `improved_with_service_flag`, `intraquarter_improvement_flag`, `fiscal_quarter_id`, `cost_bucket_id`, `calendar_day_id`
-- `railroad.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `railroad.price.dim_cost_bucket`: `cost_bucket_id`, `bucket_code`, `bucket_name`
-- `railroad.geography.dim_calendar_day`: `calendar_day_id`, `calendar_date`, `fiscal_quarter_id`
+- `railroad.price.dim_cost_bucket`: `cost_bucket_id`, `cost_bucket_code`, `cost_bucket_name`
+- `railroad.price.fact_operating_expense`: `fiscal_quarter_id`, `scenario_id`, `cost_bucket_id`, `operating_expense_amount`
+- `railroad.price.fact_accessorial_revenue`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `price_program_id`, `accessorial_revenue_amount`
+- `railroad.price.fact_contract_rate`: `fiscal_quarter_id`, `scenario_id`, `contract_type_id`, `service_type_id`, `commodity_id`, `price_program_id`, `rate_per_carload`, `rate_per_revenue_ton_mile`
+- `railroad.price.fact_enterprise_revenue`: `fiscal_quarter_id`, `scenario_id`, `total_revenue_amount`
+- `railroad.price.fact_fuel`: `fiscal_quarter_id`, `scenario_id`, `fuel_type_id`, `service_type_id`, `fuel_gallon_quantity`, `fuel_expense_amount`, `fuel_price_per_gallon`, `fuel_surcharge_revenue_amount`
+- `railroad.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `railroad.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
 
 ### Q1 2026 (4) — CSX
 
-For CSX, is the real-estate gain the expected run rate, and does it recur in the back half?
+For CSX, Is the real-estate gain the expected run rate, and does it recur in the back half?
 
-- `railroad.price.fact_real_estate`: `gain_amount`, `run_rate_flag`, `recurs_in_back_half_flag`, `fiscal_quarter_id`
-- `railroad.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
+- `railroad.price.fact_other_income`: `fiscal_quarter_id`, `scenario_id`, `income_type_id`, `other_income_amount`, `real_estate_gain_amount`
+- `railroad.price.dim_income_type`: `income_type_id`, `income_type_code`, `income_type_name`
+- `railroad.price.fact_accessorial_revenue`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `price_program_id`, `accessorial_revenue_amount`
+- `railroad.price.fact_contract_rate`: `fiscal_quarter_id`, `scenario_id`, `contract_type_id`, `service_type_id`, `commodity_id`, `price_program_id`, `rate_per_carload`, `rate_per_revenue_ton_mile`
+- `railroad.price.fact_operating_ratio`: `fiscal_quarter_id`, `scenario_id`, `operating_ratio_percent`, `operating_income_amount`
+- `railroad.price.fact_truck_rate`: `fiscal_quarter_id`, `scenario_id`, `lane_id`, `competitor_id`, `truck_spot_rate_per_load`, `truck_contract_rate_per_load`
+- `railroad.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `railroad.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
 
 ### Q1 2026 (5) — CSX
 
-For CSX, is a higher return on capital mainly asset productivity, mix and price, or cost efficiency?
+For CSX, Is a higher return on capital mainly asset productivity, mix and price, or cost efficiency?
 
-- `railroad.price.fact_return_on_capital`: `return_rate`, `primary_lever_code`, `fiscal_quarter_id`
-- `railroad.supply.fact_asset_productivity`: `productivity_index`, `primary_lever_code`, `fiscal_quarter_id`, `region_id`
-- `railroad.price.fact_price`: `price_change_amount`, `guide_growth_amount`, `price_component_amount`, `net_positive_flag`, `fiscal_quarter_id`, `price_program_id`, `traffic_type_id`
-- `railroad.price.fact_mix`: `mix_effect_amount`, `negative_mix_flag`, `lifts_growth_flag`, `fiscal_quarter_id`, `traffic_type_id`
-- `railroad.price.fact_operating_cost`: `operating_cost_amount`, `improved_with_service_flag`, `intraquarter_improvement_flag`, `fiscal_quarter_id`, `cost_bucket_id`, `calendar_day_id`
-- `railroad.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `railroad.geography.dim_region`: `region_id`, `region_code`, `region_name`
-- `railroad.price.dim_price_program`: `price_program_id`, `program_code`, `program_name`
+- `railroad.price.fact_capital_spending`: `fiscal_quarter_id`, `scenario_id`, `asset_category_id`, `division_id`, `capital_spending_amount`
+- `railroad.price.fact_productivity_savings`: `fiscal_quarter_id`, `scenario_id`, `productivity_initiative_id`, `cost_bucket_id`, `productivity_savings_amount`
+- `railroad.price.fact_return_on_capital`: `fiscal_quarter_id`, `scenario_id`, `return_on_capital_percent`, `invested_capital_amount`
+- `railroad.price.dim_cost_bucket`: `cost_bucket_id`, `cost_bucket_code`, `cost_bucket_name`
+- `railroad.price.fact_infrastructure_capital_spending`: `fiscal_quarter_id`, `scenario_id`, `infrastructure_project_id`, `project_capital_spending_amount`
+- `railroad.price.fact_labor_expense`: `fiscal_quarter_id`, `scenario_id`, `workforce_group_id`, `cost_bucket_id`, `labor_expense_amount`, `compensation_per_employee`
+- `railroad.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `railroad.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
 
 ### Q1 2026 (6) — CSX
 
-For CSX, how long is the lag before a tighter truck spot and contract market shows up in intermodal or merchandise price, and can any of it help in the second half?
+For CSX, How long is the lag before a tighter truck spot and contract market shows up in intermodal or merchandise price, and can any of it help in the second half?
 
-- `railroad.price.fact_intermodal_price`: `price_amount`, `talks_status_code`, `loose_truck_flag`, `fiscal_quarter_id`, `price_program_id`, `traffic_type_id`
-- `railroad.price.fact_merchandise_price`: `price_amount`, `holding_up_flag`, `fiscal_quarter_id`, `price_program_id`, `contract_id`
-- `railroad.price.fact_truck_rate`: `spot_rate_amount`, `contract_rate_amount`, `lag_quarters`, `tightening_flag`, `fiscal_quarter_id`, `benchmark_id`
-- `railroad.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `railroad.price.dim_price_program`: `price_program_id`, `program_code`, `program_name`
-- `railroad.customer.dim_traffic_type`: `traffic_type_id`, `traffic_type_code`, `traffic_type_name`
-- `railroad.customer.dim_contract`: `contract_id`, `contract_code`, `renewal_year`, `shipper_id`
-- `railroad.price.dim_benchmark`: `benchmark_id`, `benchmark_code`, `benchmark_name`
+- `railroad.price.fact_truck_rate`: `fiscal_quarter_id`, `scenario_id`, `lane_id`, `competitor_id`, `truck_spot_rate_per_load`, `truck_contract_rate_per_load`
+- `railroad.price.dim_price_program`: `price_program_id`, `price_program_code`, `price_program_name`
+- `railroad.price.fact_contract_rate`: `fiscal_quarter_id`, `scenario_id`, `contract_type_id`, `service_type_id`, `commodity_id`, `price_program_id`, `rate_per_carload`, `rate_per_revenue_ton_mile`
+- `railroad.price.fact_freight_revenue`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `freight_revenue_amount`
+- `railroad.price.fact_yield_rate`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `revenue_per_revenue_ton_mile`, `length_of_haul_miles`
+- `railroad.demand.fact_freight_volume`: `freight_volume_record_id`, `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `shipper_id`, `carload_quantity`, `ton_quantity`, `revenue_ton_mile_quantity`, `gross_ton_mile_quantity`
+- `railroad.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `railroad.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
 
 ### Q1 2026 (8) — CSX
 
-For CSX, is the sequential coal yield improvement an easing of index headwinds or a mix benefit?
+For CSX, Is the sequential coal yield improvement an easing of index headwinds or a mix benefit?
 
-- `railroad.price.fact_coal_yield`: `revenue_per_unit_amount`, `index_headwind_amount`, `mix_benefit_amount`, `sequential_change_amount`, `fiscal_quarter_id`, `benchmark_id`, `commodity_id`
-- `railroad.price.dim_benchmark`: `benchmark_id`, `benchmark_code`, `benchmark_name`
-- `railroad.price.fact_mix`: `mix_effect_amount`, `negative_mix_flag`, `lifts_growth_flag`, `fiscal_quarter_id`, `traffic_type_id`
-- `railroad.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `railroad.customer.dim_commodity`: `commodity_id`, `commodity_code`, `commodity_name`, `traffic_type_id`
-- `railroad.customer.dim_traffic_type`: `traffic_type_id`, `traffic_type_code`, `traffic_type_name`
+- `railroad.price.fact_yield_rate`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `revenue_per_revenue_ton_mile`, `length_of_haul_miles`
+- `railroad.price.fact_freight_revenue`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `freight_revenue_amount`
+- `railroad.price.fact_contract_rate`: `fiscal_quarter_id`, `scenario_id`, `contract_type_id`, `service_type_id`, `commodity_id`, `price_program_id`, `rate_per_carload`, `rate_per_revenue_ton_mile`
+- `railroad.price.fact_fuel`: `fiscal_quarter_id`, `scenario_id`, `fuel_type_id`, `service_type_id`, `fuel_gallon_quantity`, `fuel_expense_amount`, `fuel_price_per_gallon`, `fuel_surcharge_revenue_amount`
+- `railroad.demand.fact_freight_volume`: `freight_volume_record_id`, `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `shipper_id`, `carload_quantity`, `ton_quantity`, `revenue_ton_mile_quantity`, `gross_ton_mile_quantity`
+- `railroad.price.fact_accessorial_revenue`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `price_program_id`, `accessorial_revenue_amount`
+- `railroad.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `railroad.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+
+### Q1 2026 (9) — CSX
+
+For CSX, Besides the bridges that enable double-stack and the Chicago flow changes, what else this year improves productivity and margins?
+
+- `railroad.price.dim_cost_bucket`: `cost_bucket_id`, `cost_bucket_code`, `cost_bucket_name`
+- `railroad.price.fact_enterprise_revenue`: `fiscal_quarter_id`, `scenario_id`, `total_revenue_amount`
+- `railroad.price.fact_operating_expense`: `fiscal_quarter_id`, `scenario_id`, `cost_bucket_id`, `operating_expense_amount`
+- `railroad.price.fact_operating_ratio`: `fiscal_quarter_id`, `scenario_id`, `operating_ratio_percent`, `operating_income_amount`
+- `railroad.price.fact_productivity_savings`: `fiscal_quarter_id`, `scenario_id`, `productivity_initiative_id`, `cost_bucket_id`, `productivity_savings_amount`
+- `railroad.demand.dim_metro`: `metro_id`, `metro_code`, `metro_name`, `state_id`
+- `railroad.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `railroad.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+
+### Q1 2026 (10) — CSX
+
+For CSX, How much of the flat volume outlook is project growth offset by macro pressure?
+
+- `railroad.demand.fact_project_volume`: `fiscal_quarter_id`, `scenario_id`, `project_id`, `commodity_id`, `region_id`, `project_carload_quantity`, `ramp_carload_quantity`
+- `railroad.demand.dim_project`: `project_id`, `project_name`, `region_id`, `commodity_id`
+- `railroad.demand.fact_bid_volume`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `lane_id`, `contract_type_id`, `bid_carload_quantity`, `awarded_carload_quantity`
+- `railroad.demand.fact_contracted_volume`: `fiscal_quarter_id`, `scenario_id`, `contract_type_id`, `shipper_id`, `commodity_id`, `contracted_carload_quantity`
+- `railroad.demand.fact_freight_volume`: `freight_volume_record_id`, `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `shipper_id`, `carload_quantity`, `ton_quantity`, `revenue_ton_mile_quantity`, `gross_ton_mile_quantity`
+- `railroad.demand.fact_interchange_volume`: `fiscal_quarter_id`, `scenario_id`, `interchange_id`, `service_type_id`, `competitor_id`, `interchanged_carload_quantity`
+- `railroad.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `railroad.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
 
 ### Q1 2026 (11) — CSX
 
-For CSX, what is the size and timing of the cost headwinds, including incentive pay, and which productivity actions are aimed at 2027 rather than this year?
+For CSX, What is the size and timing of the cost headwinds, including incentive pay, and which productivity actions are aimed at 2027 rather than this year?
 
-- `railroad.price.fact_incentive_pay`: `incentive_amount`, `shows_in_year_flag`, `aimed_at_next_year_flag`, `fiscal_quarter_id`, `cost_bucket_id`
-- `railroad.supply.fact_workforce_productivity`: `productivity_index`, `further_gain_flag`, `volume_growth_compatible_flag`, `fiscal_quarter_id`, `resource_pool_id`
-- `railroad.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `railroad.price.dim_cost_bucket`: `cost_bucket_id`, `bucket_code`, `bucket_name`
-- `railroad.network.dim_resource_pool`: `resource_pool_id`, `pool_code`, `pool_name`
+- `railroad.price.fact_labor_expense`: `fiscal_quarter_id`, `scenario_id`, `workforce_group_id`, `cost_bucket_id`, `labor_expense_amount`, `compensation_per_employee`
+- `railroad.price.fact_productivity_savings`: `fiscal_quarter_id`, `scenario_id`, `productivity_initiative_id`, `cost_bucket_id`, `productivity_savings_amount`
+- `railroad.supply.dim_productivity_initiative`: `productivity_initiative_id`, `productivity_initiative_name`, `division_id`
+- `railroad.price.dim_cost_bucket`: `cost_bucket_id`, `cost_bucket_code`, `cost_bucket_name`
+- `railroad.price.fact_operating_expense`: `fiscal_quarter_id`, `scenario_id`, `cost_bucket_id`, `operating_expense_amount`
+- `railroad.price.fact_operating_ratio`: `fiscal_quarter_id`, `scenario_id`, `operating_ratio_percent`, `operating_income_amount`
+- `railroad.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `railroad.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+
+### Q1 2026 (12) — CSX
+
+For CSX, Is the revenue outlook more or less optimistic on volume, and how does it split between price and volume given current staffing?
+
+- `railroad.price.fact_freight_revenue`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `freight_revenue_amount`
+- `railroad.demand.fact_freight_volume`: `freight_volume_record_id`, `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `shipper_id`, `carload_quantity`, `ton_quantity`, `revenue_ton_mile_quantity`, `gross_ton_mile_quantity`
+- `railroad.price.fact_accessorial_revenue`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `price_program_id`, `accessorial_revenue_amount`
+- `railroad.price.fact_contract_rate`: `fiscal_quarter_id`, `scenario_id`, `contract_type_id`, `service_type_id`, `commodity_id`, `price_program_id`, `rate_per_carload`, `rate_per_revenue_ton_mile`
+- `railroad.price.fact_enterprise_revenue`: `fiscal_quarter_id`, `scenario_id`, `total_revenue_amount`
+- `railroad.price.fact_fuel`: `fiscal_quarter_id`, `scenario_id`, `fuel_type_id`, `service_type_id`, `fuel_gallon_quantity`, `fuel_expense_amount`, `fuel_price_per_gallon`, `fuel_surcharge_revenue_amount`
+- `railroad.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `railroad.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
 
 ### Q4 2025 (1) — CSX
 
-For CSX, how should the price-cost spread be thought about, separate from the base operating ratio?
+For CSX, How should the price-cost spread be thought about, separate from the base operating ratio?
 
-- `railroad.price.fact_price`: `price_change_amount`, `guide_growth_amount`, `price_component_amount`, `net_positive_flag`, `fiscal_quarter_id`, `price_program_id`, `traffic_type_id`
-- `railroad.price.fact_operating_cost`: `operating_cost_amount`, `improved_with_service_flag`, `intraquarter_improvement_flag`, `fiscal_quarter_id`, `cost_bucket_id`, `calendar_day_id`
-- `railroad.price.fact_operating_ratio`: `operating_ratio`, `full_year_target_ratio`, `high_end_bias_flag`, `fuel_headwind_amount`, `fiscal_quarter_id`, `cost_bucket_id`
-- `railroad.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `railroad.price.dim_price_program`: `price_program_id`, `program_code`, `program_name`
-- `railroad.customer.dim_traffic_type`: `traffic_type_id`, `traffic_type_code`, `traffic_type_name`
-- `railroad.price.dim_cost_bucket`: `cost_bucket_id`, `bucket_code`, `bucket_name`
-- `railroad.geography.dim_calendar_day`: `calendar_day_id`, `calendar_date`, `fiscal_quarter_id`
+- `railroad.price.fact_operating_ratio`: `fiscal_quarter_id`, `scenario_id`, `operating_ratio_percent`, `operating_income_amount`
+- `railroad.price.dim_cost_bucket`: `cost_bucket_id`, `cost_bucket_code`, `cost_bucket_name`
+- `railroad.price.fact_operating_expense`: `fiscal_quarter_id`, `scenario_id`, `cost_bucket_id`, `operating_expense_amount`
+- `railroad.price.fact_enterprise_revenue`: `fiscal_quarter_id`, `scenario_id`, `total_revenue_amount`
+- `railroad.price.fact_labor_expense`: `fiscal_quarter_id`, `scenario_id`, `workforce_group_id`, `cost_bucket_id`, `labor_expense_amount`, `compensation_per_employee`
+- `railroad.price.fact_productivity_savings`: `fiscal_quarter_id`, `scenario_id`, `productivity_initiative_id`, `cost_bucket_id`, `productivity_savings_amount`
+- `railroad.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `railroad.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
 
 ### Q4 2025 (2) — CSX
 
-For CSX, how much of the operating-ratio improvement is items already known to roll off, and what inflation is inside the guide?
+For CSX, How much of the operating-ratio improvement is items already known to roll off, and what inflation is inside the guide?
 
-- `railroad.price.fact_operating_ratio`: `operating_ratio`, `full_year_target_ratio`, `high_end_bias_flag`, `fuel_headwind_amount`, `fiscal_quarter_id`, `cost_bucket_id`
-- `railroad.price.fact_inflation`: `inflation_amount`, `faster_than_realization_flag`, `fiscal_quarter_id`, `cost_bucket_id`
-- `railroad.price.fact_or_bridge`: `known_rolloff_amount`, `identified_savings_amount`, `other_item_amount`, `inflation_inside_guide_amount`, `fiscal_quarter_id`, `cost_bucket_id`
-- `railroad.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `railroad.price.dim_cost_bucket`: `cost_bucket_id`, `bucket_code`, `bucket_name`
+- `railroad.price.fact_operating_ratio`: `fiscal_quarter_id`, `scenario_id`, `operating_ratio_percent`, `operating_income_amount`
+- `railroad.price.dim_cost_bucket`: `cost_bucket_id`, `cost_bucket_code`, `cost_bucket_name`
+- `railroad.price.fact_enterprise_revenue`: `fiscal_quarter_id`, `scenario_id`, `total_revenue_amount`
+- `railroad.price.fact_operating_expense`: `fiscal_quarter_id`, `scenario_id`, `cost_bucket_id`, `operating_expense_amount`
+- `railroad.demand.dim_calendar_month`: `calendar_month_id`, `calendar_month_name`, `fiscal_quarter_id`
+- `railroad.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+- `railroad.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
 
 ### Q4 2025 (3) — CSX
 
-For CSX, how does low-single-digit revenue growth split between volume and yield, and what longer-term operating ratio is realistic?
+For CSX, How does low-single-digit revenue growth split between volume and yield, and what longer-term operating ratio is realistic?
 
-- `railroad.demand.fact_volume`: `carload_quantity`, `merchandise_quantity`, `outlook_flat_flag`, `fiscal_quarter_id`, `commodity_id`, `region_id`, `traffic_type_id`, `shipper_id`
-- `railroad.price.fact_yield`: `yield_amount`, `core_yield_amount`, `fuel_excluded_flag`, `fiscal_quarter_id`, `traffic_type_id`, `benchmark_id`
-- `railroad.price.fact_operating_ratio`: `operating_ratio`, `full_year_target_ratio`, `high_end_bias_flag`, `fuel_headwind_amount`, `fiscal_quarter_id`, `cost_bucket_id`
-- `railroad.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `railroad.customer.dim_commodity`: `commodity_id`, `commodity_code`, `commodity_name`, `traffic_type_id`
-- `railroad.geography.dim_region`: `region_id`, `region_code`, `region_name`
-- `railroad.customer.dim_traffic_type`: `traffic_type_id`, `traffic_type_code`, `traffic_type_name`
-- `railroad.customer.dim_shipper`: `shipper_id`, `shipper_name`, `shipper_code`, `shipper_segment_id`
+- `railroad.price.fact_freight_revenue`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `freight_revenue_amount`
+- `railroad.price.fact_operating_ratio`: `fiscal_quarter_id`, `scenario_id`, `operating_ratio_percent`, `operating_income_amount`
+- `railroad.price.dim_cost_bucket`: `cost_bucket_id`, `cost_bucket_code`, `cost_bucket_name`
+- `railroad.price.fact_enterprise_revenue`: `fiscal_quarter_id`, `scenario_id`, `total_revenue_amount`
+- `railroad.price.fact_operating_expense`: `fiscal_quarter_id`, `scenario_id`, `cost_bucket_id`, `operating_expense_amount`
+- `railroad.price.fact_yield_rate`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `revenue_per_revenue_ton_mile`, `length_of_haul_miles`
+- `railroad.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `railroad.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+
+### Q4 2025 (6) — CSX
+
+For CSX, What dollar buckets and headcount targets sit inside the savings programs?
+
+- `railroad.price.fact_productivity_savings`: `fiscal_quarter_id`, `scenario_id`, `productivity_initiative_id`, `cost_bucket_id`, `productivity_savings_amount`
+- `railroad.price.fact_labor_expense`: `fiscal_quarter_id`, `scenario_id`, `workforce_group_id`, `cost_bucket_id`, `labor_expense_amount`, `compensation_per_employee`
+- `railroad.supply.dim_productivity_initiative`: `productivity_initiative_id`, `productivity_initiative_name`, `division_id`
+- `railroad.supply.dim_workforce_group`: `workforce_group_id`, `workforce_group_code`, `workforce_group_name`
+- `railroad.supply.fact_headcount`: `fiscal_quarter_id`, `scenario_id`, `workforce_group_id`, `division_id`, `employee_quantity`, `trainee_quantity`
+- `railroad.price.dim_cost_bucket`: `cost_bucket_id`, `cost_bucket_code`, `cost_bucket_name`
+- `railroad.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `railroad.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
 
 ### Q4 2025 (8) — CSX
 
-For CSX, what is driving coal revenue per unit, and what is assumed in the revenue outlook?
+For CSX, What is driving coal revenue per unit, and what is assumed in the revenue outlook?
 
-- `railroad.price.fact_coal_yield`: `revenue_per_unit_amount`, `index_headwind_amount`, `mix_benefit_amount`, `sequential_change_amount`, `fiscal_quarter_id`, `benchmark_id`, `commodity_id`
-- `railroad.demand.fact_coal_volume`: `coal_quantity`, `response_lag_quarters`, `fiscal_quarter_id`, `commodity_id`, `region_id`
-- `railroad.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `railroad.price.dim_benchmark`: `benchmark_id`, `benchmark_code`, `benchmark_name`
-- `railroad.customer.dim_commodity`: `commodity_id`, `commodity_code`, `commodity_name`, `traffic_type_id`
-- `railroad.geography.dim_region`: `region_id`, `region_code`, `region_name`
+- `railroad.price.fact_freight_revenue`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `freight_revenue_amount`
+- `railroad.price.fact_yield_rate`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `revenue_per_revenue_ton_mile`, `length_of_haul_miles`
+- `railroad.demand.fact_freight_volume`: `freight_volume_record_id`, `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `shipper_id`, `carload_quantity`, `ton_quantity`, `revenue_ton_mile_quantity`, `gross_ton_mile_quantity`
+- `railroad.price.fact_contract_rate`: `fiscal_quarter_id`, `scenario_id`, `contract_type_id`, `service_type_id`, `commodity_id`, `price_program_id`, `rate_per_carload`, `rate_per_revenue_ton_mile`
+- `railroad.price.fact_fuel`: `fiscal_quarter_id`, `scenario_id`, `fuel_type_id`, `service_type_id`, `fuel_gallon_quantity`, `fuel_expense_amount`, `fuel_price_per_gallon`, `fuel_surcharge_revenue_amount`
+- `railroad.demand.fact_port_volume`: `fiscal_quarter_id`, `scenario_id`, `port_id`, `commodity_id`, `coal_grade_id`, `port_carload_quantity`, `port_ton_quantity`
+- `railroad.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `railroad.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
 
 ### Q4 2025 (9) — CSX
 
-For CSX, how long do natural-gas prices have to stay high before coal or other volumes respond?
+For CSX, How long do natural-gas prices have to stay high before coal or other volumes respond?
 
-- `railroad.price.fact_gas_price`: `gas_price_amount`, `weeks_above_threshold`, `fiscal_quarter_id`, `benchmark_id`
-- `railroad.demand.fact_coal_volume`: `coal_quantity`, `response_lag_quarters`, `fiscal_quarter_id`, `commodity_id`, `region_id`
-- `railroad.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `railroad.price.dim_benchmark`: `benchmark_id`, `benchmark_code`, `benchmark_name`
-- `railroad.customer.dim_commodity`: `commodity_id`, `commodity_code`, `commodity_name`, `traffic_type_id`
-- `railroad.geography.dim_region`: `region_id`, `region_code`, `region_name`
+- `railroad.price.fact_freight_revenue`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `freight_revenue_amount`
+- `railroad.demand.fact_freight_volume`: `freight_volume_record_id`, `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `shipper_id`, `carload_quantity`, `ton_quantity`, `revenue_ton_mile_quantity`, `gross_ton_mile_quantity`
+- `railroad.price.fact_accessorial_revenue`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `price_program_id`, `accessorial_revenue_amount`
+- `railroad.price.fact_other_income`: `fiscal_quarter_id`, `scenario_id`, `income_type_id`, `other_income_amount`, `real_estate_gain_amount`
+- `railroad.price.fact_yield_rate`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `revenue_per_revenue_ton_mile`, `length_of_haul_miles`
+- `railroad.demand.fact_port_volume`: `fiscal_quarter_id`, `scenario_id`, `port_id`, `commodity_id`, `coal_grade_id`, `port_carload_quantity`, `port_ton_quantity`
+- `railroad.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `railroad.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+
+### Q4 2025 (10) — CSX
+
+For CSX, Has anything in the business changed the long-term earnings framework once the macro is normal again?
+
+- `railroad.price.fact_freight_revenue`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `freight_revenue_amount`
+- `railroad.price.fact_productivity_savings`: `fiscal_quarter_id`, `scenario_id`, `productivity_initiative_id`, `cost_bucket_id`, `productivity_savings_amount`
+- `railroad.demand.fact_freight_volume`: `freight_volume_record_id`, `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `shipper_id`, `carload_quantity`, `ton_quantity`, `revenue_ton_mile_quantity`, `gross_ton_mile_quantity`
+- `railroad.demand.fact_project_volume`: `fiscal_quarter_id`, `scenario_id`, `project_id`, `commodity_id`, `region_id`, `project_carload_quantity`, `ramp_carload_quantity`
+- `railroad.price.dim_cost_bucket`: `cost_bucket_id`, `cost_bucket_code`, `cost_bucket_name`
+- `railroad.price.dim_fuel_type`: `fuel_type_id`, `fuel_type_code`, `fuel_type_name`
+- `railroad.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `railroad.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
 
 ### Q4 2025 (12) — CSX
 
-For CSX, does low-single-digit revenue growth imply negative mix if price is in the usual range and volume grows?
+For CSX, Does low-single-digit revenue growth imply negative mix if price is in the usual range and volume grows?
 
-- `railroad.price.fact_price`: `price_change_amount`, `guide_growth_amount`, `price_component_amount`, `net_positive_flag`, `fiscal_quarter_id`, `price_program_id`, `traffic_type_id`
-- `railroad.demand.fact_volume`: `carload_quantity`, `merchandise_quantity`, `outlook_flat_flag`, `fiscal_quarter_id`, `commodity_id`, `region_id`, `traffic_type_id`, `shipper_id`
-- `railroad.price.fact_mix`: `mix_effect_amount`, `negative_mix_flag`, `lifts_growth_flag`, `fiscal_quarter_id`, `traffic_type_id`
-- `railroad.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `railroad.price.dim_price_program`: `price_program_id`, `program_code`, `program_name`
-- `railroad.customer.dim_traffic_type`: `traffic_type_id`, `traffic_type_code`, `traffic_type_name`
-- `railroad.customer.dim_commodity`: `commodity_id`, `commodity_code`, `commodity_name`, `traffic_type_id`
-- `railroad.geography.dim_region`: `region_id`, `region_code`, `region_name`
+- `railroad.price.fact_freight_revenue`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `freight_revenue_amount`
+- `railroad.demand.fact_freight_volume`: `freight_volume_record_id`, `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `shipper_id`, `carload_quantity`, `ton_quantity`, `revenue_ton_mile_quantity`, `gross_ton_mile_quantity`
+- `railroad.price.fact_accessorial_revenue`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `price_program_id`, `accessorial_revenue_amount`
+- `railroad.price.fact_contract_rate`: `fiscal_quarter_id`, `scenario_id`, `contract_type_id`, `service_type_id`, `commodity_id`, `price_program_id`, `rate_per_carload`, `rate_per_revenue_ton_mile`
+- `railroad.price.fact_enterprise_revenue`: `fiscal_quarter_id`, `scenario_id`, `total_revenue_amount`
+- `railroad.price.fact_fuel`: `fiscal_quarter_id`, `scenario_id`, `fuel_type_id`, `service_type_id`, `fuel_gallon_quantity`, `fuel_expense_amount`, `fuel_price_per_gallon`, `fuel_surcharge_revenue_amount`
+- `railroad.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `railroad.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
 
 ### Q4 2025 (13) — CSX
 
-For CSX, is operating-ratio improvement spread through the year or weighted to the front or back?
+For CSX, Is operating-ratio improvement spread through the year or weighted to the front or back?
 
-- `railroad.price.fact_operating_ratio`: `operating_ratio`, `full_year_target_ratio`, `high_end_bias_flag`, `fuel_headwind_amount`, `fiscal_quarter_id`, `cost_bucket_id`
-- `railroad.price.fact_or_cadence`: `weight_code`, `front_weighted_flag`, `fiscal_quarter_id`
-- `railroad.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `railroad.price.dim_cost_bucket`: `cost_bucket_id`, `bucket_code`, `bucket_name`
+- `railroad.price.fact_operating_ratio`: `fiscal_quarter_id`, `scenario_id`, `operating_ratio_percent`, `operating_income_amount`
+- `railroad.price.dim_cost_bucket`: `cost_bucket_id`, `cost_bucket_code`, `cost_bucket_name`
+- `railroad.price.fact_enterprise_revenue`: `fiscal_quarter_id`, `scenario_id`, `total_revenue_amount`
+- `railroad.price.fact_operating_expense`: `fiscal_quarter_id`, `scenario_id`, `cost_bucket_id`, `operating_expense_amount`
+- `railroad.demand.dim_lane`: `lane_id`, `lane_name`, `origin_metro_name`, `destination_metro_name`, `interchange_id`
+- `railroad.demand.fact_port_volume`: `fiscal_quarter_id`, `scenario_id`, `port_id`, `commodity_id`, `coal_grade_id`, `port_carload_quantity`, `port_ton_quantity`
+- `railroad.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `railroad.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
 
 ### Q4 2025 (14) — CSX
 
-For CSX, of the guided operating-ratio improvement, how much is the identified cost savings versus other items?
+For CSX, Of the guided operating-ratio improvement, how much is the identified cost savings versus other items?
 
-- `railroad.price.fact_cost_savings`: `savings_amount`, `workforce_bucket_amount`, `other_bucket_amount`, `fiscal_quarter_id`, `cost_bucket_id`, `initiative_id`
-- `railroad.price.fact_operating_ratio`: `operating_ratio`, `full_year_target_ratio`, `high_end_bias_flag`, `fuel_headwind_amount`, `fiscal_quarter_id`, `cost_bucket_id`
-- `railroad.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `railroad.price.dim_cost_bucket`: `cost_bucket_id`, `bucket_code`, `bucket_name`
-- `railroad.network.dim_initiative`: `initiative_id`, `initiative_code`, `initiative_name`
+- `railroad.price.fact_operating_ratio`: `fiscal_quarter_id`, `scenario_id`, `operating_ratio_percent`, `operating_income_amount`
+- `railroad.price.dim_cost_bucket`: `cost_bucket_id`, `cost_bucket_code`, `cost_bucket_name`
+- `railroad.price.fact_operating_expense`: `fiscal_quarter_id`, `scenario_id`, `cost_bucket_id`, `operating_expense_amount`
+- `railroad.price.fact_productivity_savings`: `fiscal_quarter_id`, `scenario_id`, `productivity_initiative_id`, `cost_bucket_id`, `productivity_savings_amount`
+- `railroad.price.fact_accessorial_revenue`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `price_program_id`, `accessorial_revenue_amount`
+- `railroad.price.fact_enterprise_revenue`: `fiscal_quarter_id`, `scenario_id`, `total_revenue_amount`
+- `railroad.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `railroad.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
 
 ### Q2 2025 (4) — CSX
 
-For CSX, did costs improve as operating metrics improved through the quarter after a weak April?
+For CSX, Did costs improve as operating metrics improved through the quarter after a weak April?
 
-- `railroad.price.fact_operating_cost`: `operating_cost_amount`, `improved_with_service_flag`, `intraquarter_improvement_flag`, `fiscal_quarter_id`, `cost_bucket_id`, `calendar_day_id`
-- `railroad.supply.fact_service_level`: `service_index`, `prior_best_gap`, `commercial_support_flag`, `fiscal_quarter_id`, `service_metric_id`, `calendar_day_id`
-- `railroad.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `railroad.price.dim_cost_bucket`: `cost_bucket_id`, `bucket_code`, `bucket_name`
-- `railroad.geography.dim_calendar_day`: `calendar_day_id`, `calendar_date`, `fiscal_quarter_id`
-- `railroad.network.dim_service_metric`: `service_metric_id`, `metric_code`, `metric_name`
+- `railroad.price.dim_cost_bucket`: `cost_bucket_id`, `cost_bucket_code`, `cost_bucket_name`
+- `railroad.price.fact_operating_expense`: `fiscal_quarter_id`, `scenario_id`, `cost_bucket_id`, `operating_expense_amount`
+- `railroad.price.fact_operating_ratio`: `fiscal_quarter_id`, `scenario_id`, `operating_ratio_percent`, `operating_income_amount`
+- `railroad.supply.fact_service_performance`: `fiscal_quarter_id`, `scenario_id`, `terminal_id`, `service_type_id`, `terminal_dwell_hours`, `car_velocity_miles_per_day`, `trip_plan_compliance_percent`, `average_train_length_cars`
+- `railroad.price.fact_accessorial_revenue`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `price_program_id`, `accessorial_revenue_amount`
+- `railroad.price.fact_contract_rate`: `fiscal_quarter_id`, `scenario_id`, `contract_type_id`, `service_type_id`, `commodity_id`, `price_program_id`, `rate_per_carload`, `rate_per_revenue_ton_mile`
+- `railroad.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `railroad.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
 
 ### Q2 2025 (5) — CSX
 
-For CSX, what is the sequential outlook for coal revenue per unit, and how much smaller are the benchmark and diesel headwinds in the second half versus the first?
+For CSX, What is the sequential outlook for coal revenue per unit, and how much smaller are the benchmark and diesel headwinds in the second half versus the first?
 
-- `railroad.price.fact_coal_yield`: `revenue_per_unit_amount`, `index_headwind_amount`, `mix_benefit_amount`, `sequential_change_amount`, `fiscal_quarter_id`, `benchmark_id`, `commodity_id`
-- `railroad.price.dim_benchmark`: `benchmark_id`, `benchmark_code`, `benchmark_name`
-- `railroad.price.fact_fuel_cost`: `fuel_cost_amount`, `diesel_headwind_amount`, `half_versus_half_amount`, `fiscal_quarter_id`, `fuel_grade_id`, `benchmark_id`
-- `railroad.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `railroad.customer.dim_commodity`: `commodity_id`, `commodity_code`, `commodity_name`, `traffic_type_id`
-- `railroad.price.dim_fuel_grade`: `fuel_grade_id`, `grade_code`, `grade_name`
+- `railroad.price.fact_yield_rate`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `revenue_per_revenue_ton_mile`, `length_of_haul_miles`
+- `railroad.price.fact_freight_revenue`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `freight_revenue_amount`
+- `railroad.price.fact_fuel`: `fiscal_quarter_id`, `scenario_id`, `fuel_type_id`, `service_type_id`, `fuel_gallon_quantity`, `fuel_expense_amount`, `fuel_price_per_gallon`, `fuel_surcharge_revenue_amount`
+- `railroad.price.fact_contract_rate`: `fiscal_quarter_id`, `scenario_id`, `contract_type_id`, `service_type_id`, `commodity_id`, `price_program_id`, `rate_per_carload`, `rate_per_revenue_ton_mile`
+- `railroad.demand.fact_freight_volume`: `freight_volume_record_id`, `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `shipper_id`, `carload_quantity`, `ton_quantity`, `revenue_ton_mile_quantity`, `gross_ton_mile_quantity`
+- `railroad.supply.fact_locomotive_efficiency`: `fiscal_quarter_id`, `scenario_id`, `locomotive_type_id`, `division_id`, `gross_ton_miles_per_gallon`
+- `railroad.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `railroad.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+
+### Q2 2025 (7) — CSX
+
+For CSX, Why was the intermodal snapback slower than the air pocket, and can volumes accelerate from the quarter-to-date pace?
+
+- `railroad.demand.fact_freight_volume`: `freight_volume_record_id`, `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `shipper_id`, `carload_quantity`, `ton_quantity`, `revenue_ton_mile_quantity`, `gross_ton_mile_quantity`
+- `railroad.price.fact_freight_revenue`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `freight_revenue_amount`
+- `railroad.demand.dim_commercial_channel`: `commercial_channel_id`, `commercial_channel_code`, `commercial_channel_name`
+- `railroad.demand.dim_intermodal_trade`: `intermodal_trade_id`, `intermodal_trade_code`, `intermodal_trade_name`
+- `railroad.demand.dim_service_type`: `service_type_id`, `service_type_code`, `service_type_name`
+- `railroad.demand.fact_bid_volume`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `lane_id`, `contract_type_id`, `bid_carload_quantity`, `awarded_carload_quantity`
+- `railroad.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `railroad.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
 
 ### Q2 2025 (8) — CSX
 
-For CSX, was there an upside surprise late in the quarter inside the other-revenue run rate?
+For CSX, Was there an upside surprise late in the quarter inside the other-revenue run rate?
 
-- `railroad.price.fact_other_revenue`: `other_revenue_amount`, `upside_surprise_flag`, `run_rate_amount`, `fiscal_quarter_id`
-- `railroad.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
+- `railroad.price.fact_accessorial_revenue`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `price_program_id`, `accessorial_revenue_amount`
+- `railroad.price.fact_contract_rate`: `fiscal_quarter_id`, `scenario_id`, `contract_type_id`, `service_type_id`, `commodity_id`, `price_program_id`, `rate_per_carload`, `rate_per_revenue_ton_mile`
+- `railroad.price.fact_yield_rate`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `revenue_per_revenue_ton_mile`, `length_of_haul_miles`
+- `railroad.price.fact_enterprise_revenue`: `fiscal_quarter_id`, `scenario_id`, `total_revenue_amount`
+- `railroad.price.fact_freight_revenue`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `freight_revenue_amount`
+- `railroad.price.fact_fuel`: `fiscal_quarter_id`, `scenario_id`, `fuel_type_id`, `service_type_id`, `fuel_gallon_quantity`, `fuel_expense_amount`, `fuel_price_per_gallon`, `fuel_surcharge_revenue_amount`
+- `railroad.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `railroad.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
 
 ### Q2 2025 (11) — CSX
 
-For CSX, does the stated cost of inconvenience capture the whole service penalty?
+For CSX, Does the stated cost of inconvenience capture the whole service penalty?
 
-- `railroad.price.fact_inconvenience_cost`: `inconvenience_amount`, `captures_full_penalty_flag`, `fiscal_quarter_id`, `service_metric_id`
-- `railroad.price.fact_operating_cost`: `operating_cost_amount`, `improved_with_service_flag`, `intraquarter_improvement_flag`, `fiscal_quarter_id`, `cost_bucket_id`, `calendar_day_id`
-- `railroad.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `railroad.network.dim_service_metric`: `service_metric_id`, `metric_code`, `metric_name`
-- `railroad.price.dim_cost_bucket`: `cost_bucket_id`, `bucket_code`, `bucket_name`
-- `railroad.geography.dim_calendar_day`: `calendar_day_id`, `calendar_date`, `fiscal_quarter_id`
+- `railroad.price.fact_accessorial_revenue`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `price_program_id`, `accessorial_revenue_amount`
+- `railroad.price.fact_operating_ratio`: `fiscal_quarter_id`, `scenario_id`, `operating_ratio_percent`, `operating_income_amount`
+- `railroad.price.dim_cost_bucket`: `cost_bucket_id`, `cost_bucket_code`, `cost_bucket_name`
+- `railroad.price.fact_contract_rate`: `fiscal_quarter_id`, `scenario_id`, `contract_type_id`, `service_type_id`, `commodity_id`, `price_program_id`, `rate_per_carload`, `rate_per_revenue_ton_mile`
+- `railroad.price.fact_enterprise_revenue`: `fiscal_quarter_id`, `scenario_id`, `total_revenue_amount`
+- `railroad.price.fact_freight_revenue`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `freight_revenue_amount`
+- `railroad.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `railroad.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
 
 ### Q2 2025 (12) — CSX
 
-For CSX, can better service produce positive net price in the back half after mix and fuel absorbed price this quarter?
+For CSX, Can better service produce positive net price in the back half after mix and fuel absorbed price this quarter?
 
-- `railroad.price.fact_price`: `price_change_amount`, `guide_growth_amount`, `price_component_amount`, `net_positive_flag`, `fiscal_quarter_id`, `price_program_id`, `traffic_type_id`
-- `railroad.supply.fact_service_level`: `service_index`, `prior_best_gap`, `commercial_support_flag`, `fiscal_quarter_id`, `service_metric_id`, `calendar_day_id`
-- `railroad.price.fact_mix`: `mix_effect_amount`, `negative_mix_flag`, `lifts_growth_flag`, `fiscal_quarter_id`, `traffic_type_id`
-- `railroad.price.fact_fuel_cost`: `fuel_cost_amount`, `diesel_headwind_amount`, `half_versus_half_amount`, `fiscal_quarter_id`, `fuel_grade_id`, `benchmark_id`
-- `railroad.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `railroad.price.dim_price_program`: `price_program_id`, `program_code`, `program_name`
-- `railroad.customer.dim_traffic_type`: `traffic_type_id`, `traffic_type_code`, `traffic_type_name`
-- `railroad.network.dim_service_metric`: `service_metric_id`, `metric_code`, `metric_name`
+- `railroad.price.fact_fuel`: `fiscal_quarter_id`, `scenario_id`, `fuel_type_id`, `service_type_id`, `fuel_gallon_quantity`, `fuel_expense_amount`, `fuel_price_per_gallon`, `fuel_surcharge_revenue_amount`
+- `railroad.price.dim_fuel_type`: `fuel_type_id`, `fuel_type_code`, `fuel_type_name`
+- `railroad.price.fact_accessorial_revenue`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `price_program_id`, `accessorial_revenue_amount`
+- `railroad.price.fact_contract_rate`: `fiscal_quarter_id`, `scenario_id`, `contract_type_id`, `service_type_id`, `commodity_id`, `price_program_id`, `rate_per_carload`, `rate_per_revenue_ton_mile`
+- `railroad.price.fact_freight_revenue`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `freight_revenue_amount`
+- `railroad.price.fact_yield_rate`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `revenue_per_revenue_ton_mile`, `length_of_haul_miles`
+- `railroad.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `railroad.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+
+### Q2 2025 (13) — CSX
+
+For CSX, Have customer conversations on railroad-specific projects increased or paused because of tariffs, and how large is the partnership ramp?
+
+- `railroad.demand.fact_project_volume`: `fiscal_quarter_id`, `scenario_id`, `project_id`, `commodity_id`, `region_id`, `project_carload_quantity`, `ramp_carload_quantity`
+- `railroad.demand.dim_project`: `project_id`, `project_name`, `region_id`, `commodity_id`
+- `railroad.price.fact_freight_revenue`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `freight_revenue_amount`
+- `railroad.price.fact_infrastructure_capital_spending`: `fiscal_quarter_id`, `scenario_id`, `infrastructure_project_id`, `project_capital_spending_amount`
+- `railroad.demand.dim_shipper`: `shipper_id`, `shipper_name`, `shipper_segment_id`
+- `railroad.demand.fact_bid_volume`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `lane_id`, `contract_type_id`, `bid_carload_quantity`, `awarded_carload_quantity`
+- `railroad.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `railroad.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
 
 ### Q3 2024 (1) — CSX
 
-For CSX, how does price get back to a positive spread versus cost next year after labor inflation is already set?
+For CSX, How does price get back to a positive spread versus cost next year after labor inflation is already set?
 
-- `railroad.price.fact_price`: `price_change_amount`, `guide_growth_amount`, `price_component_amount`, `net_positive_flag`, `fiscal_quarter_id`, `price_program_id`, `traffic_type_id`
-- `railroad.price.fact_compensation`: `compensation_per_employee_amount`, `wage_inflation_amount`, `technology_offset_amount`, `fiscal_quarter_id`, `cost_bucket_id`, `technology_id`
-- `railroad.customer.dim_contract`: `contract_id`, `contract_code`, `renewal_year`, `shipper_id`
-- `railroad.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `railroad.price.dim_price_program`: `price_program_id`, `program_code`, `program_name`
-- `railroad.customer.dim_traffic_type`: `traffic_type_id`, `traffic_type_code`, `traffic_type_name`
-- `railroad.price.dim_cost_bucket`: `cost_bucket_id`, `bucket_code`, `bucket_name`
-- `railroad.network.dim_technology`: `technology_id`, `technology_code`, `technology_name`
+- `railroad.price.fact_labor_expense`: `fiscal_quarter_id`, `scenario_id`, `workforce_group_id`, `cost_bucket_id`, `labor_expense_amount`, `compensation_per_employee`
+- `railroad.price.dim_cost_bucket`: `cost_bucket_id`, `cost_bucket_code`, `cost_bucket_name`
+- `railroad.price.dim_price_program`: `price_program_id`, `price_program_code`, `price_program_name`
+- `railroad.price.fact_contract_rate`: `fiscal_quarter_id`, `scenario_id`, `contract_type_id`, `service_type_id`, `commodity_id`, `price_program_id`, `rate_per_carload`, `rate_per_revenue_ton_mile`
+- `railroad.price.fact_operating_expense`: `fiscal_quarter_id`, `scenario_id`, `cost_bucket_id`, `operating_expense_amount`
+- `railroad.price.fact_operating_ratio`: `fiscal_quarter_id`, `scenario_id`, `operating_ratio_percent`, `operating_income_amount`
+- `railroad.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `railroad.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
 
 ### Q3 2024 (2) — CSX
 
-For CSX, how are next-year intermodal price talks progressing in a loose truck market, and can mix lift revenue growth above the low single digits?
+For CSX, How are next-year intermodal price talks progressing in a loose truck market, and can mix lift revenue growth above the low single digits?
 
-- `railroad.price.fact_intermodal_price`: `price_amount`, `talks_status_code`, `loose_truck_flag`, `fiscal_quarter_id`, `price_program_id`, `traffic_type_id`
-- `railroad.price.fact_truck_rate`: `spot_rate_amount`, `contract_rate_amount`, `lag_quarters`, `tightening_flag`, `fiscal_quarter_id`, `benchmark_id`
-- `railroad.price.fact_mix`: `mix_effect_amount`, `negative_mix_flag`, `lifts_growth_flag`, `fiscal_quarter_id`, `traffic_type_id`
-- `railroad.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `railroad.price.dim_price_program`: `price_program_id`, `program_code`, `program_name`
-- `railroad.customer.dim_traffic_type`: `traffic_type_id`, `traffic_type_code`, `traffic_type_name`
-- `railroad.price.dim_benchmark`: `benchmark_id`, `benchmark_code`, `benchmark_name`
+- `railroad.price.fact_freight_revenue`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `freight_revenue_amount`
+- `railroad.price.fact_truck_rate`: `fiscal_quarter_id`, `scenario_id`, `lane_id`, `competitor_id`, `truck_spot_rate_per_load`, `truck_contract_rate_per_load`
+- `railroad.price.fact_yield_rate`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `revenue_per_revenue_ton_mile`, `length_of_haul_miles`
+- `railroad.demand.fact_freight_volume`: `freight_volume_record_id`, `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `shipper_id`, `carload_quantity`, `ton_quantity`, `revenue_ton_mile_quantity`, `gross_ton_mile_quantity`
+- `railroad.price.fact_accessorial_revenue`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `price_program_id`, `accessorial_revenue_amount`
+- `railroad.price.fact_contract_rate`: `fiscal_quarter_id`, `scenario_id`, `contract_type_id`, `service_type_id`, `commodity_id`, `price_program_id`, `rate_per_carload`, `rate_per_revenue_ton_mile`
+- `railroad.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `railroad.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+
+### Q3 2024 (3) — CSX
+
+For CSX, After fuel, coal, hurricane, and softer autos and metals, why is revenue down and the operating margin lower?
+
+- `railroad.price.fact_enterprise_revenue`: `fiscal_quarter_id`, `scenario_id`, `total_revenue_amount`
+- `railroad.price.fact_freight_revenue`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `freight_revenue_amount`
+- `railroad.price.fact_fuel`: `fiscal_quarter_id`, `scenario_id`, `fuel_type_id`, `service_type_id`, `fuel_gallon_quantity`, `fuel_expense_amount`, `fuel_price_per_gallon`, `fuel_surcharge_revenue_amount`
+- `railroad.price.fact_yield_rate`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `revenue_per_revenue_ton_mile`, `length_of_haul_miles`
+- `railroad.demand.fact_freight_volume`: `freight_volume_record_id`, `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `shipper_id`, `carload_quantity`, `ton_quantity`, `revenue_ton_mile_quantity`, `gross_ton_mile_quantity`
+- `railroad.price.dim_cost_bucket`: `cost_bucket_id`, `cost_bucket_code`, `cost_bucket_name`
+- `railroad.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `railroad.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
 
 ### Q3 2024 (6) — CSX
 
-For CSX, with little margin progress likely this year, what would have to change for margin to expand in the current environment?
+For CSX, With little margin progress likely this year, what would have to change for margin to expand in the current environment?
 
-- `railroad.price.fact_operating_margin`: `margin_rate`, `expansion_condition_code`, `lower_flag`, `fiscal_quarter_id`, `traffic_type_id`
-- `railroad.demand.fact_volume`: `carload_quantity`, `merchandise_quantity`, `outlook_flat_flag`, `fiscal_quarter_id`, `commodity_id`, `region_id`, `traffic_type_id`, `shipper_id`
-- `railroad.price.fact_operating_cost`: `operating_cost_amount`, `improved_with_service_flag`, `intraquarter_improvement_flag`, `fiscal_quarter_id`, `cost_bucket_id`, `calendar_day_id`
-- `railroad.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `railroad.customer.dim_traffic_type`: `traffic_type_id`, `traffic_type_code`, `traffic_type_name`
-- `railroad.customer.dim_commodity`: `commodity_id`, `commodity_code`, `commodity_name`, `traffic_type_id`
-- `railroad.geography.dim_region`: `region_id`, `region_code`, `region_name`
-- `railroad.customer.dim_shipper`: `shipper_id`, `shipper_name`, `shipper_code`, `shipper_segment_id`
+- `railroad.price.dim_cost_bucket`: `cost_bucket_id`, `cost_bucket_code`, `cost_bucket_name`
+- `railroad.price.fact_operating_expense`: `fiscal_quarter_id`, `scenario_id`, `cost_bucket_id`, `operating_expense_amount`
+- `railroad.price.fact_operating_ratio`: `fiscal_quarter_id`, `scenario_id`, `operating_ratio_percent`, `operating_income_amount`
+- `railroad.price.fact_enterprise_revenue`: `fiscal_quarter_id`, `scenario_id`, `total_revenue_amount`
+- `railroad.price.fact_freight_revenue`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `freight_revenue_amount`
+- `railroad.price.fact_labor_expense`: `fiscal_quarter_id`, `scenario_id`, `workforce_group_id`, `cost_bucket_id`, `labor_expense_amount`, `compensation_per_employee`
+- `railroad.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `railroad.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+
+### Q3 2024 (7) — CSX
+
+For CSX, What categories did truck-to-rail wins fall into, and how is merchandise pricing holding up?
+
+- `railroad.price.dim_price_program`: `price_program_id`, `price_program_code`, `price_program_name`
+- `railroad.price.fact_contract_rate`: `fiscal_quarter_id`, `scenario_id`, `contract_type_id`, `service_type_id`, `commodity_id`, `price_program_id`, `rate_per_carload`, `rate_per_revenue_ton_mile`
+- `railroad.price.fact_truck_rate`: `fiscal_quarter_id`, `scenario_id`, `lane_id`, `competitor_id`, `truck_spot_rate_per_load`, `truck_contract_rate_per_load`
+- `railroad.demand.fact_truck_market_volume`: `fiscal_quarter_id`, `scenario_id`, `lane_id`, `service_type_id`, `competitor_id`, `truck_load_quantity`
+- `railroad.price.dim_cost_bucket`: `cost_bucket_id`, `cost_bucket_code`, `cost_bucket_name`
+- `railroad.price.dim_fuel_type`: `fuel_type_id`, `fuel_type_code`, `fuel_type_name`
+- `railroad.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `railroad.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+
+### Q3 2024 (8) — CSX
+
+For CSX, Is the modest domestic-intermodal uptick enough to move intermodal yield, relative to international?
+
+- `railroad.price.fact_freight_revenue`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `freight_revenue_amount`
+- `railroad.price.fact_yield_rate`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `revenue_per_revenue_ton_mile`, `length_of_haul_miles`
+- `railroad.demand.fact_freight_volume`: `freight_volume_record_id`, `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `shipper_id`, `carload_quantity`, `ton_quantity`, `revenue_ton_mile_quantity`, `gross_ton_mile_quantity`
+- `railroad.demand.dim_commercial_channel`: `commercial_channel_id`, `commercial_channel_code`, `commercial_channel_name`
+- `railroad.demand.dim_intermodal_trade`: `intermodal_trade_id`, `intermodal_trade_code`, `intermodal_trade_name`
+- `railroad.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+- `railroad.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
 
 ### Q3 2024 (11) — CSX
 
-For CSX, is better chemical pricing a healthy market or a quality mix shift?
+For CSX, Is better chemical pricing a healthy market or a quality mix shift?
 
-- `railroad.demand.fact_chemical_volume`: `chemical_quantity`, `fiscal_quarter_id`, `commodity_id`, `region_id`
-- `railroad.price.fact_price`: `price_change_amount`, `guide_growth_amount`, `price_component_amount`, `net_positive_flag`, `fiscal_quarter_id`, `price_program_id`, `traffic_type_id`
-- `railroad.price.fact_mix`: `mix_effect_amount`, `negative_mix_flag`, `lifts_growth_flag`, `fiscal_quarter_id`, `traffic_type_id`
-- `railroad.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `railroad.customer.dim_commodity`: `commodity_id`, `commodity_code`, `commodity_name`, `traffic_type_id`
-- `railroad.geography.dim_region`: `region_id`, `region_code`, `region_name`
-- `railroad.price.dim_price_program`: `price_program_id`, `program_code`, `program_name`
-- `railroad.customer.dim_traffic_type`: `traffic_type_id`, `traffic_type_code`, `traffic_type_name`
+- `railroad.price.dim_price_program`: `price_program_id`, `price_program_code`, `price_program_name`
+- `railroad.price.fact_contract_rate`: `fiscal_quarter_id`, `scenario_id`, `contract_type_id`, `service_type_id`, `commodity_id`, `price_program_id`, `rate_per_carload`, `rate_per_revenue_ton_mile`
+- `railroad.price.fact_freight_revenue`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `freight_revenue_amount`
+- `railroad.demand.fact_freight_volume`: `freight_volume_record_id`, `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `shipper_id`, `carload_quantity`, `ton_quantity`, `revenue_ton_mile_quantity`, `gross_ton_mile_quantity`
+- `railroad.demand.fact_project_volume`: `fiscal_quarter_id`, `scenario_id`, `project_id`, `commodity_id`, `region_id`, `project_carload_quantity`, `ramp_carload_quantity`
+- `railroad.demand.fact_truck_market_volume`: `fiscal_quarter_id`, `scenario_id`, `lane_id`, `service_type_id`, `competitor_id`, `truck_load_quantity`
+- `railroad.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `railroad.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+
+### Q3 2024 (12) — CSX
+
+For CSX, If freight that moved to the West Coast ahead of the port strike switches back, what happens to intermodal yields?
+
+- `railroad.demand.dim_coast`: `coast_id`, `coast_code`, `coast_name`
+- `railroad.price.fact_freight_revenue`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `freight_revenue_amount`
+- `railroad.price.fact_yield_rate`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `revenue_per_revenue_ton_mile`, `length_of_haul_miles`
+- `railroad.demand.fact_freight_volume`: `freight_volume_record_id`, `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `shipper_id`, `carload_quantity`, `ton_quantity`, `revenue_ton_mile_quantity`, `gross_ton_mile_quantity`
+- `railroad.demand.dim_commercial_channel`: `commercial_channel_id`, `commercial_channel_code`, `commercial_channel_name`
+- `railroad.demand.dim_port`: `port_id`, `port_name`, `metro_id`, `coast_id`
+- `railroad.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `railroad.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
 
 ### Q1 2026 (1) — Union Pacific
 
-For Union Pacific, can operating-ratio improvement continue if fuel and fuel-surcharge lag are a headwind, and where is incremental productivity showing up?
+For Union Pacific, Can operating-ratio improvement continue if fuel and fuel-surcharge lag are a headwind, and where is incremental productivity showing up?
 
-- `railroad.price.fact_operating_ratio`: `operating_ratio`, `full_year_target_ratio`, `high_end_bias_flag`, `fuel_headwind_amount`, `fiscal_quarter_id`, `cost_bucket_id`
-- `railroad.price.fact_fuel_cost`: `fuel_cost_amount`, `diesel_headwind_amount`, `half_versus_half_amount`, `fiscal_quarter_id`, `fuel_grade_id`, `benchmark_id`
-- `railroad.price.fact_fuel_surcharge`: `lag_amount`, `headwind_flag`, `fiscal_quarter_id`, `fuel_grade_id`
-- `railroad.supply.fact_workforce_productivity`: `productivity_index`, `further_gain_flag`, `volume_growth_compatible_flag`, `fiscal_quarter_id`, `resource_pool_id`
-- `railroad.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `railroad.price.dim_cost_bucket`: `cost_bucket_id`, `bucket_code`, `bucket_name`
-- `railroad.price.dim_fuel_grade`: `fuel_grade_id`, `grade_code`, `grade_name`
-- `railroad.price.dim_benchmark`: `benchmark_id`, `benchmark_code`, `benchmark_name`
+- `railroad.price.fact_operating_ratio`: `fiscal_quarter_id`, `scenario_id`, `operating_ratio_percent`, `operating_income_amount`
+- `railroad.price.dim_cost_bucket`: `cost_bucket_id`, `cost_bucket_code`, `cost_bucket_name`
+- `railroad.price.fact_fuel`: `fiscal_quarter_id`, `scenario_id`, `fuel_type_id`, `service_type_id`, `fuel_gallon_quantity`, `fuel_expense_amount`, `fuel_price_per_gallon`, `fuel_surcharge_revenue_amount`
+- `railroad.price.fact_operating_expense`: `fiscal_quarter_id`, `scenario_id`, `cost_bucket_id`, `operating_expense_amount`
+- `railroad.price.fact_productivity_savings`: `fiscal_quarter_id`, `scenario_id`, `productivity_initiative_id`, `cost_bucket_id`, `productivity_savings_amount`
+- `railroad.supply.dim_productivity_initiative`: `productivity_initiative_id`, `productivity_initiative_name`, `division_id`
+- `railroad.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `railroad.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
 
-### Q1 2026 (4) — Union Pacific
+### Q1 2026 (8) — Union Pacific
 
-For Union Pacific, what customer feedback has committed gateway pricing produced?
+For Union Pacific, Given current utilization, service, and inflation, what do incremental margins look like if volume turns up?
 
-- `railroad.price.fact_gateway_price`: `gateway_price_amount`, `feedback_code`, `competition_claim_flag`, `fiscal_quarter_id`, `gateway_id`, `price_program_id`
-- `railroad.customer.dim_shipper`: `shipper_id`, `shipper_name`, `shipper_code`, `shipper_segment_id`
-- `railroad.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `railroad.geography.dim_gateway`: `gateway_id`, `gateway_code`, `gateway_name`, `metro_id`
-- `railroad.price.dim_price_program`: `price_program_id`, `program_code`, `program_name`
+- `railroad.demand.fact_truck_market_volume`: `fiscal_quarter_id`, `scenario_id`, `lane_id`, `service_type_id`, `competitor_id`, `truck_load_quantity`
+- `railroad.price.dim_cost_bucket`: `cost_bucket_id`, `cost_bucket_code`, `cost_bucket_name`
+- `railroad.price.fact_freight_revenue`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `freight_revenue_amount`
+- `railroad.price.fact_operating_expense`: `fiscal_quarter_id`, `scenario_id`, `cost_bucket_id`, `operating_expense_amount`
+- `railroad.price.fact_operating_ratio`: `fiscal_quarter_id`, `scenario_id`, `operating_ratio_percent`, `operating_income_amount`
+- `railroad.demand.fact_bid_volume`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `lane_id`, `contract_type_id`, `bid_carload_quantity`, `awarded_carload_quantity`
+- `railroad.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `railroad.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
 
 ### Q4 2025 (1) — Union Pacific
 
-For Union Pacific, if price is not the margin driver in 2026, how does faster inflation get covered?
+For Union Pacific, If price is not the margin driver in 2026, how does faster inflation get covered?
 
-- `railroad.price.fact_price`: `price_change_amount`, `guide_growth_amount`, `price_component_amount`, `net_positive_flag`, `fiscal_quarter_id`, `price_program_id`, `traffic_type_id`
-- `railroad.price.fact_inflation`: `inflation_amount`, `faster_than_realization_flag`, `fiscal_quarter_id`, `cost_bucket_id`
-- `railroad.price.fact_operating_margin`: `margin_rate`, `expansion_condition_code`, `lower_flag`, `fiscal_quarter_id`, `traffic_type_id`
-- `railroad.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `railroad.price.dim_price_program`: `price_program_id`, `program_code`, `program_name`
-- `railroad.customer.dim_traffic_type`: `traffic_type_id`, `traffic_type_code`, `traffic_type_name`
-- `railroad.price.dim_cost_bucket`: `cost_bucket_id`, `bucket_code`, `bucket_name`
+- `railroad.price.fact_operating_ratio`: `fiscal_quarter_id`, `scenario_id`, `operating_ratio_percent`, `operating_income_amount`
+- `railroad.price.dim_cost_bucket`: `cost_bucket_id`, `cost_bucket_code`, `cost_bucket_name`
+- `railroad.price.fact_operating_expense`: `fiscal_quarter_id`, `scenario_id`, `cost_bucket_id`, `operating_expense_amount`
+- `railroad.price.fact_enterprise_revenue`: `fiscal_quarter_id`, `scenario_id`, `total_revenue_amount`
+- `railroad.price.fact_labor_expense`: `fiscal_quarter_id`, `scenario_id`, `workforce_group_id`, `cost_bucket_id`, `labor_expense_amount`, `compensation_per_employee`
+- `railroad.price.fact_productivity_savings`: `fiscal_quarter_id`, `scenario_id`, `productivity_initiative_id`, `cost_bucket_id`, `productivity_savings_amount`
+- `railroad.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `railroad.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
 
-### Q4 2025 (3) — Union Pacific
+### Q4 2025 (2) — Union Pacific
 
-For Union Pacific, how does a looser switching rule change the view of access and competition?
+For Union Pacific, How variable is the gross traffic gain from the combination relative to the cost of handling that traffic?
 
-- `railroad.price.fact_switching`: `access_change_code`, `rule_relation_code`, `customer_reaction_code`, `fiscal_quarter_id`, `gateway_id`, `shipper_id`
-- `railroad.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `railroad.geography.dim_gateway`: `gateway_id`, `gateway_code`, `gateway_name`, `metro_id`
-- `railroad.customer.dim_shipper`: `shipper_id`, `shipper_name`, `shipper_code`, `shipper_segment_id`
+- `railroad.demand.fact_freight_volume`: `freight_volume_record_id`, `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `shipper_id`, `carload_quantity`, `ton_quantity`, `revenue_ton_mile_quantity`, `gross_ton_mile_quantity`
+- `railroad.price.fact_freight_revenue`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `freight_revenue_amount`
+- `railroad.price.fact_yield_rate`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `revenue_per_revenue_ton_mile`, `length_of_haul_miles`
+- `railroad.demand.fact_seasonal_volume`: `fiscal_quarter_id`, `scenario_id`, `peak_season_id`, `service_type_id`, `commodity_id`, `seasonal_carload_quantity`, `seasonal_revenue_ton_mile_quantity`
+- `railroad.supply.fact_locomotive_efficiency`: `fiscal_quarter_id`, `scenario_id`, `locomotive_type_id`, `division_id`, `gross_ton_miles_per_gallon`
+- `railroad.price.dim_cost_bucket`: `cost_bucket_id`, `cost_bucket_code`, `cost_bucket_name`
+- `railroad.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `railroad.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
 
-### Q4 2025 (8) — Union Pacific
+### Q4 2025 (5) — Union Pacific
 
-For Union Pacific, how does the open-access gateway offer relate to the proposed change in reciprocal-switching rules?
+For Union Pacific, With record train length and velocity, why wouldn't the operating ratio improve by more?
 
-- `railroad.price.fact_switching`: `access_change_code`, `rule_relation_code`, `customer_reaction_code`, `fiscal_quarter_id`, `gateway_id`, `shipper_id`
-- `railroad.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `railroad.geography.dim_gateway`: `gateway_id`, `gateway_code`, `gateway_name`, `metro_id`
-- `railroad.customer.dim_shipper`: `shipper_id`, `shipper_name`, `shipper_code`, `shipper_segment_id`
+- `railroad.supply.fact_service_performance`: `fiscal_quarter_id`, `scenario_id`, `terminal_id`, `service_type_id`, `terminal_dwell_hours`, `car_velocity_miles_per_day`, `trip_plan_compliance_percent`, `average_train_length_cars`
+- `railroad.price.fact_operating_ratio`: `fiscal_quarter_id`, `scenario_id`, `operating_ratio_percent`, `operating_income_amount`
+- `railroad.price.dim_cost_bucket`: `cost_bucket_id`, `cost_bucket_code`, `cost_bucket_name`
+- `railroad.price.fact_operating_expense`: `fiscal_quarter_id`, `scenario_id`, `cost_bucket_id`, `operating_expense_amount`
+- `railroad.price.fact_yield_rate`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `revenue_per_revenue_ton_mile`, `length_of_haul_miles`
+- `railroad.demand.fact_freight_volume`: `freight_volume_record_id`, `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `shipper_id`, `carload_quantity`, `ton_quantity`, `revenue_ton_mile_quantity`, `gross_ton_mile_quantity`
+- `railroad.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `railroad.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+
+### Q4 2025 (6) — Union Pacific
+
+For Union Pacific, What volume and price are in the outlook, and how are customers absorbing new contracts in a soft demand environment?
+
+- `railroad.demand.fact_contracted_volume`: `fiscal_quarter_id`, `scenario_id`, `contract_type_id`, `shipper_id`, `commodity_id`, `contracted_carload_quantity`
+- `railroad.demand.fact_bid_volume`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `lane_id`, `contract_type_id`, `bid_carload_quantity`, `awarded_carload_quantity`
+- `railroad.demand.fact_freight_volume`: `freight_volume_record_id`, `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `shipper_id`, `carload_quantity`, `ton_quantity`, `revenue_ton_mile_quantity`, `gross_ton_mile_quantity`
+- `railroad.demand.fact_project_volume`: `fiscal_quarter_id`, `scenario_id`, `project_id`, `commodity_id`, `region_id`, `project_carload_quantity`, `ramp_carload_quantity`
+- `railroad.price.dim_price_program`: `price_program_id`, `price_program_code`, `price_program_name`
+- `railroad.price.fact_contract_rate`: `fiscal_quarter_id`, `scenario_id`, `contract_type_id`, `service_type_id`, `commodity_id`, `price_program_id`, `rate_per_carload`, `rate_per_revenue_ton_mile`
+- `railroad.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `railroad.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+
+### Q4 2025 (10) — Union Pacific
+
+For Union Pacific, Does the compensation-per-employee increase include items that productivity, process, and technology are expected to offset?
+
+- `railroad.price.fact_labor_expense`: `fiscal_quarter_id`, `scenario_id`, `workforce_group_id`, `cost_bucket_id`, `labor_expense_amount`, `compensation_per_employee`
+- `railroad.price.fact_contract_rate`: `fiscal_quarter_id`, `scenario_id`, `contract_type_id`, `service_type_id`, `commodity_id`, `price_program_id`, `rate_per_carload`, `rate_per_revenue_ton_mile`
+- `railroad.price.fact_fuel`: `fiscal_quarter_id`, `scenario_id`, `fuel_type_id`, `service_type_id`, `fuel_gallon_quantity`, `fuel_expense_amount`, `fuel_price_per_gallon`, `fuel_surcharge_revenue_amount`
+- `railroad.price.fact_productivity_savings`: `fiscal_quarter_id`, `scenario_id`, `productivity_initiative_id`, `cost_bucket_id`, `productivity_savings_amount`
+- `railroad.price.fact_truck_rate`: `fiscal_quarter_id`, `scenario_id`, `lane_id`, `competitor_id`, `truck_spot_rate_per_load`, `truck_contract_rate_per_load`
+- `railroad.price.fact_yield_rate`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `revenue_per_revenue_ton_mile`, `length_of_haul_miles`
+- `railroad.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `railroad.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
 
 ### Q3 2025 (2) — Union Pacific
 
-For Union Pacific, what are the fourth-quarter operating-ratio puts and takes if volume is down mid-single digits?
+For Union Pacific, What are the fourth-quarter operating-ratio puts and takes if volume is down mid-single digits?
 
-- `railroad.price.fact_operating_ratio`: `operating_ratio`, `full_year_target_ratio`, `high_end_bias_flag`, `fuel_headwind_amount`, `fiscal_quarter_id`, `cost_bucket_id`
-- `railroad.demand.fact_volume`: `carload_quantity`, `merchandise_quantity`, `outlook_flat_flag`, `fiscal_quarter_id`, `commodity_id`, `region_id`, `traffic_type_id`, `shipper_id`
-- `railroad.price.fact_mix`: `mix_effect_amount`, `negative_mix_flag`, `lifts_growth_flag`, `fiscal_quarter_id`, `traffic_type_id`
-- `railroad.price.fact_equipment_settlement`: `settlement_amount`, `fiscal_quarter_id`, `cost_bucket_id`
-- `railroad.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `railroad.price.dim_cost_bucket`: `cost_bucket_id`, `bucket_code`, `bucket_name`
-- `railroad.customer.dim_commodity`: `commodity_id`, `commodity_code`, `commodity_name`, `traffic_type_id`
-- `railroad.geography.dim_region`: `region_id`, `region_code`, `region_name`
+- `railroad.price.fact_operating_ratio`: `fiscal_quarter_id`, `scenario_id`, `operating_ratio_percent`, `operating_income_amount`
+- `railroad.price.dim_cost_bucket`: `cost_bucket_id`, `cost_bucket_code`, `cost_bucket_name`
+- `railroad.price.fact_enterprise_revenue`: `fiscal_quarter_id`, `scenario_id`, `total_revenue_amount`
+- `railroad.price.fact_freight_revenue`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `freight_revenue_amount`
+- `railroad.price.fact_operating_expense`: `fiscal_quarter_id`, `scenario_id`, `cost_bucket_id`, `operating_expense_amount`
+- `railroad.demand.fact_freight_volume`: `freight_volume_record_id`, `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `shipper_id`, `carload_quantity`, `ton_quantity`, `revenue_ton_mile_quantity`, `gross_ton_mile_quantity`
+- `railroad.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `railroad.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+
+### Q3 2025 (3) — Union Pacific
+
+For Union Pacific, Does closer collaboration among competitors create a commercial risk during the review?
+
+- `railroad.price.fact_freight_revenue`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `freight_revenue_amount`
+- `railroad.demand.fact_freight_volume`: `freight_volume_record_id`, `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `shipper_id`, `carload_quantity`, `ton_quantity`, `revenue_ton_mile_quantity`, `gross_ton_mile_quantity`
+- `railroad.price.fact_yield_rate`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `revenue_per_revenue_ton_mile`, `length_of_haul_miles`
+- `railroad.demand.dim_commercial_channel`: `commercial_channel_id`, `commercial_channel_code`, `commercial_channel_name`
+- `railroad.demand.dim_intermodal_trade`: `intermodal_trade_id`, `intermodal_trade_code`, `intermodal_trade_name`
+- `railroad.demand.dim_region`: `region_id`, `region_code`, `region_name`
+- `railroad.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `railroad.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+
+### Q3 2025 (4) — Union Pacific
+
+For Union Pacific, With productivity challenged and the outlook showing more negatives than positives, how quickly can resources held for new business be adjusted?
+
+- `railroad.price.fact_freight_revenue`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `freight_revenue_amount`
+- `railroad.demand.fact_bid_volume`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `lane_id`, `contract_type_id`, `bid_carload_quantity`, `awarded_carload_quantity`
+- `railroad.demand.fact_contracted_volume`: `fiscal_quarter_id`, `scenario_id`, `contract_type_id`, `shipper_id`, `commodity_id`, `contracted_carload_quantity`
+- `railroad.demand.fact_freight_volume`: `freight_volume_record_id`, `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `shipper_id`, `carload_quantity`, `ton_quantity`, `revenue_ton_mile_quantity`, `gross_ton_mile_quantity`
+- `railroad.demand.fact_port_volume`: `fiscal_quarter_id`, `scenario_id`, `port_id`, `commodity_id`, `coal_grade_id`, `port_carload_quantity`, `port_ton_quantity`
+- `railroad.demand.fact_project_volume`: `fiscal_quarter_id`, `scenario_id`, `project_id`, `commodity_id`, `region_id`, `project_carload_quantity`, `ramp_carload_quantity`
+- `railroad.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `railroad.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
 
 ### Q3 2025 (5) — Union Pacific
 
-For Union Pacific, what mix sits inside the yield increase excluding fuel?
+For Union Pacific, What mix sits inside the yield increase excluding fuel?
 
-- `railroad.price.fact_yield`: `yield_amount`, `core_yield_amount`, `fuel_excluded_flag`, `fiscal_quarter_id`, `traffic_type_id`, `benchmark_id`
-- `railroad.price.fact_mix`: `mix_effect_amount`, `negative_mix_flag`, `lifts_growth_flag`, `fiscal_quarter_id`, `traffic_type_id`
-- `railroad.price.fact_fuel_cost`: `fuel_cost_amount`, `diesel_headwind_amount`, `half_versus_half_amount`, `fiscal_quarter_id`, `fuel_grade_id`, `benchmark_id`
-- `railroad.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `railroad.customer.dim_traffic_type`: `traffic_type_id`, `traffic_type_code`, `traffic_type_name`
-- `railroad.price.dim_benchmark`: `benchmark_id`, `benchmark_code`, `benchmark_name`
-- `railroad.price.dim_fuel_grade`: `fuel_grade_id`, `grade_code`, `grade_name`
+- `railroad.price.dim_fuel_type`: `fuel_type_id`, `fuel_type_code`, `fuel_type_name`
+- `railroad.price.fact_freight_revenue`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `freight_revenue_amount`
+- `railroad.price.fact_fuel`: `fiscal_quarter_id`, `scenario_id`, `fuel_type_id`, `service_type_id`, `fuel_gallon_quantity`, `fuel_expense_amount`, `fuel_price_per_gallon`, `fuel_surcharge_revenue_amount`
+- `railroad.price.fact_yield_rate`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `revenue_per_revenue_ton_mile`, `length_of_haul_miles`
+- `railroad.demand.dim_calendar_month`: `calendar_month_id`, `calendar_month_name`, `fiscal_quarter_id`
+- `railroad.supply.fact_locomotive_efficiency`: `fiscal_quarter_id`, `scenario_id`, `locomotive_type_id`, `division_id`, `gross_ton_miles_per_gallon`
+- `railroad.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `railroad.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
 
 ### Q3 2025 (8) — Union Pacific
 
-For Union Pacific, if the truckload market inflects, how fast can domestic intermodal yields move, and what is the lag?
+For Union Pacific, If the truckload market inflects, how fast can domestic intermodal yields move, and what is the lag?
 
-- `railroad.price.fact_domestic_intermodal_yield`: `yield_amount`, `domestic_uptick_sufficient_flag`, `lag_quarters`, `fiscal_quarter_id`, `traffic_type_id`, `benchmark_id`
-- `railroad.price.fact_truck_rate`: `spot_rate_amount`, `contract_rate_amount`, `lag_quarters`, `tightening_flag`, `fiscal_quarter_id`, `benchmark_id`
-- `railroad.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `railroad.customer.dim_traffic_type`: `traffic_type_id`, `traffic_type_code`, `traffic_type_name`
-- `railroad.price.dim_benchmark`: `benchmark_id`, `benchmark_code`, `benchmark_name`
+- `railroad.price.fact_truck_rate`: `fiscal_quarter_id`, `scenario_id`, `lane_id`, `competitor_id`, `truck_spot_rate_per_load`, `truck_contract_rate_per_load`
+- `railroad.price.fact_freight_revenue`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `freight_revenue_amount`
+- `railroad.price.fact_yield_rate`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `revenue_per_revenue_ton_mile`, `length_of_haul_miles`
+- `railroad.price.dim_price_program`: `price_program_id`, `price_program_code`, `price_program_name`
+- `railroad.price.fact_contract_rate`: `fiscal_quarter_id`, `scenario_id`, `contract_type_id`, `service_type_id`, `commodity_id`, `price_program_id`, `rate_per_carload`, `rate_per_revenue_ton_mile`
+- `railroad.demand.dim_commercial_channel`: `commercial_channel_id`, `commercial_channel_code`, `commercial_channel_name`
+- `railroad.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `railroad.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
 
-### Q3 2025 (9) — Union Pacific
+### Q3 2025 (10) — Union Pacific
 
-For Union Pacific, is pricing in the coming contracting season better than this year, and does the service product support that?
+For Union Pacific, What macro deterioration, including housing, would change the volume outlook?
 
-- `railroad.price.fact_price`: `price_change_amount`, `guide_growth_amount`, `price_component_amount`, `net_positive_flag`, `fiscal_quarter_id`, `price_program_id`, `traffic_type_id`
-- `railroad.supply.fact_service_level`: `service_index`, `prior_best_gap`, `commercial_support_flag`, `fiscal_quarter_id`, `service_metric_id`, `calendar_day_id`
-- `railroad.customer.dim_contract`: `contract_id`, `contract_code`, `renewal_year`, `shipper_id`
-- `railroad.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `railroad.price.dim_price_program`: `price_program_id`, `program_code`, `program_name`
-- `railroad.customer.dim_traffic_type`: `traffic_type_id`, `traffic_type_code`, `traffic_type_name`
-- `railroad.network.dim_service_metric`: `service_metric_id`, `metric_code`, `metric_name`
-- `railroad.geography.dim_calendar_day`: `calendar_day_id`, `calendar_date`, `fiscal_quarter_id`
+- `railroad.demand.dim_metro`: `metro_id`, `metro_code`, `metro_name`, `state_id`
+- `railroad.demand.fact_bid_volume`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `lane_id`, `contract_type_id`, `bid_carload_quantity`, `awarded_carload_quantity`
+- `railroad.demand.fact_contracted_volume`: `fiscal_quarter_id`, `scenario_id`, `contract_type_id`, `shipper_id`, `commodity_id`, `contracted_carload_quantity`
+- `railroad.demand.fact_freight_volume`: `freight_volume_record_id`, `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `shipper_id`, `carload_quantity`, `ton_quantity`, `revenue_ton_mile_quantity`, `gross_ton_mile_quantity`
+- `railroad.demand.fact_interchange_volume`: `fiscal_quarter_id`, `scenario_id`, `interchange_id`, `service_type_id`, `competitor_id`, `interchanged_carload_quantity`
+- `railroad.demand.fact_port_volume`: `fiscal_quarter_id`, `scenario_id`, `port_id`, `commodity_id`, `coal_grade_id`, `port_carload_quantity`, `port_ton_quantity`
+- `railroad.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `railroad.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
 
-### Q2 2025 (1) — Union Pacific
+### Q3 2025 (11) — Union Pacific
 
-For Union Pacific, what cost puts and takes show up from the second quarter into the third, with the network running as well as it has?
+For Union Pacific, What is driving the business wins in the fourth-quarter outlook, and can that pipeline grow volume next year despite trade uncertainty?
 
-- `railroad.price.fact_operating_cost`: `operating_cost_amount`, `improved_with_service_flag`, `intraquarter_improvement_flag`, `fiscal_quarter_id`, `cost_bucket_id`, `calendar_day_id`
-- `railroad.supply.fact_service_level`: `service_index`, `prior_best_gap`, `commercial_support_flag`, `fiscal_quarter_id`, `service_metric_id`, `calendar_day_id`
-- `railroad.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `railroad.price.dim_cost_bucket`: `cost_bucket_id`, `bucket_code`, `bucket_name`
-- `railroad.geography.dim_calendar_day`: `calendar_day_id`, `calendar_date`, `fiscal_quarter_id`
-- `railroad.network.dim_service_metric`: `service_metric_id`, `metric_code`, `metric_name`
+- `railroad.price.fact_freight_revenue`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `freight_revenue_amount`
+- `railroad.demand.fact_bid_volume`: `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `lane_id`, `contract_type_id`, `bid_carload_quantity`, `awarded_carload_quantity`
+- `railroad.demand.fact_contracted_volume`: `fiscal_quarter_id`, `scenario_id`, `contract_type_id`, `shipper_id`, `commodity_id`, `contracted_carload_quantity`
+- `railroad.demand.fact_freight_volume`: `freight_volume_record_id`, `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `shipper_id`, `carload_quantity`, `ton_quantity`, `revenue_ton_mile_quantity`, `gross_ton_mile_quantity`
+- `railroad.price.dim_price_program`: `price_program_id`, `price_program_code`, `price_program_name`
+- `railroad.price.fact_contract_rate`: `fiscal_quarter_id`, `scenario_id`, `contract_type_id`, `service_type_id`, `commodity_id`, `price_program_id`, `rate_per_carload`, `rate_per_revenue_ton_mile`
+- `railroad.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `railroad.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
 
 ### Q2 2025 (3) — Union Pacific
 
-For Union Pacific, how much further can the operating ratio move from the level already reached?
+For Union Pacific, How much further can the operating ratio move from the level already reached?
 
-- `railroad.price.fact_operating_ratio`: `operating_ratio`, `full_year_target_ratio`, `high_end_bias_flag`, `fuel_headwind_amount`, `fiscal_quarter_id`, `cost_bucket_id`
-- `railroad.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `railroad.price.dim_cost_bucket`: `cost_bucket_id`, `bucket_code`, `bucket_name`
+- `railroad.price.fact_operating_ratio`: `fiscal_quarter_id`, `scenario_id`, `operating_ratio_percent`, `operating_income_amount`
+- `railroad.price.dim_cost_bucket`: `cost_bucket_id`, `cost_bucket_code`, `cost_bucket_name`
+- `railroad.price.fact_enterprise_revenue`: `fiscal_quarter_id`, `scenario_id`, `total_revenue_amount`
+- `railroad.price.fact_operating_expense`: `fiscal_quarter_id`, `scenario_id`, `cost_bucket_id`, `operating_expense_amount`
+- `railroad.supply.dim_division`: `division_id`, `division_name`, `region_id`
+- `railroad.supply.fact_locomotive_efficiency`: `fiscal_quarter_id`, `scenario_id`, `locomotive_type_id`, `division_id`, `gross_ton_miles_per_gallon`
+- `railroad.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `railroad.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
 
 ### Q2 2025 (6) — Union Pacific
 
-For Union Pacific, what second-half operating ratio and price/mix are expected, and how sustainable is coal strength beyond the contract win?
+For Union Pacific, What second-half operating ratio and price/mix are expected, and how sustainable is coal strength beyond the contract win?
 
-- `railroad.price.fact_operating_ratio`: `operating_ratio`, `full_year_target_ratio`, `high_end_bias_flag`, `fuel_headwind_amount`, `fiscal_quarter_id`, `cost_bucket_id`
-- `railroad.price.fact_mix`: `mix_effect_amount`, `negative_mix_flag`, `lifts_growth_flag`, `fiscal_quarter_id`, `traffic_type_id`
-- `railroad.demand.fact_coal_volume`: `coal_quantity`, `response_lag_quarters`, `fiscal_quarter_id`, `commodity_id`, `region_id`
-- `railroad.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `railroad.price.dim_cost_bucket`: `cost_bucket_id`, `bucket_code`, `bucket_name`
-- `railroad.customer.dim_traffic_type`: `traffic_type_id`, `traffic_type_code`, `traffic_type_name`
-- `railroad.customer.dim_commodity`: `commodity_id`, `commodity_code`, `commodity_name`, `traffic_type_id`
-- `railroad.geography.dim_region`: `region_id`, `region_code`, `region_name`
+- `railroad.price.fact_operating_ratio`: `fiscal_quarter_id`, `scenario_id`, `operating_ratio_percent`, `operating_income_amount`
+- `railroad.price.dim_cost_bucket`: `cost_bucket_id`, `cost_bucket_code`, `cost_bucket_name`
+- `railroad.price.fact_operating_expense`: `fiscal_quarter_id`, `scenario_id`, `cost_bucket_id`, `operating_expense_amount`
+- `railroad.demand.fact_freight_volume`: `freight_volume_record_id`, `fiscal_quarter_id`, `scenario_id`, `service_type_id`, `commodity_id`, `coal_grade_id`, `intermodal_trade_id`, `commercial_channel_id`, `routing_id`, `handling_type_id`, `lane_id`, `shipper_id`, `carload_quantity`, `ton_quantity`, `revenue_ton_mile_quantity`, `gross_ton_mile_quantity`
+- `railroad.demand.fact_project_volume`: `fiscal_quarter_id`, `scenario_id`, `project_id`, `commodity_id`, `region_id`, `project_carload_quantity`, `ramp_carload_quantity`
+- `railroad.price.dim_price_program`: `price_program_id`, `price_program_code`, `price_program_name`
+- `railroad.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `railroad.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`

@@ -183,9 +183,9 @@ Each industry directory keeps one schema version 3 warehouse, owned by a naive i
 | Health Plan Inc | Managed care | `managed-care/warehouse/` | 116 | 297 | 116 |
 | Beverage Inc | Soft drinks | `soft-drinks/warehouse/` | 105 | 312 | 105 |
 | Automaker Inc | Automobile manufacturers | `automobile-manufacturers/warehouse/` | 113 | 303 | 113 |
-| Railroad Inc | Rail transportation | `rail-transportation/warehouse/` | 119 | 245 | 119 |
-| Energy Inc | Integrated oil and gas | `integrated-oil-gas/warehouse/` | 129 | 299 | 129 |
-| Utility Inc | Electric utilities | `electric-utilities/warehouse/` | 90 | 204 | 90 |
+| Railroad Inc | Rail transportation | `rail-transportation/warehouse/` | 78 | 197 | 39 |
+| Energy Inc | Integrated oil and gas | `integrated-oil-gas/warehouse/` | 78 | 206 | 33 |
+| Utility Inc | Electric utilities | `electric-utilities/warehouse/` | 71 | 201 | 26 |
 | Bank Inc | Diversified banks | `diversified-banks/warehouse/` | 114 | 261 | 114 |
 | Merchandise Inc | Merchandise retail | `merchandise-retail/warehouse/` | 109 | 297 | 109 |
 | Social Inc | Interactive media | `interactive-media/warehouse/` | 105 | 218 | 105 |

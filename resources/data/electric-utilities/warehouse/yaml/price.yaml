@@ -4,7 +4,7 @@ nodes:
   descriptor:
     qualified_name: utility.price.dim_rate_case
     display_name: Rate Case
-    description: Rate case, including the Carolinas cases.
+    description: Rate case proceeding before a jurisdiction.
     synonyms: []
     tags:
     - dimension
@@ -28,27 +28,30 @@ nodes:
   columns:
   - name: rate_case_id
     description: Identifier of the rate case.
-  - name: case_code
-    description: Case code.
-    value_description: carolinas, other
-  - name: case_name
-    description: Case name.
-  - name: state_id
-    description: Identifier of the related state.
+  - name: rate_case_name
+    description: Rate Case name.
+  - name: jurisdiction_id
+    description: Identifier of the related jurisdiction.
+  - name: operating_company_id
+    description: Identifier of the related operating company.
   entity_definitions:
   - identity_id: dim_rate_case_identity
     dataset_columns:
     - rate_case_id
     entity_universe: complete
-  - identity_id: dim_state_identity
+  - identity_id: dim_jurisdiction_identity
     dataset_columns:
-    - state_id
+    - jurisdiction_id
     entity_universe: partial
-- node_id: sf:utility.price.dim_capital_program
+  - identity_id: dim_operating_company_identity
+    dataset_columns:
+    - operating_company_id
+    entity_universe: partial
+- node_id: sf:utility.price.dim_cost_category
   descriptor:
-    qualified_name: utility.price.dim_capital_program
-    display_name: Capital Program
-    description: Capital program window.
+    qualified_name: utility.price.dim_cost_category
+    display_name: Cost Category
+    description: Expense category.
     synonyms: []
     tags:
     - dimension
@@ -60,33 +63,33 @@ nodes:
       account: utility.us-east-1
       database: UTILITY
       schema: PRICE
-      object: DIM_CAPITAL_PROGRAM
+      object: DIM_COST_CATEGORY
       format: table
   grain:
-    description: One row is one capital program.
+    description: One row is one cost category.
     components:
-    - identity_id: dim_capital_program_identity
+    - identity_id: dim_cost_category_identity
       dataset_columns:
-      - capital_program_id
-      description: Identifier of the capital program.
+      - cost_category_id
+      description: Identifier of the cost category.
   columns:
-  - name: capital_program_id
-    description: Identifier of the capital program.
-  - name: program_code
-    description: Program code.
-    value_description: five_year, later
-  - name: program_name
-    description: Program name.
+  - name: cost_category_id
+    description: Identifier of the cost category.
+  - name: cost_category_code
+    description: Cost Category code.
+    value_description: fuel, purchased_power, operations_and_maintenance, depreciation, taxes, corporate
+  - name: cost_category_name
+    description: Cost Category name.
   entity_definitions:
-  - identity_id: dim_capital_program_identity
+  - identity_id: dim_cost_category_identity
     dataset_columns:
-    - capital_program_id
+    - cost_category_id
     entity_universe: complete
-- node_id: sf:utility.price.dim_cost_bucket
+- node_id: sf:utility.price.dim_revenue_type
   descriptor:
-    qualified_name: utility.price.dim_cost_bucket
-    display_name: Cost Bucket
-    description: Cost bucket such as storm, fuel, tax credit, or construction.
+    qualified_name: utility.price.dim_revenue_type
+    display_name: Revenue Type
+    description: Type of regulated revenue.
     synonyms: []
     tags:
     - dimension
@@ -98,495 +101,34 @@ nodes:
       account: utility.us-east-1
       database: UTILITY
       schema: PRICE
-      object: DIM_COST_BUCKET
+      object: DIM_REVENUE_TYPE
       format: table
   grain:
-    description: One row is one cost bucket.
+    description: One row is one revenue type.
     components:
-    - identity_id: dim_cost_bucket_identity
+    - identity_id: dim_revenue_type_identity
       dataset_columns:
-      - cost_bucket_id
-      description: Identifier of the cost bucket.
+      - revenue_type_id
+      description: Identifier of the revenue type.
   columns:
-  - name: cost_bucket_id
-    description: Identifier of the cost bucket.
-  - name: bucket_code
-    description: Bucket code.
-    value_description: storm, fuel, tax_credit, construction, overrun
-  - name: bucket_name
-    description: Bucket name.
+  - name: revenue_type_id
+    description: Identifier of the revenue type.
+  - name: revenue_type_code
+    description: Revenue Type code.
+    value_description: retail_electric, wholesale_electric, gas_distribution, transmission, other_regulated
+  - name: revenue_type_name
+    description: Revenue Type name.
   entity_definitions:
-  - identity_id: dim_cost_bucket_identity
+  - identity_id: dim_revenue_type_identity
     dataset_columns:
-    - cost_bucket_id
+    - revenue_type_id
     entity_universe: complete
-- node_id: sf:utility.price.dim_counterparty
-  descriptor:
-    qualified_name: utility.price.dim_counterparty
-    display_name: Counterparty
-    description: Counterparty on a wholesale or large-load contract.
-    synonyms: []
-    tags:
-    - dimension
-    - price
-    - utility
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: utility.us-east-1
-      database: UTILITY
-      schema: PRICE
-      object: DIM_COUNTERPARTY
-      format: table
-  grain:
-    description: One row is one counterparty.
-    components:
-    - identity_id: dim_counterparty_identity
-      dataset_columns:
-      - counterparty_id
-      description: Identifier of the counterparty.
-  columns:
-  - name: counterparty_id
-    description: Identifier of the counterparty.
-  - name: counterparty_code
-    description: Counterparty code.
-    value_description: hyperscaler, utility, government
-  - name: counterparty_name
-    description: Counterparty name.
-  - name: customer_id
-    description: Identifier of the related customer.
-  entity_definitions:
-  - identity_id: dim_counterparty_identity
-    dataset_columns:
-    - counterparty_id
-    entity_universe: complete
-  - identity_id: dim_customer_identity
-    dataset_columns:
-    - customer_id
-    entity_universe: partial
-- node_id: sf:utility.price.fact_earnings_growth
-  descriptor:
-    qualified_name: utility.price.fact_earnings_growth
-    display_name: Earnings Growth
-    description: Earnings-growth rate versus the range. Load quantity is not stored.
-    synonyms: []
-    tags:
-    - fact
-    - price
-    - utility
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: utility.us-east-1
-      database: UTILITY
-      schema: PRICE
-      object: FACT_EARNINGS_GROWTH
-      format: table
-  grain:
-    description: One row is one earnings growth.
-    components:
-    - identity_id: fact_earnings_growth_identity
-      dataset_columns:
-      - earnings_growth_id
-      description: Identifier of the earnings growth.
-  columns:
-  - name: earnings_growth_id
-    description: Identifier of the earnings growth.
-  - name: growth_rate
-    description: Growth rate. The value is a price, cost, or rate, not a unit quantity.
-  - name: above_range_flag
-    description: Whether this row is marked above range.
-  - name: high_end_includes_incremental_flag
-    description: Whether this row is marked high end includes incremental.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: capital_program_id
-    description: Identifier of the related capital program.
-  entity_definitions:
-  - identity_id: fact_earnings_growth_identity
-    dataset_columns:
-    - earnings_growth_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_capital_program_identity
-    dataset_columns:
-    - capital_program_id
-    entity_universe: partial
-- node_id: sf:utility.price.fact_capital_plan
-  descriptor:
-    qualified_name: utility.price.fact_capital_plan
-    display_name: Capital Plan
-    description: Capital dollars inside the five-year window versus later years.
-    synonyms: []
-    tags:
-    - fact
-    - price
-    - utility
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: utility.us-east-1
-      database: UTILITY
-      schema: PRICE
-      object: FACT_CAPITAL_PLAN
-      format: table
-  grain:
-    description: One row is one capital plan.
-    components:
-    - identity_id: fact_capital_plan_identity
-      dataset_columns:
-      - capital_plan_id
-      description: Identifier of the capital plan.
-  columns:
-  - name: capital_plan_id
-    description: Identifier of the capital plan.
-  - name: capital_amount
-    description: Capital amount. The value is a price, cost, or rate, not a unit quantity.
-  - name: inside_window_amount
-    description: Inside window amount. The value is a price, cost, or rate, not a unit quantity.
-  - name: later_amount
-    description: Later amount. The value is a price, cost, or rate, not a unit quantity.
-  - name: layered_even_flag
-    description: Whether this row is marked layered even.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: capital_program_id
-    description: Identifier of the related capital program.
-  - name: project_id
-    description: Identifier of the related project.
-  entity_definitions:
-  - identity_id: fact_capital_plan_identity
-    dataset_columns:
-    - capital_plan_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_capital_program_identity
-    dataset_columns:
-    - capital_program_id
-    entity_universe: partial
-  - identity_id: dim_project_identity
-    dataset_columns:
-    - project_id
-    entity_universe: partial
-- node_id: sf:utility.price.fact_rate_case
-  descriptor:
-    qualified_name: utility.price.fact_rate_case
-    display_name: Rate Case
-    description: Rate-case path, including settlement versus full litigation.
-    synonyms: []
-    tags:
-    - fact
-    - price
-    - utility
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: utility.us-east-1
-      database: UTILITY
-      schema: PRICE
-      object: FACT_RATE_CASE
-      format: table
-  grain:
-    description: One row is one rate case.
-    components:
-    - identity_id: fact_rate_case_identity
-      dataset_columns:
-      - rate_case_fact_id
-      description: Identifier of the rate case.
-  columns:
-  - name: rate_case_fact_id
-    description: Identifier of the rate case.
-  - name: request_amount
-    description: Request amount. The value is a price, cost, or rate, not a unit quantity.
-  - name: settlement_possible_flag
-    description: Whether this row is marked settlement possible.
-  - name: fully_litigated_flag
-    description: Whether this row is marked fully litigated.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: rate_case_id
-    description: Identifier of the related rate case.
-  - name: state_id
-    description: Identifier of the related state.
-  entity_definitions:
-  - identity_id: fact_rate_case_identity
-    dataset_columns:
-    - rate_case_fact_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_rate_case_identity
-    dataset_columns:
-    - rate_case_id
-    entity_universe: partial
-  - identity_id: dim_state_identity
-    dataset_columns:
-    - state_id
-    entity_universe: partial
-- node_id: sf:utility.price.fact_combination_offset
-  descriptor:
-    qualified_name: utility.price.fact_combination_offset
-    display_name: Combination Offset
-    description: Combination savings that can offset a rate request.
-    synonyms: []
-    tags:
-    - fact
-    - price
-    - utility
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: utility.us-east-1
-      database: UTILITY
-      schema: PRICE
-      object: FACT_COMBINATION_OFFSET
-      format: table
-  grain:
-    description: One row is one combination offset.
-    components:
-    - identity_id: fact_combination_offset_identity
-      dataset_columns:
-      - combination_offset_id
-      description: Identifier of the combination offset.
-  columns:
-  - name: combination_offset_id
-    description: Identifier of the combination offset.
-  - name: savings_amount
-    description: Savings amount. The value is a price, cost, or rate, not a unit quantity.
-  - name: offsets_request_flag
-    description: Whether this row is marked offsets request.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: rate_case_id
-    description: Identifier of the related rate case.
-  entity_definitions:
-  - identity_id: fact_combination_offset_identity
-    dataset_columns:
-    - combination_offset_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_rate_case_identity
-    dataset_columns:
-    - rate_case_id
-    entity_universe: partial
-- node_id: sf:utility.price.fact_bill_credit
-  descriptor:
-    qualified_name: utility.price.fact_bill_credit
-    display_name: Bill Credit
-    description: Bill credit funded by load growth or tax monetization.
-    synonyms: []
-    tags:
-    - fact
-    - price
-    - utility
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: utility.us-east-1
-      database: UTILITY
-      schema: PRICE
-      object: FACT_BILL_CREDIT
-      format: table
-  grain:
-    description: One row is one bill credit.
-    components:
-    - identity_id: fact_bill_credit_identity
-      dataset_columns:
-      - bill_credit_id
-      description: Identifier of the bill credit.
-  columns:
-  - name: bill_credit_id
-    description: Identifier of the bill credit.
-  - name: credit_amount
-    description: Credit amount. The value is a price, cost, or rate, not a unit quantity.
-  - name: revised_higher_flag
-    description: Whether this row is marked revised higher.
-  - name: cumulative_flag
-    description: Whether this row is marked cumulative.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: state_id
-    description: Identifier of the related state.
-  entity_definitions:
-  - identity_id: fact_bill_credit_identity
-    dataset_columns:
-    - bill_credit_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_state_identity
-    dataset_columns:
-    - state_id
-    entity_universe: partial
-- node_id: sf:utility.price.fact_tax_credit
-  descriptor:
-    qualified_name: utility.price.fact_tax_credit
-    display_name: Tax Credit
-    description: Tax-credit cash and whether new-investment recovery replaces it.
-    synonyms: []
-    tags:
-    - fact
-    - price
-    - utility
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: utility.us-east-1
-      database: UTILITY
-      schema: PRICE
-      object: FACT_TAX_CREDIT
-      format: table
-  grain:
-    description: One row is one tax credit.
-    components:
-    - identity_id: fact_tax_credit_identity
-      dataset_columns:
-      - tax_credit_id
-      description: Identifier of the tax credit.
-  columns:
-  - name: tax_credit_id
-    description: Identifier of the tax credit.
-  - name: credit_amount
-    description: Credit amount. The value is a price, cost, or rate, not a unit quantity.
-  - name: rolls_off_flag
-    description: Whether this row is marked rolls off.
-  - name: further_monetization_flag
-    description: Whether this row is marked further monetization.
-  - name: flowback_code
-    description: Flowback code.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: cost_bucket_id
-    description: Identifier of the related cost bucket.
-  entity_definitions:
-  - identity_id: fact_tax_credit_identity
-    dataset_columns:
-    - tax_credit_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_cost_bucket_identity
-    dataset_columns:
-    - cost_bucket_id
-    entity_universe: partial
-- node_id: sf:utility.price.fact_rate_recovery
-  descriptor:
-    qualified_name: utility.price.fact_rate_recovery
-    display_name: Rate Recovery
-    description: Recovery of new investment as credit cash rolls off.
-    synonyms: []
-    tags:
-    - fact
-    - price
-    - utility
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: utility.us-east-1
-      database: UTILITY
-      schema: PRICE
-      object: FACT_RATE_RECOVERY
-      format: table
-  grain:
-    description: One row is one rate recovery.
-    components:
-    - identity_id: fact_rate_recovery_identity
-      dataset_columns:
-      - rate_recovery_id
-      description: Identifier of the rate recovery.
-  columns:
-  - name: rate_recovery_id
-    description: Identifier of the rate recovery.
-  - name: recovery_amount
-    description: Recovery amount. The value is a price, cost, or rate, not a unit quantity.
-  - name: replaces_credit_flag
-    description: Whether this row is marked replaces credit.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: capital_program_id
-    description: Identifier of the related capital program.
-  entity_definitions:
-  - identity_id: fact_rate_recovery_identity
-    dataset_columns:
-    - rate_recovery_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_capital_program_identity
-    dataset_columns:
-    - capital_program_id
-    entity_universe: partial
-- node_id: sf:utility.price.fact_earned_return
-  descriptor:
-    qualified_name: utility.price.fact_earned_return
-    display_name: Earned Return
-    description: Earned return required to deliver the top half of the growth range.
-    synonyms: []
-    tags:
-    - fact
-    - price
-    - utility
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: utility.us-east-1
-      database: UTILITY
-      schema: PRICE
-      object: FACT_EARNED_RETURN
-      format: table
-  grain:
-    description: One row is one earned return.
-    components:
-    - identity_id: fact_earned_return_identity
-      dataset_columns:
-      - earned_return_id
-      description: Identifier of the earned return.
-  columns:
-  - name: earned_return_id
-    description: Identifier of the earned return.
-  - name: earned_return_rate
-    description: Earned return rate. The value is a price, cost, or rate, not a unit quantity.
-  - name: required_for_top_half_flag
-    description: Whether this row is marked required for top half.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: rate_case_id
-    description: Identifier of the related rate case.
-  entity_definitions:
-  - identity_id: fact_earned_return_identity
-    dataset_columns:
-    - earned_return_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_rate_case_identity
-    dataset_columns:
-    - rate_case_id
-    entity_universe: partial
 - node_id: sf:utility.price.fact_rate_base
   descriptor:
     qualified_name: utility.price.fact_rate_base
     display_name: Rate Base
-    description: Rate-base growth and the gap to earnings growth.
+    description: Rate base and returns by operating company and jurisdiction. Stores rate base in dollars and returns in percent.
+      Regulatory lag can be computed from authorized and earned return.
     synonyms: []
     tags:
     - fact
@@ -601,41 +143,62 @@ nodes:
       object: FACT_RATE_BASE
       format: table
   grain:
-    description: One row is one rate base.
+    description: One row is one combination of fiscal quarter, scenario, operating company, jurisdiction.
     components:
-    - identity_id: fact_rate_base_identity
+    - identity_id: dim_fiscal_quarter_identity
       dataset_columns:
-      - rate_base_id
-      description: Identifier of the rate base.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_operating_company_identity
+      dataset_columns:
+      - operating_company_id
+      description: Identifier of the operating company.
+    - identity_id: dim_jurisdiction_identity
+      dataset_columns:
+      - jurisdiction_id
+      description: Identifier of the jurisdiction.
   columns:
-  - name: rate_base_id
-    description: Identifier of the rate base.
-  - name: rate_base_growth_rate
-    description: Rate base growth rate. The value is a price, cost, or rate, not a unit quantity.
-  - name: gap_to_earnings_rate
-    description: Gap to earnings rate. The value is a price, cost, or rate, not a unit quantity.
   - name: fiscal_quarter_id
     description: Identifier of the related fiscal quarter.
-  - name: state_id
-    description: Identifier of the related state.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: operating_company_id
+    description: Identifier of the related operating company.
+  - name: jurisdiction_id
+    description: Identifier of the related jurisdiction.
+  - name: rate_base_amount
+    description: Rate base in dollars.
+  - name: authorized_return_percent
+    description: Authorized return in percent.
+  - name: earned_return_percent
+    description: Earned return in percent.
   entity_definitions:
-  - identity_id: fact_rate_base_identity
-    dataset_columns:
-    - rate_base_id
-    entity_universe: complete
   - identity_id: dim_fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: dim_state_identity
+  - identity_id: dim_scenario_identity
     dataset_columns:
-    - state_id
+    - scenario_id
     entity_universe: partial
-- node_id: sf:utility.price.fact_storm_cost
+  - identity_id: dim_operating_company_identity
+    dataset_columns:
+    - operating_company_id
+    entity_universe: partial
+  - identity_id: dim_jurisdiction_identity
+    dataset_columns:
+    - jurisdiction_id
+    entity_universe: partial
+- node_id: sf:utility.price.fact_rate_case_outcome
   descriptor:
-    qualified_name: utility.price.fact_storm_cost
-    display_name: Storm Cost
-    description: Storm cost still open and whether it is in the earnings midpoint.
+    qualified_name: utility.price.fact_rate_case_outcome
+    display_name: Rate Case Outcome
+    description: Outcome of a rate case by jurisdiction and operating company. Stores authorized revenue requirement in dollars
+      and rate change in percent.
     synonyms: []
     tags:
     - fact
@@ -647,46 +210,74 @@ nodes:
       account: utility.us-east-1
       database: UTILITY
       schema: PRICE
-      object: FACT_STORM_COST
+      object: FACT_RATE_CASE_OUTCOME
       format: table
   grain:
-    description: One row is one storm cost.
+    description: One row is one combination of fiscal quarter, scenario, rate case, jurisdiction, operating company.
     components:
-    - identity_id: fact_storm_cost_identity
+    - identity_id: dim_fiscal_quarter_identity
       dataset_columns:
-      - storm_cost_id
-      description: Identifier of the storm cost.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_rate_case_identity
+      dataset_columns:
+      - rate_case_id
+      description: Identifier of the rate case.
+    - identity_id: dim_jurisdiction_identity
+      dataset_columns:
+      - jurisdiction_id
+      description: Identifier of the jurisdiction.
+    - identity_id: dim_operating_company_identity
+      dataset_columns:
+      - operating_company_id
+      description: Identifier of the operating company.
   columns:
-  - name: storm_cost_id
-    description: Identifier of the storm cost.
-  - name: storm_amount
-    description: Storm amount. The value is a price, cost, or rate, not a unit quantity.
-  - name: still_open_flag
-    description: Whether this row is marked still open.
-  - name: in_midpoint_flag
-    description: Whether this row is marked in midpoint.
   - name: fiscal_quarter_id
     description: Identifier of the related fiscal quarter.
-  - name: cost_bucket_id
-    description: Identifier of the related cost bucket.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: rate_case_id
+    description: Identifier of the related rate case.
+  - name: jurisdiction_id
+    description: Identifier of the related jurisdiction.
+  - name: operating_company_id
+    description: Identifier of the related operating company.
+  - name: authorized_revenue_requirement_amount
+    description: Authorized revenue requirement in dollars.
+  - name: rate_change_percent
+    description: Rate change in percent.
+  - name: authorized_rate_base_amount
+    description: Authorized rate base in dollars.
   entity_definitions:
-  - identity_id: fact_storm_cost_identity
-    dataset_columns:
-    - storm_cost_id
-    entity_universe: complete
   - identity_id: dim_fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: dim_cost_bucket_identity
+  - identity_id: dim_scenario_identity
     dataset_columns:
-    - cost_bucket_id
+    - scenario_id
     entity_universe: partial
-- node_id: sf:utility.price.fact_affordability
+  - identity_id: dim_rate_case_identity
+    dataset_columns:
+    - rate_case_id
+    entity_universe: partial
+  - identity_id: dim_jurisdiction_identity
+    dataset_columns:
+    - jurisdiction_id
+    entity_universe: partial
+  - identity_id: dim_operating_company_identity
+    dataset_columns:
+    - operating_company_id
+    entity_universe: partial
+- node_id: sf:utility.price.fact_transmission_capital
   descriptor:
-    qualified_name: utility.price.fact_affordability
-    display_name: Affordability
-    description: Affordability pressure and the dollars aimed at customer bills.
+    qualified_name: utility.price.fact_transmission_capital
+    display_name: Transmission Capital
+    description: Transmission capital spending dollars by operating company and asset category.
     synonyms: []
     tags:
     - fact
@@ -698,44 +289,60 @@ nodes:
       account: utility.us-east-1
       database: UTILITY
       schema: PRICE
-      object: FACT_AFFORDABILITY
+      object: FACT_TRANSMISSION_CAPITAL
       format: table
   grain:
-    description: One row is one affordability.
+    description: One row is one combination of fiscal quarter, scenario, operating company, asset category.
     components:
-    - identity_id: fact_affordability_identity
+    - identity_id: dim_fiscal_quarter_identity
       dataset_columns:
-      - affordability_id
-      description: Identifier of the affordability.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_operating_company_identity
+      dataset_columns:
+      - operating_company_id
+      description: Identifier of the operating company.
+    - identity_id: dim_asset_category_identity
+      dataset_columns:
+      - asset_category_id
+      description: Identifier of the asset category.
   columns:
-  - name: affordability_id
-    description: Identifier of the affordability.
-  - name: pressure_flag
-    description: Whether this row is marked pressure.
-  - name: offset_amount
-    description: Offset amount. The value is a price, cost, or rate, not a unit quantity.
   - name: fiscal_quarter_id
     description: Identifier of the related fiscal quarter.
-  - name: state_id
-    description: Identifier of the related state.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: operating_company_id
+    description: Identifier of the related operating company.
+  - name: asset_category_id
+    description: Identifier of the related asset category.
+  - name: transmission_capital_amount
+    description: Transmission capital spending in dollars.
   entity_definitions:
-  - identity_id: fact_affordability_identity
-    dataset_columns:
-    - affordability_id
-    entity_universe: complete
   - identity_id: dim_fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: dim_state_identity
+  - identity_id: dim_scenario_identity
     dataset_columns:
-    - state_id
+    - scenario_id
     entity_universe: partial
-- node_id: sf:utility.price.fact_fuel_sharing
+  - identity_id: dim_operating_company_identity
+    dataset_columns:
+    - operating_company_id
+    entity_universe: partial
+  - identity_id: dim_asset_category_identity
+    dataset_columns:
+    - asset_category_id
+    entity_universe: partial
+- node_id: sf:utility.price.fact_distribution_capital
   descriptor:
-    qualified_name: utility.price.fact_fuel_sharing
-    display_name: Fuel-Cost Sharing
-    description: Fuel-cost sharing and whether legislation is material to it.
+    qualified_name: utility.price.fact_distribution_capital
+    display_name: Distribution Capital
+    description: Distribution capital spending dollars by operating company and asset category.
     synonyms: []
     tags:
     - fact
@@ -747,50 +354,60 @@ nodes:
       account: utility.us-east-1
       database: UTILITY
       schema: PRICE
-      object: FACT_FUEL_SHARING
+      object: FACT_DISTRIBUTION_CAPITAL
       format: table
   grain:
-    description: One row is one fuel-cost sharing.
+    description: One row is one combination of fiscal quarter, scenario, operating company, asset category.
     components:
-    - identity_id: fact_fuel_sharing_identity
+    - identity_id: dim_fiscal_quarter_identity
       dataset_columns:
-      - fuel_sharing_id
-      description: Identifier of the fuel-cost sharing.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_operating_company_identity
+      dataset_columns:
+      - operating_company_id
+      description: Identifier of the operating company.
+    - identity_id: dim_asset_category_identity
+      dataset_columns:
+      - asset_category_id
+      description: Identifier of the asset category.
   columns:
-  - name: fuel_sharing_id
-    description: Identifier of the fuel-cost sharing.
-  - name: sharing_amount
-    description: Sharing amount. The value is a price, cost, or rate, not a unit quantity.
-  - name: material_flag
-    description: Whether this row is marked material.
   - name: fiscal_quarter_id
     description: Identifier of the related fiscal quarter.
-  - name: state_id
-    description: Identifier of the related state.
-  - name: cost_bucket_id
-    description: Identifier of the related cost bucket.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: operating_company_id
+    description: Identifier of the related operating company.
+  - name: asset_category_id
+    description: Identifier of the related asset category.
+  - name: distribution_capital_amount
+    description: Distribution capital spending in dollars.
   entity_definitions:
-  - identity_id: fact_fuel_sharing_identity
-    dataset_columns:
-    - fuel_sharing_id
-    entity_universe: complete
   - identity_id: dim_fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: dim_state_identity
+  - identity_id: dim_scenario_identity
     dataset_columns:
-    - state_id
+    - scenario_id
     entity_universe: partial
-  - identity_id: dim_cost_bucket_identity
+  - identity_id: dim_operating_company_identity
     dataset_columns:
-    - cost_bucket_id
+    - operating_company_id
     entity_universe: partial
-- node_id: sf:utility.price.fact_overrun
+  - identity_id: dim_asset_category_identity
+    dataset_columns:
+    - asset_category_id
+    entity_universe: partial
+- node_id: sf:utility.price.fact_generation_capital
   descriptor:
-    qualified_name: utility.price.fact_overrun
-    display_name: Cost Overrun
-    description: Cost above budget and whether a hyperscaler would bear it.
+    qualified_name: utility.price.fact_generation_capital
+    display_name: Generation Capital
+    description: Generation capital spending dollars by station and technology.
     synonyms: []
     tags:
     - fact
@@ -802,380 +419,60 @@ nodes:
       account: utility.us-east-1
       database: UTILITY
       schema: PRICE
-      object: FACT_OVERRUN
+      object: FACT_GENERATION_CAPITAL
       format: table
   grain:
-    description: One row is one cost overrun.
+    description: One row is one combination of fiscal quarter, scenario, generating station, technology.
     components:
-    - identity_id: fact_overrun_identity
+    - identity_id: dim_fiscal_quarter_identity
       dataset_columns:
-      - overrun_id
-      description: Identifier of the cost overrun.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_generating_station_identity
+      dataset_columns:
+      - generating_station_id
+      description: Identifier of the generating station.
+    - identity_id: dim_technology_identity
+      dataset_columns:
+      - technology_id
+      description: Identifier of the technology.
   columns:
-  - name: overrun_id
-    description: Identifier of the cost overrun.
-  - name: overrun_amount
-    description: Overrun amount. The value is a price, cost, or rate, not a unit quantity.
-  - name: hyperscaler_bears_flag
-    description: Whether this row is marked hyperscaler bears.
-  - name: shared_structure_flag
-    description: Whether this row is marked shared structure.
   - name: fiscal_quarter_id
     description: Identifier of the related fiscal quarter.
-  - name: project_id
-    description: Identifier of the related project.
-  - name: counterparty_id
-    description: Identifier of the related counterparty.
-  entity_definitions:
-  - identity_id: fact_overrun_identity
-    dataset_columns:
-    - overrun_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_project_identity
-    dataset_columns:
-    - project_id
-    entity_universe: partial
-  - identity_id: dim_counterparty_identity
-    dataset_columns:
-    - counterparty_id
-    entity_universe: partial
-- node_id: sf:utility.price.fact_contract_price
-  descriptor:
-    qualified_name: utility.price.fact_contract_price
-    display_name: Contract Price
-    description: Price offered for contract-based generation. Megawatts are not stored.
-    synonyms: []
-    tags:
-    - fact
-    - price
-    - utility
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: utility.us-east-1
-      database: UTILITY
-      schema: PRICE
-      object: FACT_CONTRACT_PRICE
-      format: table
-  grain:
-    description: One row is one contract price.
-    components:
-    - identity_id: fact_contract_price_identity
-      dataset_columns:
-      - contract_price_id
-      description: Identifier of the contract price.
-  columns:
-  - name: contract_price_id
-    description: Identifier of the contract price.
-  - name: offered_price_amount
-    description: Offered price amount. The value is a price, cost, or rate, not a unit quantity.
-  - name: covers_return_flag
-    description: Whether this row is marked covers return.
-  - name: customers_willing_flag
-    description: Whether this row is marked customers willing.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: contract_id
-    description: Identifier of the related contract.
-  - name: counterparty_id
-    description: Identifier of the related counterparty.
-  entity_definitions:
-  - identity_id: fact_contract_price_identity
-    dataset_columns:
-    - contract_price_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_contract_identity
-    dataset_columns:
-    - contract_id
-    entity_universe: partial
-  - identity_id: dim_counterparty_identity
-    dataset_columns:
-    - counterparty_id
-    entity_universe: partial
-- node_id: sf:utility.price.fact_minimum_bill
-  descriptor:
-    qualified_name: utility.price.fact_minimum_bill
-    display_name: Minimum Bill
-    description: Minimum bill and whether it protects cost recovery.
-    synonyms: []
-    tags:
-    - fact
-    - price
-    - utility
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: utility.us-east-1
-      database: UTILITY
-      schema: PRICE
-      object: FACT_MINIMUM_BILL
-      format: table
-  grain:
-    description: One row is one minimum bill.
-    components:
-    - identity_id: fact_minimum_bill_identity
-      dataset_columns:
-      - minimum_bill_id
-      description: Identifier of the minimum bill.
-  columns:
-  - name: minimum_bill_id
-    description: Identifier of the minimum bill.
-  - name: minimum_bill_amount
-    description: Minimum bill amount. The value is a price, cost, or rate, not a unit quantity.
-  - name: protects_recovery_flag
-    description: Whether this row is marked protects recovery.
-  - name: reception_code
-    description: Reception code.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: tariff_id
-    description: Identifier of the related tariff.
-  entity_definitions:
-  - identity_id: fact_minimum_bill_identity
-    dataset_columns:
-    - minimum_bill_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_tariff_identity
-    dataset_columns:
-    - tariff_id
-    entity_universe: partial
-- node_id: sf:utility.price.fact_customer_rate
-  descriptor:
-    qualified_name: utility.price.fact_customer_rate
-    display_name: Customer Rate
-    description: Customer rate, political reception, and the chance of a larger credit.
-    synonyms: []
-    tags:
-    - fact
-    - price
-    - utility
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: utility.us-east-1
-      database: UTILITY
-      schema: PRICE
-      object: FACT_CUSTOMER_RATE
-      format: table
-  grain:
-    description: One row is one customer rate.
-    components:
-    - identity_id: fact_customer_rate_identity
-      dataset_columns:
-      - customer_rate_id
-      description: Identifier of the customer rate.
-  columns:
-  - name: customer_rate_id
-    description: Identifier of the customer rate.
-  - name: rate_amount
-    description: Rate amount. The value is a price, cost, or rate, not a unit quantity.
-  - name: political_reception_code
-    description: Political reception code.
-  - name: larger_credit_chance_flag
-    description: Whether this row is marked larger credit chance.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: state_id
-    description: Identifier of the related state.
-  - name: tariff_id
-    description: Identifier of the related tariff.
-  entity_definitions:
-  - identity_id: fact_customer_rate_identity
-    dataset_columns:
-    - customer_rate_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_state_identity
-    dataset_columns:
-    - state_id
-    entity_universe: partial
-  - identity_id: dim_tariff_identity
-    dataset_columns:
-    - tariff_id
-    entity_universe: partial
-- node_id: sf:utility.price.fact_customer_savings
-  descriptor:
-    qualified_name: utility.price.fact_customer_savings
-    display_name: Customer Savings
-    description: Customer savings from demand response. The megawatts sit on the demand slice.
-    synonyms: []
-    tags:
-    - fact
-    - price
-    - utility
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: utility.us-east-1
-      database: UTILITY
-      schema: PRICE
-      object: FACT_CUSTOMER_SAVINGS
-      format: table
-  grain:
-    description: One row is one customer savings.
-    components:
-    - identity_id: fact_customer_savings_identity
-      dataset_columns:
-      - customer_savings_id
-      description: Identifier of the customer savings.
-  columns:
-  - name: customer_savings_id
-    description: Identifier of the customer savings.
-  - name: savings_amount
-    description: Savings amount. The value is a price, cost, or rate, not a unit quantity.
-  - name: quantified_flag
-    description: Whether this row is marked quantified.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: state_id
-    description: Identifier of the related state.
-  - name: customer_id
-    description: Identifier of the related customer.
-  entity_definitions:
-  - identity_id: fact_customer_savings_identity
-    dataset_columns:
-    - customer_savings_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_state_identity
-    dataset_columns:
-    - state_id
-    entity_universe: partial
-  - identity_id: dim_customer_identity
-    dataset_columns:
-    - customer_id
-    entity_universe: partial
-- node_id: sf:utility.price.fact_funding_mix
-  descriptor:
-    qualified_name: utility.price.fact_funding_mix
-    display_name: Funding Mix
-    description: Equity share and the balance-sheet conditions for the lower end.
-    synonyms: []
-    tags:
-    - fact
-    - price
-    - utility
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: utility.us-east-1
-      database: UTILITY
-      schema: PRICE
-      object: FACT_FUNDING_MIX
-      format: table
-  grain:
-    description: One row is one funding mix.
-    components:
-    - identity_id: fact_funding_mix_identity
-      dataset_columns:
-      - funding_mix_id
-      description: Identifier of the funding mix.
-  columns:
-  - name: funding_mix_id
-    description: Identifier of the funding mix.
-  - name: equity_share_rate
-    description: Equity share rate. The value is a price, cost, or rate, not a unit quantity.
-  - name: lower_end_allowed_flag
-    description: Whether this row is marked lower end allowed.
-  - name: balance_sheet_ok_flag
-    description: Whether this row is marked balance sheet ok.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: capital_program_id
-    description: Identifier of the related capital program.
-  entity_definitions:
-  - identity_id: fact_funding_mix_identity
-    dataset_columns:
-    - funding_mix_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_capital_program_identity
-    dataset_columns:
-    - capital_program_id
-    entity_universe: partial
-- node_id: sf:utility.price.fact_cost_inflation
-  descriptor:
-    qualified_name: utility.price.fact_cost_inflation
-    display_name: Construction Cost
-    description: Construction-cost inflation assumed for future plants.
-    synonyms: []
-    tags:
-    - fact
-    - price
-    - utility
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: utility.us-east-1
-      database: UTILITY
-      schema: PRICE
-      object: FACT_COST_INFLATION
-      format: table
-  grain:
-    description: One row is one construction cost.
-    components:
-    - identity_id: fact_cost_inflation_identity
-      dataset_columns:
-      - cost_inflation_id
-      description: Identifier of the construction cost.
-  columns:
-  - name: cost_inflation_id
-    description: Identifier of the construction cost.
-  - name: inflation_amount
-    description: Inflation amount. The value is a price, cost, or rate, not a unit quantity.
-  - name: cost_per_kw_amount
-    description: Cost per kw amount. The value is a price, cost, or rate, not a unit quantity.
-  - name: assumed_flag
-    description: Whether this row is marked assumed.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: generating_station_id
+    description: Identifier of the related generating station.
   - name: technology_id
     description: Identifier of the related technology.
-  - name: cost_bucket_id
-    description: Identifier of the related cost bucket.
+  - name: generation_capital_amount
+    description: Generation capital spending in dollars.
   entity_definitions:
-  - identity_id: fact_cost_inflation_identity
-    dataset_columns:
-    - cost_inflation_id
-    entity_universe: complete
   - identity_id: dim_fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_generating_station_identity
+    dataset_columns:
+    - generating_station_id
     entity_universe: partial
   - identity_id: dim_technology_identity
     dataset_columns:
     - technology_id
     entity_universe: partial
-  - identity_id: dim_cost_bucket_identity
-    dataset_columns:
-    - cost_bucket_id
-    entity_universe: partial
-- node_id: sf:utility.price.fact_regulated_return
+- node_id: sf:utility.price.fact_gas_distribution_capital
   descriptor:
-    qualified_name: utility.price.fact_regulated_return
-    display_name: Regulated Return
-    description: Regulated return and the gap to wholesale returns on added capital.
+    qualified_name: utility.price.fact_gas_distribution_capital
+    display_name: Gas Distribution Capital
+    description: Gas distribution capital spending dollars by operating company.
     synonyms: []
     tags:
     - fact
@@ -1187,44 +484,60 @@ nodes:
       account: utility.us-east-1
       database: UTILITY
       schema: PRICE
-      object: FACT_REGULATED_RETURN
+      object: FACT_GAS_DISTRIBUTION_CAPITAL
       format: table
   grain:
-    description: One row is one regulated return.
+    description: One row is one combination of fiscal quarter, scenario, operating company, asset category.
     components:
-    - identity_id: fact_regulated_return_identity
+    - identity_id: dim_fiscal_quarter_identity
       dataset_columns:
-      - regulated_return_id
-      description: Identifier of the regulated return.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_operating_company_identity
+      dataset_columns:
+      - operating_company_id
+      description: Identifier of the operating company.
+    - identity_id: dim_asset_category_identity
+      dataset_columns:
+      - asset_category_id
+      description: Identifier of the asset category.
   columns:
-  - name: regulated_return_id
-    description: Identifier of the regulated return.
-  - name: regulated_return_rate
-    description: Regulated return rate. The value is a price, cost, or rate, not a unit quantity.
-  - name: wholesale_gap_rate
-    description: Wholesale gap rate. The value is a price, cost, or rate, not a unit quantity.
   - name: fiscal_quarter_id
     description: Identifier of the related fiscal quarter.
-  - name: capital_program_id
-    description: Identifier of the related capital program.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: operating_company_id
+    description: Identifier of the related operating company.
+  - name: asset_category_id
+    description: Identifier of the related asset category.
+  - name: gas_distribution_capital_amount
+    description: Gas distribution capital spending in dollars.
   entity_definitions:
-  - identity_id: fact_regulated_return_identity
-    dataset_columns:
-    - regulated_return_id
-    entity_universe: complete
   - identity_id: dim_fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: dim_capital_program_identity
+  - identity_id: dim_scenario_identity
     dataset_columns:
-    - capital_program_id
+    - scenario_id
     entity_universe: partial
-- node_id: sf:utility.price.fact_tariff_terms
+  - identity_id: dim_operating_company_identity
+    dataset_columns:
+    - operating_company_id
+    entity_universe: partial
+  - identity_id: dim_asset_category_identity
+    dataset_columns:
+    - asset_category_id
+    entity_universe: partial
+- node_id: sf:utility.price.fact_total_capital_spending
   descriptor:
-    qualified_name: utility.price.fact_tariff_terms
-    display_name: Tariff Terms
-    description: Large-load tariff terms, credit quality, and whether a tariff reaches back.
+    qualified_name: utility.price.fact_total_capital_spending
+    display_name: Total Capital Spending
+    description: Total capital spending dollars by operating company and asset category.
     synonyms: []
     tags:
     - fact
@@ -1236,52 +549,60 @@ nodes:
       account: utility.us-east-1
       database: UTILITY
       schema: PRICE
-      object: FACT_TARIFF_TERMS
+      object: FACT_TOTAL_CAPITAL_SPENDING
       format: table
   grain:
-    description: One row is one tariff terms.
+    description: One row is one combination of fiscal quarter, scenario, operating company, asset category.
     components:
-    - identity_id: fact_tariff_terms_identity
+    - identity_id: dim_fiscal_quarter_identity
       dataset_columns:
-      - tariff_terms_id
-      description: Identifier of the tariff terms.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_operating_company_identity
+      dataset_columns:
+      - operating_company_id
+      description: Identifier of the operating company.
+    - identity_id: dim_asset_category_identity
+      dataset_columns:
+      - asset_category_id
+      description: Identifier of the asset category.
   columns:
-  - name: tariff_terms_id
-    description: Identifier of the tariff terms.
-  - name: credit_terms_code
-    description: Credit terms code.
-  - name: reaches_back_flag
-    description: Whether this row is marked reaches back.
-  - name: docket_status_code
-    description: Docket status code.
   - name: fiscal_quarter_id
     description: Identifier of the related fiscal quarter.
-  - name: tariff_id
-    description: Identifier of the related tariff.
-  - name: customer_id
-    description: Identifier of the related customer.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: operating_company_id
+    description: Identifier of the related operating company.
+  - name: asset_category_id
+    description: Identifier of the related asset category.
+  - name: capital_spending_amount
+    description: Capital spending in dollars.
   entity_definitions:
-  - identity_id: fact_tariff_terms_identity
-    dataset_columns:
-    - tariff_terms_id
-    entity_universe: complete
   - identity_id: dim_fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: dim_tariff_identity
+  - identity_id: dim_scenario_identity
     dataset_columns:
-    - tariff_id
+    - scenario_id
     entity_universe: partial
-  - identity_id: dim_customer_identity
+  - identity_id: dim_operating_company_identity
     dataset_columns:
-    - customer_id
+    - operating_company_id
     entity_universe: partial
-- node_id: sf:utility.price.fact_stay_out
+  - identity_id: dim_asset_category_identity
+    dataset_columns:
+    - asset_category_id
+    entity_universe: partial
+- node_id: sf:utility.price.fact_fuel_purchased_power_expense
   descriptor:
-    qualified_name: utility.price.fact_stay_out
-    display_name: Regulatory Stay-Out
-    description: Whether load visibility is ahead of the plan that supported a stay-out.
+    qualified_name: utility.price.fact_fuel_purchased_power_expense
+    display_name: Fuel and Purchased Power Expense
+    description: Fuel and purchased-power expense dollars by operating company and cost category.
     synonyms: []
     tags:
     - fact
@@ -1293,44 +614,72 @@ nodes:
       account: utility.us-east-1
       database: UTILITY
       schema: PRICE
-      object: FACT_STAY_OUT
+      object: FACT_FUEL_PURCHASED_POWER_EXPENSE
       format: table
   grain:
-    description: One row is one regulatory stay-out.
+    description: One row is one combination of fiscal quarter, scenario, operating company, cost category, fuel type.
     components:
-    - identity_id: fact_stay_out_identity
+    - identity_id: dim_fiscal_quarter_identity
       dataset_columns:
-      - stay_out_id
-      description: Identifier of the regulatory stay-out.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_operating_company_identity
+      dataset_columns:
+      - operating_company_id
+      description: Identifier of the operating company.
+    - identity_id: dim_cost_category_identity
+      dataset_columns:
+      - cost_category_id
+      description: Identifier of the cost category.
+    - identity_id: dim_fuel_type_identity
+      dataset_columns:
+      - fuel_type_id
+      description: Identifier of the fuel type.
   columns:
-  - name: stay_out_id
-    description: Identifier of the regulatory stay-out.
-  - name: ahead_of_stay_out_flag
-    description: Whether this row is marked ahead of stay out.
-  - name: can_extend_flag
-    description: Whether this row is marked can extend.
   - name: fiscal_quarter_id
     description: Identifier of the related fiscal quarter.
-  - name: state_id
-    description: Identifier of the related state.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: operating_company_id
+    description: Identifier of the related operating company.
+  - name: cost_category_id
+    description: Identifier of the related cost category.
+  - name: fuel_type_id
+    description: Identifier of the related fuel type.
+  - name: fuel_expense_amount
+    description: Fuel expense in dollars.
+  - name: purchased_power_expense_amount
+    description: Purchased power expense in dollars.
   entity_definitions:
-  - identity_id: fact_stay_out_identity
-    dataset_columns:
-    - stay_out_id
-    entity_universe: complete
   - identity_id: dim_fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: dim_state_identity
+  - identity_id: dim_scenario_identity
     dataset_columns:
-    - state_id
+    - scenario_id
     entity_universe: partial
-- node_id: sf:utility.price.fact_rebase
+  - identity_id: dim_operating_company_identity
+    dataset_columns:
+    - operating_company_id
+    entity_universe: partial
+  - identity_id: dim_cost_category_identity
+    dataset_columns:
+    - cost_category_id
+    entity_universe: partial
+  - identity_id: dim_fuel_type_identity
+    dataset_columns:
+    - fuel_type_id
+    entity_universe: partial
+- node_id: sf:utility.price.fact_operating_expense
   descriptor:
-    qualified_name: utility.price.fact_rebase
-    display_name: Earnings Rebase
-    description: Rebase timing and whether it aims at the top of the growth range.
+    qualified_name: utility.price.fact_operating_expense
+    display_name: Operating Expense
+    description: Operating expense dollars by operating company and cost category.
     synonyms: []
     tags:
     - fact
@@ -1342,46 +691,60 @@ nodes:
       account: utility.us-east-1
       database: UTILITY
       schema: PRICE
-      object: FACT_REBASE
+      object: FACT_OPERATING_EXPENSE
       format: table
   grain:
-    description: One row is one earnings rebase.
+    description: One row is one combination of fiscal quarter, scenario, operating company, cost category.
     components:
-    - identity_id: fact_rebase_identity
+    - identity_id: dim_fiscal_quarter_identity
       dataset_columns:
-      - rebase_id
-      description: Identifier of the earnings rebase.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_operating_company_identity
+      dataset_columns:
+      - operating_company_id
+      description: Identifier of the operating company.
+    - identity_id: dim_cost_category_identity
+      dataset_columns:
+      - cost_category_id
+      description: Identifier of the cost category.
   columns:
-  - name: rebase_id
-    description: Identifier of the earnings rebase.
-  - name: rebase_year_code
-    description: Rebase year code.
-  - name: aimed_at_top_flag
-    description: Whether this row is marked aimed at top.
-  - name: more_definite_flag
-    description: Whether this row is marked more definite.
   - name: fiscal_quarter_id
     description: Identifier of the related fiscal quarter.
-  - name: capital_program_id
-    description: Identifier of the related capital program.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: operating_company_id
+    description: Identifier of the related operating company.
+  - name: cost_category_id
+    description: Identifier of the related cost category.
+  - name: operating_expense_amount
+    description: Operating expense in dollars.
   entity_definitions:
-  - identity_id: fact_rebase_identity
-    dataset_columns:
-    - rebase_id
-    entity_universe: complete
   - identity_id: dim_fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: dim_capital_program_identity
+  - identity_id: dim_scenario_identity
     dataset_columns:
-    - capital_program_id
+    - scenario_id
     entity_universe: partial
-- node_id: sf:utility.price.fact_legislation
+  - identity_id: dim_operating_company_identity
+    dataset_columns:
+    - operating_company_id
+    entity_universe: partial
+  - identity_id: dim_cost_category_identity
+    dataset_columns:
+    - cost_category_id
+    entity_universe: partial
+- node_id: sf:utility.price.fact_retail_revenue
   descriptor:
-    qualified_name: utility.price.fact_legislation
-    display_name: Legislation
-    description: Whether a pending bill is material to load incentives or fuel recovery.
+    qualified_name: utility.price.fact_retail_revenue
+    display_name: Retail Revenue
+    description: Retail electric revenue dollars by rate class and operating company. Stores no megawatt-hours.
     synonyms: []
     tags:
     - fact
@@ -1393,44 +756,70 @@ nodes:
       account: utility.us-east-1
       database: UTILITY
       schema: PRICE
-      object: FACT_LEGISLATION
+      object: FACT_RETAIL_REVENUE
       format: table
   grain:
-    description: One row is one legislation.
+    description: One row is one combination of fiscal quarter, scenario, rate class, operating company, revenue type.
     components:
-    - identity_id: fact_legislation_identity
+    - identity_id: dim_fiscal_quarter_identity
       dataset_columns:
-      - legislation_id
-      description: Identifier of the legislation.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_rate_class_identity
+      dataset_columns:
+      - rate_class_id
+      description: Identifier of the rate class.
+    - identity_id: dim_operating_company_identity
+      dataset_columns:
+      - operating_company_id
+      description: Identifier of the operating company.
+    - identity_id: dim_revenue_type_identity
+      dataset_columns:
+      - revenue_type_id
+      description: Identifier of the revenue type.
   columns:
-  - name: legislation_id
-    description: Identifier of the legislation.
-  - name: material_flag
-    description: Whether this row is marked material.
-  - name: affects_recovery_flag
-    description: Whether this row is marked affects recovery.
   - name: fiscal_quarter_id
     description: Identifier of the related fiscal quarter.
-  - name: state_id
-    description: Identifier of the related state.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: rate_class_id
+    description: Identifier of the related rate class.
+  - name: operating_company_id
+    description: Identifier of the related operating company.
+  - name: revenue_type_id
+    description: Identifier of the related revenue type.
+  - name: retail_revenue_amount
+    description: Retail revenue in dollars.
   entity_definitions:
-  - identity_id: fact_legislation_identity
-    dataset_columns:
-    - legislation_id
-    entity_universe: complete
   - identity_id: dim_fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: dim_state_identity
+  - identity_id: dim_scenario_identity
     dataset_columns:
-    - state_id
+    - scenario_id
     entity_universe: partial
-- node_id: sf:utility.price.fact_residential_protection
+  - identity_id: dim_rate_class_identity
+    dataset_columns:
+    - rate_class_id
+    entity_universe: partial
+  - identity_id: dim_operating_company_identity
+    dataset_columns:
+    - operating_company_id
+    entity_universe: partial
+  - identity_id: dim_revenue_type_identity
+    dataset_columns:
+    - revenue_type_id
+    entity_universe: partial
+- node_id: sf:utility.price.fact_wholesale_revenue
   descriptor:
-    qualified_name: utility.price.fact_residential_protection
-    display_name: Residential Protection
-    description: Whether large-load terms keep residential customers whole.
+    qualified_name: utility.price.fact_wholesale_revenue
+    display_name: Wholesale Revenue
+    description: Wholesale revenue dollars by operating company. Stores no megawatt-hours.
     synonyms: []
     tags:
     - fact
@@ -1442,50 +831,70 @@ nodes:
       account: utility.us-east-1
       database: UTILITY
       schema: PRICE
-      object: FACT_RESIDENTIAL_PROTECTION
+      object: FACT_WHOLESALE_REVENUE
       format: table
   grain:
-    description: One row is one residential protection.
+    description: One row is one combination of fiscal quarter, scenario, operating company, revenue type, jurisdiction.
     components:
-    - identity_id: fact_residential_protection_identity
+    - identity_id: dim_fiscal_quarter_identity
       dataset_columns:
-      - residential_protection_id
-      description: Identifier of the residential protection.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_operating_company_identity
+      dataset_columns:
+      - operating_company_id
+      description: Identifier of the operating company.
+    - identity_id: dim_revenue_type_identity
+      dataset_columns:
+      - revenue_type_id
+      description: Identifier of the revenue type.
+    - identity_id: dim_jurisdiction_identity
+      dataset_columns:
+      - jurisdiction_id
+      description: Identifier of the jurisdiction.
   columns:
-  - name: residential_protection_id
-    description: Identifier of the residential protection.
-  - name: kept_whole_flag
-    description: Whether this row is marked kept whole.
-  - name: bill_impact_amount
-    description: Bill impact amount. The value is a price, cost, or rate, not a unit quantity.
   - name: fiscal_quarter_id
     description: Identifier of the related fiscal quarter.
-  - name: state_id
-    description: Identifier of the related state.
-  - name: customer_segment_id
-    description: Identifier of the related customer segment.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: operating_company_id
+    description: Identifier of the related operating company.
+  - name: revenue_type_id
+    description: Identifier of the related revenue type.
+  - name: jurisdiction_id
+    description: Identifier of the related jurisdiction.
+  - name: wholesale_revenue_amount
+    description: Wholesale revenue in dollars.
   entity_definitions:
-  - identity_id: fact_residential_protection_identity
-    dataset_columns:
-    - residential_protection_id
-    entity_universe: complete
   - identity_id: dim_fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: dim_state_identity
+  - identity_id: dim_scenario_identity
     dataset_columns:
-    - state_id
+    - scenario_id
     entity_universe: partial
-  - identity_id: dim_customer_segment_identity
+  - identity_id: dim_operating_company_identity
     dataset_columns:
-    - customer_segment_id
+    - operating_company_id
     entity_universe: partial
-- node_id: sf:utility.price.fact_hyperscaler_contract
+  - identity_id: dim_revenue_type_identity
+    dataset_columns:
+    - revenue_type_id
+    entity_universe: partial
+  - identity_id: dim_jurisdiction_identity
+    dataset_columns:
+    - jurisdiction_id
+    entity_universe: partial
+- node_id: sf:utility.price.fact_gas_distribution_revenue
   descriptor:
-    qualified_name: utility.price.fact_hyperscaler_contract
-    display_name: Hyperscaler Contract
-    description: Whether a hyperscaler contract is a long-term energy and capacity contract.
+    qualified_name: utility.price.fact_gas_distribution_revenue
+    display_name: Gas Distribution Revenue
+    description: Gas distribution revenue dollars by rate class and operating company. Stores no therms.
     synonyms: []
     tags:
     - fact
@@ -1497,52 +906,70 @@ nodes:
       account: utility.us-east-1
       database: UTILITY
       schema: PRICE
-      object: FACT_HYPERSCALER_CONTRACT
+      object: FACT_GAS_DISTRIBUTION_REVENUE
       format: table
   grain:
-    description: One row is one hyperscaler contract.
+    description: One row is one combination of fiscal quarter, scenario, rate class, operating company, revenue type.
     components:
-    - identity_id: fact_hyperscaler_contract_identity
+    - identity_id: dim_fiscal_quarter_identity
       dataset_columns:
-      - hyperscaler_contract_id
-      description: Identifier of the hyperscaler contract.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_rate_class_identity
+      dataset_columns:
+      - rate_class_id
+      description: Identifier of the rate class.
+    - identity_id: dim_operating_company_identity
+      dataset_columns:
+      - operating_company_id
+      description: Identifier of the operating company.
+    - identity_id: dim_revenue_type_identity
+      dataset_columns:
+      - revenue_type_id
+      description: Identifier of the revenue type.
   columns:
-  - name: hyperscaler_contract_id
-    description: Identifier of the hyperscaler contract.
-  - name: long_term_flag
-    description: Whether this row is marked long term.
-  - name: standard_toll_flag
-    description: Whether this row is marked standard toll.
-  - name: bears_overrun_flag
-    description: Whether this row is marked bears overrun.
   - name: fiscal_quarter_id
     description: Identifier of the related fiscal quarter.
-  - name: contract_id
-    description: Identifier of the related contract.
-  - name: counterparty_id
-    description: Identifier of the related counterparty.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: rate_class_id
+    description: Identifier of the related rate class.
+  - name: operating_company_id
+    description: Identifier of the related operating company.
+  - name: revenue_type_id
+    description: Identifier of the related revenue type.
+  - name: gas_distribution_revenue_amount
+    description: Gas distribution revenue in dollars.
   entity_definitions:
-  - identity_id: fact_hyperscaler_contract_identity
-    dataset_columns:
-    - hyperscaler_contract_id
-    entity_universe: complete
   - identity_id: dim_fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: dim_contract_identity
+  - identity_id: dim_scenario_identity
     dataset_columns:
-    - contract_id
+    - scenario_id
     entity_universe: partial
-  - identity_id: dim_counterparty_identity
+  - identity_id: dim_rate_class_identity
     dataset_columns:
-    - counterparty_id
+    - rate_class_id
     entity_universe: partial
-- node_id: sf:utility.price.fact_wholesale_return
+  - identity_id: dim_operating_company_identity
+    dataset_columns:
+    - operating_company_id
+    entity_universe: partial
+  - identity_id: dim_revenue_type_identity
+    dataset_columns:
+    - revenue_type_id
+    entity_universe: partial
+- node_id: sf:utility.price.fact_retail_rate
   descriptor:
-    qualified_name: utility.price.fact_wholesale_return
-    display_name: Wholesale Return
-    description: Wholesale return on added capital.
+    qualified_name: utility.price.fact_retail_rate
+    display_name: Retail Rate
+    description: Retail rate by rate class and operating company. Stores dollars per megawatt-hour. Stores no megawatt-hours.
     synonyms: []
     tags:
     - fact
@@ -1554,40 +981,490 @@ nodes:
       account: utility.us-east-1
       database: UTILITY
       schema: PRICE
-      object: FACT_WHOLESALE_RETURN
+      object: FACT_RETAIL_RATE
       format: table
   grain:
-    description: One row is one wholesale return.
+    description: One row is one combination of fiscal quarter, scenario, rate class, operating company, jurisdiction.
     components:
-    - identity_id: fact_wholesale_return_identity
+    - identity_id: dim_fiscal_quarter_identity
       dataset_columns:
-      - wholesale_return_id
-      description: Identifier of the wholesale return.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_rate_class_identity
+      dataset_columns:
+      - rate_class_id
+      description: Identifier of the rate class.
+    - identity_id: dim_operating_company_identity
+      dataset_columns:
+      - operating_company_id
+      description: Identifier of the operating company.
+    - identity_id: dim_jurisdiction_identity
+      dataset_columns:
+      - jurisdiction_id
+      description: Identifier of the jurisdiction.
   columns:
-  - name: wholesale_return_id
-    description: Identifier of the wholesale return.
-  - name: wholesale_return_rate
-    description: Wholesale return rate. The value is a price, cost, or rate, not a unit quantity.
   - name: fiscal_quarter_id
     description: Identifier of the related fiscal quarter.
-  - name: capital_program_id
-    description: Identifier of the related capital program.
-  - name: plant_id
-    description: Identifier of the related plant.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: rate_class_id
+    description: Identifier of the related rate class.
+  - name: operating_company_id
+    description: Identifier of the related operating company.
+  - name: jurisdiction_id
+    description: Identifier of the related jurisdiction.
+  - name: retail_rate_per_megawatt_hour
+    description: Retail rate in dollars per megawatt-hour.
   entity_definitions:
-  - identity_id: fact_wholesale_return_identity
-    dataset_columns:
-    - wholesale_return_id
-    entity_universe: complete
   - identity_id: dim_fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: dim_capital_program_identity
+  - identity_id: dim_scenario_identity
     dataset_columns:
-    - capital_program_id
+    - scenario_id
     entity_universe: partial
-  - identity_id: dim_plant_identity
+  - identity_id: dim_rate_class_identity
     dataset_columns:
-    - plant_id
+    - rate_class_id
+    entity_universe: partial
+  - identity_id: dim_operating_company_identity
+    dataset_columns:
+    - operating_company_id
+    entity_universe: partial
+  - identity_id: dim_jurisdiction_identity
+    dataset_columns:
+    - jurisdiction_id
+    entity_universe: partial
+- node_id: sf:utility.price.fact_segment_earnings
+  descriptor:
+    qualified_name: utility.price.fact_segment_earnings
+    display_name: Segment Earnings
+    description: Earnings dollars by operating company and jurisdiction.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - utility
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: utility.us-east-1
+      database: UTILITY
+      schema: PRICE
+      object: FACT_SEGMENT_EARNINGS
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, operating company, jurisdiction.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_operating_company_identity
+      dataset_columns:
+      - operating_company_id
+      description: Identifier of the operating company.
+    - identity_id: dim_jurisdiction_identity
+      dataset_columns:
+      - jurisdiction_id
+      description: Identifier of the jurisdiction.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: operating_company_id
+    description: Identifier of the related operating company.
+  - name: jurisdiction_id
+    description: Identifier of the related jurisdiction.
+  - name: earnings_amount
+    description: Earnings in dollars.
+  - name: revenue_amount
+    description: Revenue in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_operating_company_identity
+    dataset_columns:
+    - operating_company_id
+    entity_universe: partial
+  - identity_id: dim_jurisdiction_identity
+    dataset_columns:
+    - jurisdiction_id
+    entity_universe: partial
+- node_id: sf:utility.price.fact_enterprise_earnings
+  descriptor:
+    qualified_name: utility.price.fact_enterprise_earnings
+    display_name: Enterprise Earnings
+    description: Enterprise earnings, revenue, and cash flow dollars for the whole company.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - utility
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: utility.us-east-1
+      database: UTILITY
+      schema: PRICE
+      object: FACT_ENTERPRISE_EARNINGS
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: enterprise_earnings_amount
+    description: Enterprise earnings in dollars.
+  - name: enterprise_revenue_amount
+    description: Enterprise revenue in dollars.
+  - name: operating_cash_flow_amount
+    description: Operating cash flow in dollars.
+  - name: free_cash_flow_amount
+    description: Free cash flow in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+- node_id: sf:utility.price.fact_shareholder_distributions
+  descriptor:
+    qualified_name: utility.price.fact_shareholder_distributions
+    display_name: Shareholder Distributions
+    description: Dividends and buybacks for the whole company. Stores dollars and dollars per share.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - utility
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: utility.us-east-1
+      database: UTILITY
+      schema: PRICE
+      object: FACT_SHAREHOLDER_DISTRIBUTIONS
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: dividend_amount
+    description: Dividends in dollars.
+  - name: buyback_amount
+    description: Share repurchases in dollars.
+  - name: dividend_per_share_amount
+    description: Dividend in dollars per share.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+- node_id: sf:utility.price.fact_reliability_capital
+  descriptor:
+    qualified_name: utility.price.fact_reliability_capital
+    display_name: Reliability Capital
+    description: Reliability capital spending dollars by operating company and asset category.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - utility
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: utility.us-east-1
+      database: UTILITY
+      schema: PRICE
+      object: FACT_RELIABILITY_CAPITAL
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, operating company, asset category.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_operating_company_identity
+      dataset_columns:
+      - operating_company_id
+      description: Identifier of the operating company.
+    - identity_id: dim_asset_category_identity
+      dataset_columns:
+      - asset_category_id
+      description: Identifier of the asset category.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: operating_company_id
+    description: Identifier of the related operating company.
+  - name: asset_category_id
+    description: Identifier of the related asset category.
+  - name: reliability_capital_amount
+    description: Reliability capital spending in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_operating_company_identity
+    dataset_columns:
+    - operating_company_id
+    entity_universe: partial
+  - identity_id: dim_asset_category_identity
+    dataset_columns:
+    - asset_category_id
+    entity_universe: partial
+- node_id: sf:utility.price.fact_purchased_power_rate
+  descriptor:
+    qualified_name: utility.price.fact_purchased_power_rate
+    display_name: Purchased Power Rate
+    description: Purchased power rate by operating company. Stores dollars per megawatt-hour. Stores no megawatt-hours.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - utility
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: utility.us-east-1
+      database: UTILITY
+      schema: PRICE
+      object: FACT_PURCHASED_POWER_RATE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, operating company, jurisdiction.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_operating_company_identity
+      dataset_columns:
+      - operating_company_id
+      description: Identifier of the operating company.
+    - identity_id: dim_jurisdiction_identity
+      dataset_columns:
+      - jurisdiction_id
+      description: Identifier of the jurisdiction.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: operating_company_id
+    description: Identifier of the related operating company.
+  - name: jurisdiction_id
+    description: Identifier of the related jurisdiction.
+  - name: purchased_power_rate_amount
+    description: Purchased power rate in dollars per megawatt-hour.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_operating_company_identity
+    dataset_columns:
+    - operating_company_id
+    entity_universe: partial
+  - identity_id: dim_jurisdiction_identity
+    dataset_columns:
+    - jurisdiction_id
+    entity_universe: partial
+- node_id: sf:utility.price.fact_gas_supply_expense
+  descriptor:
+    qualified_name: utility.price.fact_gas_supply_expense
+    display_name: Gas Supply Expense
+    description: Gas supply expense for the local distribution business by operating company. Stores dollars. This is distribution
+      gas supply, not generation fuel.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - utility
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: utility.us-east-1
+      database: UTILITY
+      schema: PRICE
+      object: FACT_GAS_SUPPLY_EXPENSE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, operating company, cost category.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_operating_company_identity
+      dataset_columns:
+      - operating_company_id
+      description: Identifier of the operating company.
+    - identity_id: dim_cost_category_identity
+      dataset_columns:
+      - cost_category_id
+      description: Identifier of the cost category.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: operating_company_id
+    description: Identifier of the related operating company.
+  - name: cost_category_id
+    description: Identifier of the related cost category.
+  - name: gas_supply_expense_amount
+    description: Gas supply expense in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_operating_company_identity
+    dataset_columns:
+    - operating_company_id
+    entity_universe: partial
+  - identity_id: dim_cost_category_identity
+    dataset_columns:
+    - cost_category_id
+    entity_universe: partial
+- node_id: sf:utility.price.fact_transmission_revenue
+  descriptor:
+    qualified_name: utility.price.fact_transmission_revenue
+    display_name: Transmission Revenue
+    description: Transmission revenue dollars by operating company. Stores no megawatts.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - utility
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: utility.us-east-1
+      database: UTILITY
+      schema: PRICE
+      object: FACT_TRANSMISSION_REVENUE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, operating company, revenue type.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_operating_company_identity
+      dataset_columns:
+      - operating_company_id
+      description: Identifier of the operating company.
+    - identity_id: dim_revenue_type_identity
+      dataset_columns:
+      - revenue_type_id
+      description: Identifier of the revenue type.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: operating_company_id
+    description: Identifier of the related operating company.
+  - name: revenue_type_id
+    description: Identifier of the related revenue type.
+  - name: transmission_revenue_amount
+    description: Transmission revenue in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_operating_company_identity
+    dataset_columns:
+    - operating_company_id
+    entity_universe: partial
+  - identity_id: dim_revenue_type_identity
+    dataset_columns:
+    - revenue_type_id
     entity_universe: partial

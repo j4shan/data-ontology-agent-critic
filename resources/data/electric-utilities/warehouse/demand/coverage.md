@@ -1,299 +1,352 @@
-# Utility Inc demand, customer, and geography
+# Utility Inc demand slice
 
-This slice is part of the Utility Inc warehouse. Demand quantity, supply or capacity, and price or margin stay on separate facts. A quantity row does not store a price. A price row does not store the unit quantity.
-
-Identifiers owned by another slice are partial here. Their complete populations are not re-authored in this slice.
-
-| Identity | Column on this slice | Complete population |
-| --- | --- | --- |
-| `dim_project_identity` | `project_id` | `utility.generation.dim_project` `project_id` |
-| `dim_site_identity` | `site_id` | `utility.generation.dim_site` `site_id` |
+This slice is part of the Utility Inc warehouse. Demand quantity, supply or capacity, and price or margin stay on separate facts. A quantity fact does not store a price. A price fact does not store the unit quantity; the denominator the price needs is a quantity or supply measure on its own fact, joined by the shared grain keys of fiscal quarter, scenario, and the business keys.
 
 ## Numbered questions
 
 ### Q2 2026 (2) — Duke Energy
 
-For Duke Energy, given affordability pressure in Indiana, would a generation-company structure be used to serve large load?
+For Duke Energy, Given affordability pressure in Indiana, would a generation-company structure be used to serve large load?
 
-- `utility.demand.fact_state_load`: `load_quantity`, `softer_flag`, `still_finalizing_flag`, `fiscal_quarter_id`, `state_id`, `load_class_id`
-- `utility.demand.fact_large_load`: `load_quantity`, `top_of_range_flag`, `incremental_flag`, `fiscal_quarter_id`, `state_id`, `customer_id`
-- `utility.supply.fact_generation_structure`: `would_use_flag`, `structure_code`, `fiscal_quarter_id`, `state_id`
-- `utility.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `utility.geography.dim_state`: `state_id`, `state_code`, `state_name`, `region_id`
-- `utility.customer.dim_load_class`: `load_class_id`, `class_code`, `class_name`
-- `utility.customer.dim_customer`: `customer_id`, `customer_name`, `customer_code`, `customer_segment_id`
+- `utility.demand.fact_large_load_pipeline`: `fiscal_quarter_id`, `scenario_id`, `pipeline_stage_id`, `end_use_id`, `operating_company_id`, `service_territory_id`, `pipeline_load_quantity`, `contracted_load_quantity`
+- `utility.demand.dim_pipeline_stage`: `pipeline_stage_id`, `pipeline_stage_code`, `pipeline_stage_name`
+- `utility.demand.dim_service_territory`: `service_territory_id`, `service_territory_name`, `operating_company_id`, `state_id`
+- `utility.demand.dim_weather_zone`: `weather_zone_id`, `weather_zone_name`, `state_id`
+- `utility.demand.fact_gas_throughput`: `fiscal_quarter_id`, `scenario_id`, `rate_class_id`, `operating_company_id`, `jurisdiction_id`, `gas_throughput_quantity`
+- `utility.price.fact_gas_supply_expense`: `fiscal_quarter_id`, `scenario_id`, `operating_company_id`, `cost_category_id`, `gas_supply_expense_amount`
+- `utility.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `utility.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
 
-### Q2 2026 (3) — Duke Energy
+### Q2 2026 (4) — Duke Energy
 
-For Duke Energy, how much of the potential Florida and Indiana large-load capital lands inside the next five-year plan versus the mid-2030s?
+For Duke Energy, What bottlenecks are appearing while 5 gigawatts are already under construction, and what should be watched on the next gas build?
 
-- `utility.demand.fact_state_load`: `load_quantity`, `softer_flag`, `still_finalizing_flag`, `fiscal_quarter_id`, `state_id`, `load_class_id`
-- `utility.price.fact_capital_plan`: `capital_amount`, `inside_window_amount`, `later_amount`, `layered_even_flag`, `fiscal_quarter_id`, `capital_program_id`, `project_id`
-- `utility.demand.fact_large_load`: `load_quantity`, `top_of_range_flag`, `incremental_flag`, `fiscal_quarter_id`, `state_id`, `customer_id`
-- `utility.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `utility.geography.dim_state`: `state_id`, `state_code`, `state_name`, `region_id`
-- `utility.customer.dim_load_class`: `load_class_id`, `class_code`, `class_name`
-- `utility.price.dim_capital_program`: `capital_program_id`, `program_code`, `program_name`
-- `utility.generation.dim_project`: `project_id`, `project_code`, `project_name`, `plant_id`, `technology_id`, `state_id`
+- `utility.price.fact_gas_supply_expense`: `fiscal_quarter_id`, `scenario_id`, `operating_company_id`, `cost_category_id`, `gas_supply_expense_amount`
+- `utility.supply.fact_generation_fuel_consumption`: `fiscal_quarter_id`, `scenario_id`, `generating_station_id`, `fuel_type_id`, `generation_fuel_quantity`
+- `utility.demand.fact_gas_throughput`: `fiscal_quarter_id`, `scenario_id`, `rate_class_id`, `operating_company_id`, `jurisdiction_id`, `gas_throughput_quantity`
+- `utility.supply.dim_fuel_type`: `fuel_type_id`, `fuel_type_code`, `fuel_type_name`
+- `utility.supply.dim_generation_unit`: `generation_unit_id`, `generation_unit_name`, `generating_station_id`
+- `utility.supply.dim_technology`: `technology_id`, `technology_code`, `technology_name`
+- `utility.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `utility.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+
+### Q2 2026 (5) — Duke Energy
+
+For Duke Energy, How does the new-nuclear effort come together beyond the near-term application work?
+
+- `utility.demand.fact_customer_count`: `fiscal_quarter_id`, `scenario_id`, `rate_class_id`, `operating_company_id`, `jurisdiction_id`, `customer_segment_id`, `customer_quantity`, `new_customer_quantity`
+- `utility.demand.dim_calendar_month`: `calendar_month_id`, `calendar_month_name`, `fiscal_quarter_id`
+- `utility.demand.dim_county`: `county_id`, `county_name`, `state_id`
+- `utility.demand.dim_customer_segment`: `customer_segment_id`, `customer_segment_code`, `customer_segment_name`
+- `utility.demand.dim_end_use`: `end_use_id`, `end_use_code`, `end_use_name`
+- `utility.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `utility.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
 
 ### Q2 2026 (6) — Duke Energy
 
-For Duke Energy, how many gigawatts of the high-confidence load pipeline sit in Indiana and Florida versus the Carolinas?
+For Duke Energy, How many gigawatts of the high-confidence load pipeline sit in Indiana and Florida versus the Carolinas?
 
-- `utility.demand.fact_state_load`: `load_quantity`, `softer_flag`, `still_finalizing_flag`, `fiscal_quarter_id`, `state_id`, `load_class_id`
-- `utility.demand.fact_load_pipeline`: `pipeline_quantity`, `high_confidence_quantity`, `advanced_quantity`, `fiscal_quarter_id`, `load_class_id`, `state_id`
-- `utility.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `utility.geography.dim_state`: `state_id`, `state_code`, `state_name`, `region_id`
-- `utility.customer.dim_load_class`: `load_class_id`, `class_code`, `class_name`
+- `utility.demand.dim_pipeline_stage`: `pipeline_stage_id`, `pipeline_stage_code`, `pipeline_stage_name`
+- `utility.demand.fact_large_load_pipeline`: `fiscal_quarter_id`, `scenario_id`, `pipeline_stage_id`, `end_use_id`, `operating_company_id`, `service_territory_id`, `pipeline_load_quantity`, `contracted_load_quantity`
+- `utility.supply.fact_substation_capacity`: `fiscal_quarter_id`, `scenario_id`, `substation_id`, `operating_company_id`, `substation_capacity_quantity`, `substation_peak_load_quantity`
+- `utility.demand.dim_calendar_month`: `calendar_month_id`, `calendar_month_name`, `fiscal_quarter_id`
+- `utility.demand.dim_county`: `county_id`, `county_name`, `state_id`
+- `utility.demand.dim_customer_segment`: `customer_segment_id`, `customer_segment_code`, `customer_segment_name`
+- `utility.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `utility.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+
+### Q2 2026 (9) — Duke Energy
+
+For Duke Energy, Is the nuclear preference large-scale reactors or small modular reactors, and is the company in a long-lead procurement?
+
+- `utility.demand.fact_large_load_pipeline`: `fiscal_quarter_id`, `scenario_id`, `pipeline_stage_id`, `end_use_id`, `operating_company_id`, `service_territory_id`, `pipeline_load_quantity`, `contracted_load_quantity`
+- `utility.supply.dim_generating_station`: `generating_station_id`, `generating_station_name`, `technology_id`, `operating_company_id`, `state_id`
+- `utility.supply.fact_interconnection_queue`: `fiscal_quarter_id`, `scenario_id`, `technology_id`, `operating_company_id`, `queued_capacity_quantity`, `interconnection_request_quantity`
+- `utility.supply.fact_planned_capacity`: `fiscal_quarter_id`, `scenario_id`, `technology_id`, `operating_company_id`, `planned_capacity_quantity`
+- `utility.supply.fact_renewable_generation`: `fiscal_quarter_id`, `scenario_id`, `technology_id`, `operating_company_id`, `renewable_generation_quantity`
+- `utility.supply.fact_storage_capacity`: `fiscal_quarter_id`, `scenario_id`, `storage_type_id`, `operating_company_id`, `technology_id`, `storage_power_capacity_quantity`
+- `utility.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `utility.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
 
 ### Q1 2026 (2) — Duke Energy
 
-For Duke Energy, where does the South Carolina large-load tariff docket stand, and could it catalyze more load?
+For Duke Energy, Where does the South Carolina large-load tariff docket stand, and could it catalyze more load?
 
-- `utility.demand.fact_state_load`: `load_quantity`, `softer_flag`, `still_finalizing_flag`, `fiscal_quarter_id`, `state_id`, `load_class_id`
-- `utility.price.fact_tariff_terms`: `credit_terms_code`, `reaches_back_flag`, `docket_status_code`, `fiscal_quarter_id`, `tariff_id`, `customer_id`
-- `utility.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `utility.geography.dim_state`: `state_id`, `state_code`, `state_name`, `region_id`
-- `utility.customer.dim_load_class`: `load_class_id`, `class_code`, `class_name`
-- `utility.customer.dim_tariff`: `tariff_id`, `tariff_code`, `tariff_name`, `state_id`
-- `utility.customer.dim_customer`: `customer_id`, `customer_name`, `customer_code`, `customer_segment_id`
+- `utility.demand.dim_pipeline_stage`: `pipeline_stage_id`, `pipeline_stage_code`, `pipeline_stage_name`
+- `utility.demand.fact_large_load_pipeline`: `fiscal_quarter_id`, `scenario_id`, `pipeline_stage_id`, `end_use_id`, `operating_company_id`, `service_territory_id`, `pipeline_load_quantity`, `contracted_load_quantity`
+- `utility.demand.dim_customer_segment`: `customer_segment_id`, `customer_segment_code`, `customer_segment_name`
+- `utility.supply.fact_substation_capacity`: `fiscal_quarter_id`, `scenario_id`, `substation_id`, `operating_company_id`, `substation_capacity_quantity`, `substation_peak_load_quantity`
+- `utility.demand.dim_calendar_month`: `calendar_month_id`, `calendar_month_name`, `fiscal_quarter_id`
+- `utility.demand.dim_county`: `county_id`, `county_name`, `state_id`
+- `utility.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `utility.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
 
 ### Q1 2026 (5) — Duke Energy
 
-For Duke Energy, how could the energy-services agreement pipeline beyond the signed set expand the capital plan over time?
+For Duke Energy, How could the energy-services agreement pipeline beyond the signed set expand the capital plan over time?
 
-- `utility.demand.fact_energy_services`: `signed_quantity`, `pipeline_quantity`, `not_yet_started_flag`, `fiscal_quarter_id`, `contract_id`, `state_id`
-- `utility.demand.fact_load_pipeline`: `pipeline_quantity`, `high_confidence_quantity`, `advanced_quantity`, `fiscal_quarter_id`, `load_class_id`, `state_id`
-- `utility.price.fact_capital_plan`: `capital_amount`, `inside_window_amount`, `later_amount`, `layered_even_flag`, `fiscal_quarter_id`, `capital_program_id`, `project_id`
-- `utility.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `utility.customer.dim_contract`: `contract_id`, `contract_code`, `contract_name`, `customer_id`, `load_class_id`
-- `utility.geography.dim_state`: `state_id`, `state_code`, `state_name`, `region_id`
-- `utility.customer.dim_load_class`: `load_class_id`, `class_code`, `class_name`
-- `utility.price.dim_capital_program`: `capital_program_id`, `program_code`, `program_name`
+- `utility.demand.dim_pipeline_stage`: `pipeline_stage_id`, `pipeline_stage_code`, `pipeline_stage_name`
+- `utility.demand.fact_large_load_pipeline`: `fiscal_quarter_id`, `scenario_id`, `pipeline_stage_id`, `end_use_id`, `operating_company_id`, `service_territory_id`, `pipeline_load_quantity`, `contracted_load_quantity`
+- `utility.demand.fact_electricity_sales_energy`: `fiscal_quarter_id`, `scenario_id`, `rate_class_id`, `end_use_id`, `operating_company_id`, `jurisdiction_id`, `electricity_sales_quantity`
+- `utility.demand.fact_monthly_electricity_sales`: `fiscal_quarter_id`, `scenario_id`, `calendar_month_id`, `rate_class_id`, `operating_company_id`, `monthly_electricity_sales_quantity`
+- `utility.price.fact_distribution_capital`: `fiscal_quarter_id`, `scenario_id`, `operating_company_id`, `asset_category_id`, `distribution_capital_amount`
+- `utility.price.fact_gas_distribution_capital`: `fiscal_quarter_id`, `scenario_id`, `operating_company_id`, `asset_category_id`, `gas_distribution_capital_amount`
+- `utility.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `utility.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
 
-### Q1 2026 (8) — Duke Energy
+### Q1 2026 (10) — Duke Energy
 
-For Duke Energy, has top-of-funnel data-center interest accelerated, and are any regions emerging as larger hubs?
+For Duke Energy, When do the energy-services projects not yet under construction start, and do local moratoriums threaten them?
 
-- `utility.demand.fact_load_pipeline`: `pipeline_quantity`, `high_confidence_quantity`, `advanced_quantity`, `fiscal_quarter_id`, `load_class_id`, `state_id`
-- `utility.demand.fact_state_load`: `load_quantity`, `softer_flag`, `still_finalizing_flag`, `fiscal_quarter_id`, `state_id`, `load_class_id`
-- `utility.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `utility.customer.dim_load_class`: `load_class_id`, `class_code`, `class_name`
-- `utility.geography.dim_state`: `state_id`, `state_code`, `state_name`, `region_id`
+- `utility.demand.fact_gas_throughput`: `fiscal_quarter_id`, `scenario_id`, `rate_class_id`, `operating_company_id`, `jurisdiction_id`, `gas_throughput_quantity`
+- `utility.price.fact_gas_supply_expense`: `fiscal_quarter_id`, `scenario_id`, `operating_company_id`, `cost_category_id`, `gas_supply_expense_amount`
+- `utility.supply.fact_renewable_generation`: `fiscal_quarter_id`, `scenario_id`, `technology_id`, `operating_company_id`, `renewable_generation_quantity`
+- `utility.demand.dim_customer_segment`: `customer_segment_id`, `customer_segment_code`, `customer_segment_name`
+- `utility.demand.dim_rate_class`: `rate_class_id`, `rate_class_code`, `rate_class_name`
+- `utility.demand.fact_electricity_sales_energy`: `fiscal_quarter_id`, `scenario_id`, `rate_class_id`, `end_use_id`, `operating_company_id`, `jurisdiction_id`, `electricity_sales_quantity`
+- `utility.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `utility.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
 
-### Q4 2025 (3) — Duke Energy
+### Q4 2025 (9) — Duke Energy
 
-For Duke Energy, how confident is the company in rolling incremental data-center opportunities into the capital plan?
+For Duke Energy, Is flexible interconnection being used to speed data-center connections, and would customers accept it?
 
-- `utility.demand.fact_data_center_load`: `load_quantity`, `funnel_accelerated_flag`, `in_sales_range_flag`, `joint_announcement_flag`, `fiscal_quarter_id`, `state_id`, `customer_id`
-- `utility.price.fact_capital_plan`: `capital_amount`, `inside_window_amount`, `later_amount`, `layered_even_flag`, `fiscal_quarter_id`, `capital_program_id`, `project_id`
-- `utility.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `utility.geography.dim_state`: `state_id`, `state_code`, `state_name`, `region_id`
-- `utility.customer.dim_customer`: `customer_id`, `customer_name`, `customer_code`, `customer_segment_id`
-- `utility.price.dim_capital_program`: `capital_program_id`, `program_code`, `program_name`
-- `utility.generation.dim_project`: `project_id`, `project_code`, `project_name`, `plant_id`, `technology_id`, `state_id`
+- `utility.demand.dim_end_use`: `end_use_id`, `end_use_code`, `end_use_name`
+- `utility.demand.fact_county_customer_count`: `fiscal_quarter_id`, `scenario_id`, `county_id`, `rate_class_id`, `operating_company_id`, `county_customer_quantity`
+- `utility.demand.fact_customer_count`: `fiscal_quarter_id`, `scenario_id`, `rate_class_id`, `operating_company_id`, `jurisdiction_id`, `customer_segment_id`, `customer_quantity`, `new_customer_quantity`
+- `utility.demand.fact_gas_customer_count`: `fiscal_quarter_id`, `scenario_id`, `rate_class_id`, `operating_company_id`, `gas_customer_quantity`
+- `utility.demand.dim_customer_segment`: `customer_segment_id`, `customer_segment_code`, `customer_segment_name`
+- `utility.demand.dim_meter_type`: `meter_type_id`, `meter_type_code`, `meter_type_name`
+- `utility.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `utility.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
 
-### Q4 2025 (10) — Duke Energy
+### Q2 2026 (7) — Southern Company
 
-For Duke Energy, how much data-center load is already inside the enterprise and Carolinas sales-growth ranges, and how would more signed agreements change those ranges?
+For Southern Company, Did generation RFPs through 2032 already include the latest load-pipeline progress, and is there room for further upside if more of the pipeline converts?
 
-- `utility.demand.fact_data_center_load`: `load_quantity`, `funnel_accelerated_flag`, `in_sales_range_flag`, `joint_announcement_flag`, `fiscal_quarter_id`, `state_id`, `customer_id`
-- `utility.demand.fact_sales`: `sales_quantity`, `growth_rate`, `target_year_code`, `in_range_flag`, `fiscal_quarter_id`, `state_id`, `customer_segment_id`
-- `utility.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `utility.geography.dim_state`: `state_id`, `state_code`, `state_name`, `region_id`
-- `utility.customer.dim_customer`: `customer_id`, `customer_name`, `customer_code`, `customer_segment_id`
-- `utility.customer.dim_customer_segment`: `customer_segment_id`, `segment_code`, `segment_name`
-
-### Q2 2026 (1) — Southern Company
-
-For Southern Company, how does better visibility on contracted megawatts and the 2028 load ramp change how far regulatory plans can be extended?
-
-- `utility.demand.fact_large_load`: `load_quantity`, `top_of_range_flag`, `incremental_flag`, `fiscal_quarter_id`, `state_id`, `customer_id`
-- `utility.demand.fact_sales`: `sales_quantity`, `growth_rate`, `target_year_code`, `in_range_flag`, `fiscal_quarter_id`, `state_id`, `customer_segment_id`
-- `utility.supply.fact_regulation_timing`: `approval_status_code`, `can_extend_flag`, `election_risk_flag`, `fiscal_quarter_id`, `state_id`, `rfp_id`
-- `utility.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `utility.geography.dim_state`: `state_id`, `state_code`, `state_name`, `region_id`
-- `utility.customer.dim_customer`: `customer_id`, `customer_name`, `customer_code`, `customer_segment_id`
-- `utility.customer.dim_customer_segment`: `customer_segment_id`, `segment_code`, `segment_name`
-- `utility.generation.dim_rfp`: `rfp_id`, `rfp_code`, `rfp_name`, `state_id`
-
-### Q2 2026 (2) — Southern Company
-
-For Southern Company, are the 3 gigawatts still being finalized inside the 2030 window, and what milestones remain?
-
-- `utility.demand.fact_contracted_load`: `contracted_quantity`, `still_finalizing_flag`, `fiscal_quarter_id`, `contract_id`, `state_id`
-- `utility.supply.fact_generation_capacity`: `capacity_quantity`, `incremental_required_flag`, `company_owned_flag`, `fiscal_quarter_id`, `technology_id`, `state_id`, `plant_id`
-- `utility.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `utility.customer.dim_contract`: `contract_id`, `contract_code`, `contract_name`, `customer_id`, `load_class_id`
-- `utility.geography.dim_state`: `state_id`, `state_code`, `state_name`, `region_id`
-- `utility.generation.dim_technology`: `technology_id`, `technology_code`, `technology_name`
-- `utility.generation.dim_plant`: `plant_id`, `plant_code`, `plant_name`, `state_id`
+- `utility.demand.dim_pipeline_stage`: `pipeline_stage_id`, `pipeline_stage_code`, `pipeline_stage_name`
+- `utility.demand.fact_large_load_pipeline`: `fiscal_quarter_id`, `scenario_id`, `pipeline_stage_id`, `end_use_id`, `operating_company_id`, `service_territory_id`, `pipeline_load_quantity`, `contracted_load_quantity`
+- `utility.demand.fact_gas_throughput`: `fiscal_quarter_id`, `scenario_id`, `rate_class_id`, `operating_company_id`, `jurisdiction_id`, `gas_throughput_quantity`
+- `utility.price.fact_gas_supply_expense`: `fiscal_quarter_id`, `scenario_id`, `operating_company_id`, `cost_category_id`, `gas_supply_expense_amount`
+- `utility.price.fact_generation_capital`: `fiscal_quarter_id`, `scenario_id`, `generating_station_id`, `technology_id`, `generation_capital_amount`
+- `utility.supply.dim_generation_unit`: `generation_unit_id`, `generation_unit_name`, `generating_station_id`
+- `utility.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `utility.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
 
 ### Q2 2026 (8) — Southern Company
 
-For Southern Company, does every incremental large load in Alabama require incremental generation, given signed contracts and an oversubscribed request?
+For Southern Company, Does every incremental large load in Alabama require incremental generation, given signed contracts and an oversubscribed request?
 
-- `utility.demand.fact_state_load`: `load_quantity`, `softer_flag`, `still_finalizing_flag`, `fiscal_quarter_id`, `state_id`, `load_class_id`
-- `utility.demand.fact_large_load`: `load_quantity`, `top_of_range_flag`, `incremental_flag`, `fiscal_quarter_id`, `state_id`, `customer_id`
-- `utility.supply.fact_generation_capacity`: `capacity_quantity`, `incremental_required_flag`, `company_owned_flag`, `fiscal_quarter_id`, `technology_id`, `state_id`, `plant_id`
-- `utility.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `utility.geography.dim_state`: `state_id`, `state_code`, `state_name`, `region_id`
-- `utility.customer.dim_load_class`: `load_class_id`, `class_code`, `class_name`
-- `utility.customer.dim_customer`: `customer_id`, `customer_name`, `customer_code`, `customer_segment_id`
-- `utility.generation.dim_technology`: `technology_id`, `technology_code`, `technology_name`
+- `utility.demand.dim_pipeline_stage`: `pipeline_stage_id`, `pipeline_stage_code`, `pipeline_stage_name`
+- `utility.demand.fact_large_load_pipeline`: `fiscal_quarter_id`, `scenario_id`, `pipeline_stage_id`, `end_use_id`, `operating_company_id`, `service_territory_id`, `pipeline_load_quantity`, `contracted_load_quantity`
+- `utility.supply.fact_interconnection_queue`: `fiscal_quarter_id`, `scenario_id`, `technology_id`, `operating_company_id`, `queued_capacity_quantity`, `interconnection_request_quantity`
+- `utility.demand.fact_gas_throughput`: `fiscal_quarter_id`, `scenario_id`, `rate_class_id`, `operating_company_id`, `jurisdiction_id`, `gas_throughput_quantity`
+- `utility.price.fact_gas_supply_expense`: `fiscal_quarter_id`, `scenario_id`, `operating_company_id`, `cost_category_id`, `gas_supply_expense_amount`
+- `utility.price.fact_generation_capital`: `fiscal_quarter_id`, `scenario_id`, `generating_station_id`, `technology_id`, `generation_capital_amount`
+- `utility.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `utility.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
 
 ### Q2 2026 (9) — Southern Company
 
-For Southern Company, how is the OpenAI demand-response commitment being factored into the broader project pipeline?
+For Southern Company, How is the OpenAI demand-response commitment being factored into the broader project pipeline?
 
-- `utility.demand.fact_demand_response`: `response_quantity`, `first_of_kind_flag`, `in_pipeline_flag`, `fiscal_quarter_id`, `customer_id`, `state_id`
-- `utility.demand.fact_data_center_load`: `load_quantity`, `funnel_accelerated_flag`, `in_sales_range_flag`, `joint_announcement_flag`, `fiscal_quarter_id`, `state_id`, `customer_id`
-- `utility.supply.fact_pipeline_capacity`: `expansion_quantity`, `gating_code`, `in_service_year`, `fiscal_quarter_id`, `pipeline_id`, `state_id`
-- `utility.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `utility.customer.dim_customer`: `customer_id`, `customer_name`, `customer_code`, `customer_segment_id`
-- `utility.geography.dim_state`: `state_id`, `state_code`, `state_name`, `region_id`
-- `utility.generation.dim_pipeline`: `pipeline_id`, `pipeline_code`, `pipeline_name`, `state_id`
+- `utility.demand.dim_end_use`: `end_use_id`, `end_use_code`, `end_use_name`
+- `utility.demand.dim_pipeline_stage`: `pipeline_stage_id`, `pipeline_stage_code`, `pipeline_stage_name`
+- `utility.demand.fact_large_load_pipeline`: `fiscal_quarter_id`, `scenario_id`, `pipeline_stage_id`, `end_use_id`, `operating_company_id`, `service_territory_id`, `pipeline_load_quantity`, `contracted_load_quantity`
+- `utility.demand.dim_calendar_month`: `calendar_month_id`, `calendar_month_name`, `fiscal_quarter_id`
+- `utility.demand.dim_county`: `county_id`, `county_name`, `state_id`
+- `utility.demand.dim_customer_segment`: `customer_segment_id`, `customer_segment_code`, `customer_segment_name`
+- `utility.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `utility.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
 
-### Q2 2026 (11) — Southern Company
+### Q2 2026 (10) — Southern Company
 
-For Southern Company, has the customer-rate benefit of data centers changed the political reception in Georgia?
+For Southern Company, How do Georgia tariffs handle credit risk for data-center customers that are not strongly investment grade?
 
-- `utility.demand.fact_state_load`: `load_quantity`, `softer_flag`, `still_finalizing_flag`, `fiscal_quarter_id`, `state_id`, `load_class_id`
-- `utility.demand.fact_data_center_load`: `load_quantity`, `funnel_accelerated_flag`, `in_sales_range_flag`, `joint_announcement_flag`, `fiscal_quarter_id`, `state_id`, `customer_id`
-- `utility.price.fact_customer_rate`: `rate_amount`, `political_reception_code`, `larger_credit_chance_flag`, `fiscal_quarter_id`, `state_id`, `tariff_id`
-- `utility.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `utility.geography.dim_state`: `state_id`, `state_code`, `state_name`, `region_id`
-- `utility.customer.dim_load_class`: `load_class_id`, `class_code`, `class_name`
-- `utility.customer.dim_customer`: `customer_id`, `customer_name`, `customer_code`, `customer_segment_id`
-- `utility.customer.dim_tariff`: `tariff_id`, `tariff_code`, `tariff_name`, `state_id`
+- `utility.demand.dim_end_use`: `end_use_id`, `end_use_code`, `end_use_name`
+- `utility.demand.dim_customer_segment`: `customer_segment_id`, `customer_segment_code`, `customer_segment_name`
+- `utility.demand.fact_county_customer_count`: `fiscal_quarter_id`, `scenario_id`, `county_id`, `rate_class_id`, `operating_company_id`, `county_customer_quantity`
+- `utility.demand.fact_customer_count`: `fiscal_quarter_id`, `scenario_id`, `rate_class_id`, `operating_company_id`, `jurisdiction_id`, `customer_segment_id`, `customer_quantity`, `new_customer_quantity`
+- `utility.demand.fact_gas_customer_count`: `fiscal_quarter_id`, `scenario_id`, `rate_class_id`, `operating_company_id`, `gas_customer_quantity`
+- `utility.demand.fact_gas_throughput`: `fiscal_quarter_id`, `scenario_id`, `rate_class_id`, `operating_company_id`, `jurisdiction_id`, `gas_throughput_quantity`
+- `utility.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `utility.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
 
-### Q2 2026 (12) — Southern Company
+### Q2 2026 (14) — Southern Company
 
-For Southern Company, is the gigawatt of demand response a first for a data center, and have the customer savings been quantified?
+For Southern Company, How are Southern Power upgrade and brownfield conversations trending with current and new counterparties?
 
-- `utility.demand.fact_demand_response`: `response_quantity`, `first_of_kind_flag`, `in_pipeline_flag`, `fiscal_quarter_id`, `customer_id`, `state_id`
-- `utility.demand.fact_data_center_load`: `load_quantity`, `funnel_accelerated_flag`, `in_sales_range_flag`, `joint_announcement_flag`, `fiscal_quarter_id`, `state_id`, `customer_id`
-- `utility.price.fact_customer_savings`: `savings_amount`, `quantified_flag`, `fiscal_quarter_id`, `state_id`, `customer_id`
-- `utility.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `utility.customer.dim_customer`: `customer_id`, `customer_name`, `customer_code`, `customer_segment_id`
-- `utility.geography.dim_state`: `state_id`, `state_code`, `state_name`, `region_id`
+- `utility.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+- `utility.demand.fact_customer_count`: `fiscal_quarter_id`, `scenario_id`, `rate_class_id`, `operating_company_id`, `jurisdiction_id`, `customer_segment_id`, `customer_quantity`, `new_customer_quantity`
+- `utility.price.fact_fuel_purchased_power_expense`: `fiscal_quarter_id`, `scenario_id`, `operating_company_id`, `cost_category_id`, `fuel_type_id`, `fuel_expense_amount`, `purchased_power_expense_amount`
+- `utility.price.fact_purchased_power_rate`: `fiscal_quarter_id`, `scenario_id`, `operating_company_id`, `jurisdiction_id`, `purchased_power_rate_amount`
+- `utility.supply.fact_storage_capacity`: `fiscal_quarter_id`, `scenario_id`, `storage_type_id`, `operating_company_id`, `technology_id`, `storage_power_capacity_quantity`
+- `utility.demand.dim_calendar_month`: `calendar_month_id`, `calendar_month_name`, `fiscal_quarter_id`
+- `utility.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
 
-### Q2 2026 (15) — Southern Company
+### Q1 2026 (2) — Southern Company
 
-For Southern Company, what has the recent data-center ramp taught about sales trends?
+For Southern Company, Have renegotiations started on Southern Power tolls that are rolling off, including with hyperscalers?
 
-- `utility.demand.fact_data_center_load`: `load_quantity`, `funnel_accelerated_flag`, `in_sales_range_flag`, `joint_announcement_flag`, `fiscal_quarter_id`, `state_id`, `customer_id`
-- `utility.demand.fact_sales`: `sales_quantity`, `growth_rate`, `target_year_code`, `in_range_flag`, `fiscal_quarter_id`, `state_id`, `customer_segment_id`
-- `utility.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `utility.geography.dim_state`: `state_id`, `state_code`, `state_name`, `region_id`
-- `utility.customer.dim_customer`: `customer_id`, `customer_name`, `customer_code`, `customer_segment_id`
-- `utility.customer.dim_customer_segment`: `customer_segment_id`, `segment_code`, `segment_name`
+- `utility.demand.fact_customer_count`: `fiscal_quarter_id`, `scenario_id`, `rate_class_id`, `operating_company_id`, `jurisdiction_id`, `customer_segment_id`, `customer_quantity`, `new_customer_quantity`
+- `utility.price.fact_fuel_purchased_power_expense`: `fiscal_quarter_id`, `scenario_id`, `operating_company_id`, `cost_category_id`, `fuel_type_id`, `fuel_expense_amount`, `purchased_power_expense_amount`
+- `utility.price.fact_purchased_power_rate`: `fiscal_quarter_id`, `scenario_id`, `operating_company_id`, `jurisdiction_id`, `purchased_power_rate_amount`
+- `utility.supply.fact_storage_capacity`: `fiscal_quarter_id`, `scenario_id`, `storage_type_id`, `operating_company_id`, `technology_id`, `storage_power_capacity_quantity`
+- `utility.demand.dim_calendar_month`: `calendar_month_id`, `calendar_month_name`, `fiscal_quarter_id`
+- `utility.demand.dim_county`: `county_id`, `county_name`, `state_id`
+- `utility.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `utility.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
 
 ### Q1 2026 (3) — Southern Company
 
-For Southern Company, is large-load visibility ahead of the plan that supported the regulatory stay-outs?
+For Southern Company, Is large-load visibility ahead of the plan that supported the regulatory stay-outs?
 
-- `utility.demand.fact_large_load`: `load_quantity`, `top_of_range_flag`, `incremental_flag`, `fiscal_quarter_id`, `state_id`, `customer_id`
-- `utility.price.fact_stay_out`: `ahead_of_stay_out_flag`, `can_extend_flag`, `fiscal_quarter_id`, `state_id`
-- `utility.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `utility.geography.dim_state`: `state_id`, `state_code`, `state_name`, `region_id`
-- `utility.customer.dim_customer`: `customer_id`, `customer_name`, `customer_code`, `customer_segment_id`
+- `utility.demand.dim_pipeline_stage`: `pipeline_stage_id`, `pipeline_stage_code`, `pipeline_stage_name`
+- `utility.demand.fact_large_load_pipeline`: `fiscal_quarter_id`, `scenario_id`, `pipeline_stage_id`, `end_use_id`, `operating_company_id`, `service_territory_id`, `pipeline_load_quantity`, `contracted_load_quantity`
+- `utility.demand.dim_jurisdiction`: `jurisdiction_id`, `jurisdiction_name`
+- `utility.price.fact_rate_base`: `fiscal_quarter_id`, `scenario_id`, `operating_company_id`, `jurisdiction_id`, `rate_base_amount`, `authorized_return_percent`, `earned_return_percent`
+- `utility.supply.fact_substation_capacity`: `fiscal_quarter_id`, `scenario_id`, `substation_id`, `operating_company_id`, `substation_capacity_quantity`, `substation_peak_load_quantity`
+- `utility.demand.dim_calendar_month`: `calendar_month_id`, `calendar_month_name`, `fiscal_quarter_id`
+- `utility.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `utility.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+
+### Q1 2026 (4) — Southern Company
+
+For Southern Company, Could cumulative bill credits be revised higher as contracted large load rises?
+
+- `utility.demand.fact_large_load_pipeline`: `fiscal_quarter_id`, `scenario_id`, `pipeline_stage_id`, `end_use_id`, `operating_company_id`, `service_territory_id`, `pipeline_load_quantity`, `contracted_load_quantity`
+- `utility.demand.dim_pipeline_stage`: `pipeline_stage_id`, `pipeline_stage_code`, `pipeline_stage_name`
+- `utility.supply.fact_substation_capacity`: `fiscal_quarter_id`, `scenario_id`, `substation_id`, `operating_company_id`, `substation_capacity_quantity`, `substation_peak_load_quantity`
+- `utility.demand.dim_calendar_month`: `calendar_month_id`, `calendar_month_name`, `fiscal_quarter_id`
+- `utility.demand.dim_county`: `county_id`, `county_name`, `state_id`
+- `utility.demand.dim_customer_segment`: `customer_segment_id`, `customer_segment_code`, `customer_segment_name`
+- `utility.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `utility.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
 
 ### Q1 2026 (5) — Southern Company
 
-For Southern Company, why does the Georgia large-load report look softer while other states, including Alabama, keep finalizing contracts?
+For Southern Company, Why does the Georgia large-load report look softer while other states, including Alabama, keep finalizing contracts?
 
-- `utility.demand.fact_state_load`: `load_quantity`, `softer_flag`, `still_finalizing_flag`, `fiscal_quarter_id`, `state_id`, `load_class_id`
-- `utility.demand.fact_contracted_load`: `contracted_quantity`, `still_finalizing_flag`, `fiscal_quarter_id`, `contract_id`, `state_id`
-- `utility.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `utility.geography.dim_state`: `state_id`, `state_code`, `state_name`, `region_id`
-- `utility.customer.dim_load_class`: `load_class_id`, `class_code`, `class_name`
-- `utility.customer.dim_contract`: `contract_id`, `contract_code`, `contract_name`, `customer_id`, `load_class_id`
+- `utility.demand.fact_large_load_pipeline`: `fiscal_quarter_id`, `scenario_id`, `pipeline_stage_id`, `end_use_id`, `operating_company_id`, `service_territory_id`, `pipeline_load_quantity`, `contracted_load_quantity`
+- `utility.demand.dim_pipeline_stage`: `pipeline_stage_id`, `pipeline_stage_code`, `pipeline_stage_name`
+- `utility.demand.dim_county`: `county_id`, `county_name`, `state_id`
+- `utility.demand.dim_jurisdiction`: `jurisdiction_id`, `jurisdiction_name`
+- `utility.demand.dim_service_territory`: `service_territory_id`, `service_territory_name`, `operating_company_id`, `state_id`
+- `utility.demand.dim_state`: `state_id`, `state_name`
+- `utility.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `utility.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
 
-### Q3 2025 (3) — Southern Company
+### Q1 2026 (6) — Southern Company
 
-For Southern Company, what operational, regulatory, or signed data-center milestones would make a 2027 rebase more definite?
+For Southern Company, What is the timing and remaining size of gas-fleet upgrades at Southern Power?
 
-- `utility.demand.fact_contracted_load`: `contracted_quantity`, `still_finalizing_flag`, `fiscal_quarter_id`, `contract_id`, `state_id`
-- `utility.price.fact_rebase`: `rebase_year_code`, `aimed_at_top_flag`, `more_definite_flag`, `fiscal_quarter_id`, `capital_program_id`
-- `utility.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `utility.customer.dim_contract`: `contract_id`, `contract_code`, `contract_name`, `customer_id`, `load_class_id`
-- `utility.geography.dim_state`: `state_id`, `state_code`, `state_name`, `region_id`
-- `utility.price.dim_capital_program`: `capital_program_id`, `program_code`, `program_name`
+- `utility.supply.fact_storage_capacity`: `fiscal_quarter_id`, `scenario_id`, `storage_type_id`, `operating_company_id`, `technology_id`, `storage_power_capacity_quantity`
+- `utility.supply.fact_transmission_system`: `fiscal_quarter_id`, `scenario_id`, `transmission_asset_id`, `operating_company_id`, `transfer_capacity_quantity`, `circuit_mile_quantity`
+- `utility.demand.dim_end_use`: `end_use_id`, `end_use_code`, `end_use_name`
+- `utility.demand.dim_pipeline_stage`: `pipeline_stage_id`, `pipeline_stage_code`, `pipeline_stage_name`
+- `utility.demand.fact_electricity_sales_energy`: `fiscal_quarter_id`, `scenario_id`, `rate_class_id`, `end_use_id`, `operating_company_id`, `jurisdiction_id`, `electricity_sales_quantity`
+- `utility.demand.fact_gas_customer_count`: `fiscal_quarter_id`, `scenario_id`, `rate_class_id`, `operating_company_id`, `gas_customer_quantity`
+- `utility.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `utility.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
 
-### Q3 2025 (5) — Southern Company
+### Q1 2026 (8) — Southern Company
 
-For Southern Company, how much of the later-decade large-load figure is the same projects ramping versus new projects?
+For Southern Company, Where do turbine and labor supply stand, and when is the next all-source request needed as more large-load contracts are signed?
 
-- `utility.demand.fact_large_load`: `load_quantity`, `top_of_range_flag`, `incremental_flag`, `fiscal_quarter_id`, `state_id`, `customer_id`
-- `utility.demand.fact_project_ramp`: `ramp_quantity`, `same_projects_flag`, `new_project_quantity`, `fiscal_quarter_id`, `state_id`, `project_id`
-- `utility.demand.fact_contracted_load`: `contracted_quantity`, `still_finalizing_flag`, `fiscal_quarter_id`, `contract_id`, `state_id`
-- `utility.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `utility.geography.dim_state`: `state_id`, `state_code`, `state_name`, `region_id`
-- `utility.customer.dim_customer`: `customer_id`, `customer_name`, `customer_code`, `customer_segment_id`
-- `utility.generation.dim_project`: `project_id`, `project_code`, `project_name`, `plant_id`, `technology_id`, `state_id`
-- `utility.customer.dim_contract`: `contract_id`, `contract_code`, `contract_name`, `customer_id`, `load_class_id`
+- `utility.supply.fact_interconnection_queue`: `fiscal_quarter_id`, `scenario_id`, `technology_id`, `operating_company_id`, `queued_capacity_quantity`, `interconnection_request_quantity`
+- `utility.demand.dim_pipeline_stage`: `pipeline_stage_id`, `pipeline_stage_code`, `pipeline_stage_name`
+- `utility.demand.fact_large_load_pipeline`: `fiscal_quarter_id`, `scenario_id`, `pipeline_stage_id`, `end_use_id`, `operating_company_id`, `service_territory_id`, `pipeline_load_quantity`, `contracted_load_quantity`
+- `utility.price.fact_gas_supply_expense`: `fiscal_quarter_id`, `scenario_id`, `operating_company_id`, `cost_category_id`, `gas_supply_expense_amount`
+- `utility.supply.dim_generation_unit`: `generation_unit_id`, `generation_unit_name`, `generating_station_id`
+- `utility.supply.dim_technology`: `technology_id`, `technology_code`, `technology_name`
+- `utility.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `utility.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+
+### Q3 2025 (4) — Southern Company
+
+For Southern Company, What is the timing of Southeast gas supply and the pipeline expansion needed to serve it?
+
+- `utility.price.fact_gas_supply_expense`: `fiscal_quarter_id`, `scenario_id`, `operating_company_id`, `cost_category_id`, `gas_supply_expense_amount`
+- `utility.supply.dim_fuel_type`: `fuel_type_id`, `fuel_type_code`, `fuel_type_name`
+- `utility.supply.fact_generation_fuel_consumption`: `fiscal_quarter_id`, `scenario_id`, `generating_station_id`, `fuel_type_id`, `generation_fuel_quantity`
+- `utility.demand.dim_end_use`: `end_use_id`, `end_use_code`, `end_use_name`
+- `utility.demand.dim_pipeline_stage`: `pipeline_stage_id`, `pipeline_stage_code`, `pipeline_stage_name`
+- `utility.demand.fact_gas_customer_count`: `fiscal_quarter_id`, `scenario_id`, `rate_class_id`, `operating_company_id`, `gas_customer_quantity`
+- `utility.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `utility.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+
+### Q3 2025 (6) — Southern Company
+
+For Southern Company, Is there still room to add more large load by 2029, and which years would the next requests for generation cover?
+
+- `utility.demand.fact_large_load_pipeline`: `fiscal_quarter_id`, `scenario_id`, `pipeline_stage_id`, `end_use_id`, `operating_company_id`, `service_territory_id`, `pipeline_load_quantity`, `contracted_load_quantity`
+- `utility.demand.dim_pipeline_stage`: `pipeline_stage_id`, `pipeline_stage_code`, `pipeline_stage_name`
+- `utility.supply.fact_interconnection_queue`: `fiscal_quarter_id`, `scenario_id`, `technology_id`, `operating_company_id`, `queued_capacity_quantity`, `interconnection_request_quantity`
+- `utility.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `utility.demand.fact_gas_throughput`: `fiscal_quarter_id`, `scenario_id`, `rate_class_id`, `operating_company_id`, `jurisdiction_id`, `gas_throughput_quantity`
+- `utility.price.fact_gas_supply_expense`: `fiscal_quarter_id`, `scenario_id`, `operating_company_id`, `cost_category_id`, `gas_supply_expense_amount`
+- `utility.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
 
 ### Q3 2025 (8) — Southern Company
 
-For Southern Company, what is the difference between contracted and committed large load, and how many gigawatts are in advanced negotiation?
+For Southern Company, What is the difference between contracted and committed large load, and how many gigawatts are in advanced negotiation?
 
-- `utility.demand.fact_contracted_load`: `contracted_quantity`, `still_finalizing_flag`, `fiscal_quarter_id`, `contract_id`, `state_id`
-- `utility.demand.fact_committed_load`: `committed_quantity`, `stage_gap_quantity`, `fiscal_quarter_id`, `load_class_id`, `state_id`
-- `utility.demand.fact_load_pipeline`: `pipeline_quantity`, `high_confidence_quantity`, `advanced_quantity`, `fiscal_quarter_id`, `load_class_id`, `state_id`
-- `utility.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `utility.customer.dim_contract`: `contract_id`, `contract_code`, `contract_name`, `customer_id`, `load_class_id`
-- `utility.geography.dim_state`: `state_id`, `state_code`, `state_name`, `region_id`
-- `utility.customer.dim_load_class`: `load_class_id`, `class_code`, `class_name`
+- `utility.demand.fact_large_load_pipeline`: `fiscal_quarter_id`, `scenario_id`, `pipeline_stage_id`, `end_use_id`, `operating_company_id`, `service_territory_id`, `pipeline_load_quantity`, `contracted_load_quantity`
+- `utility.demand.dim_pipeline_stage`: `pipeline_stage_id`, `pipeline_stage_code`, `pipeline_stage_name`
+- `utility.supply.fact_substation_capacity`: `fiscal_quarter_id`, `scenario_id`, `substation_id`, `operating_company_id`, `substation_capacity_quantity`, `substation_peak_load_quantity`
+- `utility.demand.dim_calendar_month`: `calendar_month_id`, `calendar_month_name`, `fiscal_quarter_id`
+- `utility.demand.dim_county`: `county_id`, `county_name`, `state_id`
+- `utility.demand.dim_customer_segment`: `customer_segment_id`, `customer_segment_code`, `customer_segment_name`
+- `utility.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `utility.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
 
-### Q3 2025 (9) — Southern Company
+### Q2 2025 (5) — Southern Company
 
-For Southern Company, in which year is the targeted sales-growth rate expected to be reached?
+For Southern Company, Where do new-nuclear discussions stand after the resource plan's upgrade cases?
 
-- `utility.demand.fact_sales`: `sales_quantity`, `growth_rate`, `target_year_code`, `in_range_flag`, `fiscal_quarter_id`, `state_id`, `customer_segment_id`
-- `utility.demand.fact_large_load`: `load_quantity`, `top_of_range_flag`, `incremental_flag`, `fiscal_quarter_id`, `state_id`, `customer_id`
-- `utility.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `utility.geography.dim_state`: `state_id`, `state_code`, `state_name`, `region_id`
-- `utility.customer.dim_customer_segment`: `customer_segment_id`, `segment_code`, `segment_name`
-- `utility.customer.dim_customer`: `customer_id`, `customer_name`, `customer_code`, `customer_segment_id`
-
-### Q3 2025 (10) — Southern Company
-
-For Southern Company, is the average large-load project a few hundred megawatts, and are the later-stage projects greenfield or brownfield?
-
-- `utility.demand.fact_project_size`: `project_count`, `average_mw_quantity`, `fiscal_quarter_id`, `state_id`, `site_id`
-- `utility.supply.fact_site_type`: `greenfield_flag`, `brownfield_flag`, `fiscal_quarter_id`, `site_id`, `project_id`
-- `utility.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `utility.geography.dim_state`: `state_id`, `state_code`, `state_name`, `region_id`
-- `utility.generation.dim_site`: `site_id`, `site_code`, `site_type_code`, `state_id`
-- `utility.generation.dim_project`: `project_id`, `project_code`, `project_name`, `plant_id`, `technology_id`, `state_id`
+- `utility.demand.dim_customer_segment`: `customer_segment_id`, `customer_segment_code`, `customer_segment_name`
+- `utility.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+- `utility.demand.fact_customer_count`: `fiscal_quarter_id`, `scenario_id`, `rate_class_id`, `operating_company_id`, `jurisdiction_id`, `customer_segment_id`, `customer_quantity`, `new_customer_quantity`
+- `utility.demand.dim_calendar_month`: `calendar_month_id`, `calendar_month_name`, `fiscal_quarter_id`
+- `utility.demand.dim_county`: `county_id`, `county_name`, `state_id`
+- `utility.demand.dim_end_use`: `end_use_id`, `end_use_code`, `end_use_name`
+- `utility.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
 
 ### Q2 2025 (6) — Southern Company
 
-For Southern Company, is the large-load update expected to come in above the prior pipeline figure?
+For Southern Company, Is the large-load update expected to come in above the prior pipeline figure?
 
-- `utility.demand.fact_load_pipeline`: `pipeline_quantity`, `high_confidence_quantity`, `advanced_quantity`, `fiscal_quarter_id`, `load_class_id`, `state_id`
-- `utility.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `utility.customer.dim_load_class`: `load_class_id`, `class_code`, `class_name`
-- `utility.geography.dim_state`: `state_id`, `state_code`, `state_name`, `region_id`
+- `utility.demand.dim_pipeline_stage`: `pipeline_stage_id`, `pipeline_stage_code`, `pipeline_stage_name`
+- `utility.demand.fact_large_load_pipeline`: `fiscal_quarter_id`, `scenario_id`, `pipeline_stage_id`, `end_use_id`, `operating_company_id`, `service_territory_id`, `pipeline_load_quantity`, `contracted_load_quantity`
+- `utility.supply.fact_substation_capacity`: `fiscal_quarter_id`, `scenario_id`, `substation_id`, `operating_company_id`, `substation_capacity_quantity`, `substation_peak_load_quantity`
+- `utility.demand.dim_calendar_month`: `calendar_month_id`, `calendar_month_name`, `fiscal_quarter_id`
+- `utility.demand.dim_county`: `county_id`, `county_name`, `state_id`
+- `utility.demand.dim_customer_segment`: `customer_segment_id`, `customer_segment_code`, `customer_segment_name`
+- `utility.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `utility.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
 
-### Q2 2025 (8) — Southern Company
+### Q2 2025 (9) — Southern Company
 
-For Southern Company, after completing the resource-plan process, how durable is the demand outlook over the next few years?
+For Southern Company, What gating items remain on a FERC gas-pipeline expansion?
 
-- `utility.demand.fact_demand_outlook`: `outlook_quantity`, `durable_flag`, `fiscal_quarter_id`, `state_id`
-- `utility.supply.fact_resource_plan`: `gas_share_rate`, `would_shift_flag`, `fiscal_quarter_id`, `state_id`, `technology_id`
-- `utility.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `utility.geography.dim_state`: `state_id`, `state_code`, `state_name`, `region_id`
-- `utility.generation.dim_technology`: `technology_id`, `technology_code`, `technology_name`
+- `utility.demand.dim_end_use`: `end_use_id`, `end_use_code`, `end_use_name`
+- `utility.demand.dim_pipeline_stage`: `pipeline_stage_id`, `pipeline_stage_code`, `pipeline_stage_name`
+- `utility.demand.fact_gas_customer_count`: `fiscal_quarter_id`, `scenario_id`, `rate_class_id`, `operating_company_id`, `gas_customer_quantity`
+- `utility.demand.fact_gas_throughput`: `fiscal_quarter_id`, `scenario_id`, `rate_class_id`, `operating_company_id`, `jurisdiction_id`, `gas_throughput_quantity`
+- `utility.demand.fact_large_load_pipeline`: `fiscal_quarter_id`, `scenario_id`, `pipeline_stage_id`, `end_use_id`, `operating_company_id`, `service_territory_id`, `pipeline_load_quantity`, `contracted_load_quantity`
+- `utility.price.fact_gas_distribution_capital`: `fiscal_quarter_id`, `scenario_id`, `operating_company_id`, `asset_category_id`, `gas_distribution_capital_amount`
+- `utility.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `utility.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
 
 ### Q2 2025 (11) — Southern Company
 
-For Southern Company, why are fewer data-center announcements being made jointly with the company in Georgia and Mississippi than at some other utilities?
+For Southern Company, Why are fewer data-center announcements being made jointly with the company in Georgia and Mississippi than at some other utilities?
 
-- `utility.demand.fact_data_center_load`: `load_quantity`, `funnel_accelerated_flag`, `in_sales_range_flag`, `joint_announcement_flag`, `fiscal_quarter_id`, `state_id`, `customer_id`
-- `utility.demand.fact_state_load`: `load_quantity`, `softer_flag`, `still_finalizing_flag`, `fiscal_quarter_id`, `state_id`, `load_class_id`
-- `utility.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
-- `utility.geography.dim_state`: `state_id`, `state_code`, `state_name`, `region_id`
-- `utility.customer.dim_customer`: `customer_id`, `customer_name`, `customer_code`, `customer_segment_id`
-- `utility.customer.dim_load_class`: `load_class_id`, `class_code`, `class_name`
+- `utility.demand.dim_end_use`: `end_use_id`, `end_use_code`, `end_use_name`
+- `utility.demand.fact_large_load_pipeline`: `fiscal_quarter_id`, `scenario_id`, `pipeline_stage_id`, `end_use_id`, `operating_company_id`, `service_territory_id`, `pipeline_load_quantity`, `contracted_load_quantity`
+- `utility.supply.fact_substation_capacity`: `fiscal_quarter_id`, `scenario_id`, `substation_id`, `operating_company_id`, `substation_capacity_quantity`, `substation_peak_load_quantity`
+- `utility.demand.dim_operating_company`: `operating_company_id`, `operating_company_code`, `operating_company_name`
+- `utility.demand.dim_pipeline_stage`: `pipeline_stage_id`, `pipeline_stage_code`, `pipeline_stage_name`
+- `utility.demand.dim_service_territory`: `service_territory_id`, `service_territory_name`, `operating_company_id`, `state_id`
+- `utility.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `utility.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`

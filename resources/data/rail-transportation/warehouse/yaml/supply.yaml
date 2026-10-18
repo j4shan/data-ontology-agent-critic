@@ -1,10 +1,10 @@
 schema_version: '3'
 nodes:
-- node_id: sf:railroad.network.dim_project_type
+- node_id: sf:railroad.supply.dim_terminal
   descriptor:
-    qualified_name: railroad.network.dim_project_type
-    display_name: Project Type
-    description: Type of operating or commercial project.
+    qualified_name: railroad.supply.dim_terminal
+    display_name: Terminal
+    description: Rail terminal or yard where cars are processed.
     synonyms: []
     tags:
     - dimension
@@ -15,320 +15,43 @@ nodes:
     properties:
       account: railroad.us-central-1
       database: RAILROAD
-      schema: NETWORK
-      object: DIM_PROJECT_TYPE
+      schema: SUPPLY
+      object: DIM_TERMINAL
       format: table
   grain:
-    description: One row is one project type.
+    description: One row is one terminal.
     components:
-    - identity_id: dim_project_type_identity
+    - identity_id: dim_terminal_identity
       dataset_columns:
-      - project_type_id
-      description: Identifier of the project type.
+      - terminal_id
+      description: Identifier of the terminal.
   columns:
-  - name: project_type_id
-    description: Identifier of the project type.
-  - name: project_type_code
-    description: Project type code.
-    value_description: double_stack, terminal, industrial, chicago_flow
-  - name: project_type_name
-    description: Project type name.
-  entity_definitions:
-  - identity_id: dim_project_type_identity
-    dataset_columns:
-    - project_type_id
-    entity_universe: complete
-- node_id: sf:railroad.network.dim_project
-  descriptor:
-    qualified_name: railroad.network.dim_project
-    display_name: Project
-    description: Named project, including the Howard Street Tunnel double-stack work.
-    synonyms: []
-    tags:
-    - dimension
-    - supply
-    - railroad
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: railroad.us-central-1
-      database: RAILROAD
-      schema: NETWORK
-      object: DIM_PROJECT
-      format: table
-  grain:
-    description: One row is one project.
-    components:
-    - identity_id: dim_project_identity
-      dataset_columns:
-      - project_id
-      description: Identifier of the project.
-  columns:
-  - name: project_id
-    description: Identifier of the project.
-  - name: project_code
-    description: Project code.
-    value_description: howard_street_tunnel, double_stack, chicago_flow
-  - name: project_name
-    description: Project name.
-  - name: project_type_id
-    description: Identifier of the related project type.
-  - name: corridor_id
-    description: Identifier of the related corridor.
-  entity_definitions:
-  - identity_id: dim_project_identity
-    dataset_columns:
-    - project_id
-    entity_universe: complete
-  - identity_id: dim_project_type_identity
-    dataset_columns:
-    - project_type_id
-    entity_universe: partial
-  - identity_id: dim_corridor_identity
-    dataset_columns:
-    - corridor_id
-    entity_universe: partial
-- node_id: sf:railroad.network.dim_locomotive_class
-  descriptor:
-    qualified_name: railroad.network.dim_locomotive_class
-    display_name: Locomotive Class
-    description: Locomotive class in the Railroad Inc fleet.
-    synonyms: []
-    tags:
-    - dimension
-    - supply
-    - railroad
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: railroad.us-central-1
-      database: RAILROAD
-      schema: NETWORK
-      object: DIM_LOCOMOTIVE_CLASS
-      format: table
-  grain:
-    description: One row is one locomotive class.
-    components:
-    - identity_id: dim_locomotive_class_identity
-      dataset_columns:
-      - locomotive_class_id
-      description: Identifier of the locomotive class.
-  columns:
-  - name: locomotive_class_id
-    description: Identifier of the locomotive class.
-  - name: class_code
-    description: Class code.
-  - name: class_name
-    description: Class name.
-  entity_definitions:
-  - identity_id: dim_locomotive_class_identity
-    dataset_columns:
-    - locomotive_class_id
-    entity_universe: complete
-- node_id: sf:railroad.network.dim_crew_practice
-  descriptor:
-    qualified_name: railroad.network.dim_crew_practice
-    display_name: Crew Practice
-    description: Crew practice, including crew size and automation.
-    synonyms: []
-    tags:
-    - dimension
-    - supply
-    - railroad
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: railroad.us-central-1
-      database: RAILROAD
-      schema: NETWORK
-      object: DIM_CREW_PRACTICE
-      format: table
-  grain:
-    description: One row is one crew practice.
-    components:
-    - identity_id: dim_crew_practice_identity
-      dataset_columns:
-      - crew_practice_id
-      description: Identifier of the crew practice.
-  columns:
-  - name: crew_practice_id
-    description: Identifier of the crew practice.
-  - name: practice_code
-    description: Practice code.
-    value_description: crew_size, automation
-  - name: practice_name
-    description: Practice name.
-  entity_definitions:
-  - identity_id: dim_crew_practice_identity
-    dataset_columns:
-    - crew_practice_id
-    entity_universe: complete
-- node_id: sf:railroad.network.dim_weather_event
-  descriptor:
-    qualified_name: railroad.network.dim_weather_event
-    display_name: Weather Event
-    description: Storm or hurricane the network is being prepared for.
-    synonyms: []
-    tags:
-    - dimension
-    - supply
-    - railroad
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: railroad.us-central-1
-      database: RAILROAD
-      schema: NETWORK
-      object: DIM_WEATHER_EVENT
-      format: table
-  grain:
-    description: One row is one weather event.
-    components:
-    - identity_id: dim_weather_event_identity
-      dataset_columns:
-      - weather_event_id
-      description: Identifier of the weather event.
-  columns:
-  - name: weather_event_id
-    description: Identifier of the weather event.
-  - name: event_code
-    description: Event code.
-    value_description: hurricane, winter_storm, prior_disruption
-  - name: event_name
-    description: Event name.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  entity_definitions:
-  - identity_id: dim_weather_event_identity
-    dataset_columns:
-    - weather_event_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-- node_id: sf:railroad.network.dim_initiative
-  descriptor:
-    qualified_name: railroad.network.dim_initiative
-    display_name: Cost Initiative
-    description: Named savings program. Dollar savings sit on the price slice.
-    synonyms: []
-    tags:
-    - dimension
-    - supply
-    - railroad
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: railroad.us-central-1
-      database: RAILROAD
-      schema: NETWORK
-      object: DIM_INITIATIVE
-      format: table
-  grain:
-    description: One row is one cost initiative.
-    components:
-    - identity_id: dim_initiative_identity
-      dataset_columns:
-      - initiative_id
-      description: Identifier of the cost initiative.
-  columns:
-  - name: initiative_id
-    description: Identifier of the cost initiative.
-  - name: initiative_code
-    description: Initiative code.
-  - name: initiative_name
-    description: Initiative name.
-  entity_definitions:
-  - identity_id: dim_initiative_identity
-    dataset_columns:
-    - initiative_id
-    entity_universe: complete
-- node_id: sf:railroad.network.dim_technology
-  descriptor:
-    qualified_name: railroad.network.dim_technology
-    display_name: Technology
-    description: Technology expected to offset wage pressure. The offset dollars sit on the price slice.
-    synonyms: []
-    tags:
-    - dimension
-    - supply
-    - railroad
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: railroad.us-central-1
-      database: RAILROAD
-      schema: NETWORK
-      object: DIM_TECHNOLOGY
-      format: table
-  grain:
-    description: One row is one technology.
-    components:
-    - identity_id: dim_technology_identity
-      dataset_columns:
-      - technology_id
-      description: Identifier of the technology.
-  columns:
-  - name: technology_id
-    description: Identifier of the technology.
-  - name: technology_code
-    description: Technology code.
-  - name: technology_name
-    description: Technology name.
-  entity_definitions:
-  - identity_id: dim_technology_identity
-    dataset_columns:
-    - technology_id
-    entity_universe: complete
-- node_id: sf:railroad.network.dim_yard
-  descriptor:
-    qualified_name: railroad.network.dim_yard
-    display_name: Yard
-    description: Yard on the Railroad Inc network.
-    synonyms: []
-    tags:
-    - dimension
-    - supply
-    - railroad
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: railroad.us-central-1
-      database: RAILROAD
-      schema: NETWORK
-      object: DIM_YARD
-      format: table
-  grain:
-    description: One row is one yard.
-    components:
-    - identity_id: dim_yard_identity
-      dataset_columns:
-      - yard_id
-      description: Identifier of the yard.
-  columns:
-  - name: yard_id
-    description: Identifier of the yard.
-  - name: yard_code
-    description: Yard code.
-  - name: yard_name
-    description: Yard name.
+  - name: terminal_id
+    description: Identifier of the terminal.
+  - name: terminal_name
+    description: Terminal name.
   - name: metro_id
     description: Identifier of the related metro.
+  - name: region_id
+    description: Identifier of the related region.
   entity_definitions:
-  - identity_id: dim_yard_identity
+  - identity_id: dim_terminal_identity
     dataset_columns:
-    - yard_id
+    - terminal_id
     entity_universe: complete
   - identity_id: dim_metro_identity
     dataset_columns:
     - metro_id
     entity_universe: partial
-- node_id: sf:railroad.network.dim_resource_pool
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:railroad.supply.dim_division
   descriptor:
-    qualified_name: railroad.network.dim_resource_pool
-    display_name: Resource Pool
-    description: Pool of crews, locomotives, or other resources held for new business.
+    qualified_name: railroad.supply.dim_division
+    display_name: Operating Division
+    description: Operating division of the Railroad Inc network.
     synonyms: []
     tags:
     - dimension
@@ -339,34 +62,37 @@ nodes:
     properties:
       account: railroad.us-central-1
       database: RAILROAD
-      schema: NETWORK
-      object: DIM_RESOURCE_POOL
+      schema: SUPPLY
+      object: DIM_DIVISION
       format: table
   grain:
-    description: One row is one resource pool.
+    description: One row is one operating division.
     components:
-    - identity_id: dim_resource_pool_identity
+    - identity_id: dim_division_identity
       dataset_columns:
-      - resource_pool_id
-      description: Identifier of the resource pool.
+      - division_id
+      description: Identifier of the operating division.
   columns:
-  - name: resource_pool_id
-    description: Identifier of the resource pool.
-  - name: pool_code
-    description: Pool code.
-    value_description: crew, locomotive, other
-  - name: pool_name
-    description: Pool name.
+  - name: division_id
+    description: Identifier of the operating division.
+  - name: division_name
+    description: Operating Division name.
+  - name: region_id
+    description: Identifier of the related region.
   entity_definitions:
-  - identity_id: dim_resource_pool_identity
+  - identity_id: dim_division_identity
     dataset_columns:
-    - resource_pool_id
+    - division_id
     entity_universe: complete
-- node_id: sf:railroad.network.dim_service_metric
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:railroad.supply.dim_locomotive_type
   descriptor:
-    qualified_name: railroad.network.dim_service_metric
-    display_name: Service Metric
-    description: Service metric such as trip-plan compliance or velocity.
+    qualified_name: railroad.supply.dim_locomotive_type
+    display_name: Locomotive Type
+    description: Type of locomotive in the fleet.
     synonyms: []
     tags:
     - dimension
@@ -377,34 +103,458 @@ nodes:
     properties:
       account: railroad.us-central-1
       database: RAILROAD
-      schema: NETWORK
-      object: DIM_SERVICE_METRIC
+      schema: SUPPLY
+      object: DIM_LOCOMOTIVE_TYPE
       format: table
   grain:
-    description: One row is one service metric.
+    description: One row is one locomotive type.
     components:
-    - identity_id: dim_service_metric_identity
+    - identity_id: dim_locomotive_type_identity
       dataset_columns:
-      - service_metric_id
-      description: Identifier of the service metric.
+      - locomotive_type_id
+      description: Identifier of the locomotive type.
   columns:
-  - name: service_metric_id
-    description: Identifier of the service metric.
-  - name: metric_code
-    description: Metric code.
-    value_description: trip_plan, velocity, train_length
-  - name: metric_name
-    description: Metric name.
+  - name: locomotive_type_id
+    description: Identifier of the locomotive type.
+  - name: locomotive_type_code
+    description: Locomotive Type code.
+    value_description: road_freight, yard_switcher, distributed_power
+  - name: locomotive_type_name
+    description: Locomotive Type name.
   entity_definitions:
-  - identity_id: dim_service_metric_identity
+  - identity_id: dim_locomotive_type_identity
     dataset_columns:
-    - service_metric_id
+    - locomotive_type_id
     entity_universe: complete
+- node_id: sf:railroad.supply.dim_crew_district
+  descriptor:
+    qualified_name: railroad.supply.dim_crew_district
+    display_name: Crew District
+    description: District where train crews are based.
+    synonyms: []
+    tags:
+    - dimension
+    - supply
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: SUPPLY
+      object: DIM_CREW_DISTRICT
+      format: table
+  grain:
+    description: One row is one crew district.
+    components:
+    - identity_id: dim_crew_district_identity
+      dataset_columns:
+      - crew_district_id
+      description: Identifier of the crew district.
+  columns:
+  - name: crew_district_id
+    description: Identifier of the crew district.
+  - name: crew_district_name
+    description: Crew District name.
+  - name: division_id
+    description: Identifier of the related operating division.
+  entity_definitions:
+  - identity_id: dim_crew_district_identity
+    dataset_columns:
+    - crew_district_id
+    entity_universe: complete
+  - identity_id: dim_division_identity
+    dataset_columns:
+    - division_id
+    entity_universe: partial
+- node_id: sf:railroad.supply.dim_workforce_group
+  descriptor:
+    qualified_name: railroad.supply.dim_workforce_group
+    display_name: Workforce Group
+    description: Group of employees grouped for headcount reporting.
+    synonyms: []
+    tags:
+    - dimension
+    - supply
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: SUPPLY
+      object: DIM_WORKFORCE_GROUP
+      format: table
+  grain:
+    description: One row is one workforce group.
+    components:
+    - identity_id: dim_workforce_group_identity
+      dataset_columns:
+      - workforce_group_id
+      description: Identifier of the workforce group.
+  columns:
+  - name: workforce_group_id
+    description: Identifier of the workforce group.
+  - name: workforce_group_code
+    description: Workforce Group code.
+    value_description: train_and_engine, mechanical, engineering, dispatch, commercial, corporate
+  - name: workforce_group_name
+    description: Workforce Group name.
+  entity_definitions:
+  - identity_id: dim_workforce_group_identity
+    dataset_columns:
+    - workforce_group_id
+    entity_universe: complete
+- node_id: sf:railroad.supply.dim_equipment_type
+  descriptor:
+    qualified_name: railroad.supply.dim_equipment_type
+    display_name: Equipment Type
+    description: Type of rail equipment.
+    synonyms: []
+    tags:
+    - dimension
+    - supply
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: SUPPLY
+      object: DIM_EQUIPMENT_TYPE
+      format: table
+  grain:
+    description: One row is one equipment type.
+    components:
+    - identity_id: dim_equipment_type_identity
+      dataset_columns:
+      - equipment_type_id
+      description: Identifier of the equipment type.
+  columns:
+  - name: equipment_type_id
+    description: Identifier of the equipment type.
+  - name: equipment_type_code
+    description: Equipment Type code.
+    value_description: locomotive, covered_hopper, tank_car, intermodal_well_car, auto_rack, boxcar
+  - name: equipment_type_name
+    description: Equipment Type name.
+  entity_definitions:
+  - identity_id: dim_equipment_type_identity
+    dataset_columns:
+    - equipment_type_id
+    entity_universe: complete
+- node_id: sf:railroad.supply.dim_asset_category
+  descriptor:
+    qualified_name: railroad.supply.dim_asset_category
+    display_name: Asset Category
+    description: Category of physical asset for capital and maintenance.
+    synonyms: []
+    tags:
+    - dimension
+    - supply
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: SUPPLY
+      object: DIM_ASSET_CATEGORY
+      format: table
+  grain:
+    description: One row is one asset category.
+    components:
+    - identity_id: dim_asset_category_identity
+      dataset_columns:
+      - asset_category_id
+      description: Identifier of the asset category.
+  columns:
+  - name: asset_category_id
+    description: Identifier of the asset category.
+  - name: asset_category_code
+    description: Asset Category code.
+    value_description: track, bridge, tunnel, signal, locomotive, railcar, terminal
+  - name: asset_category_name
+    description: Asset Category name.
+  entity_definitions:
+  - identity_id: dim_asset_category_identity
+    dataset_columns:
+    - asset_category_id
+    entity_universe: complete
+- node_id: sf:railroad.supply.dim_productivity_initiative
+  descriptor:
+    qualified_name: railroad.supply.dim_productivity_initiative
+    display_name: Productivity Initiative
+    description: Named productivity or cost initiative.
+    synonyms: []
+    tags:
+    - dimension
+    - supply
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: SUPPLY
+      object: DIM_PRODUCTIVITY_INITIATIVE
+      format: table
+  grain:
+    description: One row is one productivity initiative.
+    components:
+    - identity_id: dim_productivity_initiative_identity
+      dataset_columns:
+      - productivity_initiative_id
+      description: Identifier of the productivity initiative.
+  columns:
+  - name: productivity_initiative_id
+    description: Identifier of the productivity initiative.
+  - name: productivity_initiative_name
+    description: Productivity Initiative name.
+  - name: division_id
+    description: Identifier of the related operating division.
+  entity_definitions:
+  - identity_id: dim_productivity_initiative_identity
+    dataset_columns:
+    - productivity_initiative_id
+    entity_universe: complete
+  - identity_id: dim_division_identity
+    dataset_columns:
+    - division_id
+    entity_universe: partial
+- node_id: sf:railroad.supply.dim_weather_event_type
+  descriptor:
+    qualified_name: railroad.supply.dim_weather_event_type
+    display_name: Weather Event Type
+    description: Type of weather event that disrupts operations.
+    synonyms: []
+    tags:
+    - dimension
+    - supply
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: SUPPLY
+      object: DIM_WEATHER_EVENT_TYPE
+      format: table
+  grain:
+    description: One row is one weather event type.
+    components:
+    - identity_id: dim_weather_event_type_identity
+      dataset_columns:
+      - weather_event_type_id
+      description: Identifier of the weather event type.
+  columns:
+  - name: weather_event_type_id
+    description: Identifier of the weather event type.
+  - name: weather_event_type_code
+    description: Weather Event Type code.
+    value_description: winter_storm, hurricane, flood, heat, none
+  - name: weather_event_type_name
+    description: Weather Event Type name.
+  entity_definitions:
+  - identity_id: dim_weather_event_type_identity
+    dataset_columns:
+    - weather_event_type_id
+    entity_universe: complete
+- node_id: sf:railroad.supply.dim_train_type
+  descriptor:
+    qualified_name: railroad.supply.dim_train_type
+    display_name: Train Type
+    description: Type of train operated.
+    synonyms: []
+    tags:
+    - dimension
+    - supply
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: SUPPLY
+      object: DIM_TRAIN_TYPE
+      format: table
+  grain:
+    description: One row is one train type.
+    components:
+    - identity_id: dim_train_type_identity
+      dataset_columns:
+      - train_type_id
+      description: Identifier of the train type.
+  columns:
+  - name: train_type_id
+    description: Identifier of the train type.
+  - name: train_type_code
+    description: Train Type code.
+    value_description: manifest, unit_bulk, intermodal, local
+  - name: train_type_name
+    description: Train Type name.
+  entity_definitions:
+  - identity_id: dim_train_type_identity
+    dataset_columns:
+    - train_type_id
+    entity_universe: complete
+- node_id: sf:railroad.supply.dim_maintenance_type
+  descriptor:
+    qualified_name: railroad.supply.dim_maintenance_type
+    display_name: Maintenance Type
+    description: Type of maintenance activity.
+    synonyms: []
+    tags:
+    - dimension
+    - supply
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: SUPPLY
+      object: DIM_MAINTENANCE_TYPE
+      format: table
+  grain:
+    description: One row is one maintenance type.
+    components:
+    - identity_id: dim_maintenance_type_identity
+      dataset_columns:
+      - maintenance_type_id
+      description: Identifier of the maintenance type.
+  columns:
+  - name: maintenance_type_id
+    description: Identifier of the maintenance type.
+  - name: maintenance_type_code
+    description: Maintenance Type code.
+    value_description: track_inspection, bridge_inspection, locomotive_overhaul, car_repair
+  - name: maintenance_type_name
+    description: Maintenance Type name.
+  entity_definitions:
+  - identity_id: dim_maintenance_type_identity
+    dataset_columns:
+    - maintenance_type_id
+    entity_universe: complete
+- node_id: sf:railroad.supply.dim_infrastructure_project
+  descriptor:
+    qualified_name: railroad.supply.dim_infrastructure_project
+    display_name: Infrastructure Project
+    description: Network infrastructure project such as a tunnel, bridge, or siding project.
+    synonyms: []
+    tags:
+    - dimension
+    - supply
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: SUPPLY
+      object: DIM_INFRASTRUCTURE_PROJECT
+      format: table
+  grain:
+    description: One row is one infrastructure project.
+    components:
+    - identity_id: dim_infrastructure_project_identity
+      dataset_columns:
+      - infrastructure_project_id
+      description: Identifier of the infrastructure project.
+  columns:
+  - name: infrastructure_project_id
+    description: Identifier of the infrastructure project.
+  - name: infrastructure_project_name
+    description: Infrastructure Project name.
+  - name: region_id
+    description: Identifier of the related region.
+  - name: asset_category_id
+    description: Identifier of the related asset category.
+  entity_definitions:
+  - identity_id: dim_infrastructure_project_identity
+    dataset_columns:
+    - infrastructure_project_id
+    entity_universe: complete
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+  - identity_id: dim_asset_category_identity
+    dataset_columns:
+    - asset_category_id
+    entity_universe: partial
+- node_id: sf:railroad.supply.fact_terminal_capacity
+  descriptor:
+    qualified_name: railroad.supply.fact_terminal_capacity
+    display_name: Terminal Capacity
+    description: Capacity and throughput of a terminal. Stores capacity in carloads.
+    synonyms: []
+    tags:
+    - fact
+    - supply
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: SUPPLY
+      object: FACT_TERMINAL_CAPACITY
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, terminal, service type.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_terminal_identity
+      dataset_columns:
+      - terminal_id
+      description: Identifier of the terminal.
+    - identity_id: dim_service_type_identity
+      dataset_columns:
+      - service_type_id
+      description: Identifier of the service type.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: terminal_id
+    description: Identifier of the related terminal.
+  - name: service_type_id
+    description: Identifier of the related service type.
+  - name: terminal_capacity_quantity
+    description: Terminal capacity in carloads.
+  - name: terminal_processed_quantity
+    description: Cars processed in carloads.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_terminal_identity
+    dataset_columns:
+    - terminal_id
+    entity_universe: partial
+  - identity_id: dim_service_type_identity
+    dataset_columns:
+    - service_type_id
+    entity_universe: partial
 - node_id: sf:railroad.supply.fact_network_capacity
   descriptor:
     qualified_name: railroad.supply.fact_network_capacity
     display_name: Network Capacity
-    description: How much volume the network can hold. Capacity, not a price.
+    description: Train and carload capacity of a lane. Stores capacity in trains and carloads.
     synonyms: []
     tags:
     - fact
@@ -419,47 +569,70 @@ nodes:
       object: FACT_NETWORK_CAPACITY
       format: table
   grain:
-    description: One row is one network capacity.
+    description: One row is one combination of fiscal quarter, scenario, lane, service type, train type.
     components:
-    - identity_id: fact_network_capacity_identity
+    - identity_id: dim_fiscal_quarter_identity
       dataset_columns:
-      - network_capacity_id
-      description: Identifier of the network capacity.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_lane_identity
+      dataset_columns:
+      - lane_id
+      description: Identifier of the lane.
+    - identity_id: dim_service_type_identity
+      dataset_columns:
+      - service_type_id
+      description: Identifier of the service type.
+    - identity_id: dim_train_type_identity
+      dataset_columns:
+      - train_type_id
+      description: Identifier of the train type.
   columns:
-  - name: network_capacity_id
-    description: Identifier of the network capacity.
-  - name: capacity_quantity
-    description: Capacity quantity on this row. The value is a quantity, not a price.
-  - name: absorbable_growth_quantity
-    description: Absorbable growth quantity on this row. The value is a quantity, not a price.
   - name: fiscal_quarter_id
     description: Identifier of the related fiscal quarter.
-  - name: region_id
-    description: Identifier of the related region.
-  - name: corridor_id
-    description: Identifier of the related corridor.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: lane_id
+    description: Identifier of the related lane.
+  - name: service_type_id
+    description: Identifier of the related service type.
+  - name: train_type_id
+    description: Identifier of the related train type.
+  - name: train_capacity_quantity
+    description: Train capacity in trains.
+  - name: carload_capacity_quantity
+    description: Carload capacity in carloads.
   entity_definitions:
-  - identity_id: fact_network_capacity_identity
-    dataset_columns:
-    - network_capacity_id
-    entity_universe: complete
   - identity_id: dim_fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: dim_region_identity
+  - identity_id: dim_scenario_identity
     dataset_columns:
-    - region_id
+    - scenario_id
     entity_universe: partial
-  - identity_id: dim_corridor_identity
+  - identity_id: dim_lane_identity
     dataset_columns:
-    - corridor_id
+    - lane_id
     entity_universe: partial
-- node_id: sf:railroad.supply.fact_spare_capacity
+  - identity_id: dim_service_type_identity
+    dataset_columns:
+    - service_type_id
+    entity_universe: partial
+  - identity_id: dim_train_type_identity
+    dataset_columns:
+    - train_type_id
+    entity_universe: partial
+- node_id: sf:railroad.supply.fact_service_performance
   descriptor:
-    qualified_name: railroad.supply.fact_spare_capacity
-    display_name: Spare Capacity
-    description: Spare capacity and utilization, and the growth the network can take without new resources.
+    qualified_name: railroad.supply.fact_service_performance
+    display_name: Service Performance
+    description: Operating service measures for a terminal and service type. Stores dwell in hours, velocity in miles per
+      day, trip-plan compliance in percent, and train length in cars per train.
     synonyms: []
     tags:
     - fact
@@ -471,52 +644,66 @@ nodes:
       account: railroad.us-central-1
       database: RAILROAD
       schema: SUPPLY
-      object: FACT_SPARE_CAPACITY
+      object: FACT_SERVICE_PERFORMANCE
       format: table
   grain:
-    description: One row is one spare capacity.
+    description: One row is one combination of fiscal quarter, scenario, terminal, service type.
     components:
-    - identity_id: fact_spare_capacity_identity
+    - identity_id: dim_fiscal_quarter_identity
       dataset_columns:
-      - spare_capacity_id
-      description: Identifier of the spare capacity.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_terminal_identity
+      dataset_columns:
+      - terminal_id
+      description: Identifier of the terminal.
+    - identity_id: dim_service_type_identity
+      dataset_columns:
+      - service_type_id
+      description: Identifier of the service type.
   columns:
-  - name: spare_capacity_id
-    description: Identifier of the spare capacity.
-  - name: spare_quantity
-    description: Spare quantity on this row. The value is a quantity, not a price.
-  - name: utilization_index
-    description: Utilization index.
-  - name: volume_without_new_resources_quantity
-    description: Volume without new resources quantity on this row. The value is a quantity, not a price.
   - name: fiscal_quarter_id
     description: Identifier of the related fiscal quarter.
-  - name: resource_pool_id
-    description: Identifier of the related resource pool.
-  - name: region_id
-    description: Identifier of the related region.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: terminal_id
+    description: Identifier of the related terminal.
+  - name: service_type_id
+    description: Identifier of the related service type.
+  - name: terminal_dwell_hours
+    description: Terminal dwell in hours.
+  - name: car_velocity_miles_per_day
+    description: Car velocity in miles per day.
+  - name: trip_plan_compliance_percent
+    description: Trip-plan compliance in percent.
+  - name: average_train_length_cars
+    description: Average train length in cars per train.
   entity_definitions:
-  - identity_id: fact_spare_capacity_identity
-    dataset_columns:
-    - spare_capacity_id
-    entity_universe: complete
   - identity_id: dim_fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: dim_resource_pool_identity
+  - identity_id: dim_scenario_identity
     dataset_columns:
-    - resource_pool_id
+    - scenario_id
     entity_universe: partial
-  - identity_id: dim_region_identity
+  - identity_id: dim_terminal_identity
     dataset_columns:
-    - region_id
+    - terminal_id
     entity_universe: partial
-- node_id: sf:railroad.supply.fact_train_length
+  - identity_id: dim_service_type_identity
+    dataset_columns:
+    - service_type_id
+    entity_universe: partial
+- node_id: sf:railroad.supply.fact_train_operations
   descriptor:
-    qualified_name: railroad.supply.fact_train_length
-    display_name: Train Length
-    description: Train length. A capacity metric, not a price.
+    qualified_name: railroad.supply.fact_train_operations
+    display_name: Train Operations
+    description: Trains operated on a lane. Stores quantity in trains and train-miles and length in cars per train.
     synonyms: []
     tags:
     - fact
@@ -528,50 +715,74 @@ nodes:
       account: railroad.us-central-1
       database: RAILROAD
       schema: SUPPLY
-      object: FACT_TRAIN_LENGTH
+      object: FACT_TRAIN_OPERATIONS
       format: table
   grain:
-    description: One row is one train length.
+    description: One row is one combination of fiscal quarter, scenario, lane, operating division, train type.
     components:
-    - identity_id: fact_train_length_identity
+    - identity_id: dim_fiscal_quarter_identity
       dataset_columns:
-      - train_length_id
-      description: Identifier of the train length.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_lane_identity
+      dataset_columns:
+      - lane_id
+      description: Identifier of the lane.
+    - identity_id: dim_division_identity
+      dataset_columns:
+      - division_id
+      description: Identifier of the operating division.
+    - identity_id: dim_train_type_identity
+      dataset_columns:
+      - train_type_id
+      description: Identifier of the train type.
   columns:
-  - name: train_length_id
-    description: Identifier of the train length.
-  - name: length_feet
-    description: Length feet.
-  - name: record_flag
-    description: Whether this row is marked record.
   - name: fiscal_quarter_id
     description: Identifier of the related fiscal quarter.
-  - name: service_metric_id
-    description: Identifier of the related service metric.
-  - name: region_id
-    description: Identifier of the related region.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: lane_id
+    description: Identifier of the related lane.
+  - name: division_id
+    description: Identifier of the related operating division.
+  - name: train_type_id
+    description: Identifier of the related train type.
+  - name: train_quantity
+    description: Trains operated in trains.
+  - name: train_mile_quantity
+    description: Train movement in train-miles.
+  - name: average_train_length_cars
+    description: Average train length in cars per train.
   entity_definitions:
-  - identity_id: fact_train_length_identity
-    dataset_columns:
-    - train_length_id
-    entity_universe: complete
   - identity_id: dim_fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: dim_service_metric_identity
+  - identity_id: dim_scenario_identity
     dataset_columns:
-    - service_metric_id
+    - scenario_id
     entity_universe: partial
-  - identity_id: dim_region_identity
+  - identity_id: dim_lane_identity
     dataset_columns:
-    - region_id
+    - lane_id
     entity_universe: partial
-- node_id: sf:railroad.supply.fact_velocity
+  - identity_id: dim_division_identity
+    dataset_columns:
+    - division_id
+    entity_universe: partial
+  - identity_id: dim_train_type_identity
+    dataset_columns:
+    - train_type_id
+    entity_universe: partial
+- node_id: sf:railroad.supply.fact_locomotive_resource
   descriptor:
-    qualified_name: railroad.supply.fact_velocity
-    display_name: Velocity
-    description: Train velocity. A service capacity metric, not a price.
+    qualified_name: railroad.supply.fact_locomotive_resource
+    display_name: Locomotive Resource
+    description: Locomotives owned and available by type and division. Stores quantity in locomotives.
     synonyms: []
     tags:
     - fact
@@ -583,50 +794,62 @@ nodes:
       account: railroad.us-central-1
       database: RAILROAD
       schema: SUPPLY
-      object: FACT_VELOCITY
+      object: FACT_LOCOMOTIVE_RESOURCE
       format: table
   grain:
-    description: One row is one velocity.
+    description: One row is one combination of fiscal quarter, scenario, locomotive type, operating division.
     components:
-    - identity_id: fact_velocity_identity
+    - identity_id: dim_fiscal_quarter_identity
       dataset_columns:
-      - velocity_id
-      description: Identifier of the velocity.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_locomotive_type_identity
+      dataset_columns:
+      - locomotive_type_id
+      description: Identifier of the locomotive type.
+    - identity_id: dim_division_identity
+      dataset_columns:
+      - division_id
+      description: Identifier of the operating division.
   columns:
-  - name: velocity_id
-    description: Identifier of the velocity.
-  - name: velocity_mph
-    description: Velocity mph.
-  - name: record_flag
-    description: Whether this row is marked record.
   - name: fiscal_quarter_id
     description: Identifier of the related fiscal quarter.
-  - name: service_metric_id
-    description: Identifier of the related service metric.
-  - name: region_id
-    description: Identifier of the related region.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: locomotive_type_id
+    description: Identifier of the related locomotive type.
+  - name: division_id
+    description: Identifier of the related operating division.
+  - name: locomotive_unit_quantity
+    description: Locomotive fleet in locomotives.
+  - name: available_locomotive_quantity
+    description: Available locomotives in locomotives.
   entity_definitions:
-  - identity_id: fact_velocity_identity
-    dataset_columns:
-    - velocity_id
-    entity_universe: complete
   - identity_id: dim_fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: dim_service_metric_identity
+  - identity_id: dim_scenario_identity
     dataset_columns:
-    - service_metric_id
+    - scenario_id
     entity_universe: partial
-  - identity_id: dim_region_identity
+  - identity_id: dim_locomotive_type_identity
     dataset_columns:
-    - region_id
+    - locomotive_type_id
     entity_universe: partial
-- node_id: sf:railroad.supply.fact_trip_plan
+  - identity_id: dim_division_identity
+    dataset_columns:
+    - division_id
+    entity_universe: partial
+- node_id: sf:railroad.supply.fact_crew_resource
   descriptor:
-    qualified_name: railroad.supply.fact_trip_plan
-    display_name: Trip-Plan Compliance
-    description: Trip-plan compliance expected next quarter after a weak start.
+    qualified_name: railroad.supply.fact_crew_resource
+    display_name: Crew Resource
+    description: Train crews available by district. Stores quantity in crews and employees.
     synonyms: []
     tags:
     - fact
@@ -638,270 +861,62 @@ nodes:
       account: railroad.us-central-1
       database: RAILROAD
       schema: SUPPLY
-      object: FACT_TRIP_PLAN
+      object: FACT_CREW_RESOURCE
       format: table
   grain:
-    description: One row is one trip-plan compliance.
+    description: One row is one combination of fiscal quarter, scenario, crew district, workforce group.
     components:
-    - identity_id: fact_trip_plan_identity
+    - identity_id: dim_fiscal_quarter_identity
       dataset_columns:
-      - trip_plan_id
-      description: Identifier of the trip-plan compliance.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_crew_district_identity
+      dataset_columns:
+      - crew_district_id
+      description: Identifier of the crew district.
+    - identity_id: dim_workforce_group_identity
+      dataset_columns:
+      - workforce_group_id
+      description: Identifier of the workforce group.
   columns:
-  - name: trip_plan_id
-    description: Identifier of the trip-plan compliance.
-  - name: compliance_rate
-    description: Compliance rate.
-  - name: next_quarter_expected_rate
-    description: Next quarter expected rate.
-  - name: weak_start_flag
-    description: Whether this row is marked weak start.
   - name: fiscal_quarter_id
     description: Identifier of the related fiscal quarter.
-  - name: service_metric_id
-    description: Identifier of the related service metric.
-  - name: region_id
-    description: Identifier of the related region.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: crew_district_id
+    description: Identifier of the related crew district.
+  - name: workforce_group_id
+    description: Identifier of the related workforce group.
+  - name: crew_quantity
+    description: Crews in crews.
+  - name: crew_employee_quantity
+    description: Crew employees in employees.
   entity_definitions:
-  - identity_id: fact_trip_plan_identity
-    dataset_columns:
-    - trip_plan_id
-    entity_universe: complete
   - identity_id: dim_fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: dim_service_metric_identity
+  - identity_id: dim_scenario_identity
     dataset_columns:
-    - service_metric_id
+    - scenario_id
     entity_universe: partial
-  - identity_id: dim_region_identity
+  - identity_id: dim_crew_district_identity
     dataset_columns:
-    - region_id
+    - crew_district_id
     entity_universe: partial
-- node_id: sf:railroad.supply.fact_service_level
-  descriptor:
-    qualified_name: railroad.supply.fact_service_level
-    display_name: Service Level
-    description: Service level versus a prior best period, and whether it supports a commercial conversation.
-    synonyms: []
-    tags:
-    - fact
-    - supply
-    - railroad
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: railroad.us-central-1
-      database: RAILROAD
-      schema: SUPPLY
-      object: FACT_SERVICE_LEVEL
-      format: table
-  grain:
-    description: One row is one service level.
-    components:
-    - identity_id: fact_service_level_identity
-      dataset_columns:
-      - service_level_id
-      description: Identifier of the service level.
-  columns:
-  - name: service_level_id
-    description: Identifier of the service level.
-  - name: service_index
-    description: Service index.
-  - name: prior_best_gap
-    description: Prior best gap.
-  - name: commercial_support_flag
-    description: Whether this row is marked commercial support.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: service_metric_id
-    description: Identifier of the related service metric.
-  - name: calendar_day_id
-    description: Identifier of the related calendar day.
-  entity_definitions:
-  - identity_id: fact_service_level_identity
+  - identity_id: dim_workforce_group_identity
     dataset_columns:
-    - service_level_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_service_metric_identity
-    dataset_columns:
-    - service_metric_id
-    entity_universe: partial
-  - identity_id: dim_calendar_day_identity
-    dataset_columns:
-    - calendar_day_id
-    entity_universe: partial
-- node_id: sf:railroad.supply.fact_service_recovery
-  descriptor:
-    qualified_name: railroad.supply.fact_service_recovery
-    display_name: Service Recovery
-    description: How much of a service recovery was weather versus operating changes.
-    synonyms: []
-    tags:
-    - fact
-    - supply
-    - railroad
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: railroad.us-central-1
-      database: RAILROAD
-      schema: SUPPLY
-      object: FACT_SERVICE_RECOVERY
-      format: table
-  grain:
-    description: One row is one service recovery.
-    components:
-    - identity_id: fact_service_recovery_identity
-      dataset_columns:
-      - service_recovery_id
-      description: Identifier of the service recovery.
-  columns:
-  - name: service_recovery_id
-    description: Identifier of the service recovery.
-  - name: weather_share_rate
-    description: Weather share rate.
-  - name: operating_change_share_rate
-    description: Operating change share rate.
-  - name: further_recovery_flag
-    description: Whether this row is marked further recovery.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: weather_event_id
-    description: Identifier of the related weather event.
-  - name: region_id
-    description: Identifier of the related region.
-  entity_definitions:
-  - identity_id: fact_service_recovery_identity
-    dataset_columns:
-    - service_recovery_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_weather_event_identity
-    dataset_columns:
-    - weather_event_id
-    entity_universe: partial
-  - identity_id: dim_region_identity
-    dataset_columns:
-    - region_id
-    entity_universe: partial
-- node_id: sf:railroad.supply.fact_weather_disruption
-  descriptor:
-    qualified_name: railroad.supply.fact_weather_disruption
-    display_name: Weather Disruption
-    description: Hours and days lost to weather. Lost carloads stay on the demand slice.
-    synonyms: []
-    tags:
-    - fact
-    - supply
-    - railroad
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: railroad.us-central-1
-      database: RAILROAD
-      schema: SUPPLY
-      object: FACT_WEATHER_DISRUPTION
-      format: table
-  grain:
-    description: One row is one weather disruption.
-    components:
-    - identity_id: fact_weather_disruption_identity
-      dataset_columns:
-      - weather_disruption_id
-      description: Identifier of the weather disruption.
-  columns:
-  - name: weather_disruption_id
-    description: Identifier of the weather disruption.
-  - name: delay_hours
-    description: Delay hours.
-  - name: recovery_days
-    description: Recovery days.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: weather_event_id
-    description: Identifier of the related weather event.
-  - name: region_id
-    description: Identifier of the related region.
-  entity_definitions:
-  - identity_id: fact_weather_disruption_identity
-    dataset_columns:
-    - weather_disruption_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_weather_event_identity
-    dataset_columns:
-    - weather_event_id
-    entity_universe: partial
-  - identity_id: dim_region_identity
-    dataset_columns:
-    - region_id
-    entity_universe: partial
-- node_id: sf:railroad.supply.fact_storm_plan
-  descriptor:
-    qualified_name: railroad.supply.fact_storm_plan
-    display_name: Storm Plan
-    description: How the network is prepared for a storm relative to the prior weather setback.
-    synonyms: []
-    tags:
-    - fact
-    - supply
-    - railroad
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: railroad.us-central-1
-      database: RAILROAD
-      schema: SUPPLY
-      object: FACT_STORM_PLAN
-      format: table
-  grain:
-    description: One row is one storm plan.
-    components:
-    - identity_id: fact_storm_plan_identity
-      dataset_columns:
-      - storm_plan_id
-      description: Identifier of the storm plan.
-  columns:
-  - name: storm_plan_id
-    description: Identifier of the storm plan.
-  - name: readiness_code
-    description: Readiness code.
-  - name: differs_from_prior_event_flag
-    description: Whether this row is marked differs from prior event.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: weather_event_id
-    description: Identifier of the related weather event.
-  entity_definitions:
-  - identity_id: fact_storm_plan_identity
-    dataset_columns:
-    - storm_plan_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_weather_event_identity
-    dataset_columns:
-    - weather_event_id
+    - workforce_group_id
     entity_universe: partial
 - node_id: sf:railroad.supply.fact_headcount
   descriptor:
     qualified_name: railroad.supply.fact_headcount
     display_name: Headcount
-    description: Headcount and whether staffing can support the volume plan.
+    description: Employees by workforce group and division. Stores quantity in employees.
     synonyms: []
     tags:
     - fact
@@ -916,43 +931,60 @@ nodes:
       object: FACT_HEADCOUNT
       format: table
   grain:
-    description: One row is one headcount.
+    description: One row is one combination of fiscal quarter, scenario, workforce group, operating division.
     components:
-    - identity_id: fact_headcount_identity
+    - identity_id: dim_fiscal_quarter_identity
       dataset_columns:
-      - headcount_id
-      description: Identifier of the headcount.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_workforce_group_identity
+      dataset_columns:
+      - workforce_group_id
+      description: Identifier of the workforce group.
+    - identity_id: dim_division_identity
+      dataset_columns:
+      - division_id
+      description: Identifier of the operating division.
   columns:
-  - name: headcount_id
-    description: Identifier of the headcount.
-  - name: headcount_quantity
-    description: Headcount quantity on this row. The value is a quantity, not a price.
-  - name: can_support_volume_flag
-    description: Whether this row is marked can support volume.
-  - name: record_low_flag
-    description: Whether this row is marked record low.
   - name: fiscal_quarter_id
     description: Identifier of the related fiscal quarter.
-  - name: resource_pool_id
-    description: Identifier of the related resource pool.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: workforce_group_id
+    description: Identifier of the related workforce group.
+  - name: division_id
+    description: Identifier of the related operating division.
+  - name: employee_quantity
+    description: Employees in employees.
+  - name: trainee_quantity
+    description: Trainees in employees.
   entity_definitions:
-  - identity_id: fact_headcount_identity
-    dataset_columns:
-    - headcount_id
-    entity_universe: complete
   - identity_id: dim_fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: dim_resource_pool_identity
+  - identity_id: dim_scenario_identity
     dataset_columns:
-    - resource_pool_id
+    - scenario_id
     entity_universe: partial
-- node_id: sf:railroad.supply.fact_workforce_productivity
+  - identity_id: dim_workforce_group_identity
+    dataset_columns:
+    - workforce_group_id
+    entity_universe: partial
+  - identity_id: dim_division_identity
+    dataset_columns:
+    - division_id
+    entity_universe: partial
+- node_id: sf:railroad.supply.fact_equipment_resource
   descriptor:
-    qualified_name: railroad.supply.fact_workforce_productivity
-    display_name: Workforce Productivity
-    description: Workforce productivity and whether the current headcount can still improve.
+    qualified_name: railroad.supply.fact_equipment_resource
+    display_name: Equipment Resource
+    description: Rail equipment owned and available by type. Stores quantity in railcars and locomotives as labelled by equipment
+      type.
     synonyms: []
     tags:
     - fact
@@ -964,46 +996,62 @@ nodes:
       account: railroad.us-central-1
       database: RAILROAD
       schema: SUPPLY
-      object: FACT_WORKFORCE_PRODUCTIVITY
+      object: FACT_EQUIPMENT_RESOURCE
       format: table
   grain:
-    description: One row is one workforce productivity.
+    description: One row is one combination of fiscal quarter, scenario, equipment type, operating division.
     components:
-    - identity_id: fact_workforce_productivity_identity
+    - identity_id: dim_fiscal_quarter_identity
       dataset_columns:
-      - workforce_productivity_id
-      description: Identifier of the workforce productivity.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_equipment_type_identity
+      dataset_columns:
+      - equipment_type_id
+      description: Identifier of the equipment type.
+    - identity_id: dim_division_identity
+      dataset_columns:
+      - division_id
+      description: Identifier of the operating division.
   columns:
-  - name: workforce_productivity_id
-    description: Identifier of the workforce productivity.
-  - name: productivity_index
-    description: Productivity index.
-  - name: further_gain_flag
-    description: Whether this row is marked further gain.
-  - name: volume_growth_compatible_flag
-    description: Whether this row is marked volume growth compatible.
   - name: fiscal_quarter_id
     description: Identifier of the related fiscal quarter.
-  - name: resource_pool_id
-    description: Identifier of the related resource pool.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: equipment_type_id
+    description: Identifier of the related equipment type.
+  - name: division_id
+    description: Identifier of the related operating division.
+  - name: equipment_unit_quantity
+    description: Equipment fleet in units.
+  - name: available_equipment_quantity
+    description: Available equipment in units.
   entity_definitions:
-  - identity_id: fact_workforce_productivity_identity
-    dataset_columns:
-    - workforce_productivity_id
-    entity_universe: complete
   - identity_id: dim_fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: dim_resource_pool_identity
+  - identity_id: dim_scenario_identity
     dataset_columns:
-    - resource_pool_id
+    - scenario_id
     entity_universe: partial
-- node_id: sf:railroad.supply.fact_union_jobs
+  - identity_id: dim_equipment_type_identity
+    dataset_columns:
+    - equipment_type_id
+    entity_universe: partial
+  - identity_id: dim_division_identity
+    dataset_columns:
+    - division_id
+    entity_universe: partial
+- node_id: sf:railroad.supply.fact_yard_inventory
   descriptor:
-    qualified_name: railroad.supply.fact_union_jobs
-    display_name: Union Job Protection
-    description: Whether a commitment to protect union jobs slows productivity.
+    qualified_name: railroad.supply.fact_yard_inventory
+    display_name: Yard Inventory
+    description: Cars held in a terminal yard. Stores quantity in carloads.
     synonyms: []
     tags:
     - fact
@@ -1015,44 +1063,60 @@ nodes:
       account: railroad.us-central-1
       database: RAILROAD
       schema: SUPPLY
-      object: FACT_UNION_JOBS
+      object: FACT_YARD_INVENTORY
       format: table
   grain:
-    description: One row is one union job protection.
+    description: One row is one combination of fiscal quarter, scenario, terminal, equipment type.
     components:
-    - identity_id: fact_union_jobs_identity
+    - identity_id: dim_fiscal_quarter_identity
       dataset_columns:
-      - union_jobs_id
-      description: Identifier of the union job protection.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_terminal_identity
+      dataset_columns:
+      - terminal_id
+      description: Identifier of the terminal.
+    - identity_id: dim_equipment_type_identity
+      dataset_columns:
+      - equipment_type_id
+      description: Identifier of the equipment type.
   columns:
-  - name: union_jobs_id
-    description: Identifier of the union job protection.
-  - name: protection_flag
-    description: Whether this row is marked protection.
-  - name: slows_productivity_flag
-    description: Whether this row is marked slows productivity.
   - name: fiscal_quarter_id
     description: Identifier of the related fiscal quarter.
-  - name: resource_pool_id
-    description: Identifier of the related resource pool.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: terminal_id
+    description: Identifier of the related terminal.
+  - name: equipment_type_id
+    description: Identifier of the related equipment type.
+  - name: yard_car_quantity
+    description: Cars in yard in carloads.
   entity_definitions:
-  - identity_id: fact_union_jobs_identity
-    dataset_columns:
-    - union_jobs_id
-    entity_universe: complete
   - identity_id: dim_fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: dim_resource_pool_identity
+  - identity_id: dim_scenario_identity
     dataset_columns:
-    - resource_pool_id
+    - scenario_id
     entity_universe: partial
-- node_id: sf:railroad.supply.fact_crew_automation
+  - identity_id: dim_terminal_identity
+    dataset_columns:
+    - terminal_id
+    entity_universe: partial
+  - identity_id: dim_equipment_type_identity
+    dataset_columns:
+    - equipment_type_id
+    entity_universe: partial
+- node_id: sf:railroad.supply.fact_track_infrastructure
   descriptor:
-    qualified_name: railroad.supply.fact_crew_automation
-    display_name: Crew Size and Automation
-    description: Crew size and automation progress under the current regulatory backdrop.
+    qualified_name: railroad.supply.fact_track_infrastructure
+    display_name: Track Infrastructure
+    description: Track and siding base by division and asset category. Stores quantity in track-miles.
     synonyms: []
     tags:
     - fact
@@ -1064,46 +1128,62 @@ nodes:
       account: railroad.us-central-1
       database: RAILROAD
       schema: SUPPLY
-      object: FACT_CREW_AUTOMATION
+      object: FACT_TRACK_INFRASTRUCTURE
       format: table
   grain:
-    description: One row is one crew size and automation.
+    description: One row is one combination of fiscal quarter, scenario, operating division, asset category.
     components:
-    - identity_id: fact_crew_automation_identity
+    - identity_id: dim_fiscal_quarter_identity
       dataset_columns:
-      - crew_automation_id
-      description: Identifier of the crew size and automation.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_division_identity
+      dataset_columns:
+      - division_id
+      description: Identifier of the operating division.
+    - identity_id: dim_asset_category_identity
+      dataset_columns:
+      - asset_category_id
+      description: Identifier of the asset category.
   columns:
-  - name: crew_automation_id
-    description: Identifier of the crew size and automation.
-  - name: crew_size_quantity
-    description: Crew size quantity on this row. The value is a quantity, not a price.
-  - name: automation_progress_flag
-    description: Whether this row is marked automation progress.
-  - name: regulatory_permission_flag
-    description: Whether this row is marked regulatory permission.
   - name: fiscal_quarter_id
     description: Identifier of the related fiscal quarter.
-  - name: crew_practice_id
-    description: Identifier of the related crew practice.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: division_id
+    description: Identifier of the related operating division.
+  - name: asset_category_id
+    description: Identifier of the related asset category.
+  - name: track_mile_quantity
+    description: Track base in track-miles.
+  - name: siding_quantity
+    description: Sidings in sidings.
   entity_definitions:
-  - identity_id: fact_crew_automation_identity
-    dataset_columns:
-    - crew_automation_id
-    entity_universe: complete
   - identity_id: dim_fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: dim_crew_practice_identity
+  - identity_id: dim_scenario_identity
     dataset_columns:
-    - crew_practice_id
+    - scenario_id
     entity_universe: partial
-- node_id: sf:railroad.supply.fact_locomotive_fleet
+  - identity_id: dim_division_identity
+    dataset_columns:
+    - division_id
+    entity_universe: partial
+  - identity_id: dim_asset_category_identity
+    dataset_columns:
+    - asset_category_id
+    entity_universe: partial
+- node_id: sf:railroad.supply.fact_weather_disruption
   descriptor:
-    qualified_name: railroad.supply.fact_locomotive_fleet
-    display_name: Locomotive Fleet
-    description: Locomotive units, fleet condition, and whether more refresh is needed.
+    qualified_name: railroad.supply.fact_weather_disruption
+    display_name: Weather Disruption
+    description: Disruption from a weather event by division. Stores duration in hours and delayed trains in trains.
     synonyms: []
     tags:
     - fact
@@ -1115,46 +1195,63 @@ nodes:
       account: railroad.us-central-1
       database: RAILROAD
       schema: SUPPLY
-      object: FACT_LOCOMOTIVE_FLEET
+      object: FACT_WEATHER_DISRUPTION
       format: table
   grain:
-    description: One row is one locomotive fleet.
+    description: One row is one combination of fiscal quarter, scenario, weather event type, operating division.
     components:
-    - identity_id: fact_locomotive_fleet_identity
+    - identity_id: dim_fiscal_quarter_identity
       dataset_columns:
-      - locomotive_fleet_id
-      description: Identifier of the locomotive fleet.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_weather_event_type_identity
+      dataset_columns:
+      - weather_event_type_id
+      description: Identifier of the weather event type.
+    - identity_id: dim_division_identity
+      dataset_columns:
+      - division_id
+      description: Identifier of the operating division.
   columns:
-  - name: locomotive_fleet_id
-    description: Identifier of the locomotive fleet.
-  - name: unit_quantity
-    description: Unit quantity on this row. The value is a quantity, not a price.
-  - name: condition_code
-    description: Condition code.
-  - name: refresh_needed_flag
-    description: Whether this row is marked refresh needed.
   - name: fiscal_quarter_id
     description: Identifier of the related fiscal quarter.
-  - name: locomotive_class_id
-    description: Identifier of the related locomotive class.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: weather_event_type_id
+    description: Identifier of the related weather event type.
+  - name: division_id
+    description: Identifier of the related operating division.
+  - name: disruption_duration_hours
+    description: Disruption duration in hours.
+  - name: delayed_train_quantity
+    description: Delayed trains in trains.
   entity_definitions:
-  - identity_id: fact_locomotive_fleet_identity
-    dataset_columns:
-    - locomotive_fleet_id
-    entity_universe: complete
   - identity_id: dim_fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: dim_locomotive_class_identity
+  - identity_id: dim_scenario_identity
     dataset_columns:
-    - locomotive_class_id
+    - scenario_id
     entity_universe: partial
-- node_id: sf:railroad.supply.fact_maintenance
+  - identity_id: dim_weather_event_type_identity
+    dataset_columns:
+    - weather_event_type_id
+    entity_universe: partial
+  - identity_id: dim_division_identity
+    dataset_columns:
+    - division_id
+    entity_universe: partial
+- node_id: sf:railroad.supply.fact_maintenance_activity
   descriptor:
-    qualified_name: railroad.supply.fact_maintenance
-    display_name: Fleet Maintenance
-    description: Whether the locomotive refresh program is ending and the fleet condition that remains.
+    qualified_name: railroad.supply.fact_maintenance_activity
+    display_name: Maintenance Activity
+    description: Maintenance work performed by type and division. Stores quantity in units inspected or repaired as labelled
+      by maintenance type.
     synonyms: []
     tags:
     - fact
@@ -1166,44 +1263,72 @@ nodes:
       account: railroad.us-central-1
       database: RAILROAD
       schema: SUPPLY
-      object: FACT_MAINTENANCE
+      object: FACT_MAINTENANCE_ACTIVITY
       format: table
   grain:
-    description: One row is one fleet maintenance.
+    description: One row is one combination of fiscal quarter, scenario, maintenance type, asset category, operating division.
     components:
-    - identity_id: fact_maintenance_identity
+    - identity_id: dim_fiscal_quarter_identity
       dataset_columns:
-      - maintenance_id
-      description: Identifier of the fleet maintenance.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_maintenance_type_identity
+      dataset_columns:
+      - maintenance_type_id
+      description: Identifier of the maintenance type.
+    - identity_id: dim_asset_category_identity
+      dataset_columns:
+      - asset_category_id
+      description: Identifier of the asset category.
+    - identity_id: dim_division_identity
+      dataset_columns:
+      - division_id
+      description: Identifier of the operating division.
   columns:
-  - name: maintenance_id
-    description: Identifier of the fleet maintenance.
-  - name: program_ending_flag
-    description: Whether this row is marked program ending.
-  - name: refresh_complete_flag
-    description: Whether this row is marked refresh complete.
   - name: fiscal_quarter_id
     description: Identifier of the related fiscal quarter.
-  - name: locomotive_class_id
-    description: Identifier of the related locomotive class.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: maintenance_type_id
+    description: Identifier of the related maintenance type.
+  - name: asset_category_id
+    description: Identifier of the related asset category.
+  - name: division_id
+    description: Identifier of the related operating division.
+  - name: maintenance_unit_quantity
+    description: Maintenance work in units.
+  - name: inspected_unit_quantity
+    description: Inspected assets in units.
   entity_definitions:
-  - identity_id: fact_maintenance_identity
-    dataset_columns:
-    - maintenance_id
-    entity_universe: complete
   - identity_id: dim_fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: dim_locomotive_class_identity
+  - identity_id: dim_scenario_identity
     dataset_columns:
-    - locomotive_class_id
+    - scenario_id
     entity_universe: partial
-- node_id: sf:railroad.supply.fact_project_ramp
+  - identity_id: dim_maintenance_type_identity
+    dataset_columns:
+    - maintenance_type_id
+    entity_universe: partial
+  - identity_id: dim_asset_category_identity
+    dataset_columns:
+    - asset_category_id
+    entity_universe: partial
+  - identity_id: dim_division_identity
+    dataset_columns:
+    - division_id
+    entity_universe: partial
+- node_id: sf:railroad.supply.fact_safety_performance
   descriptor:
-    qualified_name: railroad.supply.fact_project_ramp
-    display_name: Project Ramp
-    description: Months until a project, including double-stack, is fully launched.
+    qualified_name: railroad.supply.fact_safety_performance
+    display_name: Safety Performance
+    description: Safety counts by division. Stores quantity in incidents.
     synonyms: []
     tags:
     - fact
@@ -1215,46 +1340,53 @@ nodes:
       account: railroad.us-central-1
       database: RAILROAD
       schema: SUPPLY
-      object: FACT_PROJECT_RAMP
+      object: FACT_SAFETY_PERFORMANCE
       format: table
   grain:
-    description: One row is one project ramp.
+    description: One row is one combination of fiscal quarter, scenario, operating division.
     components:
-    - identity_id: fact_project_ramp_identity
+    - identity_id: dim_fiscal_quarter_identity
       dataset_columns:
-      - project_ramp_id
-      description: Identifier of the project ramp.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_division_identity
+      dataset_columns:
+      - division_id
+      description: Identifier of the operating division.
   columns:
-  - name: project_ramp_id
-    description: Identifier of the project ramp.
-  - name: months_to_full
-    description: Months to full.
-  - name: fully_launched_flag
-    description: Whether this row is marked fully launched.
-  - name: similar_impact_flag
-    description: Whether this row is marked similar impact.
   - name: fiscal_quarter_id
     description: Identifier of the related fiscal quarter.
-  - name: project_id
-    description: Identifier of the related project.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: division_id
+    description: Identifier of the related operating division.
+  - name: incident_quantity
+    description: Safety incidents in incidents.
+  - name: injury_quantity
+    description: Injuries in injuries.
   entity_definitions:
-  - identity_id: fact_project_ramp_identity
-    dataset_columns:
-    - project_ramp_id
-    entity_universe: complete
   - identity_id: dim_fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: dim_project_identity
+  - identity_id: dim_scenario_identity
     dataset_columns:
-    - project_id
+    - scenario_id
     entity_universe: partial
-- node_id: sf:railroad.supply.fact_chicago_constraint
+  - identity_id: dim_division_identity
+    dataset_columns:
+    - division_id
+    entity_universe: partial
+- node_id: sf:railroad.supply.fact_infrastructure_project_progress
   descriptor:
-    qualified_name: railroad.supply.fact_chicago_constraint
-    display_name: Chicago Constraint
-    description: Where Chicago interchange or routings still constrain the network.
+    qualified_name: railroad.supply.fact_infrastructure_project_progress
+    display_name: Infrastructure Project Progress
+    description: Progress and capacity added by an infrastructure project. Stores completion in percent and added capacity
+      in carloads.
     synonyms: []
     tags:
     - fact
@@ -1266,50 +1398,63 @@ nodes:
       account: railroad.us-central-1
       database: RAILROAD
       schema: SUPPLY
-      object: FACT_CHICAGO_CONSTRAINT
+      object: FACT_INFRASTRUCTURE_PROJECT_PROGRESS
       format: table
   grain:
-    description: One row is one chicago constraint.
+    description: One row is one combination of fiscal quarter, scenario, infrastructure project, asset category.
     components:
-    - identity_id: fact_chicago_constraint_identity
+    - identity_id: dim_fiscal_quarter_identity
       dataset_columns:
-      - chicago_constraint_id
-      description: Identifier of the chicago constraint.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_infrastructure_project_identity
+      dataset_columns:
+      - infrastructure_project_id
+      description: Identifier of the infrastructure project.
+    - identity_id: dim_asset_category_identity
+      dataset_columns:
+      - asset_category_id
+      description: Identifier of the asset category.
   columns:
-  - name: chicago_constraint_id
-    description: Identifier of the chicago constraint.
-  - name: constraint_flag
-    description: Whether this row is marked constraint.
-  - name: remaining_pain_flag
-    description: Whether this row is marked remaining pain.
   - name: fiscal_quarter_id
     description: Identifier of the related fiscal quarter.
-  - name: metro_id
-    description: Identifier of the related metro.
-  - name: yard_id
-    description: Identifier of the related yard.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: infrastructure_project_id
+    description: Identifier of the related infrastructure project.
+  - name: asset_category_id
+    description: Identifier of the related asset category.
+  - name: project_completion_percent
+    description: Project completion in percent.
+  - name: capacity_added_carload_quantity
+    description: Capacity added in carloads.
   entity_definitions:
-  - identity_id: fact_chicago_constraint_identity
-    dataset_columns:
-    - chicago_constraint_id
-    entity_universe: complete
   - identity_id: dim_fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: dim_metro_identity
+  - identity_id: dim_scenario_identity
     dataset_columns:
-    - metro_id
+    - scenario_id
     entity_universe: partial
-  - identity_id: dim_yard_identity
+  - identity_id: dim_infrastructure_project_identity
     dataset_columns:
-    - yard_id
+    - infrastructure_project_id
     entity_universe: partial
-- node_id: sf:railroad.supply.fact_port_capacity
+  - identity_id: dim_asset_category_identity
+    dataset_columns:
+    - asset_category_id
+    entity_universe: partial
+- node_id: sf:railroad.supply.fact_locomotive_efficiency
   descriptor:
-    qualified_name: railroad.supply.fact_port_capacity
-    display_name: Port Capacity
-    description: Port capacity and whether it is the bottleneck for repatriated freight.
+    qualified_name: railroad.supply.fact_locomotive_efficiency
+    display_name: Locomotive Efficiency
+    description: Locomotive fuel efficiency by type. Stores efficiency in gross ton-miles per gallon, computed with gross
+      ton-miles from the freight-volume fact.
     synonyms: []
     tags:
     - fact
@@ -1321,44 +1466,60 @@ nodes:
       account: railroad.us-central-1
       database: RAILROAD
       schema: SUPPLY
-      object: FACT_PORT_CAPACITY
+      object: FACT_LOCOMOTIVE_EFFICIENCY
       format: table
   grain:
-    description: One row is one port capacity.
+    description: One row is one combination of fiscal quarter, scenario, locomotive type, operating division.
     components:
-    - identity_id: fact_port_capacity_identity
+    - identity_id: dim_fiscal_quarter_identity
       dataset_columns:
-      - port_capacity_id
-      description: Identifier of the port capacity.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_locomotive_type_identity
+      dataset_columns:
+      - locomotive_type_id
+      description: Identifier of the locomotive type.
+    - identity_id: dim_division_identity
+      dataset_columns:
+      - division_id
+      description: Identifier of the operating division.
   columns:
-  - name: port_capacity_id
-    description: Identifier of the port capacity.
-  - name: capacity_quantity
-    description: Capacity quantity on this row. The value is a quantity, not a price.
-  - name: bottleneck_flag
-    description: Whether this row is marked bottleneck.
   - name: fiscal_quarter_id
     description: Identifier of the related fiscal quarter.
-  - name: port_id
-    description: Identifier of the related port.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: locomotive_type_id
+    description: Identifier of the related locomotive type.
+  - name: division_id
+    description: Identifier of the related operating division.
+  - name: gross_ton_miles_per_gallon
+    description: Fuel efficiency in gross ton-miles per gallon.
   entity_definitions:
-  - identity_id: fact_port_capacity_identity
-    dataset_columns:
-    - port_capacity_id
-    entity_universe: complete
   - identity_id: dim_fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: dim_port_identity
+  - identity_id: dim_scenario_identity
     dataset_columns:
-    - port_id
+    - scenario_id
     entity_universe: partial
-- node_id: sf:railroad.supply.fact_resource_flex
+  - identity_id: dim_locomotive_type_identity
+    dataset_columns:
+    - locomotive_type_id
+    entity_universe: partial
+  - identity_id: dim_division_identity
+    dataset_columns:
+    - division_id
+    entity_universe: partial
+- node_id: sf:railroad.supply.fact_empty_repositioning
   descriptor:
-    qualified_name: railroad.supply.fact_resource_flex
-    display_name: Resource Flexibility
-    description: How quickly resources held for new business can be adjusted.
+    qualified_name: railroad.supply.fact_empty_repositioning
+    display_name: Empty Repositioning
+    description: Empty cars repositioned on a lane. Stores quantity in carloads.
     synonyms: []
     tags:
     - fact
@@ -1370,392 +1531,52 @@ nodes:
       account: railroad.us-central-1
       database: RAILROAD
       schema: SUPPLY
-      object: FACT_RESOURCE_FLEX
+      object: FACT_EMPTY_REPOSITIONING
       format: table
   grain:
-    description: One row is one resource flexibility.
+    description: One row is one combination of fiscal quarter, scenario, lane, equipment type.
     components:
-    - identity_id: fact_resource_flex_identity
+    - identity_id: dim_fiscal_quarter_identity
       dataset_columns:
-      - resource_flex_id
-      description: Identifier of the resource flexibility.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_lane_identity
+      dataset_columns:
+      - lane_id
+      description: Identifier of the lane.
+    - identity_id: dim_equipment_type_identity
+      dataset_columns:
+      - equipment_type_id
+      description: Identifier of the equipment type.
   columns:
-  - name: resource_flex_id
-    description: Identifier of the resource flexibility.
-  - name: days_to_adjust
-    description: Days to adjust.
-  - name: resources_held_flag
-    description: Whether this row is marked resources held.
   - name: fiscal_quarter_id
     description: Identifier of the related fiscal quarter.
-  - name: resource_pool_id
-    description: Identifier of the related resource pool.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: lane_id
+    description: Identifier of the related lane.
+  - name: equipment_type_id
+    description: Identifier of the related equipment type.
+  - name: empty_carload_quantity
+    description: Empty repositioned cars in carloads.
   entity_definitions:
-  - identity_id: fact_resource_flex_identity
-    dataset_columns:
-    - resource_flex_id
-    entity_universe: complete
   - identity_id: dim_fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: dim_resource_pool_identity
+  - identity_id: dim_scenario_identity
     dataset_columns:
-    - resource_pool_id
+    - scenario_id
     entity_universe: partial
-- node_id: sf:railroad.supply.fact_integration
-  descriptor:
-    qualified_name: railroad.supply.fact_integration
-    display_name: Network Integration
-    description: How long current service practices would take to transfer onto a larger network.
-    synonyms: []
-    tags:
-    - fact
-    - supply
-    - railroad
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: railroad.us-central-1
-      database: RAILROAD
-      schema: SUPPLY
-      object: FACT_INTEGRATION
-      format: table
-  grain:
-    description: One row is one network integration.
-    components:
-    - identity_id: fact_integration_identity
-      dataset_columns:
-      - integration_id
-      description: Identifier of the network integration.
-  columns:
-  - name: integration_id
-    description: Identifier of the network integration.
-  - name: months_to_transfer
-    description: Months to transfer.
-  - name: confidence_code
-    description: Confidence code.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: region_id
-    description: Identifier of the related region.
-  entity_definitions:
-  - identity_id: fact_integration_identity
+  - identity_id: dim_lane_identity
     dataset_columns:
-    - integration_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
+    - lane_id
     entity_universe: partial
-  - identity_id: dim_region_identity
+  - identity_id: dim_equipment_type_identity
     dataset_columns:
-    - region_id
-    entity_universe: partial
-- node_id: sf:railroad.supply.fact_structural_limit
-  descriptor:
-    qualified_name: railroad.supply.fact_structural_limit
-    display_name: Structural Limit
-    description: Structural network limits that keep freight on the highway despite service.
-    synonyms: []
-    tags:
-    - fact
-    - supply
-    - railroad
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: railroad.us-central-1
-      database: RAILROAD
-      schema: SUPPLY
-      object: FACT_STRUCTURAL_LIMIT
-      format: table
-  grain:
-    description: One row is one structural limit.
-    components:
-    - identity_id: fact_structural_limit_identity
-      dataset_columns:
-      - structural_limit_id
-      description: Identifier of the structural limit.
-  columns:
-  - name: structural_limit_id
-    description: Identifier of the structural limit.
-  - name: highway_remaining_flag
-    description: Whether this row is marked highway remaining.
-  - name: limit_code
-    description: Limit code.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: corridor_id
-    description: Identifier of the related corridor.
-  entity_definitions:
-  - identity_id: fact_structural_limit_identity
-    dataset_columns:
-    - structural_limit_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_corridor_identity
-    dataset_columns:
-    - corridor_id
-    entity_universe: partial
-- node_id: sf:railroad.supply.fact_interchange
-  descriptor:
-    qualified_name: railroad.supply.fact_interchange
-    display_name: Interchange Constraint
-    description: Interchange points that still constrain shippers.
-    synonyms: []
-    tags:
-    - fact
-    - supply
-    - railroad
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: railroad.us-central-1
-      database: RAILROAD
-      schema: SUPPLY
-      object: FACT_INTERCHANGE
-      format: table
-  grain:
-    description: One row is one interchange constraint.
-    components:
-    - identity_id: fact_interchange_identity
-      dataset_columns:
-      - interchange_id
-      description: Identifier of the interchange constraint.
-  columns:
-  - name: interchange_id
-    description: Identifier of the interchange constraint.
-  - name: constraint_flag
-    description: Whether this row is marked constraint.
-  - name: pain_code
-    description: Pain code.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: gateway_id
-    description: Identifier of the related gateway.
-  - name: metro_id
-    description: Identifier of the related metro.
-  entity_definitions:
-  - identity_id: fact_interchange_identity
-    dataset_columns:
-    - interchange_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_gateway_identity
-    dataset_columns:
-    - gateway_id
-    entity_universe: partial
-  - identity_id: dim_metro_identity
-    dataset_columns:
-    - metro_id
-    entity_universe: partial
-- node_id: sf:railroad.supply.fact_operating_plan
-  descriptor:
-    qualified_name: railroad.supply.fact_operating_plan
-    display_name: Operating Plan
-    description: Operating plan aimed at restoring prior service metrics.
-    synonyms: []
-    tags:
-    - fact
-    - supply
-    - railroad
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: railroad.us-central-1
-      database: RAILROAD
-      schema: SUPPLY
-      object: FACT_OPERATING_PLAN
-      format: table
-  grain:
-    description: One row is one operating plan.
-    components:
-    - identity_id: fact_operating_plan_identity
-      dataset_columns:
-      - operating_plan_id
-      description: Identifier of the operating plan.
-  columns:
-  - name: operating_plan_id
-    description: Identifier of the operating plan.
-  - name: plan_code
-    description: Plan code.
-  - name: targets_prior_best_flag
-    description: Whether this row is marked targets prior best.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: service_metric_id
-    description: Identifier of the related service metric.
-  entity_definitions:
-  - identity_id: fact_operating_plan_identity
-    dataset_columns:
-    - operating_plan_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_service_metric_identity
-    dataset_columns:
-    - service_metric_id
-    entity_universe: partial
-- node_id: sf:railroad.supply.fact_single_line
-  descriptor:
-    qualified_name: railroad.supply.fact_single_line
-    display_name: Single-Line Service
-    description: Shipper benefit of single-line service versus an interline handoff.
-    synonyms: []
-    tags:
-    - fact
-    - supply
-    - railroad
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: railroad.us-central-1
-      database: RAILROAD
-      schema: SUPPLY
-      object: FACT_SINGLE_LINE
-      format: table
-  grain:
-    description: One row is one single-line service.
-    components:
-    - identity_id: fact_single_line_identity
-      dataset_columns:
-      - single_line_id
-      description: Identifier of the single-line service.
-  columns:
-  - name: single_line_id
-    description: Identifier of the single-line service.
-  - name: ease_gap_score
-    description: Ease gap score.
-  - name: shipper_benefit_code
-    description: Shipper benefit code.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: channel_id
-    description: Identifier of the related channel.
-  - name: shipper_id
-    description: Identifier of the related shipper.
-  entity_definitions:
-  - identity_id: fact_single_line_identity
-    dataset_columns:
-    - single_line_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_channel_identity
-    dataset_columns:
-    - channel_id
-    entity_universe: partial
-  - identity_id: dim_shipper_identity
-    dataset_columns:
-    - shipper_id
-    entity_universe: partial
-- node_id: sf:railroad.supply.fact_outage_capacity
-  descriptor:
-    qualified_name: railroad.supply.fact_outage_capacity
-    display_name: Outage Capacity
-    description: Days of capacity lost to an outage and whether that capacity is back.
-    synonyms: []
-    tags:
-    - fact
-    - supply
-    - railroad
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: railroad.us-central-1
-      database: RAILROAD
-      schema: SUPPLY
-      object: FACT_OUTAGE_CAPACITY
-      format: table
-  grain:
-    description: One row is one outage capacity.
-    components:
-    - identity_id: fact_outage_capacity_identity
-      dataset_columns:
-      - outage_capacity_id
-      description: Identifier of the outage capacity.
-  columns:
-  - name: outage_capacity_id
-    description: Identifier of the outage capacity.
-  - name: outage_days
-    description: Outage days.
-  - name: capacity_back_flag
-    description: Whether this row is marked capacity back.
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: corridor_id
-    description: Identifier of the related corridor.
-  entity_definitions:
-  - identity_id: fact_outage_capacity_identity
-    dataset_columns:
-    - outage_capacity_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_corridor_identity
-    dataset_columns:
-    - corridor_id
-    entity_universe: partial
-- node_id: sf:railroad.supply.fact_asset_productivity
-  descriptor:
-    qualified_name: railroad.supply.fact_asset_productivity
-    display_name: Asset Productivity
-    description: Asset productivity as an operating lever. The return rate sits on the price slice.
-    synonyms: []
-    tags:
-    - fact
-    - supply
-    - railroad
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: railroad.us-central-1
-      database: RAILROAD
-      schema: SUPPLY
-      object: FACT_ASSET_PRODUCTIVITY
-      format: table
-  grain:
-    description: One row is one asset productivity.
-    components:
-    - identity_id: fact_asset_productivity_identity
-      dataset_columns:
-      - asset_productivity_id
-      description: Identifier of the asset productivity.
-  columns:
-  - name: asset_productivity_id
-    description: Identifier of the asset productivity.
-  - name: productivity_index
-    description: Productivity index.
-  - name: primary_lever_code
-    description: Primary lever code.
-    value_description: asset_productivity, mix, efficiency
-  - name: fiscal_quarter_id
-    description: Identifier of the related fiscal quarter.
-  - name: region_id
-    description: Identifier of the related region.
-  entity_definitions:
-  - identity_id: fact_asset_productivity_identity
-    dataset_columns:
-    - asset_productivity_id
-    entity_universe: complete
-  - identity_id: dim_fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: dim_region_identity
-    dataset_columns:
-    - region_id
+    - equipment_type_id
     entity_universe: partial
