@@ -28,16 +28,16 @@ Graph success: zero unknown fields and zero contradictory edges. Do not join one
 
 ## Checkpoint A
 
-Status: `pending`
+Status: `in_progress`
 
 | Subtask | Agent | Industry | Owner | Slug | Database | Account | Questions | Status |
 | --- | --- | --- | --- | --- | --- | --- | ---: | --- |
-| A1 | 1 | `rail-transportation/` | Railroad Inc | `railroad` | `RAILROAD` | `railroad.us-central-1` | 94 | `pending` |
-| A2 | 1 | `integrated-oil-gas/` | Energy Inc | `energy` | `ENERGY` | `energy.us-central-1` | 87 | `pending` |
-| A3 | 1 | `electric-utilities/` | Utility Inc | `utility` | `UTILITY` | `utility.us-east-1` | 82 | `pending` |
-| A4 | 2 | `diversified-banks/` | Bank Inc | `bank` | `BANK` | `bank.us-east-1` | 92 | `pending` |
-| A5 | 2 | `merchandise-retail/` | Merchandise Inc | `merchandise` | `MERCHANDISE` | `merchandise.us-east-1` | 85 | `pending` |
-| A6 | 2 | `interactive-media/` | Social Inc | `social` | `SOCIAL` | `social.us-west-1` | 79 | `pending` |
+| A1 | 1 | `rail-transportation/` | Railroad Inc | `railroad` | `RAILROAD` | `railroad.us-central-1` | 94 | `in_progress` |
+| A2 | 1 | `integrated-oil-gas/` | Energy Inc | `energy` | `ENERGY` | `energy.us-central-1` | 87 | `in_progress` |
+| A3 | 1 | `electric-utilities/` | Utility Inc | `utility` | `UTILITY` | `utility.us-east-1` | 82 | `in_progress` |
+| A4 | 2 | `diversified-banks/` | Bank Inc | `bank` | `BANK` | `bank.us-east-1` | 92 | `in_progress` |
+| A5 | 2 | `merchandise-retail/` | Merchandise Inc | `merchandise` | `MERCHANDISE` | `merchandise.us-east-1` | 85 | `in_progress` |
+| A6 | 2 | `interactive-media/` | Social Inc | `social` | `SOCIAL` | `social.us-west-1` | 79 | `in_progress` |
 
 Companies: CSX and Union Pacific. Chevron and Exxon Mobil. Duke Energy and Southern Company. Bank of America and JPMorgan Chase. Costco and Walmart. Alphabet and Meta Platforms.
 
