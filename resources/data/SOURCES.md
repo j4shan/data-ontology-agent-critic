@@ -16,17 +16,17 @@ directory has `references.md`, which names the companies and earnings calls with
 | `systems-software/` | Microsoft, ServiceNow | — |
 | `application-software/` | Salesforce, Oracle | — |
 | `technology-hardware/` | Apple, Dell Technologies | `technology-hardware/warehouse/` (Device Inc) |
-| `interactive-media/` | Alphabet, Meta Platforms | — |
+| `interactive-media/` | Alphabet, Meta Platforms | `interactive-media/warehouse/` (Social Inc) |
 | `movies-entertainment/` | Walt Disney, Netflix | — |
 | `integrated-telecom/` | AT&T, Verizon | — |
 | `broadline-retail/` | Amazon, eBay | — |
 | `home-improvement-retail/` | Home Depot, Lowe's | — |
 | `automobile-manufacturers/` | General Motors, Tesla | `automobile-manufacturers/warehouse/` (Automaker Inc) |
 | `restaurants/` | McDonald's, Starbucks | `restaurants/warehouse/` (Burger Inc) |
-| `merchandise-retail/` | Costco, Walmart | — |
+| `merchandise-retail/` | Costco, Walmart | `merchandise-retail/warehouse/` (Merchandise Inc) |
 | `soft-drinks/` | Coca-Cola, PepsiCo | `soft-drinks/warehouse/` (Beverage Inc) |
 | `packaged-foods/` | General Mills, Mondelez | `packaged-foods/warehouse/` (Food Inc) |
-| `diversified-banks/` | Bank of America, JPMorgan Chase | — |
+| `diversified-banks/` | Bank of America, JPMorgan Chase | `diversified-banks/warehouse/` (Bank Inc) |
 | `investment-banking/` | Goldman Sachs, Morgan Stanley | — |
 | `payments/` | Mastercard, Visa | — |
 | `pc-insurance/` | Chubb, Progressive | — |
@@ -35,12 +35,12 @@ directory has `references.md`, which names the companies and earnings calls with
 | `health-care-equipment/` | Intuitive Surgical, Stryker | `health-care-equipment/warehouse/` (Surgical Supply Inc) |
 | `aerospace-defense/` | Lockheed Martin, RTX | — |
 | `construction-machinery/` | Caterpillar, PACCAR | `construction-machinery/warehouse/` (Machinery Inc) |
-| `rail-transportation/` | CSX, Union Pacific | — |
+| `rail-transportation/` | CSX, Union Pacific | `rail-transportation/warehouse/` (Railroad Inc) |
 | `passenger-airlines/` | Delta Air Lines, United Airlines | `passenger-airlines/warehouse/` (Airline Inc) |
-| `integrated-oil-gas/` | Chevron, Exxon Mobil | — |
+| `integrated-oil-gas/` | Chevron, Exxon Mobil | `integrated-oil-gas/warehouse/` (Energy Inc) |
 | `specialty-chemicals/` | Ecolab, Sherwin-Williams | `specialty-chemicals/warehouse/` (Chemical Inc) |
 | `data-center-reits/` | Digital Realty, Equinix | `data-center-reits/warehouse/` (Colocation Inc) |
-| `electric-utilities/` | Duke Energy, Southern Company | — |
+| `electric-utilities/` | Duke Energy, Southern Company | `electric-utilities/warehouse/` (Utility Inc) |
 
 Each company sheet is `{industry}/{ticker}/questions.md`. A warehouse is one schema version 3
 catalog for that industry, owned by the naive name in the table. `coverage.md` is the GICS

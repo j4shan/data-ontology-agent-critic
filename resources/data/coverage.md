@@ -12,7 +12,7 @@ Status values: `selected` (pair locked, transcripts not read), `extracting`, `qu
 
 Every pair below is `questions-ready`: four recent calls were read and analyst questions were
 paraphrased into `{slug}/{ticker}/questions.md`. Each industry directory has `references.md`
-naming those companies and calls. Eleven industries have one schema version 3 warehouse at
+naming those companies and calls. Seventeen industries have one schema version 3 warehouse at
 `{slug}/warehouse/`. See `summary-report.md` for counts and the simulation shortlist.
 
 | # | GICS sector | GICS sub-industry | Ticker | Company | Status |
@@ -85,5 +85,8 @@ present, is the single model for that industry: `restaurants/warehouse/` (Burger
 `health-care-equipment/warehouse/` (Surgical Supply Inc),
 `construction-machinery/warehouse/` (Machinery Inc), `specialty-chemicals/warehouse/` (Chemical Inc),
 `passenger-airlines/warehouse/` (Airline Inc), `packaged-foods/warehouse/` (Food Inc),
-`managed-care/warehouse/` (Health Plan Inc), `soft-drinks/warehouse/` (Beverage Inc), and
-`automobile-manufacturers/warehouse/` (Automaker Inc).
+`managed-care/warehouse/` (Health Plan Inc), `soft-drinks/warehouse/` (Beverage Inc),
+`automobile-manufacturers/warehouse/` (Automaker Inc), `rail-transportation/warehouse/` (Railroad Inc),
+`integrated-oil-gas/warehouse/` (Energy Inc), `electric-utilities/warehouse/` (Utility Inc),
+`diversified-banks/warehouse/` (Bank Inc), `merchandise-retail/warehouse/` (Merchandise Inc), and
+`interactive-media/warehouse/` (Social Inc).

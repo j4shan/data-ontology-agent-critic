@@ -1,0 +1,2207 @@
+schema_version: '3'
+nodes:
+- node_id: sf:railroad.geography.dim_region
+  descriptor:
+    qualified_name: railroad.geography.dim_region
+    display_name: Region
+    description: Commercial region in which Railroad Inc sells freight service.
+    synonyms: []
+    tags:
+    - dimension
+    - demand
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: GEOGRAPHY
+      object: DIM_REGION
+      format: table
+  grain:
+    description: One row is one region.
+    components:
+    - identity_id: dim_region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+  columns:
+  - name: region_id
+    description: Identifier of the region.
+  - name: region_code
+    description: Region code.
+    value_description: eastern, western, transcontinental
+  - name: region_name
+    description: Region name.
+  entity_definitions:
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: complete
+- node_id: sf:railroad.geography.dim_state
+  descriptor:
+    qualified_name: railroad.geography.dim_state
+    display_name: State
+    description: State or province on the Railroad Inc network.
+    synonyms: []
+    tags:
+    - dimension
+    - demand
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: GEOGRAPHY
+      object: DIM_STATE
+      format: table
+  grain:
+    description: One row is one state.
+    components:
+    - identity_id: dim_state_identity
+      dataset_columns:
+      - state_id
+      description: Identifier of the state.
+  columns:
+  - name: state_id
+    description: Identifier of the state.
+  - name: state_code
+    description: State code.
+  - name: state_name
+    description: State name.
+  - name: region_id
+    description: Identifier of the related region.
+  entity_definitions:
+  - identity_id: dim_state_identity
+    dataset_columns:
+    - state_id
+    entity_universe: complete
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:railroad.geography.dim_metro
+  descriptor:
+    qualified_name: railroad.geography.dim_metro
+    display_name: Metro
+    description: Metro Railroad Inc uses as a gateway, including Chicago and Baltimore.
+    synonyms: []
+    tags:
+    - dimension
+    - demand
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: GEOGRAPHY
+      object: DIM_METRO
+      format: table
+  grain:
+    description: One row is one metro.
+    components:
+    - identity_id: dim_metro_identity
+      dataset_columns:
+      - metro_id
+      description: Identifier of the metro.
+  columns:
+  - name: metro_id
+    description: Identifier of the metro.
+  - name: metro_code
+    description: Metro code.
+    value_description: chicago, baltimore, houston, kansas_city
+  - name: metro_name
+    description: Metro name.
+  - name: state_id
+    description: Identifier of the related state.
+  entity_definitions:
+  - identity_id: dim_metro_identity
+    dataset_columns:
+    - metro_id
+    entity_universe: complete
+  - identity_id: dim_state_identity
+    dataset_columns:
+    - state_id
+    entity_universe: partial
+- node_id: sf:railroad.geography.dim_coast
+  descriptor:
+    qualified_name: railroad.geography.dim_coast
+    display_name: Coast
+    description: Coast used when freight shifts between East Coast and West Coast ports.
+    synonyms: []
+    tags:
+    - dimension
+    - demand
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: GEOGRAPHY
+      object: DIM_COAST
+      format: table
+  grain:
+    description: One row is one coast.
+    components:
+    - identity_id: dim_coast_identity
+      dataset_columns:
+      - coast_id
+      description: Identifier of the coast.
+  columns:
+  - name: coast_id
+    description: Identifier of the coast.
+  - name: coast_code
+    description: Coast code.
+    value_description: east, west, gulf
+  - name: coast_name
+    description: Coast name.
+  entity_definitions:
+  - identity_id: dim_coast_identity
+    dataset_columns:
+    - coast_id
+    entity_universe: complete
+- node_id: sf:railroad.geography.dim_port
+  descriptor:
+    qualified_name: railroad.geography.dim_port
+    display_name: Port
+    description: Port Railroad Inc serves, including the Port of Baltimore and Canadian gateways.
+    synonyms: []
+    tags:
+    - dimension
+    - demand
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: GEOGRAPHY
+      object: DIM_PORT
+      format: table
+  grain:
+    description: One row is one port.
+    components:
+    - identity_id: dim_port_identity
+      dataset_columns:
+      - port_id
+      description: Identifier of the port.
+  columns:
+  - name: port_id
+    description: Identifier of the port.
+  - name: port_code
+    description: Port code.
+    value_description: baltimore, east_coast, west_coast, canadian
+  - name: port_name
+    description: Port name.
+  - name: metro_id
+    description: Identifier of the related metro.
+  - name: coast_id
+    description: Identifier of the related coast.
+  entity_definitions:
+  - identity_id: dim_port_identity
+    dataset_columns:
+    - port_id
+    entity_universe: complete
+  - identity_id: dim_metro_identity
+    dataset_columns:
+    - metro_id
+    entity_universe: partial
+  - identity_id: dim_coast_identity
+    dataset_columns:
+    - coast_id
+    entity_universe: partial
+- node_id: sf:railroad.geography.dim_corridor
+  descriptor:
+    qualified_name: railroad.geography.dim_corridor
+    display_name: Corridor
+    description: Lane Railroad Inc operates.
+    synonyms: []
+    tags:
+    - dimension
+    - demand
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: GEOGRAPHY
+      object: DIM_CORRIDOR
+      format: table
+  grain:
+    description: One row is one corridor.
+    components:
+    - identity_id: dim_corridor_identity
+      dataset_columns:
+      - corridor_id
+      description: Identifier of the corridor.
+  columns:
+  - name: corridor_id
+    description: Identifier of the corridor.
+  - name: corridor_code
+    description: Corridor code.
+  - name: corridor_name
+    description: Corridor name.
+  - name: region_id
+    description: Identifier of the related region.
+  entity_definitions:
+  - identity_id: dim_corridor_identity
+    dataset_columns:
+    - corridor_id
+    entity_universe: complete
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:railroad.geography.dim_gateway
+  descriptor:
+    qualified_name: railroad.geography.dim_gateway
+    display_name: Gateway
+    description: Gateway where Railroad Inc offers committed pricing.
+    synonyms: []
+    tags:
+    - dimension
+    - demand
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: GEOGRAPHY
+      object: DIM_GATEWAY
+      format: table
+  grain:
+    description: One row is one gateway.
+    components:
+    - identity_id: dim_gateway_identity
+      dataset_columns:
+      - gateway_id
+      description: Identifier of the gateway.
+  columns:
+  - name: gateway_id
+    description: Identifier of the gateway.
+  - name: gateway_code
+    description: Gateway code.
+  - name: gateway_name
+    description: Gateway name.
+  - name: metro_id
+    description: Identifier of the related metro.
+  entity_definitions:
+  - identity_id: dim_gateway_identity
+    dataset_columns:
+    - gateway_id
+    entity_universe: complete
+  - identity_id: dim_metro_identity
+    dataset_columns:
+    - metro_id
+    entity_universe: partial
+- node_id: sf:railroad.geography.dim_fiscal_quarter
+  descriptor:
+    qualified_name: railroad.geography.dim_fiscal_quarter
+    display_name: Fiscal Quarter
+    description: Fiscal quarter on the Railroad Inc earnings calendar.
+    synonyms: []
+    tags:
+    - dimension
+    - demand
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: GEOGRAPHY
+      object: DIM_FISCAL_QUARTER
+      format: table
+  grain:
+    description: One row is one fiscal quarter.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: quarter_code
+    description: Quarter code.
+    value_description: 2024Q3, 2025Q2, 2025Q3, 2025Q4, 2026Q1
+  - name: quarter_label
+    description: Quarter label.
+  - name: guidance_horizon
+    description: Guidance horizon.
+    value_description: reported, guided_next
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: complete
+- node_id: sf:railroad.geography.dim_calendar_day
+  descriptor:
+    qualified_name: railroad.geography.dim_calendar_day
+    display_name: Calendar Day
+    description: Calendar day used to place volume, service, and price on one time axis.
+    synonyms: []
+    tags:
+    - dimension
+    - demand
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: GEOGRAPHY
+      object: DIM_CALENDAR_DAY
+      format: table
+  grain:
+    description: One row is one calendar day.
+    components:
+    - identity_id: dim_calendar_day_identity
+      dataset_columns:
+      - calendar_day_id
+      description: Identifier of the calendar day.
+  columns:
+  - name: calendar_day_id
+    description: Identifier of the calendar day.
+  - name: calendar_date
+    description: Calendar date.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  entity_definitions:
+  - identity_id: dim_calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+- node_id: sf:railroad.geography.dim_peak_season
+  descriptor:
+    qualified_name: railroad.geography.dim_peak_season
+    display_name: Peak Season
+    description: Peak shipping season inside a quarter.
+    synonyms: []
+    tags:
+    - dimension
+    - demand
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: GEOGRAPHY
+      object: DIM_PEAK_SEASON
+      format: table
+  grain:
+    description: One row is one peak season.
+    components:
+    - identity_id: dim_peak_season_identity
+      dataset_columns:
+      - peak_season_id
+      description: Identifier of the peak season.
+  columns:
+  - name: peak_season_id
+    description: Identifier of the peak season.
+  - name: peak_code
+    description: Peak code.
+    value_description: peak, off_peak
+  - name: peak_name
+    description: Peak name.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  entity_definitions:
+  - identity_id: dim_peak_season_identity
+    dataset_columns:
+    - peak_season_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+- node_id: sf:railroad.customer.dim_shipper_segment
+  descriptor:
+    qualified_name: railroad.customer.dim_shipper_segment
+    display_name: Shipper Segment
+    description: Shipper segment Railroad Inc serves.
+    synonyms: []
+    tags:
+    - dimension
+    - demand
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: CUSTOMER
+      object: DIM_SHIPPER_SEGMENT
+      format: table
+  grain:
+    description: One row is one shipper segment.
+    components:
+    - identity_id: dim_shipper_segment_identity
+      dataset_columns:
+      - shipper_segment_id
+      description: Identifier of the shipper segment.
+  columns:
+  - name: shipper_segment_id
+    description: Identifier of the shipper segment.
+  - name: segment_code
+    description: Segment code.
+    value_description: merchandise, intermodal, coal, industrial
+  - name: segment_name
+    description: Segment name.
+  entity_definitions:
+  - identity_id: dim_shipper_segment_identity
+    dataset_columns:
+    - shipper_segment_id
+    entity_universe: complete
+- node_id: sf:railroad.customer.dim_shipper
+  descriptor:
+    qualified_name: railroad.customer.dim_shipper
+    display_name: Shipper
+    description: Shipper that buys Railroad Inc service.
+    synonyms: []
+    tags:
+    - dimension
+    - demand
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: CUSTOMER
+      object: DIM_SHIPPER
+      format: table
+  grain:
+    description: One row is one shipper.
+    components:
+    - identity_id: dim_shipper_identity
+      dataset_columns:
+      - shipper_id
+      description: Identifier of the shipper.
+  columns:
+  - name: shipper_id
+    description: Identifier of the shipper.
+  - name: shipper_name
+    description: Shipper name.
+  - name: shipper_code
+    description: Shipper code.
+  - name: shipper_segment_id
+    description: Identifier of the related shipper segment.
+  entity_definitions:
+  - identity_id: dim_shipper_identity
+    dataset_columns:
+    - shipper_id
+    entity_universe: complete
+  - identity_id: dim_shipper_segment_identity
+    dataset_columns:
+    - shipper_segment_id
+    entity_universe: partial
+- node_id: sf:railroad.customer.dim_traffic_type
+  descriptor:
+    qualified_name: railroad.customer.dim_traffic_type
+    display_name: Traffic Type
+    description: Traffic type Railroad Inc reports.
+    synonyms: []
+    tags:
+    - dimension
+    - demand
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: CUSTOMER
+      object: DIM_TRAFFIC_TYPE
+      format: table
+  grain:
+    description: One row is one traffic type.
+    components:
+    - identity_id: dim_traffic_type_identity
+      dataset_columns:
+      - traffic_type_id
+      description: Identifier of the traffic type.
+  columns:
+  - name: traffic_type_id
+    description: Identifier of the traffic type.
+  - name: traffic_type_code
+    description: Traffic type code.
+    value_description: merchandise, domestic_intermodal, international_intermodal, coal, grain, chemicals,
+      autos, metals
+  - name: traffic_type_name
+    description: Traffic type name.
+  entity_definitions:
+  - identity_id: dim_traffic_type_identity
+    dataset_columns:
+    - traffic_type_id
+    entity_universe: complete
+- node_id: sf:railroad.customer.dim_commodity
+  descriptor:
+    qualified_name: railroad.customer.dim_commodity
+    display_name: Commodity
+    description: Commodity moved by Railroad Inc.
+    synonyms: []
+    tags:
+    - dimension
+    - demand
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: CUSTOMER
+      object: DIM_COMMODITY
+      format: table
+  grain:
+    description: One row is one commodity.
+    components:
+    - identity_id: dim_commodity_identity
+      dataset_columns:
+      - commodity_id
+      description: Identifier of the commodity.
+  columns:
+  - name: commodity_id
+    description: Identifier of the commodity.
+  - name: commodity_code
+    description: Commodity code.
+  - name: commodity_name
+    description: Commodity name.
+  - name: traffic_type_id
+    description: Identifier of the related traffic type.
+  entity_definitions:
+  - identity_id: dim_commodity_identity
+    dataset_columns:
+    - commodity_id
+    entity_universe: complete
+  - identity_id: dim_traffic_type_identity
+    dataset_columns:
+    - traffic_type_id
+    entity_universe: partial
+- node_id: sf:railroad.customer.dim_channel
+  descriptor:
+    qualified_name: railroad.customer.dim_channel
+    display_name: Channel
+    description: How freight is sold, including intermodal marketing companies and transload.
+    synonyms: []
+    tags:
+    - dimension
+    - demand
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: CUSTOMER
+      object: DIM_CHANNEL
+      format: table
+  grain:
+    description: One row is one channel.
+    components:
+    - identity_id: dim_channel_identity
+      dataset_columns:
+      - channel_id
+      description: Identifier of the channel.
+  columns:
+  - name: channel_id
+    description: Identifier of the channel.
+  - name: channel_code
+    description: Channel code.
+    value_description: direct, imc, transload, single_line, interline
+  - name: channel_name
+    description: Channel name.
+  entity_definitions:
+  - identity_id: dim_channel_identity
+    dataset_columns:
+    - channel_id
+    entity_universe: complete
+- node_id: sf:railroad.customer.dim_contract
+  descriptor:
+    qualified_name: railroad.customer.dim_contract
+    display_name: Contract
+    description: Shipper contract, including merchandise contracts up for bid.
+    synonyms: []
+    tags:
+    - dimension
+    - demand
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: CUSTOMER
+      object: DIM_CONTRACT
+      format: table
+  grain:
+    description: One row is one contract.
+    components:
+    - identity_id: dim_contract_identity
+      dataset_columns:
+      - contract_id
+      description: Identifier of the contract.
+  columns:
+  - name: contract_id
+    description: Identifier of the contract.
+  - name: contract_code
+    description: Contract code.
+  - name: renewal_year
+    description: Renewal year.
+  - name: shipper_id
+    description: Identifier of the related shipper.
+  entity_definitions:
+  - identity_id: dim_contract_identity
+    dataset_columns:
+    - contract_id
+    entity_universe: complete
+  - identity_id: dim_shipper_identity
+    dataset_columns:
+    - shipper_id
+    entity_universe: partial
+- node_id: sf:railroad.customer.dim_competitor
+  descriptor:
+    qualified_name: railroad.customer.dim_competitor
+    display_name: Competitor
+    description: Competing railroad, including the other western railroad and an eastern connection.
+    synonyms: []
+    tags:
+    - dimension
+    - demand
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: CUSTOMER
+      object: DIM_COMPETITOR
+      format: table
+  grain:
+    description: One row is one competitor.
+    components:
+    - identity_id: dim_competitor_identity
+      dataset_columns:
+      - competitor_id
+      description: Identifier of the competitor.
+  columns:
+  - name: competitor_id
+    description: Identifier of the competitor.
+  - name: competitor_code
+    description: Competitor code.
+    value_description: eastern, western
+  - name: competitor_name
+    description: Competitor name.
+  - name: region_id
+    description: Identifier of the related region.
+  entity_definitions:
+  - identity_id: dim_competitor_identity
+    dataset_columns:
+    - competitor_id
+    entity_universe: complete
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:railroad.demand.fact_volume
+  descriptor:
+    qualified_name: railroad.demand.fact_volume
+    display_name: Carload Volume
+    description: Carloads Railroad Inc moves. The row stores quantity, not yield.
+    synonyms: []
+    tags:
+    - fact
+    - demand
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: DEMAND
+      object: FACT_VOLUME
+      format: table
+  grain:
+    description: One row is one carload volume.
+    components:
+    - identity_id: fact_volume_identity
+      dataset_columns:
+      - volume_id
+      description: Identifier of the carload volume.
+  columns:
+  - name: volume_id
+    description: Identifier of the carload volume.
+  - name: carload_quantity
+    description: Carload quantity on this row. The value is a quantity, not a price.
+  - name: merchandise_quantity
+    description: Merchandise quantity on this row. The value is a quantity, not a price.
+  - name: outlook_flat_flag
+    description: Whether this row is marked outlook flat.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: commodity_id
+    description: Identifier of the related commodity.
+  - name: region_id
+    description: Identifier of the related region.
+  - name: traffic_type_id
+    description: Identifier of the related traffic type.
+  - name: shipper_id
+    description: Identifier of the related shipper.
+  entity_definitions:
+  - identity_id: fact_volume_identity
+    dataset_columns:
+    - volume_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_commodity_identity
+    dataset_columns:
+    - commodity_id
+    entity_universe: partial
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+  - identity_id: dim_traffic_type_identity
+    dataset_columns:
+    - traffic_type_id
+    entity_universe: partial
+  - identity_id: dim_shipper_identity
+    dataset_columns:
+    - shipper_id
+    entity_universe: partial
+- node_id: sf:railroad.demand.fact_volume_outlook
+  descriptor:
+    qualified_name: railroad.demand.fact_volume_outlook
+    display_name: Volume Outlook
+    description: Project growth and macro pressure inside the volume outlook. Quantities only.
+    synonyms: []
+    tags:
+    - fact
+    - demand
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: DEMAND
+      object: FACT_VOLUME_OUTLOOK
+      format: table
+  grain:
+    description: One row is one volume outlook.
+    components:
+    - identity_id: fact_volume_outlook_identity
+      dataset_columns:
+      - volume_outlook_id
+      description: Identifier of the volume outlook.
+  columns:
+  - name: volume_outlook_id
+    description: Identifier of the volume outlook.
+  - name: project_offset_quantity
+    description: Project offset quantity on this row. The value is a quantity, not a price.
+  - name: macro_drag_quantity
+    description: Macro drag quantity on this row. The value is a quantity, not a price.
+  - name: outlook_quantity
+    description: Outlook quantity on this row. The value is a quantity, not a price.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: traffic_type_id
+    description: Identifier of the related traffic type.
+  - name: region_id
+    description: Identifier of the related region.
+  entity_definitions:
+  - identity_id: fact_volume_outlook_identity
+    dataset_columns:
+    - volume_outlook_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_traffic_type_identity
+    dataset_columns:
+    - traffic_type_id
+    entity_universe: partial
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:railroad.demand.fact_project_volume
+  descriptor:
+    qualified_name: railroad.demand.fact_project_volume
+    display_name: Project Volume
+    description: Carloads from industrial projects, business development, partnerships, and contract wins.
+    synonyms: []
+    tags:
+    - fact
+    - demand
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: DEMAND
+      object: FACT_PROJECT_VOLUME
+      format: table
+  grain:
+    description: One row is one project volume.
+    components:
+    - identity_id: fact_project_volume_identity
+      dataset_columns:
+      - project_volume_id
+      description: Identifier of the project volume.
+  columns:
+  - name: project_volume_id
+    description: Identifier of the project volume.
+  - name: project_carload_quantity
+    description: Project carload quantity on this row. The value is a quantity, not a price.
+  - name: partnership_ramp_quantity
+    description: Partnership ramp quantity on this row. The value is a quantity, not a price.
+  - name: win_quantity
+    description: Win quantity on this row. The value is a quantity, not a price.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: project_id
+    description: Identifier of the related project.
+  - name: commodity_id
+    description: Identifier of the related commodity.
+  - name: region_id
+    description: Identifier of the related region.
+  entity_definitions:
+  - identity_id: fact_project_volume_identity
+    dataset_columns:
+    - project_volume_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_project_identity
+    dataset_columns:
+    - project_id
+    entity_universe: partial
+  - identity_id: dim_commodity_identity
+    dataset_columns:
+    - commodity_id
+    entity_universe: partial
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:railroad.demand.fact_intermodal_volume
+  descriptor:
+    qualified_name: railroad.demand.fact_intermodal_volume
+    display_name: Intermodal Volume
+    description: Intermodal units, domestic or international. Quantity only.
+    synonyms: []
+    tags:
+    - fact
+    - demand
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: DEMAND
+      object: FACT_INTERMODAL_VOLUME
+      format: table
+  grain:
+    description: One row is one intermodal volume.
+    components:
+    - identity_id: fact_intermodal_volume_identity
+      dataset_columns:
+      - intermodal_volume_id
+      description: Identifier of the intermodal volume.
+  columns:
+  - name: intermodal_volume_id
+    description: Identifier of the intermodal volume.
+  - name: unit_quantity
+    description: Unit quantity on this row. The value is a quantity, not a price.
+  - name: snapback_slower_flag
+    description: Whether this row is marked snapback slower.
+  - name: can_accelerate_flag
+    description: Whether this row is marked can accelerate.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: traffic_type_id
+    description: Identifier of the related traffic type.
+  - name: port_id
+    description: Identifier of the related port.
+  - name: channel_id
+    description: Identifier of the related channel.
+  - name: region_id
+    description: Identifier of the related region.
+  entity_definitions:
+  - identity_id: fact_intermodal_volume_identity
+    dataset_columns:
+    - intermodal_volume_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_traffic_type_identity
+    dataset_columns:
+    - traffic_type_id
+    entity_universe: partial
+  - identity_id: dim_port_identity
+    dataset_columns:
+    - port_id
+    entity_universe: partial
+  - identity_id: dim_channel_identity
+    dataset_columns:
+    - channel_id
+    entity_universe: partial
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:railroad.demand.fact_originated_volume
+  descriptor:
+    qualified_name: railroad.demand.fact_originated_volume
+    display_name: Originated Volume
+    description: Originated units used to read a share shift. Quantity only.
+    synonyms: []
+    tags:
+    - fact
+    - demand
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: DEMAND
+      object: FACT_ORIGINATED_VOLUME
+      format: table
+  grain:
+    description: One row is one originated volume.
+    components:
+    - identity_id: fact_originated_volume_identity
+      dataset_columns:
+      - originated_volume_id
+      description: Identifier of the originated volume.
+  columns:
+  - name: originated_volume_id
+    description: Identifier of the originated volume.
+  - name: originated_quantity
+    description: Originated quantity on this row. The value is a quantity, not a price.
+  - name: share_shift_flag
+    description: Whether this row is marked share shift.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: traffic_type_id
+    description: Identifier of the related traffic type.
+  - name: competitor_id
+    description: Identifier of the related competitor.
+  - name: region_id
+    description: Identifier of the related region.
+  entity_definitions:
+  - identity_id: fact_originated_volume_identity
+    dataset_columns:
+    - originated_volume_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_traffic_type_identity
+    dataset_columns:
+    - traffic_type_id
+    entity_universe: partial
+  - identity_id: dim_competitor_identity
+    dataset_columns:
+    - competitor_id
+    entity_universe: partial
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:railroad.demand.fact_diverted_volume
+  descriptor:
+    qualified_name: railroad.demand.fact_diverted_volume
+    display_name: Diverted Volume
+    description: Freight diverted ahead of a port labor risk, and whether it is returning.
+    synonyms: []
+    tags:
+    - fact
+    - demand
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: DEMAND
+      object: FACT_DIVERTED_VOLUME
+      format: table
+  grain:
+    description: One row is one diverted volume.
+    components:
+    - identity_id: fact_diverted_volume_identity
+      dataset_columns:
+      - diverted_volume_id
+      description: Identifier of the diverted volume.
+  columns:
+  - name: diverted_volume_id
+    description: Identifier of the diverted volume.
+  - name: diverted_quantity
+    description: Diverted quantity on this row. The value is a quantity, not a price.
+  - name: returning_flag
+    description: Whether this row is marked returning.
+  - name: labor_risk_flag
+    description: Whether this row is marked labor risk.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: port_id
+    description: Identifier of the related port.
+  - name: coast_id
+    description: Identifier of the related coast.
+  - name: traffic_type_id
+    description: Identifier of the related traffic type.
+  entity_definitions:
+  - identity_id: fact_diverted_volume_identity
+    dataset_columns:
+    - diverted_volume_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_port_identity
+    dataset_columns:
+    - port_id
+    entity_universe: partial
+  - identity_id: dim_coast_identity
+    dataset_columns:
+    - coast_id
+    entity_universe: partial
+  - identity_id: dim_traffic_type_identity
+    dataset_columns:
+    - traffic_type_id
+    entity_universe: partial
+- node_id: sf:railroad.demand.fact_coal_volume
+  descriptor:
+    qualified_name: railroad.demand.fact_coal_volume
+    display_name: Coal Volume
+    description: Coal carloads. The row does not store coal yield or a gas price.
+    synonyms: []
+    tags:
+    - fact
+    - demand
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: DEMAND
+      object: FACT_COAL_VOLUME
+      format: table
+  grain:
+    description: One row is one coal volume.
+    components:
+    - identity_id: fact_coal_volume_identity
+      dataset_columns:
+      - coal_volume_id
+      description: Identifier of the coal volume.
+  columns:
+  - name: coal_volume_id
+    description: Identifier of the coal volume.
+  - name: coal_quantity
+    description: Coal quantity on this row. The value is a quantity, not a price.
+  - name: response_lag_quarters
+    description: Response lag quarters.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: commodity_id
+    description: Identifier of the related commodity.
+  - name: region_id
+    description: Identifier of the related region.
+  entity_definitions:
+  - identity_id: fact_coal_volume_identity
+    dataset_columns:
+    - coal_volume_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_commodity_identity
+    dataset_columns:
+    - commodity_id
+    entity_universe: partial
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:railroad.demand.fact_export_coal
+  descriptor:
+    qualified_name: railroad.demand.fact_export_coal
+    display_name: Export Coal Demand
+    description: Export coal units and how stable that demand is.
+    synonyms: []
+    tags:
+    - fact
+    - demand
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: DEMAND
+      object: FACT_EXPORT_COAL
+      format: table
+  grain:
+    description: One row is one export coal demand.
+    components:
+    - identity_id: fact_export_coal_identity
+      dataset_columns:
+      - export_coal_id
+      description: Identifier of the export coal demand.
+  columns:
+  - name: export_coal_id
+    description: Identifier of the export coal demand.
+  - name: export_quantity
+    description: Export quantity on this row. The value is a quantity, not a price.
+  - name: demand_stability_code
+    description: Demand stability code.
+  - name: service_read_code
+    description: Service read code.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: commodity_id
+    description: Identifier of the related commodity.
+  - name: port_id
+    description: Identifier of the related port.
+  entity_definitions:
+  - identity_id: fact_export_coal_identity
+    dataset_columns:
+    - export_coal_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_commodity_identity
+    dataset_columns:
+    - commodity_id
+    entity_universe: partial
+  - identity_id: dim_port_identity
+    dataset_columns:
+    - port_id
+    entity_universe: partial
+- node_id: sf:railroad.demand.fact_grain_export
+  descriptor:
+    qualified_name: railroad.demand.fact_grain_export
+    display_name: Grain Export Volume
+    description: Grain export units and whether trade pressure is the negative.
+    synonyms: []
+    tags:
+    - fact
+    - demand
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: DEMAND
+      object: FACT_GRAIN_EXPORT
+      format: table
+  grain:
+    description: One row is one grain export volume.
+    components:
+    - identity_id: fact_grain_export_identity
+      dataset_columns:
+      - grain_export_id
+      description: Identifier of the grain export volume.
+  columns:
+  - name: grain_export_id
+    description: Identifier of the grain export volume.
+  - name: export_quantity
+    description: Export quantity on this row. The value is a quantity, not a price.
+  - name: trade_pressure_flag
+    description: Whether this row is marked trade pressure.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: commodity_id
+    description: Identifier of the related commodity.
+  - name: port_id
+    description: Identifier of the related port.
+  entity_definitions:
+  - identity_id: fact_grain_export_identity
+    dataset_columns:
+    - grain_export_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_commodity_identity
+    dataset_columns:
+    - commodity_id
+    entity_universe: partial
+  - identity_id: dim_port_identity
+    dataset_columns:
+    - port_id
+    entity_universe: partial
+- node_id: sf:railroad.demand.fact_metals_move
+  descriptor:
+    qualified_name: railroad.demand.fact_metals_move
+    display_name: Metals Volume
+    description: Metals carloads, including domestic moves that can offset export pressure.
+    synonyms: []
+    tags:
+    - fact
+    - demand
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: DEMAND
+      object: FACT_METALS_MOVE
+      format: table
+  grain:
+    description: One row is one metals volume.
+    components:
+    - identity_id: fact_metals_move_identity
+      dataset_columns:
+      - metals_move_id
+      description: Identifier of the metals volume.
+  columns:
+  - name: metals_move_id
+    description: Identifier of the metals volume.
+  - name: move_quantity
+    description: Move quantity on this row. The value is a quantity, not a price.
+  - name: domestic_positive_flag
+    description: Whether this row is marked domestic positive.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: commodity_id
+    description: Identifier of the related commodity.
+  - name: region_id
+    description: Identifier of the related region.
+  entity_definitions:
+  - identity_id: fact_metals_move_identity
+    dataset_columns:
+    - metals_move_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_commodity_identity
+    dataset_columns:
+    - commodity_id
+    entity_universe: partial
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:railroad.demand.fact_auto_move
+  descriptor:
+    qualified_name: railroad.demand.fact_auto_move
+    display_name: Auto Volume
+    description: Automotive carloads.
+    synonyms: []
+    tags:
+    - fact
+    - demand
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: DEMAND
+      object: FACT_AUTO_MOVE
+      format: table
+  grain:
+    description: One row is one auto volume.
+    components:
+    - identity_id: fact_auto_move_identity
+      dataset_columns:
+      - auto_move_id
+      description: Identifier of the auto volume.
+  columns:
+  - name: auto_move_id
+    description: Identifier of the auto volume.
+  - name: auto_quantity
+    description: Auto quantity on this row. The value is a quantity, not a price.
+  - name: softer_flag
+    description: Whether this row is marked softer.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: commodity_id
+    description: Identifier of the related commodity.
+  - name: region_id
+    description: Identifier of the related region.
+  entity_definitions:
+  - identity_id: fact_auto_move_identity
+    dataset_columns:
+    - auto_move_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_commodity_identity
+    dataset_columns:
+    - commodity_id
+    entity_universe: partial
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:railroad.demand.fact_chemical_volume
+  descriptor:
+    qualified_name: railroad.demand.fact_chemical_volume
+    display_name: Chemical Volume
+    description: Chemical carloads. Price and mix sit on the price slice.
+    synonyms: []
+    tags:
+    - fact
+    - demand
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: DEMAND
+      object: FACT_CHEMICAL_VOLUME
+      format: table
+  grain:
+    description: One row is one chemical volume.
+    components:
+    - identity_id: fact_chemical_volume_identity
+      dataset_columns:
+      - chemical_volume_id
+      description: Identifier of the chemical volume.
+  columns:
+  - name: chemical_volume_id
+    description: Identifier of the chemical volume.
+  - name: chemical_quantity
+    description: Chemical quantity on this row. The value is a quantity, not a price.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: commodity_id
+    description: Identifier of the related commodity.
+  - name: region_id
+    description: Identifier of the related region.
+  entity_definitions:
+  - identity_id: fact_chemical_volume_identity
+    dataset_columns:
+    - chemical_volume_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_commodity_identity
+    dataset_columns:
+    - commodity_id
+    entity_universe: partial
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:railroad.demand.fact_housing_volume
+  descriptor:
+    qualified_name: railroad.demand.fact_housing_volume
+    display_name: Housing-Linked Volume
+    description: Merchandise units tied to housing.
+    synonyms: []
+    tags:
+    - fact
+    - demand
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: DEMAND
+      object: FACT_HOUSING_VOLUME
+      format: table
+  grain:
+    description: One row is one housing-linked volume.
+    components:
+    - identity_id: fact_housing_volume_identity
+      dataset_columns:
+      - housing_volume_id
+      description: Identifier of the housing-linked volume.
+  columns:
+  - name: housing_volume_id
+    description: Identifier of the housing-linked volume.
+  - name: housing_sensitive_quantity
+    description: Housing sensitive quantity on this row. The value is a quantity, not a price.
+  - name: outlook_change_flag
+    description: Whether this row is marked outlook change.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: commodity_id
+    description: Identifier of the related commodity.
+  - name: region_id
+    description: Identifier of the related region.
+  entity_definitions:
+  - identity_id: fact_housing_volume_identity
+    dataset_columns:
+    - housing_volume_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_commodity_identity
+    dataset_columns:
+    - commodity_id
+    entity_universe: partial
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:railroad.demand.fact_consumer_demand
+  descriptor:
+    qualified_name: railroad.demand.fact_consumer_demand
+    display_name: Consumer Demand
+    description: Consumer demand index behind intermodal. Not a price.
+    synonyms: []
+    tags:
+    - fact
+    - demand
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: DEMAND
+      object: FACT_CONSUMER_DEMAND
+      format: table
+  grain:
+    description: One row is one consumer demand.
+    components:
+    - identity_id: fact_consumer_demand_identity
+      dataset_columns:
+      - consumer_demand_id
+      description: Identifier of the consumer demand.
+  columns:
+  - name: consumer_demand_id
+    description: Identifier of the consumer demand.
+  - name: demand_index
+    description: Demand index.
+  - name: air_pocket_flag
+    description: Whether this row is marked air pocket.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: traffic_type_id
+    description: Identifier of the related traffic type.
+  - name: region_id
+    description: Identifier of the related region.
+  entity_definitions:
+  - identity_id: fact_consumer_demand_identity
+    dataset_columns:
+    - consumer_demand_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_traffic_type_identity
+    dataset_columns:
+    - traffic_type_id
+    entity_universe: partial
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:railroad.demand.fact_peak_volume
+  descriptor:
+    qualified_name: railroad.demand.fact_peak_volume
+    display_name: Peak Volume
+    description: Peak-season units required to get the year back to growth.
+    synonyms: []
+    tags:
+    - fact
+    - demand
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: DEMAND
+      object: FACT_PEAK_VOLUME
+      format: table
+  grain:
+    description: One row is one peak volume.
+    components:
+    - identity_id: fact_peak_volume_identity
+      dataset_columns:
+      - peak_volume_id
+      description: Identifier of the peak volume.
+  columns:
+  - name: peak_volume_id
+    description: Identifier of the peak volume.
+  - name: peak_quantity
+    description: Peak quantity on this row. The value is a quantity, not a price.
+  - name: required_for_growth_flag
+    description: Whether this row is marked required for growth.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: peak_season_id
+    description: Identifier of the related peak season.
+  - name: traffic_type_id
+    description: Identifier of the related traffic type.
+  entity_definitions:
+  - identity_id: fact_peak_volume_identity
+    dataset_columns:
+    - peak_volume_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_peak_season_identity
+    dataset_columns:
+    - peak_season_id
+    entity_universe: partial
+  - identity_id: dim_traffic_type_identity
+    dataset_columns:
+    - traffic_type_id
+    entity_universe: partial
+- node_id: sf:railroad.demand.fact_truck_conversion
+  descriptor:
+    qualified_name: railroad.demand.fact_truck_conversion
+    display_name: Truck Conversion
+    description: Units converted from truck to rail, and the win category.
+    synonyms: []
+    tags:
+    - fact
+    - demand
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: DEMAND
+      object: FACT_TRUCK_CONVERSION
+      format: table
+  grain:
+    description: One row is one truck conversion.
+    components:
+    - identity_id: fact_truck_conversion_identity
+      dataset_columns:
+      - truck_conversion_id
+      description: Identifier of the truck conversion.
+  columns:
+  - name: truck_conversion_id
+    description: Identifier of the truck conversion.
+  - name: converted_quantity
+    description: Converted quantity on this row. The value is a quantity, not a price.
+  - name: win_category_code
+    description: Win category code.
+  - name: still_on_highway_flag
+    description: Whether this row is marked still on highway.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: traffic_type_id
+    description: Identifier of the related traffic type.
+  - name: channel_id
+    description: Identifier of the related channel.
+  - name: region_id
+    description: Identifier of the related region.
+  entity_definitions:
+  - identity_id: fact_truck_conversion_identity
+    dataset_columns:
+    - truck_conversion_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_traffic_type_identity
+    dataset_columns:
+    - traffic_type_id
+    entity_universe: partial
+  - identity_id: dim_channel_identity
+    dataset_columns:
+    - channel_id
+    entity_universe: partial
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:railroad.demand.fact_watershed
+  descriptor:
+    qualified_name: railroad.demand.fact_watershed
+    display_name: Watershed Freight
+    description: Addressable freight the industry could still reach, versus units already on rail.
+    synonyms: []
+    tags:
+    - fact
+    - demand
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: DEMAND
+      object: FACT_WATERSHED
+      format: table
+  grain:
+    description: One row is one watershed freight.
+    components:
+    - identity_id: fact_watershed_identity
+      dataset_columns:
+      - watershed_id
+      description: Identifier of the watershed freight.
+  columns:
+  - name: watershed_id
+    description: Identifier of the watershed freight.
+  - name: addressable_quantity
+    description: Addressable quantity on this row. The value is a quantity, not a price.
+  - name: already_railed_quantity
+    description: Already railed quantity on this row. The value is a quantity, not a price.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: region_id
+    description: Identifier of the related region.
+  - name: traffic_type_id
+    description: Identifier of the related traffic type.
+  entity_definitions:
+  - identity_id: fact_watershed_identity
+    dataset_columns:
+    - watershed_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+  - identity_id: dim_traffic_type_identity
+    dataset_columns:
+    - traffic_type_id
+    entity_universe: partial
+- node_id: sf:railroad.demand.fact_repatriation
+  descriptor:
+    qualified_name: railroad.demand.fact_repatriation
+    display_name: Repatriation Volume
+    description: U.S.-bound units moving through Canadian ports that could return.
+    synonyms: []
+    tags:
+    - fact
+    - demand
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: DEMAND
+      object: FACT_REPATRIATION
+      format: table
+  grain:
+    description: One row is one repatriation volume.
+    components:
+    - identity_id: fact_repatriation_identity
+      dataset_columns:
+      - repatriation_id
+      description: Identifier of the repatriation volume.
+  columns:
+  - name: repatriation_id
+    description: Identifier of the repatriation volume.
+  - name: addressable_quantity
+    description: Addressable quantity on this row. The value is a quantity, not a price.
+  - name: through_canadian_port_flag
+    description: Whether this row is marked through canadian port.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: port_id
+    description: Identifier of the related port.
+  - name: traffic_type_id
+    description: Identifier of the related traffic type.
+  entity_definitions:
+  - identity_id: fact_repatriation_identity
+    dataset_columns:
+    - repatriation_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_port_identity
+    dataset_columns:
+    - port_id
+    entity_universe: partial
+  - identity_id: dim_traffic_type_identity
+    dataset_columns:
+    - traffic_type_id
+    entity_universe: partial
+- node_id: sf:railroad.demand.fact_eastern_shift
+  descriptor:
+    qualified_name: railroad.demand.fact_eastern_shift
+    display_name: Eastern Shift Risk
+    description: Units that could move to another eastern railroad while a review is pending.
+    synonyms: []
+    tags:
+    - fact
+    - demand
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: DEMAND
+      object: FACT_EASTERN_SHIFT
+      format: table
+  grain:
+    description: One row is one eastern shift risk.
+    components:
+    - identity_id: fact_eastern_shift_identity
+      dataset_columns:
+      - eastern_shift_id
+      description: Identifier of the eastern shift risk.
+  columns:
+  - name: eastern_shift_id
+    description: Identifier of the eastern shift risk.
+  - name: at_risk_quantity
+    description: At risk quantity on this row. The value is a quantity, not a price.
+  - name: review_pending_flag
+    description: Whether this row is marked review pending.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: competitor_id
+    description: Identifier of the related competitor.
+  - name: traffic_type_id
+    description: Identifier of the related traffic type.
+  entity_definitions:
+  - identity_id: fact_eastern_shift_identity
+    dataset_columns:
+    - eastern_shift_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_competitor_identity
+    dataset_columns:
+    - competitor_id
+    entity_universe: partial
+  - identity_id: dim_traffic_type_identity
+    dataset_columns:
+    - traffic_type_id
+    entity_universe: partial
+- node_id: sf:railroad.demand.fact_incremental_traffic
+  descriptor:
+    qualified_name: railroad.demand.fact_incremental_traffic
+    display_name: Incremental Traffic
+    description: Added units from a combination. Handling dollars sit on the price slice.
+    synonyms: []
+    tags:
+    - fact
+    - demand
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: DEMAND
+      object: FACT_INCREMENTAL_TRAFFIC
+      format: table
+  grain:
+    description: One row is one incremental traffic.
+    components:
+    - identity_id: fact_incremental_traffic_identity
+      dataset_columns:
+      - incremental_traffic_id
+      description: Identifier of the incremental traffic.
+  columns:
+  - name: incremental_traffic_id
+    description: Identifier of the incremental traffic.
+  - name: added_quantity
+    description: Added quantity on this row. The value is a quantity, not a price.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: traffic_type_id
+    description: Identifier of the related traffic type.
+  - name: region_id
+    description: Identifier of the related region.
+  entity_definitions:
+  - identity_id: fact_incremental_traffic_identity
+    dataset_columns:
+    - incremental_traffic_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_traffic_type_identity
+    dataset_columns:
+    - traffic_type_id
+    entity_universe: partial
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:railroad.demand.fact_outage_return
+  descriptor:
+    qualified_name: railroad.demand.fact_outage_return
+    display_name: Outage Return
+    description: Units returning after an outage, versus a real acceleration.
+    synonyms: []
+    tags:
+    - fact
+    - demand
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: DEMAND
+      object: FACT_OUTAGE_RETURN
+      format: table
+  grain:
+    description: One row is one outage return.
+    components:
+    - identity_id: fact_outage_return_identity
+      dataset_columns:
+      - outage_return_id
+      description: Identifier of the outage return.
+  columns:
+  - name: outage_return_id
+    description: Identifier of the outage return.
+  - name: returned_quantity
+    description: Returned quantity on this row. The value is a quantity, not a price.
+  - name: acceleration_flag
+    description: Whether this row is marked acceleration.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: traffic_type_id
+    description: Identifier of the related traffic type.
+  - name: region_id
+    description: Identifier of the related region.
+  entity_definitions:
+  - identity_id: fact_outage_return_identity
+    dataset_columns:
+    - outage_return_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_traffic_type_identity
+    dataset_columns:
+    - traffic_type_id
+    entity_universe: partial
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:railroad.demand.fact_bid_volume
+  descriptor:
+    qualified_name: railroad.demand.fact_bid_volume
+    display_name: Bid Volume
+    description: Units in the bid book, including second-quarter double-stack bids.
+    synonyms: []
+    tags:
+    - fact
+    - demand
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: DEMAND
+      object: FACT_BID_VOLUME
+      format: table
+  grain:
+    description: One row is one bid volume.
+    components:
+    - identity_id: fact_bid_volume_identity
+      dataset_columns:
+      - bid_volume_id
+      description: Identifier of the bid volume.
+  columns:
+  - name: bid_volume_id
+    description: Identifier of the bid volume.
+  - name: bid_quantity
+    description: Bid quantity on this row. The value is a quantity, not a price.
+  - name: second_quarter_bid_flag
+    description: Whether this row is marked second quarter bid.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: project_id
+    description: Identifier of the related project.
+  - name: traffic_type_id
+    description: Identifier of the related traffic type.
+  entity_definitions:
+  - identity_id: fact_bid_volume_identity
+    dataset_columns:
+    - bid_volume_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_project_identity
+    dataset_columns:
+    - project_id
+    entity_universe: partial
+  - identity_id: dim_traffic_type_identity
+    dataset_columns:
+    - traffic_type_id
+    entity_universe: partial
+- node_id: sf:railroad.demand.fact_shipper_request
+  descriptor:
+    qualified_name: railroad.demand.fact_shipper_request
+    display_name: Shipper Request
+    description: Shipper requests for single-line service that takes trucks off the road.
+    synonyms: []
+    tags:
+    - fact
+    - demand
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: DEMAND
+      object: FACT_SHIPPER_REQUEST
+      format: table
+  grain:
+    description: One row is one shipper request.
+    components:
+    - identity_id: fact_shipper_request_identity
+      dataset_columns:
+      - shipper_request_id
+      description: Identifier of the shipper request.
+  columns:
+  - name: shipper_request_id
+    description: Identifier of the shipper request.
+  - name: request_quantity
+    description: Request quantity on this row. The value is a quantity, not a price.
+  - name: wants_truck_off_road_flag
+    description: Whether this row is marked wants truck off road.
+  - name: single_line_interest_flag
+    description: Whether this row is marked single line interest.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: shipper_id
+    description: Identifier of the related shipper.
+  - name: channel_id
+    description: Identifier of the related channel.
+  entity_definitions:
+  - identity_id: fact_shipper_request_identity
+    dataset_columns:
+    - shipper_request_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_shipper_identity
+    dataset_columns:
+    - shipper_id
+    entity_universe: partial
+  - identity_id: dim_channel_identity
+    dataset_columns:
+    - channel_id
+    entity_universe: partial
+- node_id: sf:railroad.demand.fact_trade_risk
+  descriptor:
+    qualified_name: railroad.demand.fact_trade_risk
+    display_name: Trade Risk Volume
+    description: Units at risk when trade policy pauses project conversations.
+    synonyms: []
+    tags:
+    - fact
+    - demand
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: DEMAND
+      object: FACT_TRADE_RISK
+      format: table
+  grain:
+    description: One row is one trade risk volume.
+    components:
+    - identity_id: fact_trade_risk_identity
+      dataset_columns:
+      - trade_risk_id
+      description: Identifier of the trade risk volume.
+  columns:
+  - name: trade_risk_id
+    description: Identifier of the trade risk volume.
+  - name: volume_at_risk_quantity
+    description: Volume at risk quantity on this row. The value is a quantity, not a price.
+  - name: trade_pause_flag
+    description: Whether this row is marked trade pause.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: project_id
+    description: Identifier of the related project.
+  - name: commodity_id
+    description: Identifier of the related commodity.
+  entity_definitions:
+  - identity_id: fact_trade_risk_identity
+    dataset_columns:
+    - trade_risk_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_project_identity
+    dataset_columns:
+    - project_id
+    entity_universe: partial
+  - identity_id: dim_commodity_identity
+    dataset_columns:
+    - commodity_id
+    entity_universe: partial
+- node_id: sf:railroad.demand.fact_competitor_volume
+  descriptor:
+    qualified_name: railroad.demand.fact_competitor_volume
+    display_name: Competitor Volume
+    description: Competitor originated units and whether collaboration creates commercial risk.
+    synonyms: []
+    tags:
+    - fact
+    - demand
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: DEMAND
+      object: FACT_COMPETITOR_VOLUME
+      format: table
+  grain:
+    description: One row is one competitor volume.
+    components:
+    - identity_id: fact_competitor_volume_identity
+      dataset_columns:
+      - competitor_volume_id
+      description: Identifier of the competitor volume.
+  columns:
+  - name: competitor_volume_id
+    description: Identifier of the competitor volume.
+  - name: competitor_quantity
+    description: Competitor quantity on this row. The value is a quantity, not a price.
+  - name: share_shift_flag
+    description: Whether this row is marked share shift.
+  - name: commercial_risk_flag
+    description: Whether this row is marked commercial risk.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: competitor_id
+    description: Identifier of the related competitor.
+  - name: traffic_type_id
+    description: Identifier of the related traffic type.
+  entity_definitions:
+  - identity_id: fact_competitor_volume_identity
+    dataset_columns:
+    - competitor_volume_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_competitor_identity
+    dataset_columns:
+    - competitor_id
+    entity_universe: partial
+  - identity_id: dim_traffic_type_identity
+    dataset_columns:
+    - traffic_type_id
+    entity_universe: partial
+- node_id: sf:railroad.demand.fact_cycle_sensitivity
+  descriptor:
+    qualified_name: railroad.demand.fact_cycle_sensitivity
+    display_name: Cycle Sensitivity
+    description: How sensitive multi-year industrial development units are to the economic cycle.
+    synonyms: []
+    tags:
+    - fact
+    - demand
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: DEMAND
+      object: FACT_CYCLE_SENSITIVITY
+      format: table
+  grain:
+    description: One row is one cycle sensitivity.
+    components:
+    - identity_id: fact_cycle_sensitivity_identity
+      dataset_columns:
+      - cycle_sensitivity_id
+      description: Identifier of the cycle sensitivity.
+  columns:
+  - name: cycle_sensitivity_id
+    description: Identifier of the cycle sensitivity.
+  - name: cycle_sensitive_flag
+    description: Whether this row is marked cycle sensitive.
+  - name: project_quantity
+    description: Project quantity on this row. The value is a quantity, not a price.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: project_id
+    description: Identifier of the related project.
+  - name: region_id
+    description: Identifier of the related region.
+  entity_definitions:
+  - identity_id: fact_cycle_sensitivity_identity
+    dataset_columns:
+    - cycle_sensitivity_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_project_identity
+    dataset_columns:
+    - project_id
+    entity_universe: partial
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial

@@ -1,0 +1,2027 @@
+schema_version: '3'
+nodes:
+- node_id: sf:railroad.price.dim_benchmark
+  descriptor:
+    qualified_name: railroad.price.dim_benchmark
+    display_name: Benchmark
+    description: Index used in coal yield and export benchmarks.
+    synonyms: []
+    tags:
+    - dimension
+    - price
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: PRICE
+      object: DIM_BENCHMARK
+      format: table
+  grain:
+    description: One row is one benchmark.
+    components:
+    - identity_id: dim_benchmark_identity
+      dataset_columns:
+      - benchmark_id
+      description: Identifier of the benchmark.
+  columns:
+  - name: benchmark_id
+    description: Identifier of the benchmark.
+  - name: benchmark_code
+    description: Benchmark code.
+    value_description: export_coal, diesel, truck_spot
+  - name: benchmark_name
+    description: Benchmark name.
+  entity_definitions:
+  - identity_id: dim_benchmark_identity
+    dataset_columns:
+    - benchmark_id
+    entity_universe: complete
+- node_id: sf:railroad.price.dim_cost_bucket
+  descriptor:
+    qualified_name: railroad.price.dim_cost_bucket
+    display_name: Cost Bucket
+    description: Cost bucket inside a savings program or the operating ratio bridge.
+    synonyms: []
+    tags:
+    - dimension
+    - price
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: PRICE
+      object: DIM_COST_BUCKET
+      format: table
+  grain:
+    description: One row is one cost bucket.
+    components:
+    - identity_id: dim_cost_bucket_identity
+      dataset_columns:
+      - cost_bucket_id
+      description: Identifier of the cost bucket.
+  columns:
+  - name: cost_bucket_id
+    description: Identifier of the cost bucket.
+  - name: bucket_code
+    description: Bucket code.
+    value_description: workforce, fuel, purchased_services, incentive, other
+  - name: bucket_name
+    description: Bucket name.
+  entity_definitions:
+  - identity_id: dim_cost_bucket_identity
+    dataset_columns:
+    - cost_bucket_id
+    entity_universe: complete
+- node_id: sf:railroad.price.dim_fuel_grade
+  descriptor:
+    qualified_name: railroad.price.dim_fuel_grade
+    display_name: Fuel Grade
+    description: Fuel grade whose cost hits the operating ratio.
+    synonyms: []
+    tags:
+    - dimension
+    - price
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: PRICE
+      object: DIM_FUEL_GRADE
+      format: table
+  grain:
+    description: One row is one fuel grade.
+    components:
+    - identity_id: dim_fuel_grade_identity
+      dataset_columns:
+      - fuel_grade_id
+      description: Identifier of the fuel grade.
+  columns:
+  - name: fuel_grade_id
+    description: Identifier of the fuel grade.
+  - name: grade_code
+    description: Grade code.
+    value_description: diesel, other
+  - name: grade_name
+    description: Grade name.
+  entity_definitions:
+  - identity_id: dim_fuel_grade_identity
+    dataset_columns:
+    - fuel_grade_id
+    entity_universe: complete
+- node_id: sf:railroad.price.dim_price_program
+  descriptor:
+    qualified_name: railroad.price.dim_price_program
+    display_name: Price Program
+    description: Price program, including gateway pricing and the annual contract season.
+    synonyms: []
+    tags:
+    - dimension
+    - price
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: PRICE
+      object: DIM_PRICE_PROGRAM
+      format: table
+  grain:
+    description: One row is one price program.
+    components:
+    - identity_id: dim_price_program_identity
+      dataset_columns:
+      - price_program_id
+      description: Identifier of the price program.
+  columns:
+  - name: price_program_id
+    description: Identifier of the price program.
+  - name: program_code
+    description: Program code.
+    value_description: gateway, annual_contract, intermodal, merchandise
+  - name: program_name
+    description: Program name.
+  entity_definitions:
+  - identity_id: dim_price_program_identity
+    dataset_columns:
+    - price_program_id
+    entity_universe: complete
+- node_id: sf:railroad.price.dim_earnings_framework
+  descriptor:
+    qualified_name: railroad.price.dim_earnings_framework
+    display_name: Earnings Framework
+    description: Long-term earnings framework once the macro is normal.
+    synonyms: []
+    tags:
+    - dimension
+    - price
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: PRICE
+      object: DIM_EARNINGS_FRAMEWORK
+      format: table
+  grain:
+    description: One row is one earnings framework.
+    components:
+    - identity_id: dim_earnings_framework_identity
+      dataset_columns:
+      - earnings_framework_id
+      description: Identifier of the earnings framework.
+  columns:
+  - name: earnings_framework_id
+    description: Identifier of the earnings framework.
+  - name: framework_code
+    description: Framework code.
+  - name: framework_name
+    description: Framework name.
+  entity_definitions:
+  - identity_id: dim_earnings_framework_identity
+    dataset_columns:
+    - earnings_framework_id
+    entity_universe: complete
+- node_id: sf:railroad.price.fact_yield
+  descriptor:
+    qualified_name: railroad.price.fact_yield
+    display_name: Yield
+    description: Yield excluding fuel. The row stores a rate, not the unit count.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: PRICE
+      object: FACT_YIELD
+      format: table
+  grain:
+    description: One row is one yield.
+    components:
+    - identity_id: fact_yield_identity
+      dataset_columns:
+      - yield_id
+      description: Identifier of the yield.
+  columns:
+  - name: yield_id
+    description: Identifier of the yield.
+  - name: yield_amount
+    description: Yield amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: core_yield_amount
+    description: Core yield amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: fuel_excluded_flag
+    description: Whether this row is marked fuel excluded.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: traffic_type_id
+    description: Identifier of the related traffic type.
+  - name: benchmark_id
+    description: Identifier of the related benchmark.
+  entity_definitions:
+  - identity_id: fact_yield_identity
+    dataset_columns:
+    - yield_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_traffic_type_identity
+    dataset_columns:
+    - traffic_type_id
+    entity_universe: partial
+  - identity_id: dim_benchmark_identity
+    dataset_columns:
+    - benchmark_id
+    entity_universe: partial
+- node_id: sf:railroad.price.fact_price
+  descriptor:
+    qualified_name: railroad.price.fact_price
+    display_name: Price Realization
+    description: Core price, including the guide split that belongs to price rather than units.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: PRICE
+      object: FACT_PRICE
+      format: table
+  grain:
+    description: One row is one price realization.
+    components:
+    - identity_id: fact_price_identity
+      dataset_columns:
+      - price_id
+      description: Identifier of the price realization.
+  columns:
+  - name: price_id
+    description: Identifier of the price realization.
+  - name: price_change_amount
+    description: Price change amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: guide_growth_amount
+    description: Guide growth amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: price_component_amount
+    description: Price component amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: net_positive_flag
+    description: Whether this row is marked net positive.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: price_program_id
+    description: Identifier of the related price program.
+  - name: traffic_type_id
+    description: Identifier of the related traffic type.
+  entity_definitions:
+  - identity_id: fact_price_identity
+    dataset_columns:
+    - price_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_price_program_identity
+    dataset_columns:
+    - price_program_id
+    entity_universe: partial
+  - identity_id: dim_traffic_type_identity
+    dataset_columns:
+    - traffic_type_id
+    entity_universe: partial
+- node_id: sf:railroad.price.fact_price_cost_spread
+  descriptor:
+    qualified_name: railroad.price.fact_price_cost_spread
+    display_name: Price-Cost Spread
+    description: Spread of price versus cost, separate from the base operating ratio.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: PRICE
+      object: FACT_PRICE_COST_SPREAD
+      format: table
+  grain:
+    description: One row is one price-cost spread.
+    components:
+    - identity_id: fact_price_cost_spread_identity
+      dataset_columns:
+      - price_cost_spread_id
+      description: Identifier of the price-cost spread.
+  columns:
+  - name: price_cost_spread_id
+    description: Identifier of the price-cost spread.
+  - name: spread_amount
+    description: Spread amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: positive_spread_flag
+    description: Whether this row is marked positive spread.
+  - name: labor_already_set_flag
+    description: Whether this row is marked labor already set.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: price_program_id
+    description: Identifier of the related price program.
+  - name: cost_bucket_id
+    description: Identifier of the related cost bucket.
+  entity_definitions:
+  - identity_id: fact_price_cost_spread_identity
+    dataset_columns:
+    - price_cost_spread_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_price_program_identity
+    dataset_columns:
+    - price_program_id
+    entity_universe: partial
+  - identity_id: dim_cost_bucket_identity
+    dataset_columns:
+    - cost_bucket_id
+    entity_universe: partial
+- node_id: sf:railroad.price.fact_operating_ratio
+  descriptor:
+    qualified_name: railroad.price.fact_operating_ratio
+    display_name: Operating Ratio
+    description: Operating ratio, the fuel headwind inside it, and the full-year target.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: PRICE
+      object: FACT_OPERATING_RATIO
+      format: table
+  grain:
+    description: One row is one operating ratio.
+    components:
+    - identity_id: fact_operating_ratio_identity
+      dataset_columns:
+      - operating_ratio_id
+      description: Identifier of the operating ratio.
+  columns:
+  - name: operating_ratio_id
+    description: Identifier of the operating ratio.
+  - name: operating_ratio
+    description: Operating ratio. The value is a price, cost, or rate, not a unit quantity.
+  - name: full_year_target_ratio
+    description: Full year target ratio. The value is a price, cost, or rate, not a unit quantity.
+  - name: high_end_bias_flag
+    description: Whether this row is marked high end bias.
+  - name: fuel_headwind_amount
+    description: Fuel headwind amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: cost_bucket_id
+    description: Identifier of the related cost bucket.
+  entity_definitions:
+  - identity_id: fact_operating_ratio_identity
+    dataset_columns:
+    - operating_ratio_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_cost_bucket_identity
+    dataset_columns:
+    - cost_bucket_id
+    entity_universe: partial
+- node_id: sf:railroad.price.fact_or_bridge
+  descriptor:
+    qualified_name: railroad.price.fact_or_bridge
+    display_name: Operating Ratio Bridge
+    description: Known roll-offs, identified savings, and other items inside the ratio bridge.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: PRICE
+      object: FACT_OR_BRIDGE
+      format: table
+  grain:
+    description: One row is one operating ratio bridge.
+    components:
+    - identity_id: fact_or_bridge_identity
+      dataset_columns:
+      - or_bridge_id
+      description: Identifier of the operating ratio bridge.
+  columns:
+  - name: or_bridge_id
+    description: Identifier of the operating ratio bridge.
+  - name: known_rolloff_amount
+    description: Known rolloff amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: identified_savings_amount
+    description: Identified savings amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: other_item_amount
+    description: Other item amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: inflation_inside_guide_amount
+    description: Inflation inside guide amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: cost_bucket_id
+    description: Identifier of the related cost bucket.
+  entity_definitions:
+  - identity_id: fact_or_bridge_identity
+    dataset_columns:
+    - or_bridge_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_cost_bucket_identity
+    dataset_columns:
+    - cost_bucket_id
+    entity_universe: partial
+- node_id: sf:railroad.price.fact_or_cadence
+  descriptor:
+    qualified_name: railroad.price.fact_or_cadence
+    display_name: Operating Ratio Cadence
+    description: Whether ratio improvement is spread through the year or weighted to one half.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: PRICE
+      object: FACT_OR_CADENCE
+      format: table
+  grain:
+    description: One row is one operating ratio cadence.
+    components:
+    - identity_id: fact_or_cadence_identity
+      dataset_columns:
+      - or_cadence_id
+      description: Identifier of the operating ratio cadence.
+  columns:
+  - name: or_cadence_id
+    description: Identifier of the operating ratio cadence.
+  - name: weight_code
+    description: Weight code.
+    value_description: front, back, spread
+  - name: front_weighted_flag
+    description: Whether this row is marked front weighted.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  entity_definitions:
+  - identity_id: fact_or_cadence_identity
+    dataset_columns:
+    - or_cadence_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+- node_id: sf:railroad.price.fact_fuel_cost
+  descriptor:
+    qualified_name: railroad.price.fact_fuel_cost
+    display_name: Fuel Cost
+    description: Fuel and diesel cost. The row stores dollars, not gallons and not carloads.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: PRICE
+      object: FACT_FUEL_COST
+      format: table
+  grain:
+    description: One row is one fuel cost.
+    components:
+    - identity_id: fact_fuel_cost_identity
+      dataset_columns:
+      - fuel_cost_id
+      description: Identifier of the fuel cost.
+  columns:
+  - name: fuel_cost_id
+    description: Identifier of the fuel cost.
+  - name: fuel_cost_amount
+    description: Fuel cost amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: diesel_headwind_amount
+    description: Diesel headwind amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: half_versus_half_amount
+    description: Half versus half amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: fuel_grade_id
+    description: Identifier of the related fuel grade.
+  - name: benchmark_id
+    description: Identifier of the related benchmark.
+  entity_definitions:
+  - identity_id: fact_fuel_cost_identity
+    dataset_columns:
+    - fuel_cost_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_fuel_grade_identity
+    dataset_columns:
+    - fuel_grade_id
+    entity_universe: partial
+  - identity_id: dim_benchmark_identity
+    dataset_columns:
+    - benchmark_id
+    entity_universe: partial
+- node_id: sf:railroad.price.fact_fuel_surcharge
+  descriptor:
+    qualified_name: railroad.price.fact_fuel_surcharge
+    display_name: Fuel Surcharge Lag
+    description: Fuel-surcharge lag versus fuel cost.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: PRICE
+      object: FACT_FUEL_SURCHARGE
+      format: table
+  grain:
+    description: One row is one fuel surcharge lag.
+    components:
+    - identity_id: fact_fuel_surcharge_identity
+      dataset_columns:
+      - fuel_surcharge_id
+      description: Identifier of the fuel surcharge lag.
+  columns:
+  - name: fuel_surcharge_id
+    description: Identifier of the fuel surcharge lag.
+  - name: lag_amount
+    description: Lag amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: headwind_flag
+    description: Whether this row is marked headwind.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: fuel_grade_id
+    description: Identifier of the related fuel grade.
+  entity_definitions:
+  - identity_id: fact_fuel_surcharge_identity
+    dataset_columns:
+    - fuel_surcharge_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_fuel_grade_identity
+    dataset_columns:
+    - fuel_grade_id
+    entity_universe: partial
+- node_id: sf:railroad.price.fact_coal_yield
+  descriptor:
+    qualified_name: railroad.price.fact_coal_yield
+    display_name: Coal Yield
+    description: Coal revenue per unit, split between index headwind and mix.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: PRICE
+      object: FACT_COAL_YIELD
+      format: table
+  grain:
+    description: One row is one coal yield.
+    components:
+    - identity_id: fact_coal_yield_identity
+      dataset_columns:
+      - coal_yield_id
+      description: Identifier of the coal yield.
+  columns:
+  - name: coal_yield_id
+    description: Identifier of the coal yield.
+  - name: revenue_per_unit_amount
+    description: Revenue per unit amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: index_headwind_amount
+    description: Index headwind amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: mix_benefit_amount
+    description: Mix benefit amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: sequential_change_amount
+    description: Sequential change amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: benchmark_id
+    description: Identifier of the related benchmark.
+  - name: commodity_id
+    description: Identifier of the related commodity.
+  entity_definitions:
+  - identity_id: fact_coal_yield_identity
+    dataset_columns:
+    - coal_yield_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_benchmark_identity
+    dataset_columns:
+    - benchmark_id
+    entity_universe: partial
+  - identity_id: dim_commodity_identity
+    dataset_columns:
+    - commodity_id
+    entity_universe: partial
+- node_id: sf:railroad.price.fact_intermodal_price
+  descriptor:
+    qualified_name: railroad.price.fact_intermodal_price
+    display_name: Intermodal Price
+    description: Intermodal price talks, including a loose truck market.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: PRICE
+      object: FACT_INTERMODAL_PRICE
+      format: table
+  grain:
+    description: One row is one intermodal price.
+    components:
+    - identity_id: fact_intermodal_price_identity
+      dataset_columns:
+      - intermodal_price_id
+      description: Identifier of the intermodal price.
+  columns:
+  - name: intermodal_price_id
+    description: Identifier of the intermodal price.
+  - name: price_amount
+    description: Price amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: talks_status_code
+    description: Talks status code.
+  - name: loose_truck_flag
+    description: Whether this row is marked loose truck.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: price_program_id
+    description: Identifier of the related price program.
+  - name: traffic_type_id
+    description: Identifier of the related traffic type.
+  entity_definitions:
+  - identity_id: fact_intermodal_price_identity
+    dataset_columns:
+    - intermodal_price_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_price_program_identity
+    dataset_columns:
+    - price_program_id
+    entity_universe: partial
+  - identity_id: dim_traffic_type_identity
+    dataset_columns:
+    - traffic_type_id
+    entity_universe: partial
+- node_id: sf:railroad.price.fact_merchandise_price
+  descriptor:
+    qualified_name: railroad.price.fact_merchandise_price
+    display_name: Merchandise Price
+    description: Merchandise price and whether it is holding up.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: PRICE
+      object: FACT_MERCHANDISE_PRICE
+      format: table
+  grain:
+    description: One row is one merchandise price.
+    components:
+    - identity_id: fact_merchandise_price_identity
+      dataset_columns:
+      - merchandise_price_id
+      description: Identifier of the merchandise price.
+  columns:
+  - name: merchandise_price_id
+    description: Identifier of the merchandise price.
+  - name: price_amount
+    description: Price amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: holding_up_flag
+    description: Whether this row is marked holding up.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: price_program_id
+    description: Identifier of the related price program.
+  - name: contract_id
+    description: Identifier of the related contract.
+  entity_definitions:
+  - identity_id: fact_merchandise_price_identity
+    dataset_columns:
+    - merchandise_price_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_price_program_identity
+    dataset_columns:
+    - price_program_id
+    entity_universe: partial
+  - identity_id: dim_contract_identity
+    dataset_columns:
+    - contract_id
+    entity_universe: partial
+- node_id: sf:railroad.price.fact_domestic_intermodal_yield
+  descriptor:
+    qualified_name: railroad.price.fact_domestic_intermodal_yield
+    display_name: Domestic Intermodal Yield
+    description: Whether a domestic intermodal uptick is enough to move yield, and the truck lag.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: PRICE
+      object: FACT_DOMESTIC_INTERMODAL_YIELD
+      format: table
+  grain:
+    description: One row is one domestic intermodal yield.
+    components:
+    - identity_id: fact_domestic_intermodal_yield_identity
+      dataset_columns:
+      - domestic_intermodal_yield_id
+      description: Identifier of the domestic intermodal yield.
+  columns:
+  - name: domestic_intermodal_yield_id
+    description: Identifier of the domestic intermodal yield.
+  - name: yield_amount
+    description: Yield amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: domestic_uptick_sufficient_flag
+    description: Whether this row is marked domestic uptick sufficient.
+  - name: lag_quarters
+    description: Lag quarters.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: traffic_type_id
+    description: Identifier of the related traffic type.
+  - name: benchmark_id
+    description: Identifier of the related benchmark.
+  entity_definitions:
+  - identity_id: fact_domestic_intermodal_yield_identity
+    dataset_columns:
+    - domestic_intermodal_yield_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_traffic_type_identity
+    dataset_columns:
+    - traffic_type_id
+    entity_universe: partial
+  - identity_id: dim_benchmark_identity
+    dataset_columns:
+    - benchmark_id
+    entity_universe: partial
+- node_id: sf:railroad.price.fact_mix
+  descriptor:
+    qualified_name: railroad.price.fact_mix
+    display_name: Mix Effect
+    description: Mix effect on revenue, separate from price and from unit counts.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: PRICE
+      object: FACT_MIX
+      format: table
+  grain:
+    description: One row is one mix effect.
+    components:
+    - identity_id: fact_mix_identity
+      dataset_columns:
+      - mix_id
+      description: Identifier of the mix effect.
+  columns:
+  - name: mix_id
+    description: Identifier of the mix effect.
+  - name: mix_effect_amount
+    description: Mix effect amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: negative_mix_flag
+    description: Whether this row is marked negative mix.
+  - name: lifts_growth_flag
+    description: Whether this row is marked lifts growth.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: traffic_type_id
+    description: Identifier of the related traffic type.
+  entity_definitions:
+  - identity_id: fact_mix_identity
+    dataset_columns:
+    - mix_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_traffic_type_identity
+    dataset_columns:
+    - traffic_type_id
+    entity_universe: partial
+- node_id: sf:railroad.price.fact_revenue_bridge
+  descriptor:
+    qualified_name: railroad.price.fact_revenue_bridge
+    display_name: Revenue Bridge
+    description: Dollar contributions of price, units, and mix. Not a unit count.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: PRICE
+      object: FACT_REVENUE_BRIDGE
+      format: table
+  grain:
+    description: One row is one revenue bridge.
+    components:
+    - identity_id: fact_revenue_bridge_identity
+      dataset_columns:
+      - revenue_bridge_id
+      description: Identifier of the revenue bridge.
+  columns:
+  - name: revenue_bridge_id
+    description: Identifier of the revenue bridge.
+  - name: price_contribution_amount
+    description: Price contribution amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: unit_contribution_amount
+    description: Unit contribution amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: mix_contribution_amount
+    description: Mix contribution amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: growth_amount
+    description: Growth amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: traffic_type_id
+    description: Identifier of the related traffic type.
+  entity_definitions:
+  - identity_id: fact_revenue_bridge_identity
+    dataset_columns:
+    - revenue_bridge_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_traffic_type_identity
+    dataset_columns:
+    - traffic_type_id
+    entity_universe: partial
+- node_id: sf:railroad.price.fact_other_revenue
+  descriptor:
+    qualified_name: railroad.price.fact_other_revenue
+    display_name: Other Revenue
+    description: Other revenue and whether the quarter held an upside surprise versus the run rate.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: PRICE
+      object: FACT_OTHER_REVENUE
+      format: table
+  grain:
+    description: One row is one other revenue.
+    components:
+    - identity_id: fact_other_revenue_identity
+      dataset_columns:
+      - other_revenue_id
+      description: Identifier of the other revenue.
+  columns:
+  - name: other_revenue_id
+    description: Identifier of the other revenue.
+  - name: other_revenue_amount
+    description: Other revenue amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: upside_surprise_flag
+    description: Whether this row is marked upside surprise.
+  - name: run_rate_amount
+    description: Run rate amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  entity_definitions:
+  - identity_id: fact_other_revenue_identity
+    dataset_columns:
+    - other_revenue_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+- node_id: sf:railroad.price.fact_real_estate
+  descriptor:
+    qualified_name: railroad.price.fact_real_estate
+    display_name: Real-Estate Gain
+    description: Real-estate gain and whether it recurs in the back half.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: PRICE
+      object: FACT_REAL_ESTATE
+      format: table
+  grain:
+    description: One row is one real-estate gain.
+    components:
+    - identity_id: fact_real_estate_identity
+      dataset_columns:
+      - real_estate_id
+      description: Identifier of the real-estate gain.
+  columns:
+  - name: real_estate_id
+    description: Identifier of the real-estate gain.
+  - name: gain_amount
+    description: Gain amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: run_rate_flag
+    description: Whether this row is marked run rate.
+  - name: recurs_in_back_half_flag
+    description: Whether this row is marked recurs in back half.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  entity_definitions:
+  - identity_id: fact_real_estate_identity
+    dataset_columns:
+    - real_estate_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+- node_id: sf:railroad.price.fact_purchased_services
+  descriptor:
+    qualified_name: railroad.price.fact_purchased_services
+    display_name: Purchased Services
+    description: Purchased-services expense and whether the quarter is the run rate.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: PRICE
+      object: FACT_PURCHASED_SERVICES
+      format: table
+  grain:
+    description: One row is one purchased services.
+    components:
+    - identity_id: fact_purchased_services_identity
+      dataset_columns:
+      - purchased_services_id
+      description: Identifier of the purchased services.
+  columns:
+  - name: purchased_services_id
+    description: Identifier of the purchased services.
+  - name: expense_amount
+    description: Expense amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: is_run_rate_flag
+    description: Whether this row is marked is run rate.
+  - name: remaining_opportunity_amount
+    description: Remaining opportunity amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: cost_bucket_id
+    description: Identifier of the related cost bucket.
+  entity_definitions:
+  - identity_id: fact_purchased_services_identity
+    dataset_columns:
+    - purchased_services_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_cost_bucket_identity
+    dataset_columns:
+    - cost_bucket_id
+    entity_universe: partial
+- node_id: sf:railroad.price.fact_incentive_pay
+  descriptor:
+    qualified_name: railroad.price.fact_incentive_pay
+    display_name: Incentive Pay
+    description: Incentive compensation and whether the action shows this year or next year.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: PRICE
+      object: FACT_INCENTIVE_PAY
+      format: table
+  grain:
+    description: One row is one incentive pay.
+    components:
+    - identity_id: fact_incentive_pay_identity
+      dataset_columns:
+      - incentive_pay_id
+      description: Identifier of the incentive pay.
+  columns:
+  - name: incentive_pay_id
+    description: Identifier of the incentive pay.
+  - name: incentive_amount
+    description: Incentive amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: shows_in_year_flag
+    description: Whether this row is marked shows in year.
+  - name: aimed_at_next_year_flag
+    description: Whether this row is marked aimed at next year.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: cost_bucket_id
+    description: Identifier of the related cost bucket.
+  entity_definitions:
+  - identity_id: fact_incentive_pay_identity
+    dataset_columns:
+    - incentive_pay_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_cost_bucket_identity
+    dataset_columns:
+    - cost_bucket_id
+    entity_universe: partial
+- node_id: sf:railroad.price.fact_compensation
+  descriptor:
+    qualified_name: railroad.price.fact_compensation
+    display_name: Compensation
+    description: Compensation per employee and the wage inflation technology is expected to offset.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: PRICE
+      object: FACT_COMPENSATION
+      format: table
+  grain:
+    description: One row is one compensation.
+    components:
+    - identity_id: fact_compensation_identity
+      dataset_columns:
+      - compensation_id
+      description: Identifier of the compensation.
+  columns:
+  - name: compensation_id
+    description: Identifier of the compensation.
+  - name: compensation_per_employee_amount
+    description: Compensation per employee amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: wage_inflation_amount
+    description: Wage inflation amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: technology_offset_amount
+    description: Technology offset amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: cost_bucket_id
+    description: Identifier of the related cost bucket.
+  - name: technology_id
+    description: Identifier of the related technology.
+  entity_definitions:
+  - identity_id: fact_compensation_identity
+    dataset_columns:
+    - compensation_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_cost_bucket_identity
+    dataset_columns:
+    - cost_bucket_id
+    entity_universe: partial
+  - identity_id: dim_technology_identity
+    dataset_columns:
+    - technology_id
+    entity_universe: partial
+- node_id: sf:railroad.price.fact_cost_savings
+  descriptor:
+    qualified_name: railroad.price.fact_cost_savings
+    display_name: Cost Savings
+    description: Identified savings by bucket.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: PRICE
+      object: FACT_COST_SAVINGS
+      format: table
+  grain:
+    description: One row is one cost savings.
+    components:
+    - identity_id: fact_cost_savings_identity
+      dataset_columns:
+      - cost_savings_id
+      description: Identifier of the cost savings.
+  columns:
+  - name: cost_savings_id
+    description: Identifier of the cost savings.
+  - name: savings_amount
+    description: Savings amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: workforce_bucket_amount
+    description: Workforce bucket amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: other_bucket_amount
+    description: Other bucket amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: cost_bucket_id
+    description: Identifier of the related cost bucket.
+  - name: initiative_id
+    description: Identifier of the related initiative.
+  entity_definitions:
+  - identity_id: fact_cost_savings_identity
+    dataset_columns:
+    - cost_savings_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_cost_bucket_identity
+    dataset_columns:
+    - cost_bucket_id
+    entity_universe: partial
+  - identity_id: dim_initiative_identity
+    dataset_columns:
+    - initiative_id
+    entity_universe: partial
+- node_id: sf:railroad.price.fact_inflation
+  descriptor:
+    qualified_name: railroad.price.fact_inflation
+    display_name: Inflation
+    description: Cost inflation that price has to cover.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: PRICE
+      object: FACT_INFLATION
+      format: table
+  grain:
+    description: One row is one inflation.
+    components:
+    - identity_id: fact_inflation_identity
+      dataset_columns:
+      - inflation_id
+      description: Identifier of the inflation.
+  columns:
+  - name: inflation_id
+    description: Identifier of the inflation.
+  - name: inflation_amount
+    description: Inflation amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: faster_than_realization_flag
+    description: Whether this row is marked faster than realization.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: cost_bucket_id
+    description: Identifier of the related cost bucket.
+  entity_definitions:
+  - identity_id: fact_inflation_identity
+    dataset_columns:
+    - inflation_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_cost_bucket_identity
+    dataset_columns:
+    - cost_bucket_id
+    entity_universe: partial
+- node_id: sf:railroad.price.fact_incremental_margin
+  descriptor:
+    qualified_name: railroad.price.fact_incremental_margin
+    display_name: Incremental Margin
+    description: Incremental margin if volume turns up, given utilization and inflation.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: PRICE
+      object: FACT_INCREMENTAL_MARGIN
+      format: table
+  grain:
+    description: One row is one incremental margin.
+    components:
+    - identity_id: fact_incremental_margin_identity
+      dataset_columns:
+      - incremental_margin_id
+      description: Identifier of the incremental margin.
+  columns:
+  - name: incremental_margin_id
+    description: Identifier of the incremental margin.
+  - name: incremental_margin_rate
+    description: Incremental margin rate. The value is a price, cost, or rate, not a unit quantity.
+  - name: leverage_rate
+    description: Leverage rate. The value is a price, cost, or rate, not a unit quantity.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: cost_bucket_id
+    description: Identifier of the related cost bucket.
+  entity_definitions:
+  - identity_id: fact_incremental_margin_identity
+    dataset_columns:
+    - incremental_margin_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_cost_bucket_identity
+    dataset_columns:
+    - cost_bucket_id
+    entity_universe: partial
+- node_id: sf:railroad.price.fact_handling_cost
+  descriptor:
+    qualified_name: railroad.price.fact_handling_cost
+    display_name: Handling Cost
+    description: Cost to handle incremental traffic. The added units sit on the demand slice.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: PRICE
+      object: FACT_HANDLING_COST
+      format: table
+  grain:
+    description: One row is one handling cost.
+    components:
+    - identity_id: fact_handling_cost_identity
+      dataset_columns:
+      - handling_cost_id
+      description: Identifier of the handling cost.
+  columns:
+  - name: handling_cost_id
+    description: Identifier of the handling cost.
+  - name: handling_cost_amount
+    description: Handling cost amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: variable_with_traffic_flag
+    description: Whether this row is marked variable with traffic.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: traffic_type_id
+    description: Identifier of the related traffic type.
+  entity_definitions:
+  - identity_id: fact_handling_cost_identity
+    dataset_columns:
+    - handling_cost_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_traffic_type_identity
+    dataset_columns:
+    - traffic_type_id
+    entity_universe: partial
+- node_id: sf:railroad.price.fact_gateway_price
+  descriptor:
+    qualified_name: railroad.price.fact_gateway_price
+    display_name: Gateway Price
+    description: Customer feedback on committed gateway pricing.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: PRICE
+      object: FACT_GATEWAY_PRICE
+      format: table
+  grain:
+    description: One row is one gateway price.
+    components:
+    - identity_id: fact_gateway_price_identity
+      dataset_columns:
+      - gateway_price_id
+      description: Identifier of the gateway price.
+  columns:
+  - name: gateway_price_id
+    description: Identifier of the gateway price.
+  - name: gateway_price_amount
+    description: Gateway price amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: feedback_code
+    description: Feedback code.
+  - name: competition_claim_flag
+    description: Whether this row is marked competition claim.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: gateway_id
+    description: Identifier of the related gateway.
+  - name: price_program_id
+    description: Identifier of the related price program.
+  entity_definitions:
+  - identity_id: fact_gateway_price_identity
+    dataset_columns:
+    - gateway_price_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_gateway_identity
+    dataset_columns:
+    - gateway_id
+    entity_universe: partial
+  - identity_id: dim_price_program_identity
+    dataset_columns:
+    - price_program_id
+    entity_universe: partial
+- node_id: sf:railroad.price.fact_truck_rate
+  descriptor:
+    qualified_name: railroad.price.fact_truck_rate
+    display_name: Truck Rate
+    description: Truck spot and contract rates and the lag before rail price responds.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: PRICE
+      object: FACT_TRUCK_RATE
+      format: table
+  grain:
+    description: One row is one truck rate.
+    components:
+    - identity_id: fact_truck_rate_identity
+      dataset_columns:
+      - truck_rate_id
+      description: Identifier of the truck rate.
+  columns:
+  - name: truck_rate_id
+    description: Identifier of the truck rate.
+  - name: spot_rate_amount
+    description: Spot rate amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: contract_rate_amount
+    description: Contract rate amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: lag_quarters
+    description: Lag quarters.
+  - name: tightening_flag
+    description: Whether this row is marked tightening.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: benchmark_id
+    description: Identifier of the related benchmark.
+  entity_definitions:
+  - identity_id: fact_truck_rate_identity
+    dataset_columns:
+    - truck_rate_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_benchmark_identity
+    dataset_columns:
+    - benchmark_id
+    entity_universe: partial
+- node_id: sf:railroad.price.fact_gas_price
+  descriptor:
+    qualified_name: railroad.price.fact_gas_price
+    display_name: Natural Gas Price
+    description: Natural-gas price and how long it has to stay high. Coal units sit on the demand slice.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: PRICE
+      object: FACT_GAS_PRICE
+      format: table
+  grain:
+    description: One row is one natural gas price.
+    components:
+    - identity_id: fact_gas_price_identity
+      dataset_columns:
+      - gas_price_id
+      description: Identifier of the natural gas price.
+  columns:
+  - name: gas_price_id
+    description: Identifier of the natural gas price.
+  - name: gas_price_amount
+    description: Gas price amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: weeks_above_threshold
+    description: Weeks above threshold.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: benchmark_id
+    description: Identifier of the related benchmark.
+  entity_definitions:
+  - identity_id: fact_gas_price_identity
+    dataset_columns:
+    - gas_price_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_benchmark_identity
+    dataset_columns:
+    - benchmark_id
+    entity_universe: partial
+- node_id: sf:railroad.price.fact_return_on_capital
+  descriptor:
+    qualified_name: railroad.price.fact_return_on_capital
+    display_name: Return on Capital
+    description: Return on capital and which lever is doing the work.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: PRICE
+      object: FACT_RETURN_ON_CAPITAL
+      format: table
+  grain:
+    description: One row is one return on capital.
+    components:
+    - identity_id: fact_return_on_capital_identity
+      dataset_columns:
+      - return_on_capital_id
+      description: Identifier of the return on capital.
+  columns:
+  - name: return_on_capital_id
+    description: Identifier of the return on capital.
+  - name: return_rate
+    description: Return rate. The value is a price, cost, or rate, not a unit quantity.
+  - name: primary_lever_code
+    description: Primary lever code.
+    value_description: asset_productivity, mix_and_price, efficiency
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  entity_definitions:
+  - identity_id: fact_return_on_capital_identity
+    dataset_columns:
+    - return_on_capital_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+- node_id: sf:railroad.price.fact_operating_margin
+  descriptor:
+    qualified_name: railroad.price.fact_operating_margin
+    display_name: Operating Margin
+    description: Operating margin and what would have to change for it to expand.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: PRICE
+      object: FACT_OPERATING_MARGIN
+      format: table
+  grain:
+    description: One row is one operating margin.
+    components:
+    - identity_id: fact_operating_margin_identity
+      dataset_columns:
+      - operating_margin_id
+      description: Identifier of the operating margin.
+  columns:
+  - name: operating_margin_id
+    description: Identifier of the operating margin.
+  - name: margin_rate
+    description: Margin rate. The value is a price, cost, or rate, not a unit quantity.
+  - name: expansion_condition_code
+    description: Expansion condition code.
+  - name: lower_flag
+    description: Whether this row is marked lower.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: traffic_type_id
+    description: Identifier of the related traffic type.
+  entity_definitions:
+  - identity_id: fact_operating_margin_identity
+    dataset_columns:
+    - operating_margin_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_traffic_type_identity
+    dataset_columns:
+    - traffic_type_id
+    entity_universe: partial
+- node_id: sf:railroad.price.fact_chemical_price
+  descriptor:
+    qualified_name: railroad.price.fact_chemical_price
+    display_name: Chemical Price
+    description: Chemical price and whether the gain is a healthy market or a quality mix shift.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: PRICE
+      object: FACT_CHEMICAL_PRICE
+      format: table
+  grain:
+    description: One row is one chemical price.
+    components:
+    - identity_id: fact_chemical_price_identity
+      dataset_columns:
+      - chemical_price_id
+      description: Identifier of the chemical price.
+  columns:
+  - name: chemical_price_id
+    description: Identifier of the chemical price.
+  - name: chemical_price_amount
+    description: Chemical price amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: quality_mix_flag
+    description: Whether this row is marked quality mix.
+  - name: healthy_market_flag
+    description: Whether this row is marked healthy market.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: commodity_id
+    description: Identifier of the related commodity.
+  entity_definitions:
+  - identity_id: fact_chemical_price_identity
+    dataset_columns:
+    - chemical_price_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_commodity_identity
+    dataset_columns:
+    - commodity_id
+    entity_universe: partial
+- node_id: sf:railroad.price.fact_contract_price
+  descriptor:
+    qualified_name: railroad.price.fact_contract_price
+    display_name: Contract Price
+    description: Renewal price and whether customers are accepting contracts in a soft market.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: PRICE
+      object: FACT_CONTRACT_PRICE
+      format: table
+  grain:
+    description: One row is one contract price.
+    components:
+    - identity_id: fact_contract_price_identity
+      dataset_columns:
+      - contract_price_id
+      description: Identifier of the contract price.
+  columns:
+  - name: contract_price_id
+    description: Identifier of the contract price.
+  - name: renewal_change_amount
+    description: Renewal change amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: acceptance_code
+    description: Acceptance code.
+  - name: better_than_this_year_flag
+    description: Whether this row is marked better than this year.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: contract_id
+    description: Identifier of the related contract.
+  - name: price_program_id
+    description: Identifier of the related price program.
+  entity_definitions:
+  - identity_id: fact_contract_price_identity
+    dataset_columns:
+    - contract_price_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_contract_identity
+    dataset_columns:
+    - contract_id
+    entity_universe: partial
+  - identity_id: dim_price_program_identity
+    dataset_columns:
+    - price_program_id
+    entity_universe: partial
+- node_id: sf:railroad.price.fact_inconvenience_cost
+  descriptor:
+    qualified_name: railroad.price.fact_inconvenience_cost
+    display_name: Inconvenience Cost
+    description: Quantified service-inconvenience cost and whether it captures the whole penalty.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: PRICE
+      object: FACT_INCONVENIENCE_COST
+      format: table
+  grain:
+    description: One row is one inconvenience cost.
+    components:
+    - identity_id: fact_inconvenience_cost_identity
+      dataset_columns:
+      - inconvenience_cost_id
+      description: Identifier of the inconvenience cost.
+  columns:
+  - name: inconvenience_cost_id
+    description: Identifier of the inconvenience cost.
+  - name: inconvenience_amount
+    description: Inconvenience amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: captures_full_penalty_flag
+    description: Whether this row is marked captures full penalty.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: service_metric_id
+    description: Identifier of the related service metric.
+  entity_definitions:
+  - identity_id: fact_inconvenience_cost_identity
+    dataset_columns:
+    - inconvenience_cost_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_service_metric_identity
+    dataset_columns:
+    - service_metric_id
+    entity_universe: partial
+- node_id: sf:railroad.price.fact_switching
+  descriptor:
+    qualified_name: railroad.price.fact_switching
+    display_name: Switching and Access
+    description: Reciprocal switching, gateway access, and shipper access. A commercial-terms fact, not
+      a unit count.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: PRICE
+      object: FACT_SWITCHING
+      format: table
+  grain:
+    description: One row is one switching and access.
+    components:
+    - identity_id: fact_switching_identity
+      dataset_columns:
+      - switching_id
+      description: Identifier of the switching and access.
+  columns:
+  - name: switching_id
+    description: Identifier of the switching and access.
+  - name: access_change_code
+    description: Access change code.
+  - name: rule_relation_code
+    description: Rule relation code.
+  - name: customer_reaction_code
+    description: Customer reaction code.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: gateway_id
+    description: Identifier of the related gateway.
+  - name: shipper_id
+    description: Identifier of the related shipper.
+  entity_definitions:
+  - identity_id: fact_switching_identity
+    dataset_columns:
+    - switching_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_gateway_identity
+    dataset_columns:
+    - gateway_id
+    entity_universe: partial
+  - identity_id: dim_shipper_identity
+    dataset_columns:
+    - shipper_id
+    entity_universe: partial
+- node_id: sf:railroad.price.fact_equipment_settlement
+  descriptor:
+    qualified_name: railroad.price.fact_equipment_settlement
+    display_name: Equipment Settlement
+    description: Equipment-settlement dollars inside the operating-ratio puts and takes.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: PRICE
+      object: FACT_EQUIPMENT_SETTLEMENT
+      format: table
+  grain:
+    description: One row is one equipment settlement.
+    components:
+    - identity_id: fact_equipment_settlement_identity
+      dataset_columns:
+      - equipment_settlement_id
+      description: Identifier of the equipment settlement.
+  columns:
+  - name: equipment_settlement_id
+    description: Identifier of the equipment settlement.
+  - name: settlement_amount
+    description: Settlement amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: cost_bucket_id
+    description: Identifier of the related cost bucket.
+  entity_definitions:
+  - identity_id: fact_equipment_settlement_identity
+    dataset_columns:
+    - equipment_settlement_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_cost_bucket_identity
+    dataset_columns:
+    - cost_bucket_id
+    entity_universe: partial
+- node_id: sf:railroad.price.fact_long_term_framework
+  descriptor:
+    qualified_name: railroad.price.fact_long_term_framework
+    display_name: Long-Term Framework
+    description: Whether the long-term earnings framework changed once the business mix is considered.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: PRICE
+      object: FACT_LONG_TERM_FRAMEWORK
+      format: table
+  grain:
+    description: One row is one long-term framework.
+    components:
+    - identity_id: fact_long_term_framework_identity
+      dataset_columns:
+      - long_term_framework_id
+      description: Identifier of the long-term framework.
+  columns:
+  - name: long_term_framework_id
+    description: Identifier of the long-term framework.
+  - name: unchanged_flag
+    description: Whether this row is marked unchanged.
+  - name: framework_code
+    description: Framework code.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: earnings_framework_id
+    description: Identifier of the related earnings framework.
+  entity_definitions:
+  - identity_id: fact_long_term_framework_identity
+    dataset_columns:
+    - long_term_framework_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_earnings_framework_identity
+    dataset_columns:
+    - earnings_framework_id
+    entity_universe: partial
+- node_id: sf:railroad.price.fact_operating_cost
+  descriptor:
+    qualified_name: railroad.price.fact_operating_cost
+    display_name: Operating Cost
+    description: Operating cost and whether it improved as service improved through the quarter.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - railroad
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: railroad.us-central-1
+      database: RAILROAD
+      schema: PRICE
+      object: FACT_OPERATING_COST
+      format: table
+  grain:
+    description: One row is one operating cost.
+    components:
+    - identity_id: fact_operating_cost_identity
+      dataset_columns:
+      - operating_cost_id
+      description: Identifier of the operating cost.
+  columns:
+  - name: operating_cost_id
+    description: Identifier of the operating cost.
+  - name: operating_cost_amount
+    description: Operating cost amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: improved_with_service_flag
+    description: Whether this row is marked improved with service.
+  - name: intraquarter_improvement_flag
+    description: Whether this row is marked intraquarter improvement.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: cost_bucket_id
+    description: Identifier of the related cost bucket.
+  - name: calendar_day_id
+    description: Identifier of the related calendar day.
+  entity_definitions:
+  - identity_id: fact_operating_cost_identity
+    dataset_columns:
+    - operating_cost_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_cost_bucket_identity
+    dataset_columns:
+    - cost_bucket_id
+    entity_universe: partial
+  - identity_id: dim_calendar_day_identity
+    dataset_columns:
+    - calendar_day_id
+    entity_universe: partial

@@ -1,0 +1,1593 @@
+schema_version: '3'
+nodes:
+- node_id: sf:utility.price.dim_rate_case
+  descriptor:
+    qualified_name: utility.price.dim_rate_case
+    display_name: Rate Case
+    description: Rate case, including the Carolinas cases.
+    synonyms: []
+    tags:
+    - dimension
+    - price
+    - utility
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: utility.us-east-1
+      database: UTILITY
+      schema: PRICE
+      object: DIM_RATE_CASE
+      format: table
+  grain:
+    description: One row is one rate case.
+    components:
+    - identity_id: dim_rate_case_identity
+      dataset_columns:
+      - rate_case_id
+      description: Identifier of the rate case.
+  columns:
+  - name: rate_case_id
+    description: Identifier of the rate case.
+  - name: case_code
+    description: Case code.
+    value_description: carolinas, other
+  - name: case_name
+    description: Case name.
+  - name: state_id
+    description: Identifier of the related state.
+  entity_definitions:
+  - identity_id: dim_rate_case_identity
+    dataset_columns:
+    - rate_case_id
+    entity_universe: complete
+  - identity_id: dim_state_identity
+    dataset_columns:
+    - state_id
+    entity_universe: partial
+- node_id: sf:utility.price.dim_capital_program
+  descriptor:
+    qualified_name: utility.price.dim_capital_program
+    display_name: Capital Program
+    description: Capital program window.
+    synonyms: []
+    tags:
+    - dimension
+    - price
+    - utility
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: utility.us-east-1
+      database: UTILITY
+      schema: PRICE
+      object: DIM_CAPITAL_PROGRAM
+      format: table
+  grain:
+    description: One row is one capital program.
+    components:
+    - identity_id: dim_capital_program_identity
+      dataset_columns:
+      - capital_program_id
+      description: Identifier of the capital program.
+  columns:
+  - name: capital_program_id
+    description: Identifier of the capital program.
+  - name: program_code
+    description: Program code.
+    value_description: five_year, later
+  - name: program_name
+    description: Program name.
+  entity_definitions:
+  - identity_id: dim_capital_program_identity
+    dataset_columns:
+    - capital_program_id
+    entity_universe: complete
+- node_id: sf:utility.price.dim_cost_bucket
+  descriptor:
+    qualified_name: utility.price.dim_cost_bucket
+    display_name: Cost Bucket
+    description: Cost bucket such as storm, fuel, tax credit, or construction.
+    synonyms: []
+    tags:
+    - dimension
+    - price
+    - utility
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: utility.us-east-1
+      database: UTILITY
+      schema: PRICE
+      object: DIM_COST_BUCKET
+      format: table
+  grain:
+    description: One row is one cost bucket.
+    components:
+    - identity_id: dim_cost_bucket_identity
+      dataset_columns:
+      - cost_bucket_id
+      description: Identifier of the cost bucket.
+  columns:
+  - name: cost_bucket_id
+    description: Identifier of the cost bucket.
+  - name: bucket_code
+    description: Bucket code.
+    value_description: storm, fuel, tax_credit, construction, overrun
+  - name: bucket_name
+    description: Bucket name.
+  entity_definitions:
+  - identity_id: dim_cost_bucket_identity
+    dataset_columns:
+    - cost_bucket_id
+    entity_universe: complete
+- node_id: sf:utility.price.dim_counterparty
+  descriptor:
+    qualified_name: utility.price.dim_counterparty
+    display_name: Counterparty
+    description: Counterparty on a wholesale or large-load contract.
+    synonyms: []
+    tags:
+    - dimension
+    - price
+    - utility
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: utility.us-east-1
+      database: UTILITY
+      schema: PRICE
+      object: DIM_COUNTERPARTY
+      format: table
+  grain:
+    description: One row is one counterparty.
+    components:
+    - identity_id: dim_counterparty_identity
+      dataset_columns:
+      - counterparty_id
+      description: Identifier of the counterparty.
+  columns:
+  - name: counterparty_id
+    description: Identifier of the counterparty.
+  - name: counterparty_code
+    description: Counterparty code.
+    value_description: hyperscaler, utility, government
+  - name: counterparty_name
+    description: Counterparty name.
+  - name: customer_id
+    description: Identifier of the related customer.
+  entity_definitions:
+  - identity_id: dim_counterparty_identity
+    dataset_columns:
+    - counterparty_id
+    entity_universe: complete
+  - identity_id: dim_customer_identity
+    dataset_columns:
+    - customer_id
+    entity_universe: partial
+- node_id: sf:utility.price.fact_earnings_growth
+  descriptor:
+    qualified_name: utility.price.fact_earnings_growth
+    display_name: Earnings Growth
+    description: Earnings-growth rate versus the range. Load quantity is not stored.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - utility
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: utility.us-east-1
+      database: UTILITY
+      schema: PRICE
+      object: FACT_EARNINGS_GROWTH
+      format: table
+  grain:
+    description: One row is one earnings growth.
+    components:
+    - identity_id: fact_earnings_growth_identity
+      dataset_columns:
+      - earnings_growth_id
+      description: Identifier of the earnings growth.
+  columns:
+  - name: earnings_growth_id
+    description: Identifier of the earnings growth.
+  - name: growth_rate
+    description: Growth rate. The value is a price, cost, or rate, not a unit quantity.
+  - name: above_range_flag
+    description: Whether this row is marked above range.
+  - name: high_end_includes_incremental_flag
+    description: Whether this row is marked high end includes incremental.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: capital_program_id
+    description: Identifier of the related capital program.
+  entity_definitions:
+  - identity_id: fact_earnings_growth_identity
+    dataset_columns:
+    - earnings_growth_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_capital_program_identity
+    dataset_columns:
+    - capital_program_id
+    entity_universe: partial
+- node_id: sf:utility.price.fact_capital_plan
+  descriptor:
+    qualified_name: utility.price.fact_capital_plan
+    display_name: Capital Plan
+    description: Capital dollars inside the five-year window versus later years.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - utility
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: utility.us-east-1
+      database: UTILITY
+      schema: PRICE
+      object: FACT_CAPITAL_PLAN
+      format: table
+  grain:
+    description: One row is one capital plan.
+    components:
+    - identity_id: fact_capital_plan_identity
+      dataset_columns:
+      - capital_plan_id
+      description: Identifier of the capital plan.
+  columns:
+  - name: capital_plan_id
+    description: Identifier of the capital plan.
+  - name: capital_amount
+    description: Capital amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: inside_window_amount
+    description: Inside window amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: later_amount
+    description: Later amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: layered_even_flag
+    description: Whether this row is marked layered even.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: capital_program_id
+    description: Identifier of the related capital program.
+  - name: project_id
+    description: Identifier of the related project.
+  entity_definitions:
+  - identity_id: fact_capital_plan_identity
+    dataset_columns:
+    - capital_plan_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_capital_program_identity
+    dataset_columns:
+    - capital_program_id
+    entity_universe: partial
+  - identity_id: dim_project_identity
+    dataset_columns:
+    - project_id
+    entity_universe: partial
+- node_id: sf:utility.price.fact_rate_case
+  descriptor:
+    qualified_name: utility.price.fact_rate_case
+    display_name: Rate Case
+    description: Rate-case path, including settlement versus full litigation.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - utility
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: utility.us-east-1
+      database: UTILITY
+      schema: PRICE
+      object: FACT_RATE_CASE
+      format: table
+  grain:
+    description: One row is one rate case.
+    components:
+    - identity_id: fact_rate_case_identity
+      dataset_columns:
+      - rate_case_fact_id
+      description: Identifier of the rate case.
+  columns:
+  - name: rate_case_fact_id
+    description: Identifier of the rate case.
+  - name: request_amount
+    description: Request amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: settlement_possible_flag
+    description: Whether this row is marked settlement possible.
+  - name: fully_litigated_flag
+    description: Whether this row is marked fully litigated.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: rate_case_id
+    description: Identifier of the related rate case.
+  - name: state_id
+    description: Identifier of the related state.
+  entity_definitions:
+  - identity_id: fact_rate_case_identity
+    dataset_columns:
+    - rate_case_fact_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_rate_case_identity
+    dataset_columns:
+    - rate_case_id
+    entity_universe: partial
+  - identity_id: dim_state_identity
+    dataset_columns:
+    - state_id
+    entity_universe: partial
+- node_id: sf:utility.price.fact_combination_offset
+  descriptor:
+    qualified_name: utility.price.fact_combination_offset
+    display_name: Combination Offset
+    description: Combination savings that can offset a rate request.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - utility
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: utility.us-east-1
+      database: UTILITY
+      schema: PRICE
+      object: FACT_COMBINATION_OFFSET
+      format: table
+  grain:
+    description: One row is one combination offset.
+    components:
+    - identity_id: fact_combination_offset_identity
+      dataset_columns:
+      - combination_offset_id
+      description: Identifier of the combination offset.
+  columns:
+  - name: combination_offset_id
+    description: Identifier of the combination offset.
+  - name: savings_amount
+    description: Savings amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: offsets_request_flag
+    description: Whether this row is marked offsets request.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: rate_case_id
+    description: Identifier of the related rate case.
+  entity_definitions:
+  - identity_id: fact_combination_offset_identity
+    dataset_columns:
+    - combination_offset_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_rate_case_identity
+    dataset_columns:
+    - rate_case_id
+    entity_universe: partial
+- node_id: sf:utility.price.fact_bill_credit
+  descriptor:
+    qualified_name: utility.price.fact_bill_credit
+    display_name: Bill Credit
+    description: Bill credit funded by load growth or tax monetization.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - utility
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: utility.us-east-1
+      database: UTILITY
+      schema: PRICE
+      object: FACT_BILL_CREDIT
+      format: table
+  grain:
+    description: One row is one bill credit.
+    components:
+    - identity_id: fact_bill_credit_identity
+      dataset_columns:
+      - bill_credit_id
+      description: Identifier of the bill credit.
+  columns:
+  - name: bill_credit_id
+    description: Identifier of the bill credit.
+  - name: credit_amount
+    description: Credit amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: revised_higher_flag
+    description: Whether this row is marked revised higher.
+  - name: cumulative_flag
+    description: Whether this row is marked cumulative.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: state_id
+    description: Identifier of the related state.
+  entity_definitions:
+  - identity_id: fact_bill_credit_identity
+    dataset_columns:
+    - bill_credit_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_state_identity
+    dataset_columns:
+    - state_id
+    entity_universe: partial
+- node_id: sf:utility.price.fact_tax_credit
+  descriptor:
+    qualified_name: utility.price.fact_tax_credit
+    display_name: Tax Credit
+    description: Tax-credit cash and whether new-investment recovery replaces it.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - utility
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: utility.us-east-1
+      database: UTILITY
+      schema: PRICE
+      object: FACT_TAX_CREDIT
+      format: table
+  grain:
+    description: One row is one tax credit.
+    components:
+    - identity_id: fact_tax_credit_identity
+      dataset_columns:
+      - tax_credit_id
+      description: Identifier of the tax credit.
+  columns:
+  - name: tax_credit_id
+    description: Identifier of the tax credit.
+  - name: credit_amount
+    description: Credit amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: rolls_off_flag
+    description: Whether this row is marked rolls off.
+  - name: further_monetization_flag
+    description: Whether this row is marked further monetization.
+  - name: flowback_code
+    description: Flowback code.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: cost_bucket_id
+    description: Identifier of the related cost bucket.
+  entity_definitions:
+  - identity_id: fact_tax_credit_identity
+    dataset_columns:
+    - tax_credit_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_cost_bucket_identity
+    dataset_columns:
+    - cost_bucket_id
+    entity_universe: partial
+- node_id: sf:utility.price.fact_rate_recovery
+  descriptor:
+    qualified_name: utility.price.fact_rate_recovery
+    display_name: Rate Recovery
+    description: Recovery of new investment as credit cash rolls off.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - utility
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: utility.us-east-1
+      database: UTILITY
+      schema: PRICE
+      object: FACT_RATE_RECOVERY
+      format: table
+  grain:
+    description: One row is one rate recovery.
+    components:
+    - identity_id: fact_rate_recovery_identity
+      dataset_columns:
+      - rate_recovery_id
+      description: Identifier of the rate recovery.
+  columns:
+  - name: rate_recovery_id
+    description: Identifier of the rate recovery.
+  - name: recovery_amount
+    description: Recovery amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: replaces_credit_flag
+    description: Whether this row is marked replaces credit.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: capital_program_id
+    description: Identifier of the related capital program.
+  entity_definitions:
+  - identity_id: fact_rate_recovery_identity
+    dataset_columns:
+    - rate_recovery_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_capital_program_identity
+    dataset_columns:
+    - capital_program_id
+    entity_universe: partial
+- node_id: sf:utility.price.fact_earned_return
+  descriptor:
+    qualified_name: utility.price.fact_earned_return
+    display_name: Earned Return
+    description: Earned return required to deliver the top half of the growth range.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - utility
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: utility.us-east-1
+      database: UTILITY
+      schema: PRICE
+      object: FACT_EARNED_RETURN
+      format: table
+  grain:
+    description: One row is one earned return.
+    components:
+    - identity_id: fact_earned_return_identity
+      dataset_columns:
+      - earned_return_id
+      description: Identifier of the earned return.
+  columns:
+  - name: earned_return_id
+    description: Identifier of the earned return.
+  - name: earned_return_rate
+    description: Earned return rate. The value is a price, cost, or rate, not a unit quantity.
+  - name: required_for_top_half_flag
+    description: Whether this row is marked required for top half.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: rate_case_id
+    description: Identifier of the related rate case.
+  entity_definitions:
+  - identity_id: fact_earned_return_identity
+    dataset_columns:
+    - earned_return_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_rate_case_identity
+    dataset_columns:
+    - rate_case_id
+    entity_universe: partial
+- node_id: sf:utility.price.fact_rate_base
+  descriptor:
+    qualified_name: utility.price.fact_rate_base
+    display_name: Rate Base
+    description: Rate-base growth and the gap to earnings growth.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - utility
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: utility.us-east-1
+      database: UTILITY
+      schema: PRICE
+      object: FACT_RATE_BASE
+      format: table
+  grain:
+    description: One row is one rate base.
+    components:
+    - identity_id: fact_rate_base_identity
+      dataset_columns:
+      - rate_base_id
+      description: Identifier of the rate base.
+  columns:
+  - name: rate_base_id
+    description: Identifier of the rate base.
+  - name: rate_base_growth_rate
+    description: Rate base growth rate. The value is a price, cost, or rate, not a unit quantity.
+  - name: gap_to_earnings_rate
+    description: Gap to earnings rate. The value is a price, cost, or rate, not a unit quantity.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: state_id
+    description: Identifier of the related state.
+  entity_definitions:
+  - identity_id: fact_rate_base_identity
+    dataset_columns:
+    - rate_base_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_state_identity
+    dataset_columns:
+    - state_id
+    entity_universe: partial
+- node_id: sf:utility.price.fact_storm_cost
+  descriptor:
+    qualified_name: utility.price.fact_storm_cost
+    display_name: Storm Cost
+    description: Storm cost still open and whether it is in the earnings midpoint.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - utility
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: utility.us-east-1
+      database: UTILITY
+      schema: PRICE
+      object: FACT_STORM_COST
+      format: table
+  grain:
+    description: One row is one storm cost.
+    components:
+    - identity_id: fact_storm_cost_identity
+      dataset_columns:
+      - storm_cost_id
+      description: Identifier of the storm cost.
+  columns:
+  - name: storm_cost_id
+    description: Identifier of the storm cost.
+  - name: storm_amount
+    description: Storm amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: still_open_flag
+    description: Whether this row is marked still open.
+  - name: in_midpoint_flag
+    description: Whether this row is marked in midpoint.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: cost_bucket_id
+    description: Identifier of the related cost bucket.
+  entity_definitions:
+  - identity_id: fact_storm_cost_identity
+    dataset_columns:
+    - storm_cost_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_cost_bucket_identity
+    dataset_columns:
+    - cost_bucket_id
+    entity_universe: partial
+- node_id: sf:utility.price.fact_affordability
+  descriptor:
+    qualified_name: utility.price.fact_affordability
+    display_name: Affordability
+    description: Affordability pressure and the dollars aimed at customer bills.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - utility
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: utility.us-east-1
+      database: UTILITY
+      schema: PRICE
+      object: FACT_AFFORDABILITY
+      format: table
+  grain:
+    description: One row is one affordability.
+    components:
+    - identity_id: fact_affordability_identity
+      dataset_columns:
+      - affordability_id
+      description: Identifier of the affordability.
+  columns:
+  - name: affordability_id
+    description: Identifier of the affordability.
+  - name: pressure_flag
+    description: Whether this row is marked pressure.
+  - name: offset_amount
+    description: Offset amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: state_id
+    description: Identifier of the related state.
+  entity_definitions:
+  - identity_id: fact_affordability_identity
+    dataset_columns:
+    - affordability_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_state_identity
+    dataset_columns:
+    - state_id
+    entity_universe: partial
+- node_id: sf:utility.price.fact_fuel_sharing
+  descriptor:
+    qualified_name: utility.price.fact_fuel_sharing
+    display_name: Fuel-Cost Sharing
+    description: Fuel-cost sharing and whether legislation is material to it.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - utility
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: utility.us-east-1
+      database: UTILITY
+      schema: PRICE
+      object: FACT_FUEL_SHARING
+      format: table
+  grain:
+    description: One row is one fuel-cost sharing.
+    components:
+    - identity_id: fact_fuel_sharing_identity
+      dataset_columns:
+      - fuel_sharing_id
+      description: Identifier of the fuel-cost sharing.
+  columns:
+  - name: fuel_sharing_id
+    description: Identifier of the fuel-cost sharing.
+  - name: sharing_amount
+    description: Sharing amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: material_flag
+    description: Whether this row is marked material.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: state_id
+    description: Identifier of the related state.
+  - name: cost_bucket_id
+    description: Identifier of the related cost bucket.
+  entity_definitions:
+  - identity_id: fact_fuel_sharing_identity
+    dataset_columns:
+    - fuel_sharing_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_state_identity
+    dataset_columns:
+    - state_id
+    entity_universe: partial
+  - identity_id: dim_cost_bucket_identity
+    dataset_columns:
+    - cost_bucket_id
+    entity_universe: partial
+- node_id: sf:utility.price.fact_overrun
+  descriptor:
+    qualified_name: utility.price.fact_overrun
+    display_name: Cost Overrun
+    description: Cost above budget and whether a hyperscaler would bear it.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - utility
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: utility.us-east-1
+      database: UTILITY
+      schema: PRICE
+      object: FACT_OVERRUN
+      format: table
+  grain:
+    description: One row is one cost overrun.
+    components:
+    - identity_id: fact_overrun_identity
+      dataset_columns:
+      - overrun_id
+      description: Identifier of the cost overrun.
+  columns:
+  - name: overrun_id
+    description: Identifier of the cost overrun.
+  - name: overrun_amount
+    description: Overrun amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: hyperscaler_bears_flag
+    description: Whether this row is marked hyperscaler bears.
+  - name: shared_structure_flag
+    description: Whether this row is marked shared structure.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: project_id
+    description: Identifier of the related project.
+  - name: counterparty_id
+    description: Identifier of the related counterparty.
+  entity_definitions:
+  - identity_id: fact_overrun_identity
+    dataset_columns:
+    - overrun_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_project_identity
+    dataset_columns:
+    - project_id
+    entity_universe: partial
+  - identity_id: dim_counterparty_identity
+    dataset_columns:
+    - counterparty_id
+    entity_universe: partial
+- node_id: sf:utility.price.fact_contract_price
+  descriptor:
+    qualified_name: utility.price.fact_contract_price
+    display_name: Contract Price
+    description: Price offered for contract-based generation. Megawatts are not stored.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - utility
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: utility.us-east-1
+      database: UTILITY
+      schema: PRICE
+      object: FACT_CONTRACT_PRICE
+      format: table
+  grain:
+    description: One row is one contract price.
+    components:
+    - identity_id: fact_contract_price_identity
+      dataset_columns:
+      - contract_price_id
+      description: Identifier of the contract price.
+  columns:
+  - name: contract_price_id
+    description: Identifier of the contract price.
+  - name: offered_price_amount
+    description: Offered price amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: covers_return_flag
+    description: Whether this row is marked covers return.
+  - name: customers_willing_flag
+    description: Whether this row is marked customers willing.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: contract_id
+    description: Identifier of the related contract.
+  - name: counterparty_id
+    description: Identifier of the related counterparty.
+  entity_definitions:
+  - identity_id: fact_contract_price_identity
+    dataset_columns:
+    - contract_price_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_contract_identity
+    dataset_columns:
+    - contract_id
+    entity_universe: partial
+  - identity_id: dim_counterparty_identity
+    dataset_columns:
+    - counterparty_id
+    entity_universe: partial
+- node_id: sf:utility.price.fact_minimum_bill
+  descriptor:
+    qualified_name: utility.price.fact_minimum_bill
+    display_name: Minimum Bill
+    description: Minimum bill and whether it protects cost recovery.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - utility
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: utility.us-east-1
+      database: UTILITY
+      schema: PRICE
+      object: FACT_MINIMUM_BILL
+      format: table
+  grain:
+    description: One row is one minimum bill.
+    components:
+    - identity_id: fact_minimum_bill_identity
+      dataset_columns:
+      - minimum_bill_id
+      description: Identifier of the minimum bill.
+  columns:
+  - name: minimum_bill_id
+    description: Identifier of the minimum bill.
+  - name: minimum_bill_amount
+    description: Minimum bill amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: protects_recovery_flag
+    description: Whether this row is marked protects recovery.
+  - name: reception_code
+    description: Reception code.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: tariff_id
+    description: Identifier of the related tariff.
+  entity_definitions:
+  - identity_id: fact_minimum_bill_identity
+    dataset_columns:
+    - minimum_bill_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_tariff_identity
+    dataset_columns:
+    - tariff_id
+    entity_universe: partial
+- node_id: sf:utility.price.fact_customer_rate
+  descriptor:
+    qualified_name: utility.price.fact_customer_rate
+    display_name: Customer Rate
+    description: Customer rate, political reception, and the chance of a larger credit.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - utility
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: utility.us-east-1
+      database: UTILITY
+      schema: PRICE
+      object: FACT_CUSTOMER_RATE
+      format: table
+  grain:
+    description: One row is one customer rate.
+    components:
+    - identity_id: fact_customer_rate_identity
+      dataset_columns:
+      - customer_rate_id
+      description: Identifier of the customer rate.
+  columns:
+  - name: customer_rate_id
+    description: Identifier of the customer rate.
+  - name: rate_amount
+    description: Rate amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: political_reception_code
+    description: Political reception code.
+  - name: larger_credit_chance_flag
+    description: Whether this row is marked larger credit chance.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: state_id
+    description: Identifier of the related state.
+  - name: tariff_id
+    description: Identifier of the related tariff.
+  entity_definitions:
+  - identity_id: fact_customer_rate_identity
+    dataset_columns:
+    - customer_rate_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_state_identity
+    dataset_columns:
+    - state_id
+    entity_universe: partial
+  - identity_id: dim_tariff_identity
+    dataset_columns:
+    - tariff_id
+    entity_universe: partial
+- node_id: sf:utility.price.fact_customer_savings
+  descriptor:
+    qualified_name: utility.price.fact_customer_savings
+    display_name: Customer Savings
+    description: Customer savings from demand response. The megawatts sit on the demand slice.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - utility
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: utility.us-east-1
+      database: UTILITY
+      schema: PRICE
+      object: FACT_CUSTOMER_SAVINGS
+      format: table
+  grain:
+    description: One row is one customer savings.
+    components:
+    - identity_id: fact_customer_savings_identity
+      dataset_columns:
+      - customer_savings_id
+      description: Identifier of the customer savings.
+  columns:
+  - name: customer_savings_id
+    description: Identifier of the customer savings.
+  - name: savings_amount
+    description: Savings amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: quantified_flag
+    description: Whether this row is marked quantified.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: state_id
+    description: Identifier of the related state.
+  - name: customer_id
+    description: Identifier of the related customer.
+  entity_definitions:
+  - identity_id: fact_customer_savings_identity
+    dataset_columns:
+    - customer_savings_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_state_identity
+    dataset_columns:
+    - state_id
+    entity_universe: partial
+  - identity_id: dim_customer_identity
+    dataset_columns:
+    - customer_id
+    entity_universe: partial
+- node_id: sf:utility.price.fact_funding_mix
+  descriptor:
+    qualified_name: utility.price.fact_funding_mix
+    display_name: Funding Mix
+    description: Equity share and the balance-sheet conditions for the lower end.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - utility
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: utility.us-east-1
+      database: UTILITY
+      schema: PRICE
+      object: FACT_FUNDING_MIX
+      format: table
+  grain:
+    description: One row is one funding mix.
+    components:
+    - identity_id: fact_funding_mix_identity
+      dataset_columns:
+      - funding_mix_id
+      description: Identifier of the funding mix.
+  columns:
+  - name: funding_mix_id
+    description: Identifier of the funding mix.
+  - name: equity_share_rate
+    description: Equity share rate. The value is a price, cost, or rate, not a unit quantity.
+  - name: lower_end_allowed_flag
+    description: Whether this row is marked lower end allowed.
+  - name: balance_sheet_ok_flag
+    description: Whether this row is marked balance sheet ok.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: capital_program_id
+    description: Identifier of the related capital program.
+  entity_definitions:
+  - identity_id: fact_funding_mix_identity
+    dataset_columns:
+    - funding_mix_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_capital_program_identity
+    dataset_columns:
+    - capital_program_id
+    entity_universe: partial
+- node_id: sf:utility.price.fact_cost_inflation
+  descriptor:
+    qualified_name: utility.price.fact_cost_inflation
+    display_name: Construction Cost
+    description: Construction-cost inflation assumed for future plants.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - utility
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: utility.us-east-1
+      database: UTILITY
+      schema: PRICE
+      object: FACT_COST_INFLATION
+      format: table
+  grain:
+    description: One row is one construction cost.
+    components:
+    - identity_id: fact_cost_inflation_identity
+      dataset_columns:
+      - cost_inflation_id
+      description: Identifier of the construction cost.
+  columns:
+  - name: cost_inflation_id
+    description: Identifier of the construction cost.
+  - name: inflation_amount
+    description: Inflation amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: cost_per_kw_amount
+    description: Cost per kw amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: assumed_flag
+    description: Whether this row is marked assumed.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: technology_id
+    description: Identifier of the related technology.
+  - name: cost_bucket_id
+    description: Identifier of the related cost bucket.
+  entity_definitions:
+  - identity_id: fact_cost_inflation_identity
+    dataset_columns:
+    - cost_inflation_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_technology_identity
+    dataset_columns:
+    - technology_id
+    entity_universe: partial
+  - identity_id: dim_cost_bucket_identity
+    dataset_columns:
+    - cost_bucket_id
+    entity_universe: partial
+- node_id: sf:utility.price.fact_regulated_return
+  descriptor:
+    qualified_name: utility.price.fact_regulated_return
+    display_name: Regulated Return
+    description: Regulated return and the gap to wholesale returns on added capital.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - utility
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: utility.us-east-1
+      database: UTILITY
+      schema: PRICE
+      object: FACT_REGULATED_RETURN
+      format: table
+  grain:
+    description: One row is one regulated return.
+    components:
+    - identity_id: fact_regulated_return_identity
+      dataset_columns:
+      - regulated_return_id
+      description: Identifier of the regulated return.
+  columns:
+  - name: regulated_return_id
+    description: Identifier of the regulated return.
+  - name: regulated_return_rate
+    description: Regulated return rate. The value is a price, cost, or rate, not a unit quantity.
+  - name: wholesale_gap_rate
+    description: Wholesale gap rate. The value is a price, cost, or rate, not a unit quantity.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: capital_program_id
+    description: Identifier of the related capital program.
+  entity_definitions:
+  - identity_id: fact_regulated_return_identity
+    dataset_columns:
+    - regulated_return_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_capital_program_identity
+    dataset_columns:
+    - capital_program_id
+    entity_universe: partial
+- node_id: sf:utility.price.fact_tariff_terms
+  descriptor:
+    qualified_name: utility.price.fact_tariff_terms
+    display_name: Tariff Terms
+    description: Large-load tariff terms, credit quality, and whether a tariff reaches back.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - utility
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: utility.us-east-1
+      database: UTILITY
+      schema: PRICE
+      object: FACT_TARIFF_TERMS
+      format: table
+  grain:
+    description: One row is one tariff terms.
+    components:
+    - identity_id: fact_tariff_terms_identity
+      dataset_columns:
+      - tariff_terms_id
+      description: Identifier of the tariff terms.
+  columns:
+  - name: tariff_terms_id
+    description: Identifier of the tariff terms.
+  - name: credit_terms_code
+    description: Credit terms code.
+  - name: reaches_back_flag
+    description: Whether this row is marked reaches back.
+  - name: docket_status_code
+    description: Docket status code.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: tariff_id
+    description: Identifier of the related tariff.
+  - name: customer_id
+    description: Identifier of the related customer.
+  entity_definitions:
+  - identity_id: fact_tariff_terms_identity
+    dataset_columns:
+    - tariff_terms_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_tariff_identity
+    dataset_columns:
+    - tariff_id
+    entity_universe: partial
+  - identity_id: dim_customer_identity
+    dataset_columns:
+    - customer_id
+    entity_universe: partial
+- node_id: sf:utility.price.fact_stay_out
+  descriptor:
+    qualified_name: utility.price.fact_stay_out
+    display_name: Regulatory Stay-Out
+    description: Whether load visibility is ahead of the plan that supported a stay-out.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - utility
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: utility.us-east-1
+      database: UTILITY
+      schema: PRICE
+      object: FACT_STAY_OUT
+      format: table
+  grain:
+    description: One row is one regulatory stay-out.
+    components:
+    - identity_id: fact_stay_out_identity
+      dataset_columns:
+      - stay_out_id
+      description: Identifier of the regulatory stay-out.
+  columns:
+  - name: stay_out_id
+    description: Identifier of the regulatory stay-out.
+  - name: ahead_of_stay_out_flag
+    description: Whether this row is marked ahead of stay out.
+  - name: can_extend_flag
+    description: Whether this row is marked can extend.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: state_id
+    description: Identifier of the related state.
+  entity_definitions:
+  - identity_id: fact_stay_out_identity
+    dataset_columns:
+    - stay_out_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_state_identity
+    dataset_columns:
+    - state_id
+    entity_universe: partial
+- node_id: sf:utility.price.fact_rebase
+  descriptor:
+    qualified_name: utility.price.fact_rebase
+    display_name: Earnings Rebase
+    description: Rebase timing and whether it aims at the top of the growth range.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - utility
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: utility.us-east-1
+      database: UTILITY
+      schema: PRICE
+      object: FACT_REBASE
+      format: table
+  grain:
+    description: One row is one earnings rebase.
+    components:
+    - identity_id: fact_rebase_identity
+      dataset_columns:
+      - rebase_id
+      description: Identifier of the earnings rebase.
+  columns:
+  - name: rebase_id
+    description: Identifier of the earnings rebase.
+  - name: rebase_year_code
+    description: Rebase year code.
+  - name: aimed_at_top_flag
+    description: Whether this row is marked aimed at top.
+  - name: more_definite_flag
+    description: Whether this row is marked more definite.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: capital_program_id
+    description: Identifier of the related capital program.
+  entity_definitions:
+  - identity_id: fact_rebase_identity
+    dataset_columns:
+    - rebase_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_capital_program_identity
+    dataset_columns:
+    - capital_program_id
+    entity_universe: partial
+- node_id: sf:utility.price.fact_legislation
+  descriptor:
+    qualified_name: utility.price.fact_legislation
+    display_name: Legislation
+    description: Whether a pending bill is material to load incentives or fuel recovery.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - utility
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: utility.us-east-1
+      database: UTILITY
+      schema: PRICE
+      object: FACT_LEGISLATION
+      format: table
+  grain:
+    description: One row is one legislation.
+    components:
+    - identity_id: fact_legislation_identity
+      dataset_columns:
+      - legislation_id
+      description: Identifier of the legislation.
+  columns:
+  - name: legislation_id
+    description: Identifier of the legislation.
+  - name: material_flag
+    description: Whether this row is marked material.
+  - name: affects_recovery_flag
+    description: Whether this row is marked affects recovery.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: state_id
+    description: Identifier of the related state.
+  entity_definitions:
+  - identity_id: fact_legislation_identity
+    dataset_columns:
+    - legislation_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_state_identity
+    dataset_columns:
+    - state_id
+    entity_universe: partial
+- node_id: sf:utility.price.fact_residential_protection
+  descriptor:
+    qualified_name: utility.price.fact_residential_protection
+    display_name: Residential Protection
+    description: Whether large-load terms keep residential customers whole.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - utility
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: utility.us-east-1
+      database: UTILITY
+      schema: PRICE
+      object: FACT_RESIDENTIAL_PROTECTION
+      format: table
+  grain:
+    description: One row is one residential protection.
+    components:
+    - identity_id: fact_residential_protection_identity
+      dataset_columns:
+      - residential_protection_id
+      description: Identifier of the residential protection.
+  columns:
+  - name: residential_protection_id
+    description: Identifier of the residential protection.
+  - name: kept_whole_flag
+    description: Whether this row is marked kept whole.
+  - name: bill_impact_amount
+    description: Bill impact amount. The value is a price, cost, or rate, not a unit quantity.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: state_id
+    description: Identifier of the related state.
+  - name: customer_segment_id
+    description: Identifier of the related customer segment.
+  entity_definitions:
+  - identity_id: fact_residential_protection_identity
+    dataset_columns:
+    - residential_protection_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_state_identity
+    dataset_columns:
+    - state_id
+    entity_universe: partial
+  - identity_id: dim_customer_segment_identity
+    dataset_columns:
+    - customer_segment_id
+    entity_universe: partial
+- node_id: sf:utility.price.fact_hyperscaler_contract
+  descriptor:
+    qualified_name: utility.price.fact_hyperscaler_contract
+    display_name: Hyperscaler Contract
+    description: Whether a hyperscaler contract is a long-term energy and capacity contract.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - utility
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: utility.us-east-1
+      database: UTILITY
+      schema: PRICE
+      object: FACT_HYPERSCALER_CONTRACT
+      format: table
+  grain:
+    description: One row is one hyperscaler contract.
+    components:
+    - identity_id: fact_hyperscaler_contract_identity
+      dataset_columns:
+      - hyperscaler_contract_id
+      description: Identifier of the hyperscaler contract.
+  columns:
+  - name: hyperscaler_contract_id
+    description: Identifier of the hyperscaler contract.
+  - name: long_term_flag
+    description: Whether this row is marked long term.
+  - name: standard_toll_flag
+    description: Whether this row is marked standard toll.
+  - name: bears_overrun_flag
+    description: Whether this row is marked bears overrun.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: contract_id
+    description: Identifier of the related contract.
+  - name: counterparty_id
+    description: Identifier of the related counterparty.
+  entity_definitions:
+  - identity_id: fact_hyperscaler_contract_identity
+    dataset_columns:
+    - hyperscaler_contract_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_contract_identity
+    dataset_columns:
+    - contract_id
+    entity_universe: partial
+  - identity_id: dim_counterparty_identity
+    dataset_columns:
+    - counterparty_id
+    entity_universe: partial
+- node_id: sf:utility.price.fact_wholesale_return
+  descriptor:
+    qualified_name: utility.price.fact_wholesale_return
+    display_name: Wholesale Return
+    description: Wholesale return on added capital.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - utility
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: utility.us-east-1
+      database: UTILITY
+      schema: PRICE
+      object: FACT_WHOLESALE_RETURN
+      format: table
+  grain:
+    description: One row is one wholesale return.
+    components:
+    - identity_id: fact_wholesale_return_identity
+      dataset_columns:
+      - wholesale_return_id
+      description: Identifier of the wholesale return.
+  columns:
+  - name: wholesale_return_id
+    description: Identifier of the wholesale return.
+  - name: wholesale_return_rate
+    description: Wholesale return rate. The value is a price, cost, or rate, not a unit quantity.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: capital_program_id
+    description: Identifier of the related capital program.
+  - name: plant_id
+    description: Identifier of the related plant.
+  entity_definitions:
+  - identity_id: fact_wholesale_return_identity
+    dataset_columns:
+    - wholesale_return_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_capital_program_identity
+    dataset_columns:
+    - capital_program_id
+    entity_universe: partial
+  - identity_id: dim_plant_identity
+    dataset_columns:
+    - plant_id
+    entity_universe: partial

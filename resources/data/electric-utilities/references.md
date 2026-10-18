@@ -1,5 +1,7 @@
 # Referenced materials
 
+Warehouse owner: Utility Inc.
+
 ## Duke Energy
 
 - Q2 2026, 2026-08-04

@@ -2,7 +2,7 @@
 
 Resume from the last checkpoint recorded here. Do not rebuild a domain whose status is `committed`.
 
-Baseline already committed on this branch: 11 warehouses (Burger Inc, Colocation Inc, Device Inc, Surgical Supply Inc, Machinery Inc, Chemical Inc, Airline Inc, Food Inc, Health Plan Inc, Beverage Inc, Automaker Inc). Nineteen industries remain. Each remaining industry is one subtask and gets one schema version 3 warehouse.
+Baseline already committed on this branch: 17 warehouses. Checkpoint A is `committed`. Thirteen industries remain in Checkpoints B, C, and D.
 
 ## How to resume
 
@@ -28,16 +28,16 @@ Graph success: zero unknown fields and zero contradictory edges. Do not join one
 
 ## Checkpoint A
 
-Status: `in_progress`
+Status: `committed`
 
 | Subtask | Agent | Industry | Owner | Slug | Database | Account | Questions | Status |
 | --- | --- | --- | --- | --- | --- | --- | ---: | --- |
-| A1 | 1 | `rail-transportation/` | Railroad Inc | `railroad` | `RAILROAD` | `railroad.us-central-1` | 94 | `in_progress` |
-| A2 | 1 | `integrated-oil-gas/` | Energy Inc | `energy` | `ENERGY` | `energy.us-central-1` | 87 | `in_progress` |
-| A3 | 1 | `electric-utilities/` | Utility Inc | `utility` | `UTILITY` | `utility.us-east-1` | 82 | `in_progress` |
-| A4 | 2 | `diversified-banks/` | Bank Inc | `bank` | `BANK` | `bank.us-east-1` | 92 | `in_progress` |
-| A5 | 2 | `merchandise-retail/` | Merchandise Inc | `merchandise` | `MERCHANDISE` | `merchandise.us-east-1` | 85 | `in_progress` |
-| A6 | 2 | `interactive-media/` | Social Inc | `social` | `SOCIAL` | `social.us-west-1` | 79 | `in_progress` |
+| A1 | 1 | `rail-transportation/` | Railroad Inc | `railroad` | `RAILROAD` | `railroad.us-central-1` | 94 | `committed` |
+| A2 | 1 | `integrated-oil-gas/` | Energy Inc | `energy` | `ENERGY` | `energy.us-central-1` | 87 | `committed` |
+| A3 | 1 | `electric-utilities/` | Utility Inc | `utility` | `UTILITY` | `utility.us-east-1` | 82 | `committed` |
+| A4 | 2 | `diversified-banks/` | Bank Inc | `bank` | `BANK` | `bank.us-east-1` | 92 | `committed` |
+| A5 | 2 | `merchandise-retail/` | Merchandise Inc | `merchandise` | `MERCHANDISE` | `merchandise.us-east-1` | 85 | `committed` |
+| A6 | 2 | `interactive-media/` | Social Inc | `social` | `SOCIAL` | `social.us-west-1` | 79 | `committed` |
 
 Companies: CSX and Union Pacific. Chevron and Exxon Mobil. Duke Energy and Southern Company. Bank of America and JPMorgan Chase. Costco and Walmart. Alphabet and Meta Platforms.
 

@@ -1,5 +1,7 @@
 # Referenced materials
 
+Warehouse owner: Merchandise Inc.
+
 ## Costco
 
 - Q4 FY2026, 2026-09-24
