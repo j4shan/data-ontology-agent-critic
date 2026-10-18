@@ -27,6 +27,19 @@ For CSX, when is double-stack through the Howard Street Tunnel and the Port of B
 - `railroad.supply.fact_project_ramp`: `months_to_full`, `fully_launched_flag`, `similar_impact_flag`, `fiscal_quarter_id`, `project_id`
 - `railroad.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
 
+### Q1 2026 (7) — CSX
+
+For CSX, when do the projects already cited reach full carload ramp, and do the remaining projects for the year have a similar impact?
+
+- `railroad.supply.fact_project_ramp`: `months_to_full`, `fully_launched_flag`, `similar_impact_flag`, `fiscal_quarter_id`, `project_id`
+- `railroad.demand.fact_volume`: `carload_quantity`, `merchandise_quantity`, `outlook_flat_flag`, `fiscal_quarter_id`, `commodity_id`, `region_id`, `traffic_type_id`, `shipper_id`
+- `railroad.geography.dim_fiscal_quarter`: `fiscal_quarter_id`, `quarter_code`, `quarter_label`, `guidance_horizon`
+- `railroad.network.dim_project`: `project_id`, `project_code`, `project_name`, `project_type_id`, `corridor_id`
+- `railroad.customer.dim_commodity`: `commodity_id`, `commodity_code`, `commodity_name`, `traffic_type_id`
+- `railroad.geography.dim_region`: `region_id`, `region_code`, `region_name`
+- `railroad.customer.dim_traffic_type`: `traffic_type_id`, `traffic_type_code`, `traffic_type_name`
+- `railroad.customer.dim_shipper`: `shipper_id`, `shipper_name`, `shipper_code`, `shipper_segment_id`
+
 ### Q1 2026 (9) — CSX
 
 For CSX, besides the bridges that enable double-stack and the Chicago flow changes, what else this year improves productivity and margins?

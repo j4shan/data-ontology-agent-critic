@@ -14,7 +14,7 @@ Snowflake database `UTILITY`, account `utility.us-east-1`. Node ids use the `sf:
 
 ## What the model covers
 
-Demand owns the customer, the geography, the calendar, and the quantity facts. Those rows store units, loads, or barrels, not a price and not a capacity rating.
+Demand owns the customer, the geography, the calendar, and the quantity facts. Those rows store demand quantity, not a price and not a capacity rating.
 
 Supply owns the capacity, the network or the asset base, and the operating constraints. A capacity row stores how much can be produced, moved, or built. It does not store the price of that unit.
 
