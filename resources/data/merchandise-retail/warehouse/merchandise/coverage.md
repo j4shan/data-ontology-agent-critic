@@ -1,241 +1,344 @@
-# Merchandise Inc merchandise price and mix
+# Merchandise Inc merchandise, sales, and margin
 
-This slice owns items, prices, inflation, and category mix. Member counts and site capacity are owned in the other slices and are partial when named here. A unit-volume fact does not store the shelf price.
-
-Identifiers owned by another slice are partial here. Their complete populations are not re-authored in this slice.
-
-| Identity | Column on this slice | Complete population |
-| --- | --- | --- |
-| `banner_identity` | `banner_id` | `sf:merchandise.member.dim_banner` `banner_id` |
-| `competitor_identity` | `competitor_id` | `sf:merchandise.member.dim_competitor` `competitor_id` |
-| `country_identity` | `country_id` | `sf:merchandise.geography.dim_country` `country_id` |
-| `fiscal_quarter_identity` | `fiscal_quarter_id` | `sf:merchandise.geography.dim_fiscal_quarter` `fiscal_quarter_id` |
-| `income_cohort_identity` | `income_cohort_id` | `sf:merchandise.member.dim_income_cohort` `income_cohort_id` |
+Coverage maps each numbered question to datasets and columns that exist in the YAML and can express the distinction the question asks. Demand quantity, supply or capacity, and price or margin are stored on separate facts joined by the shared grain keys (fiscal quarter, scenario, and the business keys).
 
 ## Numbered questions
 
 ## Costco
 
-### Q4 FY2026 (1)
+### Q4 FY2026 (9) Costco
 
-How is Costco judging the return on the price investment funded by tariff refunds, given monthly sales have not clearly accelerated?
+How is food inflation versus nonfood inflation running, and how much does bringing an item like the churro back add?
 
-- `merchandise.price.fact_price_investment`: `investment_amount`, `funding_source_code`, `return_clear_flag`
-- `merchandise.demand.fact_monthly_sales`: `sales_amount`
-- `merchandise.price.fact_shelf_price`: `shelf_price_amount`
+- `merchandise.sales.fact_category_sales`: `fiscal_quarter_id`, `scenario_id`, `category_id`, `brand_tier_id`, `category_sales_amount`
+- `merchandise.sales.fact_merchandise_units`: `fiscal_quarter_id`, `scenario_id`, `category_id`, `unit_count`
+- `merchandise.sales.fact_average_unit_price`: `fiscal_quarter_id`, `scenario_id`, `category_id`, `average_price_amount`
 
-### Q4 FY2026 (3)
+### Q3 FY2026 (2) Costco
 
-How long did last year's tariff-driven assortment swaps last, and how does the holiday assortment look now at Costco?
+What drove the slight core-on-core margin decline while lapping prior-year items?
 
-- `merchandise.price.fact_assortment`: `items_removed_quantity`, `items_added_quantity`, `holiday_ready_flag`, `duration_quarters`
-- `merchandise.price.dim_season`: `season_code`
-- `merchandise.price.dim_inflation_driver`: `driver_code`
+- `merchandise.sales.fact_net_sales`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `geography_segment_id`, `net_sales_amount`
 
-### Q4 FY2026 (5)
-
-How much visibility does Costco have on vendor price increases over the next few months, and where can it substitute items?
-
-- `merchandise.price.fact_vendor_cost`: `cost_amount`, `visibility_flag`, `notified_increase_flag`
-- `merchandise.price.fact_assortment`: `substitutable_flag`, `items_added_quantity`
-
-### Q4 FY2026 (9)
-
-How is food inflation versus nonfood inflation running, and how much does bringing an item like the churro back add at Costco?
-
-- `merchandise.price.fact_inflation_observation`: `inflation_rate`
-- `merchandise.price.dim_department`: `department_code`
-- `merchandise.price.fact_traffic_item`: `restored_flag`, `sales_lift_amount`
-- `merchandise.price.dim_item`: `item_code`
-
-### Q4 FY2026 (10)
-
-Is the member still strong in both value categories and premium categories such as jewelry and travel at Costco?
-
-- `merchandise.price.fact_category_demand`: `sales_amount`, `premium_strong_flag`, `value_strong_flag`
-- `merchandise.price.dim_category`: `category_code`
-
-### Q4 FY2026 (12)
-
-As egg deflation fades and tariff-rebate reinvestment and oil effects pass, where does price and inflation go next at Costco?
-
-- `merchandise.price.fact_inflation_observation`: `inflation_rate`
-- `merchandise.price.dim_inflation_driver`: `driver_code`
-- `merchandise.price.fact_fuel_price`: `price_per_gallon`
-
-### Q3 FY2026 (1)
-
-How should same-store sales be read as Costco laps outsized drivers such as gift cards and gold?
-
-- `merchandise.price.fact_comp_sales`: `comp_rate`
-- `merchandise.price.fact_lap_driver`: `driver_code`, `being_lapped_flag`
-- `merchandise.price.dim_item`: `item_code`
-
-### Q3 FY2026 (2)
-
-What drove the slight core-on-core margin decline while lapping prior-year items at Costco?
-
-- `merchandise.price.fact_merchandise_margin`: `margin_rate`, `decline_flag`
-- `merchandise.price.fact_lap_driver`: `being_lapped_flag`
-- `merchandise.price.dim_department`: `department_code`
-
-### Q3 FY2026 (3)
+### Q3 FY2026 (3) Costco
 
 Is Costco lowering prices ahead of expected cost declines, and how does that compare with peers?
 
-- `merchandise.price.fact_shelf_price`: `shelf_price_amount`, `lowered_ahead_of_cost_flag`
-- `merchandise.price.fact_vendor_cost`: `cost_amount`
-- `merchandise.price.fact_price_gap`: `gap_index`, `peer_cutting_flag`
+- `merchandise.sales.fact_net_sales`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `geography_segment_id`, `net_sales_amount`
 
-### Q2 FY2026 (3)
+### Q3 FY2026 (5) Costco
 
-Are spring and summer assortments changing the way last fall's did, and how have rising gas prices historically affected the club at Costco?
+What limits retail media given Costco's tight SKU count versus other retailers?
 
-- `merchandise.price.fact_assortment`: `items_added_quantity`, `items_removed_quantity`
-- `merchandise.price.dim_season`: `season_code`
-- `merchandise.price.fact_fuel_price`: `price_per_gallon`
-- `merchandise.demand.fact_traffic`: `traffic_quantity`
+- `merchandise.media.fact_retail_media_revenue`: `fiscal_quarter_id`, `scenario_id`, `geography_segment_id`, `retail_media_revenue_amount`
+- `merchandise.media.fact_retail_media_impressions`: `fiscal_quarter_id`, `scenario_id`, `geography_segment_id`, `media_impression_count`
+- `merchandise.media.fact_retail_media_price`: `fiscal_quarter_id`, `scenario_id`, `geography_segment_id`, `media_cpm_amount`
 
-### Q1 FY2026 (8)
+### Q3 FY2026 (7) Costco
 
-Was food inflationary in the quarter, was general merchandise up low single digits, and was most ticket growth just inflation at Costco?
+With fuel volumes up sharply, where can throughput still increase, and did wider gasoline price gaps reduce profit per gallon?
 
-- `merchandise.price.fact_inflation_observation`: `inflation_rate`
-- `merchandise.price.dim_department`: `department_code`
-- `merchandise.price.fact_average_ticket`: `ticket_amount`, `mostly_inflation_flag`
+- `merchandise.fuel.fact_fuel_gallons`: `fiscal_quarter_id`, `scenario_id`, `banner_id`, `geography_segment_id`, `gallon_count`
+- `merchandise.fuel.fact_fuel_price`: `fiscal_quarter_id`, `scenario_id`, `banner_id`, `fuel_price_per_gallon_amount`, `fuel_margin_amount`
+- `merchandise.sales.fact_fuel_revenue`: `fiscal_quarter_id`, `scenario_id`, `banner_id`, `fuel_revenue_amount`
 
-### Q1 FY2026 (9)
+### Q3 FY2026 (9) Costco
 
-Why has paid-member growth slowed, and when do nonfood comps clear the gift-card comparison relative to tax-refund timing at Costco?
+Is AI search already lifting traffic or conversion in particular categories?
 
-- `merchandise.member.fact_member_count`: `growth_rate`, `slowed_flag`
-- `merchandise.price.fact_comp_sales`: `comp_rate`
-- `merchandise.price.fact_lap_driver`: `driver_code`, `being_lapped_flag`
-- `merchandise.price.fact_stimulus_effect`: `refund_timing_code`, `fading_flag`
+- `merchandise.sales.fact_traffic`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `visit_count`
+- `merchandise.sales.fact_ticket`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `average_ticket_amount`
+- `merchandise.sales.fact_net_sales`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `geography_segment_id`, `net_sales_amount`
+
+### Q2 FY2026 (1) Costco
+
+How did weather help or hurt January and February sales?
+
+- `merchandise.sales.fact_net_sales`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `geography_segment_id`, `net_sales_amount`
+- `merchandise.sales.fact_comparable_sales`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `geography_segment_id`, `comparable_sales_percent`, `comparable_sales_amount`
+- `merchandise.margin.fact_gross_margin`: `fiscal_quarter_id`, `scenario_id`, `category_id`, `store_format_id`, `gross_margin_amount`, `gross_margin_percent`
+
+### Q2 FY2026 (2) Costco
+
+How large are the savings from checkout and front-end tests, and how widely can they roll?
+
+- `merchandise.sales.fact_net_sales`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `geography_segment_id`, `net_sales_amount`
+
+### Q2 FY2026 (6) Costco
+
+How do newly available real-estate sites change which markets Costco can enter over the long term?
+
+- `merchandise.sales.fact_net_sales`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `geography_segment_id`, `net_sales_amount`
+
+### Q2 FY2026 (8) Costco
+
+What is the roadmap for digital advertising and the marketplace, and where is AI being applied?
+
+- `merchandise.marketplace.fact_marketplace_gmv`: `fiscal_quarter_id`, `scenario_id`, `geography_segment_id`, `gmv_amount`, `marketplace_order_count`
+- `merchandise.marketplace.fact_marketplace_order_value`: `fiscal_quarter_id`, `scenario_id`, `geography_segment_id`, `average_order_value_amount`
+- `merchandise.marketplace.fact_marketplace_seller_count`: `fiscal_quarter_id`, `scenario_id`, `geography_segment_id`, `seller_count`
+
+### Q1 FY2026 (1) Costco
+
+Is there any concern in traffic even though absolute results are strong?
+
+- `merchandise.sales.fact_traffic`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `visit_count`
+- `merchandise.sales.fact_ticket`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `average_ticket_amount`
+- `merchandise.sales.fact_net_sales`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `geography_segment_id`, `net_sales_amount`
+
+### Q1 FY2026 (8) Costco
+
+Was food inflationary in the quarter, was general merchandise up low single digits, and was most ticket growth just inflation?
+
+- `merchandise.sales.fact_traffic`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `visit_count`
+- `merchandise.sales.fact_ticket`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `average_ticket_amount`
+- `merchandise.sales.fact_net_sales`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `geography_segment_id`, `net_sales_amount`
+
+### Q1 FY2026 (10) Costco
+
+What is the long-term warehouse potential in the U.S. and worldwide, and are the deepest price investments concentrated in Kirkland?
+
+- `merchandise.brand.fact_private_brand_sales`: `fiscal_quarter_id`, `scenario_id`, `brand_tier_id`, `category_id`, `private_brand_sales_amount`
+- `merchandise.sales.fact_category_sales`: `fiscal_quarter_id`, `scenario_id`, `category_id`, `brand_tier_id`, `category_sales_amount`
+
+### Q1 FY2026 (11) Costco
+
+How far has personalization rolled, and what conversion or attachment has it produced?
+
+- `merchandise.sales.fact_net_sales`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `geography_segment_id`, `net_sales_amount`
 
 ## Walmart
 
-### Q2 FY2027 (1)
+### Q2 FY2027 (2) Walmart
 
-Have the latest price investments already lifted units, how much of the funding is vendor support versus Walmart, and how are the lower prices sustained when they are lapped in the next year?
+Is higher fuel adding a new burden on lower-income shoppers, and does the unit response to rollbacks show up immediately or with a lag of several months?
 
-- `merchandise.price.fact_price_investment`: `investment_amount`, `funding_source_code`, `in_guide_amount`
-- `merchandise.price.fact_unit_volume`: `unit_quantity`
-- `merchandise.price.fact_comp_sales`: `comp_rate`
+- `merchandise.fuel.fact_fuel_gallons`: `fiscal_quarter_id`, `scenario_id`, `banner_id`, `geography_segment_id`, `gallon_count`
+- `merchandise.fuel.fact_fuel_price`: `fiscal_quarter_id`, `scenario_id`, `banner_id`, `fuel_price_per_gallon_amount`, `fuel_margin_amount`
+- `merchandise.sales.fact_fuel_revenue`: `fiscal_quarter_id`, `scenario_id`, `banner_id`, `fuel_revenue_amount`
 
-### Q2 FY2027 (4)
+### Q2 FY2027 (3) Walmart
 
-What is the multi-year outlook for health and wellness, including the effect of fair-pricing rules at Walmart?
+Are the new tariff rates higher or lower than the prior emergency-tariff regime, and should operating income still grow faster than sales into next year once price-investment traffic arrives?
 
-- `merchandise.price.fact_health_outlook`: `growth_rate`, `fair_pricing_constraint_flag`
-- `merchandise.price.fact_regulatory_price`: `constrained_flag`
-- `merchandise.price.dim_category`: `category_code`
+- `merchandise.sales.fact_traffic`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `visit_count`
+- `merchandise.sales.fact_ticket`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `average_ticket_amount`
+- `merchandise.sales.fact_net_sales`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `geography_segment_id`, `net_sales_amount`
 
-### Q2 FY2027 (5)
+### Q2 FY2027 (4) Walmart
+
+What is the multi-year outlook for health and wellness, including the effect of fair-pricing rules?
+
+- `merchandise.sales.fact_net_sales`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `geography_segment_id`, `net_sales_amount`
+
+### Q2 FY2027 (5) Walmart
 
 If the expected U.S. comp acceleration from lagged price cuts does not arrive, would Walmart invest more in price into the back half and next year as tax-refund benefits fade?
 
-- `merchandise.price.fact_comp_sales`: `comp_rate`, `acceleration_missing_flag`
-- `merchandise.price.fact_price_investment`: `investment_amount`, `in_guide_amount`
-- `merchandise.price.fact_stimulus_effect`: `fading_flag`, `refund_timing_code`
+- `merchandise.sales.fact_net_sales`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `geography_segment_id`, `net_sales_amount`
 
-### Q2 FY2027 (7)
+### Q2 FY2027 (6) Walmart
 
-How much of the general-merchandise slowdown versus grocery was stimulus fading versus fuel pressure on lower-income shoppers, and has back-to-school started to lift general merchandise at Walmart?
+What incremental margin is the digital business producing, and how does Walmart lap today's rollbacks next year without losing store traffic?
 
-- `merchandise.price.fact_category_demand`: `sales_amount`
-- `merchandise.price.fact_stimulus_effect`: `fading_flag`
-- `merchandise.price.fact_basket_mix`: `mix_share`
-- `merchandise.price.dim_season`: `season_code`
-- `merchandise.price.dim_category`: `category_code`
+- `merchandise.sales.fact_traffic`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `visit_count`
+- `merchandise.sales.fact_ticket`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `average_ticket_amount`
+- `merchandise.sales.fact_net_sales`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `geography_segment_id`, `net_sales_amount`
 
-### Q2 FY2027 (8)
+### Q2 FY2027 (7) Walmart
 
-What payback decides whether a rollback becomes permanent, and how much of the current rollback set is clearing that hurdle at Walmart?
+How much of the general-merchandise slowdown versus grocery was stimulus fading versus fuel pressure on lower-income shoppers, and has back-to-school started to lift general merchandise?
 
-- `merchandise.price.fact_rollback_payback`: `payback_met_flag`, `unit_lift_lag_months`
-- `merchandise.price.fact_price_investment`: `permanent_flag`, `investment_amount`
-- `merchandise.price.fact_unit_volume`: `unit_quantity`
+- `merchandise.fuel.fact_fuel_gallons`: `fiscal_quarter_id`, `scenario_id`, `banner_id`, `geography_segment_id`, `gallon_count`
+- `merchandise.fuel.fact_fuel_price`: `fiscal_quarter_id`, `scenario_id`, `banner_id`, `fuel_price_per_gallon_amount`, `fuel_margin_amount`
+- `merchandise.sales.fact_fuel_revenue`: `fiscal_quarter_id`, `scenario_id`, `banner_id`, `fuel_revenue_amount`
 
-### Q2 FY2027 (10)
+### Q2 FY2027 (8) Walmart
 
-How is Walmart telling customers and members about tariff-refund reinvestment, and are other retailers doing the same?
+What payback decides whether a rollback becomes permanent, and how much of the current rollback set is clearing that hurdle?
 
-- `merchandise.price.fact_price_investment`: `funding_source_code`, `investment_amount`
-- `merchandise.price.fact_price_gap`: `peer_cutting_flag`, `gap_index`
-- `merchandise.member.dim_competitor`: `competitor_code`
+- `merchandise.sales.fact_net_sales`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `geography_segment_id`, `net_sales_amount`
 
-### Q2 FY2027 (12)
+### Q2 FY2027 (11) Walmart
 
-With average ticket running below inflation, is the basket shifting through trade-down, category mix, or smaller-ticket items at Walmart?
+How do second-half comps split between traffic and ticket under the price investments, and was the 7% U.S. expense growth timing or higher liability claims?
 
-- `merchandise.price.fact_average_ticket`: `ticket_amount`, `below_inflation_flag`
-- `merchandise.price.fact_inflation_observation`: `inflation_rate`
-- `merchandise.price.fact_basket_mix`: `trade_down_flag`, `smaller_ticket_flag`, `mix_share`
+- `merchandise.sales.fact_traffic`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `visit_count`
+- `merchandise.sales.fact_ticket`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `average_ticket_amount`
+- `merchandise.sales.fact_net_sales`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `geography_segment_id`, `net_sales_amount`
 
-### Q1 FY2027 (5)
+### Q2 FY2027 (12) Walmart
 
-How sustainable is general-merchandise strength and the ticket assumption into the back half, and how does marketplace expansion support share in that segment at Walmart?
+With average ticket running below inflation, is the basket shifting through trade-down, category mix, or smaller-ticket items?
 
-- `merchandise.price.fact_category_demand`: `sales_amount`
-- `merchandise.price.fact_average_ticket`: `ticket_amount`
-- `merchandise.network.fact_marketplace_supply`: `sku_quantity`, `seller_quantity`
-- `merchandise.price.fact_share_position`: `share_change_rate`
+- `merchandise.sales.fact_traffic`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `visit_count`
+- `merchandise.sales.fact_ticket`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `average_ticket_amount`
+- `merchandise.sales.fact_net_sales`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `geography_segment_id`, `net_sales_amount`
 
-### Q1 FY2027 (7)
+### Q1 FY2027 (1) Walmart
 
-Are competitors already cutting price to regain share, where do Walmart's price gaps sit, and what tariff rates are in this year's plan?
+What would let enterprise and U.S. e-commerce incremental margins move above the recent range if fuel stays high?
 
-- `merchandise.price.fact_price_gap`: `gap_index`, `peer_cutting_flag`
-- `merchandise.price.fact_share_position`: `share_change_rate`
-- `merchandise.price.fact_tariff_plan`: `duty_rate`, `assumed_in_plan_flag`
-- `merchandise.member.dim_competitor`: `competitor_code`
+- `merchandise.fuel.fact_fuel_gallons`: `fiscal_quarter_id`, `scenario_id`, `banner_id`, `geography_segment_id`, `gallon_count`
+- `merchandise.fuel.fact_fuel_price`: `fiscal_quarter_id`, `scenario_id`, `banner_id`, `fuel_price_per_gallon_amount`, `fuel_margin_amount`
+- `merchandise.sales.fact_fuel_revenue`: `fiscal_quarter_id`, `scenario_id`, `banner_id`, `fuel_revenue_amount`
 
-### Q1 FY2027 (11)
+### Q1 FY2027 (2) Walmart
 
-What is happening in underlying health and wellness after the moderation, and does GLP-1 price pressure free spending for other categories at Walmart?
+What keeps the traffic acceleration at Walmart U.S. and Sam's going, and could tariff rebates fund that versus offsetting energy costs?
 
-- `merchandise.price.fact_health_outlook`: `underlying_sales_amount`, `growth_rate`
-- `merchandise.price.fact_glp1_price`: `price_index`, `frees_other_spend_flag`
-- `merchandise.price.fact_category_demand`: `sales_amount`
+- `merchandise.sales.fact_traffic`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `visit_count`
+- `merchandise.sales.fact_ticket`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `average_ticket_amount`
+- `merchandise.sales.fact_net_sales`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `geography_segment_id`, `net_sales_amount`
 
-### Q1 FY2027 (12)
+### Q1 FY2027 (3) Walmart
 
-How much has mix into health and wellness and grocery held back U.S. gross margin, now that mix is a margin source again at Walmart?
+When do the alternative-revenue platforms launched in Canada and Mexico show up in enterprise margin?
 
-- `merchandise.price.fact_merchandise_margin`: `margin_rate`, `mix_source_flag`
-- `merchandise.price.fact_basket_mix`: `mix_share`
-- `merchandise.price.dim_department`: `department_code`
+- `merchandise.sales.fact_net_sales`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `geography_segment_id`, `net_sales_amount`
+- `merchandise.sales.fact_comparable_sales`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `geography_segment_id`, `comparable_sales_percent`, `comparable_sales_amount`
+- `merchandise.margin.fact_gross_margin`: `fiscal_quarter_id`, `scenario_id`, `category_id`, `store_format_id`, `gross_margin_amount`, `gross_margin_percent`
 
-### Q4 FY2026 (2)
+### Q1 FY2027 (4) Walmart
 
-What inflation, including lower drug prices, is assumed in the outlook at Walmart?
+Where do the main alternative-revenue streams sit versus their potential, if double-digit operating-income growth is harder in this environment?
 
-- `merchandise.price.fact_inflation_observation`: `inflation_rate`
-- `merchandise.price.fact_glp1_price`: `price_index`
-- `merchandise.price.dim_inflation_driver`: `driver_code`
-- `merchandise.price.fact_comp_sales`: `comp_rate`
+- `merchandise.sales.fact_net_sales`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `geography_segment_id`, `net_sales_amount`
+- `merchandise.sales.fact_comparable_sales`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `geography_segment_id`, `comparable_sales_percent`, `comparable_sales_amount`
+- `merchandise.margin.fact_gross_margin`: `fiscal_quarter_id`, `scenario_id`, `category_id`, `store_format_id`, `gross_margin_amount`, `gross_margin_percent`
 
-### Q4 FY2025 (1)
+### Q1 FY2027 (5) Walmart
+
+How sustainable is general-merchandise strength and the ticket assumption into the back half, and how does marketplace expansion support share in that segment?
+
+- `merchandise.sales.fact_traffic`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `visit_count`
+- `merchandise.sales.fact_ticket`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `average_ticket_amount`
+- `merchandise.sales.fact_net_sales`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `geography_segment_id`, `net_sales_amount`
+
+### Q1 FY2027 (6) Walmart
+
+Can trade-in from higher-income shoppers offset pressure on the lower end as fuel rises and tax stimulus fades, and could grocery price competition mute inflation and squeeze margin as egg deflation ends?
+
+- `merchandise.fuel.fact_fuel_gallons`: `fiscal_quarter_id`, `scenario_id`, `banner_id`, `geography_segment_id`, `gallon_count`
+- `merchandise.fuel.fact_fuel_price`: `fiscal_quarter_id`, `scenario_id`, `banner_id`, `fuel_price_per_gallon_amount`, `fuel_margin_amount`
+- `merchandise.sales.fact_fuel_revenue`: `fiscal_quarter_id`, `scenario_id`, `banner_id`, `fuel_revenue_amount`
+
+### Q1 FY2027 (8) Walmart
+
+Which categories are driving the order lift from the shopping assistant, and how is AI split between customer experience and the supply chain?
+
+- `merchandise.sales.fact_net_sales`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `geography_segment_id`, `net_sales_amount`
+
+### Q1 FY2027 (9) Walmart
+
+How much volume is on 30- and 60-minute delivery, and how fast does that coverage expand beyond the share of the population already reached?
+
+- `merchandise.sales.fact_ecommerce_sales`: `fiscal_quarter_id`, `scenario_id`, `sales_channel_id`, `fulfillment_type_id`, `ecommerce_sales_amount`, `ecommerce_order_count`
+- `merchandise.sales.fact_traffic`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `visit_count`
+
+### Q1 FY2027 (10) Walmart
+
+How does marketplace growth split among sellers, SKUs, and order value, and where is the biggest expansion opportunity for the rest of the year?
+
+- `merchandise.marketplace.fact_marketplace_gmv`: `fiscal_quarter_id`, `scenario_id`, `geography_segment_id`, `gmv_amount`, `marketplace_order_count`
+- `merchandise.marketplace.fact_marketplace_order_value`: `fiscal_quarter_id`, `scenario_id`, `geography_segment_id`, `average_order_value_amount`
+- `merchandise.marketplace.fact_marketplace_seller_count`: `fiscal_quarter_id`, `scenario_id`, `geography_segment_id`, `seller_count`
+
+### Q1 FY2027 (11) Walmart
+
+What is happening in underlying health and wellness after the moderation, and does GLP-1 price pressure free spending for other categories?
+
+- `merchandise.sales.fact_net_sales`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `geography_segment_id`, `net_sales_amount`
+
+### Q1 FY2027 (12) Walmart
+
+How much has mix into health and wellness and grocery held back U.S. gross margin, now that mix is a margin source again?
+
+- `merchandise.margin.fact_gross_margin`: `fiscal_quarter_id`, `scenario_id`, `category_id`, `store_format_id`, `gross_margin_amount`, `gross_margin_percent`
+- `merchandise.sales.fact_net_sales`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `geography_segment_id`, `net_sales_amount`
+- `merchandise.margin.fact_category_margin`: `fiscal_quarter_id`, `scenario_id`, `category_id`, `category_gross_margin_amount`, `category_gross_margin_percent`
+
+### Q1 FY2027 (13) Walmart
+
+Why can second-quarter operating income growth accelerate versus the first quarter even with a full quarter of fuel headwind?
+
+- `merchandise.fuel.fact_fuel_gallons`: `fiscal_quarter_id`, `scenario_id`, `banner_id`, `geography_segment_id`, `gallon_count`
+- `merchandise.fuel.fact_fuel_price`: `fiscal_quarter_id`, `scenario_id`, `banner_id`, `fuel_price_per_gallon_amount`, `fuel_margin_amount`
+- `merchandise.sales.fact_fuel_revenue`: `fiscal_quarter_id`, `scenario_id`, `banner_id`, `fuel_revenue_amount`
+
+### Q1 FY2027 (14) Walmart
+
+Are higher gas prices shifting trips online versus in store, or changing what people buy?
+
+- `merchandise.sales.fact_ecommerce_sales`: `fiscal_quarter_id`, `scenario_id`, `sales_channel_id`, `fulfillment_type_id`, `ecommerce_sales_amount`, `ecommerce_order_count`
+- `merchandise.sales.fact_traffic`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `visit_count`
+
+### Q4 FY2026 (1) Walmart
+
+How could agent-style shopping change customer traffic, loyalty, and advertising monetization?
+
+- `merchandise.sales.fact_traffic`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `visit_count`
+- `merchandise.sales.fact_ticket`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `average_ticket_amount`
+- `merchandise.sales.fact_net_sales`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `geography_segment_id`, `net_sales_amount`
+
+### Q4 FY2026 (2) Walmart
+
+What inflation, including lower drug prices, is assumed in the outlook?
+
+- `merchandise.sales.fact_net_sales`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `geography_segment_id`, `net_sales_amount`
+
+### Q4 FY2026 (4) Walmart
+
+Should advertising growth moderate from here, and which advertiser types or categories are accelerating versus still underpenetrated?
+
+- `merchandise.sales.fact_net_sales`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `geography_segment_id`, `net_sales_amount`
+
+### Q4 FY2026 (5) Walmart
+
+What threatens e-commerce share momentum, and does that change the near-term profit path?
+
+- `merchandise.sales.fact_ecommerce_sales`: `fiscal_quarter_id`, `scenario_id`, `sales_channel_id`, `fulfillment_type_id`, `ecommerce_sales_amount`, `ecommerce_order_count`
+- `merchandise.sales.fact_traffic`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `visit_count`
+
+### Q4 FY2025 (1) Walmart
 
 Is Walmart becoming more sensitive to the economy, with less of a countercyclical share gain, and is that in the sales and earnings outlook?
 
-- `merchandise.price.fact_share_position`: `share_change_rate`, `countercyclical_flag`, `in_outlook_flag`
-- `merchandise.price.fact_comp_sales`: `comp_rate`
+- `merchandise.sales.fact_net_sales`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `geography_segment_id`, `net_sales_amount`
+- `merchandise.sales.fact_comparable_sales`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `geography_segment_id`, `comparable_sales_percent`, `comparable_sales_amount`
+- `merchandise.margin.fact_gross_margin`: `fiscal_quarter_id`, `scenario_id`, `category_id`, `store_format_id`, `gross_margin_amount`, `gross_margin_percent`
 
-### Q4 FY2025 (2)
+### Q4 FY2025 (3) Walmart
 
-How should mix affect gross margin as general merchandise improves, and have advertising, membership, or marketplace reached scale at Walmart?
+If e-commerce incremental margins are already healthy, why not reinvest faster to grow the top of the funnel?
 
-- `merchandise.price.fact_merchandise_margin`: `margin_rate`, `mix_source_flag`
-- `merchandise.price.fact_category_demand`: `sales_amount`
-- `merchandise.network.fact_alternative_revenue`: `contribution_amount`, `versus_potential_code`
-- `merchandise.network.fact_membership_profit`: `scale_reached_flag`
+- `merchandise.sales.fact_ecommerce_sales`: `fiscal_quarter_id`, `scenario_id`, `sales_channel_id`, `fulfillment_type_id`, `ecommerce_sales_amount`, `ecommerce_order_count`
+- `merchandise.sales.fact_traffic`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `visit_count`
 
-### Q4 FY2025 (5)
+### Q4 FY2025 (6) Walmart
 
-How did markdowns compare with plan, how much price investment is in next year's guide, and what is the longer-term view of the extra Canada investment at Walmart?
+What is the dilution and integration plan for VIZIO, and how fast can Walmart Connect keep growing?
 
-- `merchandise.price.fact_markdown_result`: `markdown_versus_plan_code`
-- `merchandise.price.fact_price_investment`: `in_guide_amount`, `investment_amount`
-- `merchandise.geography.dim_country`: `country_code`
+- `merchandise.media.fact_retail_media_revenue`: `fiscal_quarter_id`, `scenario_id`, `geography_segment_id`, `retail_media_revenue_amount`
+- `merchandise.media.fact_retail_media_impressions`: `fiscal_quarter_id`, `scenario_id`, `geography_segment_id`, `media_impression_count`
+- `merchandise.media.fact_retail_media_price`: `fiscal_quarter_id`, `scenario_id`, `geography_segment_id`, `media_cpm_amount`
+
+### Q4 FY2025 (7) Walmart
+
+What are the main drivers of better e-commerce profit, and what share of profit dollars already comes from high-margin alternative revenue?
+
+- `merchandise.sales.fact_ecommerce_sales`: `fiscal_quarter_id`, `scenario_id`, `sales_channel_id`, `fulfillment_type_id`, `ecommerce_sales_amount`, `ecommerce_order_count`
+- `merchandise.sales.fact_traffic`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `visit_count`
+
+### Q4 FY2025 (8) Walmart
+
+Do e-commerce incremental margins rise from here, and when does e-commerce itself become profitable?
+
+- `merchandise.sales.fact_ecommerce_sales`: `fiscal_quarter_id`, `scenario_id`, `sales_channel_id`, `fulfillment_type_id`, `ecommerce_sales_amount`, `ecommerce_order_count`
+- `merchandise.sales.fact_traffic`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `visit_count`
+
+### Q4 FY2025 (10) Walmart
+
+How is PhonePe growing and how profitable is it, and where can returns on investment still rise?
+
+- `merchandise.sales.fact_net_sales`: `fiscal_quarter_id`, `scenario_id`, `store_format_id`, `banner_id`, `geography_segment_id`, `net_sales_amount`

@@ -1,108 +1,249 @@
 # Social Inc audience and usage
 
-This slice owns surfaces, audiences, and usage quantities. Ad prices, cloud revenue, and compute capacity are owned in the other slices and are partial when named here.
+Coverage maps each numbered question to datasets and columns that exist in the YAML and can express the distinction the question asks. Demand quantity, supply or capacity, and price or margin are stored on separate facts joined by the shared grain keys (fiscal quarter, scenario, and the business keys).
 
 ## Numbered questions
 
 ## Alphabet
 
-### Q1 2026 (3)
+### Q1 2026 (6) Alphabet
 
-What is pushing Search queries to a record, and how much room is left to cover more of those queries with ads at Alphabet?
+Are AI tools shortening purchase journeys and lifting conversion, and how much of Search strength is that behavior versus newer advertiser AI tools?
 
-- `social.audience.fact_query_volume`: `query_quantity`, `record_flag`
-- `social.monetization.fact_ad_coverage`: `coverage_share`, `room_left_flag`
-- `social.audience.dim_surface`: `surface_code`
+- `social.audience.fact_ai_usage`: `fiscal_quarter_id`, `scenario_id`, `consumer_surface_id`, `presentation_feature_id`, `device_id`, `ai_interaction_count`, `ai_user_count`
+- `social.search.fact_search_query_volume`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `presentation_feature_id`, `consumer_surface_id`, `query_count`
+- `social.search.fact_search_clicks`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `presentation_feature_id`, `paid_click_count`, `total_click_count`
 
-### Q4 2025 (2)
+### Q4 2025 (1) Alphabet
 
-How do generative creation tools fit YouTube’s longer-term content model at Alphabet?
+Where did agentic commerce advance most in 2025, and where should utility for users and advertisers move further in 2026?
 
-- `social.audience.fact_content_supply`: `content_quantity`, `generative_fit_flag`
-- `social.audience.dim_surface`: `surface_code`
-- `social.audience.dim_content_type`: `content_code`
+- `social.audience.fact_family_people`: `fiscal_quarter_id`, `scenario_id`, `daily_active_people_count`, `monthly_active_people_count`
+- `social.audience.fact_surface_audience`: `fiscal_quarter_id`, `scenario_id`, `consumer_surface_id`, `surface_daily_user_count`, `surface_monthly_user_count`
 
-### Q4 2025 (6)
+### Q4 2025 (6) Alphabet
 
-How are usage and retention trending for the native Gemini app, and is that monthly-active base the right cohort to compare with rival assistants at Alphabet?
+How are usage and retention trending for the native Gemini app, and is that monthly-active base the right cohort to compare with rival assistants?
 
-- `social.audience.fact_user_base`: `user_quantity`, `monthly_active_quantity`
-- `social.audience.fact_retention`: `retention_rate`
-- `social.audience.fact_assistant_usage`: `usage_index`
-- `social.audience.dim_surface`: `surface_code`
+- `social.audience.fact_ai_usage`: `fiscal_quarter_id`, `scenario_id`, `consumer_surface_id`, `presentation_feature_id`, `device_id`, `ai_interaction_count`, `ai_user_count`
+- `social.search.fact_search_query_volume`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `presentation_feature_id`, `consumer_surface_id`, `query_count`
+- `social.search.fact_search_clicks`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `presentation_feature_id`, `paid_click_count`, `total_click_count`
 
-### Q2 2025 (5)
+### Q4 2025 (7) Alphabet
 
-How important are new devices, including glasses, to scaling AI, and could the phone stop being the center of the consumer experience at Alphabet?
+As AI Search sessions get longer and more of the answer stays on the page, how does revenue keep up with that utility, including any role for subscriptions?
 
-- `social.audience.fact_device_mix`: `usage_share`, `phone_still_center_flag`
-- `social.infrastructure.fact_glasses_volume`: `unit_quantity`
-- `social.audience.dim_device_form`: `form_code`
+- `social.audience.fact_ai_usage`: `fiscal_quarter_id`, `scenario_id`, `consumer_surface_id`, `presentation_feature_id`, `device_id`, `ai_interaction_count`, `ai_user_count`
+- `social.search.fact_search_query_volume`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `presentation_feature_id`, `consumer_surface_id`, `query_count`
+- `social.search.fact_search_clicks`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `presentation_feature_id`, `paid_click_count`, `total_click_count`
 
-### Q2 2025 (6)
+### Q3 2025 (2) Alphabet
 
-How does usage of Search with AI Mode differ from the standalone Gemini app, including which consumers use each at Alphabet?
+How close is a deeper tie between Waymo and core Gemini capabilities?
 
-- `social.audience.fact_surface_audience`: `distinct_audience_flag`
-- `social.audience.fact_assistant_usage`: `usage_index`
-- `social.audience.dim_surface`: `surface_code`
-- `social.audience.dim_audience_segment`: `segment_code`
+- `social.audience.fact_ai_usage`: `fiscal_quarter_id`, `scenario_id`, `consumer_surface_id`, `presentation_feature_id`, `device_id`, `ai_interaction_count`, `ai_user_count`
+- `social.search.fact_search_query_volume`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `presentation_feature_id`, `consumer_surface_id`, `query_count`
+- `social.search.fact_search_clicks`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `presentation_feature_id`, `paid_click_count`, `total_click_count`
 
-## Meta Platforms
+### Q3 2025 (3) Alphabet
 
-### Q2 2026 (3)
+Inside AI Overviews and AI Mode, what is happening to clicks per query, conversion, and price even as query growth accelerates?
 
-Can mainstream consumer adoption close the gap between heavy AI-builder use and people who still treat AI like search at Meta Platforms?
+- `social.audience.fact_ai_usage`: `fiscal_quarter_id`, `scenario_id`, `consumer_surface_id`, `presentation_feature_id`, `device_id`, `ai_interaction_count`, `ai_user_count`
+- `social.search.fact_search_query_volume`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `presentation_feature_id`, `consumer_surface_id`, `query_count`
+- `social.search.fact_search_clicks`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `presentation_feature_id`, `paid_click_count`, `total_click_count`
 
-- `social.audience.fact_assistant_usage`: `usage_index`, `search_like_share`, `power_user_share`, `mainstream_gap_flag`
-- `social.audience.dim_surface`: `surface_code`
+### Q3 2025 (6) Alphabet
 
-### Q1 2026 (8)
+How do longer AI Mode queries change return on ad spend?
+
+- `social.audience.fact_ai_usage`: `fiscal_quarter_id`, `scenario_id`, `consumer_surface_id`, `presentation_feature_id`, `device_id`, `ai_interaction_count`, `ai_user_count`
+- `social.search.fact_search_query_volume`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `presentation_feature_id`, `consumer_surface_id`, `query_count`
+- `social.search.fact_search_clicks`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `presentation_feature_id`, `paid_click_count`, `total_click_count`
+
+### Q3 2025 (7) Alphabet
+
+Can products such as AI Max lift the share of queries that are commercial above the historical level?
+
+- `social.audience.fact_ai_usage`: `fiscal_quarter_id`, `scenario_id`, `consumer_surface_id`, `presentation_feature_id`, `device_id`, `ai_interaction_count`, `ai_user_count`
+- `social.search.fact_search_query_volume`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `presentation_feature_id`, `consumer_surface_id`, `query_count`
+- `social.search.fact_search_clicks`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `presentation_feature_id`, `paid_click_count`, `total_click_count`
+
+### Q3 2025 (8) Alphabet
+
+What supports the view that AI Overviews, AI Mode, and similar assistants expand marketing revenue, not only engagement?
+
+- `social.audience.fact_ai_usage`: `fiscal_quarter_id`, `scenario_id`, `consumer_surface_id`, `presentation_feature_id`, `device_id`, `ai_interaction_count`, `ai_user_count`
+- `social.search.fact_search_query_volume`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `presentation_feature_id`, `consumer_surface_id`, `query_count`
+- `social.search.fact_search_clicks`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `presentation_feature_id`, `paid_click_count`, `total_click_count`
+
+### Q3 2025 (9) Alphabet
+
+Is frontier-model innovation still rapid ahead of the next Gemini generation, or is the pace slowing?
+
+- `social.audience.fact_ai_usage`: `fiscal_quarter_id`, `scenario_id`, `consumer_surface_id`, `presentation_feature_id`, `device_id`, `ai_interaction_count`, `ai_user_count`
+- `social.search.fact_search_query_volume`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `presentation_feature_id`, `consumer_surface_id`, `query_count`
+- `social.search.fact_search_clicks`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `presentation_feature_id`, `paid_click_count`, `total_click_count`
+
+### Q2 2025 (1) Alphabet
+
+As consumer behavior shifts, should investors track volume or monetization, given that click economics may not describe AI usage?
+
+- `social.audience.fact_ai_usage`: `fiscal_quarter_id`, `scenario_id`, `consumer_surface_id`, `presentation_feature_id`, `device_id`, `ai_interaction_count`, `ai_user_count`
+- `social.search.fact_search_query_volume`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `presentation_feature_id`, `consumer_surface_id`, `query_count`
+- `social.search.fact_search_clicks`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `presentation_feature_id`, `paid_click_count`, `total_click_count`
+
+### Q2 2025 (5) Alphabet
+
+How important are new devices, including glasses, to scaling AI, and could the phone stop being the center of the consumer experience?
+
+- `social.audience.fact_glasses_usage`: `fiscal_quarter_id`, `scenario_id`, `device_id`, `consumer_surface_id`, `glasses_session_count`, `glasses_user_count`
+- `social.reality.fact_reality_labs_result`: `fiscal_quarter_id`, `scenario_id`, `device_id`, `reality_labs_revenue_amount`, `reality_labs_operating_loss_amount`
+
+### Q2 2025 (6) Alphabet
+
+How does usage of Search with AI Mode differ from the standalone Gemini app, including which consumers use each?
+
+- `social.audience.fact_ai_usage`: `fiscal_quarter_id`, `scenario_id`, `consumer_surface_id`, `presentation_feature_id`, `device_id`, `ai_interaction_count`, `ai_user_count`
+- `social.search.fact_search_query_volume`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `presentation_feature_id`, `consumer_surface_id`, `query_count`
+- `social.search.fact_search_clicks`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `presentation_feature_id`, `paid_click_count`, `total_click_count`
+
+### Q2 2025 (7) Alphabet
+
+How is Google doing at keeping key AI talent, and how should AI operating costs sit next to the capital-spending step-up?
+
+- `social.audience.fact_ai_usage`: `fiscal_quarter_id`, `scenario_id`, `consumer_surface_id`, `presentation_feature_id`, `device_id`, `ai_interaction_count`, `ai_user_count`
+- `social.search.fact_search_query_volume`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `presentation_feature_id`, `consumer_surface_id`, `query_count`
+- `social.search.fact_search_clicks`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `presentation_feature_id`, `paid_click_count`, `total_click_count`
+
+### Q2 2025 (8) Alphabet
+
+Can click-through rates still rise as AI Overviews reduce ad impressions on a results page?
+
+- `social.audience.fact_ai_usage`: `fiscal_quarter_id`, `scenario_id`, `consumer_surface_id`, `presentation_feature_id`, `device_id`, `ai_interaction_count`, `ai_user_count`
+- `social.search.fact_search_query_volume`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `presentation_feature_id`, `consumer_surface_id`, `query_count`
+- `social.search.fact_search_clicks`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `presentation_feature_id`, `paid_click_count`, `total_click_count`
+
+### Q2 2025 (11) Alphabet
+
+How are Gemini subscriptions inside Google One progressing, and what would speed consumer adoption?
+
+- `social.audience.fact_ai_usage`: `fiscal_quarter_id`, `scenario_id`, `consumer_surface_id`, `presentation_feature_id`, `device_id`, `ai_interaction_count`, `ai_user_count`
+- `social.search.fact_search_query_volume`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `presentation_feature_id`, `consumer_surface_id`, `query_count`
+- `social.search.fact_search_clicks`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `presentation_feature_id`, `paid_click_count`, `total_click_count`
+
+## Meta
+
+### Q2 2026 (3) Meta
+
+Can mainstream consumer adoption close the gap between heavy AI-builder use and people who still treat AI like search?
+
+- `social.audience.fact_ai_usage`: `fiscal_quarter_id`, `scenario_id`, `consumer_surface_id`, `presentation_feature_id`, `device_id`, `ai_interaction_count`, `ai_user_count`
+- `social.search.fact_search_query_volume`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `presentation_feature_id`, `consumer_surface_id`, `query_count`
+- `social.search.fact_search_clicks`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `presentation_feature_id`, `paid_click_count`, `total_click_count`
+
+### Q2 2026 (6) Meta
+
+How is the AI lab performing about a year after the senior team arrived, and when should faster model or chip releases show up?
+
+- `social.audience.fact_ai_usage`: `fiscal_quarter_id`, `scenario_id`, `consumer_surface_id`, `presentation_feature_id`, `device_id`, `ai_interaction_count`, `ai_user_count`
+- `social.search.fact_search_query_volume`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `presentation_feature_id`, `consumer_surface_id`, `query_count`
+- `social.search.fact_search_clicks`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `presentation_feature_id`, `paid_click_count`, `total_click_count`
+
+### Q1 2026 (5) Meta
+
+What limits launching AI glasses under more EssilorLuxottica brands this year, and what unit volume would count as a successful 2026?
+
+- `social.audience.fact_glasses_usage`: `fiscal_quarter_id`, `scenario_id`, `device_id`, `consumer_surface_id`, `glasses_session_count`, `glasses_user_count`
+- `social.reality.fact_reality_labs_result`: `fiscal_quarter_id`, `scenario_id`, `device_id`, `reality_labs_revenue_amount`, `reality_labs_operating_loss_amount`
+
+### Q1 2026 (6) Meta
+
+How much of the workforce reduction is efficiency from AI rather than other cuts?
+
+- `social.audience.fact_ai_usage`: `fiscal_quarter_id`, `scenario_id`, `consumer_surface_id`, `presentation_feature_id`, `device_id`, `ai_interaction_count`, `ai_user_count`
+- `social.search.fact_search_query_volume`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `presentation_feature_id`, `consumer_surface_id`, `query_count`
+- `social.search.fact_search_clicks`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `presentation_feature_id`, `paid_click_count`, `total_click_count`
+
+### Q1 2026 (8) Meta
 
 How do new consumer AI apps change the direction of Meta AI, Dreamer, and the broader agent strategy?
 
-- `social.infrastructure.fact_dreamer_direction`: `direction_code`
-- `social.audience.fact_assistant_usage`: `usage_index`
-- `social.infrastructure.dim_product_bet`: `bet_code`
-- `social.infrastructure.dim_agent_kind`: `kind_code`
+- `social.audience.fact_ai_usage`: `fiscal_quarter_id`, `scenario_id`, `consumer_surface_id`, `presentation_feature_id`, `device_id`, `ai_interaction_count`, `ai_user_count`
+- `social.search.fact_search_query_volume`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `presentation_feature_id`, `consumer_surface_id`, `query_count`
+- `social.search.fact_search_clicks`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `presentation_feature_id`, `paid_click_count`, `total_click_count`
 
-### Q1 2026 (10)
+### Q1 2026 (11) Meta
 
-What changes in ranking when the interaction history those models can use gets much longer at Meta Platforms?
+What engagement and monetization unlocks come from moving ads from smaller models to Muse Spark and later large models?
 
-- `social.audience.fact_interaction_depth`: `history_length`, `ranking_change_flag`
-- `social.infrastructure.fact_ranking_model`: `larger_model_flag`
-- `social.audience.dim_surface`: `surface_code`
+- `social.audience.fact_family_people`: `fiscal_quarter_id`, `scenario_id`, `daily_active_people_count`, `monthly_active_people_count`
+- `social.audience.fact_surface_audience`: `fiscal_quarter_id`, `scenario_id`, `consumer_surface_id`, `surface_daily_user_count`, `surface_monthly_user_count`
 
-### Q4 2025 (8)
+### Q4 2025 (2) Meta
 
-What is the plan for bringing Horizon Worlds to mobile, and what do AI and Horizon open in gaming or new communication at Meta Platforms?
+How do internal compute needs now compare with the product roadmap, after a period of being capacity constrained?
 
-- `social.audience.fact_horizon_roadmap`: `mobile_plan_flag`, `gaming_open_flag`
-- `social.audience.dim_surface`: `surface_code`
-- `social.audience.dim_content_type`: `content_code`
+- `social.audience.fact_family_people`: `fiscal_quarter_id`, `scenario_id`, `daily_active_people_count`, `monthly_active_people_count`
+- `social.audience.fact_surface_audience`: `fiscal_quarter_id`, `scenario_id`, `consumer_surface_id`, `surface_daily_user_count`, `surface_monthly_user_count`
 
-### Q4 2025 (11)
+### Q4 2025 (9) Meta
+
+Where is the ranking and recommendation roadmap, and is further gain waiting on newer models?
+
+- `social.audience.fact_family_people`: `fiscal_quarter_id`, `scenario_id`, `daily_active_people_count`, `monthly_active_people_count`
+- `social.audience.fact_surface_audience`: `fiscal_quarter_id`, `scenario_id`, `consumer_surface_id`, `surface_daily_user_count`, `surface_monthly_user_count`
+
+### Q4 2025 (11) Meta
 
 Is Meta AI usage at the point where product improvements are starting to show up in engagement?
 
-- `social.audience.fact_assistant_usage`: `usage_index`
-- `social.audience.fact_engagement_gain`: `gain_index`
-- `social.infrastructure.fact_monetization_path`: `usage_to_money_stage`
-- `social.audience.dim_surface`: `surface_code`
+- `social.audience.fact_ai_usage`: `fiscal_quarter_id`, `scenario_id`, `consumer_surface_id`, `presentation_feature_id`, `device_id`, `ai_interaction_count`, `ai_user_count`
+- `social.search.fact_search_query_volume`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `presentation_feature_id`, `consumer_surface_id`, `query_count`
+- `social.search.fact_search_clicks`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `presentation_feature_id`, `paid_click_count`, `total_click_count`
 
-### Q3 2025 (3)
+### Q3 2025 (3) Meta
 
 What do today’s Meta AI interactions imply for how superintelligence-class models would change utility and behavior?
 
-- `social.infrastructure.fact_superintelligence_utility`: `utility_change_code`
-- `social.audience.fact_assistant_usage`: `usage_index`
-- `social.audience.dim_surface`: `surface_code`
+- `social.audience.fact_ai_usage`: `fiscal_quarter_id`, `scenario_id`, `consumer_surface_id`, `presentation_feature_id`, `device_id`, `ai_interaction_count`, `ai_user_count`
+- `social.search.fact_search_query_volume`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `presentation_feature_id`, `consumer_surface_id`, `query_count`
+- `social.search.fact_search_clicks`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `presentation_feature_id`, `paid_click_count`, `total_click_count`
 
-### Q3 2025 (8)
+### Q3 2025 (4) Meta
+
+How large are next year’s ad and engagement gains expected to be versus the progress of the prior two years?
+
+- `social.audience.fact_family_people`: `fiscal_quarter_id`, `scenario_id`, `daily_active_people_count`, `monthly_active_people_count`
+- `social.audience.fact_surface_audience`: `fiscal_quarter_id`, `scenario_id`, `consumer_surface_id`, `surface_daily_user_count`, `surface_monthly_user_count`
+
+### Q3 2025 (6) Meta
+
+What user tools should come out of this AI cycle, and is there a reason margins would differ from prior product cycles?
+
+- `social.audience.fact_ai_usage`: `fiscal_quarter_id`, `scenario_id`, `consumer_surface_id`, `presentation_feature_id`, `device_id`, `ai_interaction_count`, `ai_user_count`
+- `social.search.fact_search_query_volume`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `presentation_feature_id`, `consumer_surface_id`, `query_count`
+- `social.search.fact_search_clicks`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `presentation_feature_id`, `paid_click_count`, `total_click_count`
+
+### Q3 2025 (7) Meta
+
+Is the lab aimed at long-range milestones or at products that can earn revenue quickly, and is a personal AI for billions of people still the goal?
+
+- `social.audience.fact_ai_usage`: `fiscal_quarter_id`, `scenario_id`, `consumer_surface_id`, `presentation_feature_id`, `device_id`, `ai_interaction_count`, `ai_user_count`
+- `social.search.fact_search_query_volume`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `presentation_feature_id`, `consumer_surface_id`, `query_count`
+- `social.search.fact_search_clicks`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `presentation_feature_id`, `paid_click_count`, `total_click_count`
+
+### Q3 2025 (8) Meta
 
 What Meta AI adoption is most encouraging, and how far along is the path from usage to monetization?
 
-- `social.infrastructure.fact_monetization_path`: `usage_to_money_stage`, `encouraging_flag`
-- `social.audience.fact_assistant_usage`: `usage_index`
-- `social.audience.dim_surface`: `surface_code`
+- `social.audience.fact_ai_usage`: `fiscal_quarter_id`, `scenario_id`, `consumer_surface_id`, `presentation_feature_id`, `device_id`, `ai_interaction_count`, `ai_user_count`
+- `social.search.fact_search_query_volume`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `presentation_feature_id`, `consumer_surface_id`, `query_count`
+- `social.search.fact_search_clicks`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `presentation_feature_id`, `paid_click_count`, `total_click_count`
+
+### Q3 2025 (9) Meta
+
+Can glasses volume alone repay the hardware investment, or does that require advertising, services, or commerce on the device?
+
+- `social.audience.fact_glasses_usage`: `fiscal_quarter_id`, `scenario_id`, `device_id`, `consumer_surface_id`, `glasses_session_count`, `glasses_user_count`
+- `social.reality.fact_reality_labs_result`: `fiscal_quarter_id`, `scenario_id`, `device_id`, `reality_labs_revenue_amount`, `reality_labs_operating_loss_amount`

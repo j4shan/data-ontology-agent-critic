@@ -2,22 +2,18 @@
 
 Loadable intermediary schema version 3. The builder input is `directory-manifest.yaml` beside `yaml/`.
 
-The catalog was assembled from three subject slices that were written separately: audience and usage, monetization and price, compute, models, and capacity. Question-to-column notes stay in `audience/coverage.md`, `monetization/coverage.md`, `infrastructure/coverage.md`.
+The catalog was assembled from 3 subject slices that were written separately. Question-to-column notes stay in `audience/coverage.md`, `infrastructure/coverage.md`, `monetization/coverage.md`.
 
 | | |
 | --- | ---: |
-| Datasets | 105 |
-| Relationships | 218 |
-| Logical identities | 105 |
+| Datasets | 73 |
+| Relationships | 187 |
+| Logical identities | 17 |
 
-Snowflake database `SOCIAL`, account `social.us-west-1`. Node ids use the `sf:` prefix. Qualified names start with `social.`.
+Snowflake database `SOCIAL`, account `social.us-west-1`. Node ids use the `sf:social` prefix. Qualified names start with `social.`.
 
 ## What the model covers
 
-Audience and usage own surfaces, queries, sessions, and the installed audience. Query counts, clicks, and users are quantities. They do not store a price per click.
+Every fact grain is the natural combination of fiscal quarter, scenario, and the business keys named in its grain description; a surrogate column is never the grain. The scenario dimension carries `reported` and `guide`, so the same fiscal quarter can be both a reported result and a later guide, and the fiscal-quarter dimension has no `guidance_horizon` column. Demand quantity, supply or capacity, and price or margin stay on separate facts: a quantity fact does not store a price, and a price fact does not store the unit quantity; the denominator a price needs is a quantity measure on its own fact joined by the shared grain keys. No column is an analyst-conclusion flag; operational classifications are dimension codes, and measure descriptions name their unit.
 
-Monetization and price own ad products, subscriptions, and cloud deals. Ad price and cloud margin are prices. Ad revenue and cloud revenue do not store the click quantity or the backlog quantity. A search bridge stores separate volume and price effects, not the unit quantity and the unit price together.
-
-Compute, models, and capacity own pools, silicon, labs, and capital plans. Compute capacity, backlog, and glasses units are quantities. Supply-chain inflation and talent cost are prices or costs. Capital spending does not store the capacity quantity. Capacity bought from others is a different fact from capacity sold.
-
-A graph build of this directory reports 105 datasets, 218 relationships, no unknown claims, and no contradictory edges.
+A graph build of this directory reports 73 datasets, 187 relationships, no unknown claims, and no contradictory edges.

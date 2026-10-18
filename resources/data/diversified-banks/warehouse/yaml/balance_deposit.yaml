@@ -1,404 +1,130 @@
 schema_version: '3'
 nodes:
-- node_id: sf:bank.geography.dim_region
+- node_id: sf:bank.time.dim_fiscal_quarter
   descriptor:
-    qualified_name: bank.geography.dim_region
-    display_name: Region
-    description: "Commercial region in which Bank Inc operates."
+    qualified_name: bank.time.dim_fiscal_quarter
+    display_name: Fiscal Quarter
+    description: Fiscal quarter on the Bank Inc earnings calendar.
     synonyms: []
     tags:
     - dimension
-    - geography
-    - bank
+    - balance
+    - diversified-banks
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: bank.us-east-1
       database: BANK
-      schema: GEOGRAPHY
-      object: DIM_REGION
-      format: table
-  grain:
-    description: "One row is one region."
-    components:
-    - identity_id: region_identity
-      dataset_columns:
-      - region_id
-      description: "Identifier of the region."
-  columns:
-  - name: region_id
-    description: "Identifier of the region."
-  - name: region_name
-    description: "Name of the region."
-  - name: region_code
-    description: "Region code."
-    value_description: "americas, emea, asia_pacific"
-  entity_definitions:
-  - identity_id: region_identity
-    dataset_columns:
-    - region_id
-    entity_universe: complete
-- node_id: sf:bank.geography.dim_country
-  descriptor:
-    qualified_name: bank.geography.dim_country
-    display_name: Country
-    description: "Country where Bank Inc takes deposits or extends credit."
-    synonyms: []
-    tags:
-    - dimension
-    - geography
-    - bank
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: bank.us-east-1
-      database: BANK
-      schema: GEOGRAPHY
-      object: DIM_COUNTRY
-      format: table
-  grain:
-    description: "One row is one country."
-    components:
-    - identity_id: country_identity
-      dataset_columns:
-      - country_id
-      description: "Identifier of the country."
-  columns:
-  - name: country_id
-    description: "Identifier of the country."
-  - name: region_id
-    description: "Region referenced by this row."
-  - name: country_name
-    description: "Name of the country."
-  - name: country_code
-    description: "Country code."
-    value_description: "united_states, united_kingdom, germany, france, other"
-  entity_definitions:
-  - identity_id: country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: complete
-  - identity_id: region_identity
-    dataset_columns:
-    - region_id
-    entity_universe: partial
-- node_id: sf:bank.geography.dim_fiscal_quarter
-  descriptor:
-    qualified_name: bank.geography.dim_fiscal_quarter
-    display_name: "Fiscal Quarter"
-    description: "Reporting quarter on the Bank Inc calendar."
-    synonyms: []
-    tags:
-    - dimension
-    - geography
-    - bank
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: bank.us-east-1
-      database: BANK
-      schema: GEOGRAPHY
+      schema: TIME
       object: DIM_FISCAL_QUARTER
       format: table
   grain:
-    description: "One row is one fiscal quarter."
+    description: One row is one fiscal quarter, identified by fiscal_quarter_id.
     components:
     - identity_id: fiscal_quarter_identity
       dataset_columns:
       - fiscal_quarter_id
-      description: "Identifier of the fiscal quarter."
+      description: Identifier of the fiscal quarter.
   columns:
   - name: fiscal_quarter_id
-    description: "Identifier of the fiscal quarter."
-  - name: quarter_label
-    description: "Label of the quarter."
-  - name: quarter_code
-    description: "Quarter code."
-    value_description: "2025Q2, 2025Q4, 2026Q1, 2026Q2, 2026Q3, 2026Q4"
-  - name: guidance_horizon
-    description: "Whether the quarter is reported or still a guide."
-    value_description: "reported, guided_next, exit_rate"
+    description: Identifier of the fiscal quarter.
+  - name: fiscal_quarter_name
+    description: Name of the fiscal quarter.
+  - name: fiscal_quarter_code
+    description: Code of the fiscal quarter.
+    value_description: 2025Q2, 2025Q3, 2025Q4, 2026Q1, 2026Q2
   entity_definitions:
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: complete
-- node_id: sf:bank.geography.dim_calendar_day
+- node_id: sf:bank.time.dim_scenario
   descriptor:
-    qualified_name: bank.geography.dim_calendar_day
-    display_name: "Calendar Day"
-    description: "Calendar day used to place balances on one time axis."
+    qualified_name: bank.time.dim_scenario
+    display_name: Scenario
+    description: 'Reporting scenario: an actual reported result or a management guide for the same fiscal
+      quarter.'
     synonyms: []
     tags:
     - dimension
-    - geography
-    - bank
+    - balance
+    - diversified-banks
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: bank.us-east-1
       database: BANK
-      schema: GEOGRAPHY
-      object: DIM_CALENDAR_DAY
+      schema: TIME
+      object: DIM_SCENARIO
       format: table
   grain:
-    description: "One row is one calendar day."
+    description: One row is one scenario, identified by scenario_id.
     components:
-    - identity_id: calendar_day_identity
+    - identity_id: scenario_identity
       dataset_columns:
-      - calendar_day_id
-      description: "Identifier of the calendar day."
+      - scenario_id
+      description: Identifier of the scenario.
   columns:
-  - name: calendar_day_id
-    description: "Identifier of the calendar day."
-  - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: calendar_date
-    description: "Civil date of the day."
-  entity_definitions:
-  - identity_id: calendar_day_identity
-    dataset_columns:
-    - calendar_day_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-- node_id: sf:bank.geography.dim_rate_scenario
-  descriptor:
-    qualified_name: bank.geography.dim_rate_scenario
-    display_name: "Rate Scenario"
-    description: "Rate path Bank Inc uses when it talks about higher-for-longer, cuts, or no cuts."
-    synonyms: []
-    tags:
-    - dimension
-    - geography
-    - bank
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: bank.us-east-1
-      database: BANK
-      schema: GEOGRAPHY
-      object: DIM_RATE_SCENARIO
-      format: table
-  grain:
-    description: "One row is one rate scenario."
-    components:
-    - identity_id: rate_scenario_identity
-      dataset_columns:
-      - rate_scenario_id
-      description: "Identifier of the rate scenario."
-  columns:
-  - name: rate_scenario_id
-    description: "Identifier of the rate scenario."
-  - name: scenario_code
-    description: "Rate-path code."
-    value_description: "higher_for_longer, no_cut, cutting, static"
+  - name: scenario_id
+    description: Identifier of the scenario.
   - name: scenario_name
-    description: "Name of the rate path."
+    description: Name of the scenario.
+  - name: scenario_code
+    description: Code of the scenario.
+    value_description: reported, guide
   entity_definitions:
-  - identity_id: rate_scenario_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - rate_scenario_id
+    - scenario_id
     entity_universe: complete
-- node_id: sf:bank.customer.dim_customer_segment
+- node_id: sf:bank.segment.dim_reporting_segment
   descriptor:
-    qualified_name: bank.customer.dim_customer_segment
-    display_name: "Customer Segment"
-    description: "Client segment Bank Inc serves."
+    qualified_name: bank.segment.dim_reporting_segment
+    display_name: Reporting Segment
+    description: Bank Inc reporting segment.
     synonyms: []
     tags:
     - dimension
-    - customer
-    - bank
+    - balance
+    - diversified-banks
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: bank.us-east-1
       database: BANK
-      schema: CUSTOMER
-      object: DIM_CUSTOMER_SEGMENT
+      schema: SEGMENT
+      object: DIM_REPORTING_SEGMENT
       format: table
   grain:
-    description: "One row is one customer segment."
+    description: One row is one reporting segment, identified by reporting_segment_id.
     components:
-    - identity_id: customer_segment_identity
+    - identity_id: reporting_segment_identity
       dataset_columns:
-      - customer_segment_id
-      description: "Identifier of the customer segment."
+      - reporting_segment_id
+      description: Identifier of the reporting segment.
   columns:
-  - name: customer_segment_id
-    description: "Identifier of the customer segment."
-  - name: segment_code
-    description: "Segment code."
-    value_description: "consumer, retail, middle_market, commercial, corporate, wealth, hyperscaler"
-  - name: segment_name
-    description: "Name of the segment."
+  - name: reporting_segment_id
+    description: Identifier of the reporting segment.
+  - name: reporting_segment_name
+    description: Name of the reporting segment.
+  - name: reporting_segment_code
+    description: Code of the reporting segment.
+    value_description: consumer, wealth, wholesale, markets
   entity_definitions:
-  - identity_id: customer_segment_identity
+  - identity_id: reporting_segment_identity
     dataset_columns:
-    - customer_segment_id
-    entity_universe: complete
-- node_id: sf:bank.customer.dim_business_line
-  descriptor:
-    qualified_name: bank.customer.dim_business_line
-    display_name: "Business Line"
-    description: "Bank Inc business line that owns a result."
-    synonyms: []
-    tags:
-    - dimension
-    - customer
-    - bank
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: bank.us-east-1
-      database: BANK
-      schema: CUSTOMER
-      object: DIM_BUSINESS_LINE
-      format: table
-  grain:
-    description: "One row is one business line."
-    components:
-    - identity_id: business_line_identity
-      dataset_columns:
-      - business_line_id
-      description: "Identifier of the business line."
-  columns:
-  - name: business_line_id
-    description: "Identifier of the business line."
-  - name: line_code
-    description: "Business-line code."
-    value_description: "consumer_bank, global_banking, global_markets, wealth, cards, payments"
-  - name: line_name
-    description: "Name of the business line."
-  entity_definitions:
-  - identity_id: business_line_identity
-    dataset_columns:
-    - business_line_id
-    entity_universe: complete
-- node_id: sf:bank.customer.dim_channel
-  descriptor:
-    qualified_name: bank.customer.dim_channel
-    display_name: Channel
-    description: "Channel through which Bank Inc reaches a client."
-    synonyms: []
-    tags:
-    - dimension
-    - customer
-    - bank
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: bank.us-east-1
-      database: BANK
-      schema: CUSTOMER
-      object: DIM_CHANNEL
-      format: table
-  grain:
-    description: "One row is one channel."
-    components:
-    - identity_id: channel_identity
-      dataset_columns:
-      - channel_id
-      description: "Identifier of the channel."
-  columns:
-  - name: channel_id
-    description: "Identifier of the channel."
-  - name: channel_code
-    description: "Channel code."
-    value_description: "branch, digital, advisor, smart_cash, open_banking"
-  - name: channel_name
-    description: "Name of the channel."
-  entity_definitions:
-  - identity_id: channel_identity
-    dataset_columns:
-    - channel_id
-    entity_universe: complete
-- node_id: sf:bank.customer.dim_competitor
-  descriptor:
-    qualified_name: bank.customer.dim_competitor
-    display_name: Competitor
-    description: "Competitor Bank Inc compares with on price, credit, or deposits."
-    synonyms: []
-    tags:
-    - dimension
-    - customer
-    - bank
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: bank.us-east-1
-      database: BANK
-      schema: CUSTOMER
-      object: DIM_COMPETITOR
-      format: table
-  grain:
-    description: "One row is one competitor."
-    components:
-    - identity_id: competitor_identity
-      dataset_columns:
-      - competitor_id
-      description: "Identifier of the competitor."
-  columns:
-  - name: competitor_id
-    description: "Identifier of the competitor."
-  - name: competitor_code
-    description: "Competitor code."
-  - name: competitor_name
-    description: "Name of the competitor."
-  entity_definitions:
-  - identity_id: competitor_identity
-    dataset_columns:
-    - competitor_id
-    entity_universe: complete
-- node_id: sf:bank.customer.dim_peer_set
-  descriptor:
-    qualified_name: bank.customer.dim_peer_set
-    display_name: "Peer Set"
-    description: "Peer set used when Bank Inc says it beat deposit pricing."
-    synonyms: []
-    tags:
-    - dimension
-    - customer
-    - bank
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: bank.us-east-1
-      database: BANK
-      schema: CUSTOMER
-      object: DIM_PEER_SET
-      format: table
-  grain:
-    description: "One row is one peer set."
-    components:
-    - identity_id: peer_set_identity
-      dataset_columns:
-      - peer_set_id
-      description: "Identifier of the peer set."
-  columns:
-  - name: peer_set_id
-    description: "Identifier of the peer set."
-  - name: peer_set_code
-    description: "Peer-set code."
-    value_description: "large_banks, regional_banks, card_issuers"
-  entity_definitions:
-  - identity_id: peer_set_identity
-    dataset_columns:
-    - peer_set_id
+    - reporting_segment_id
     entity_universe: complete
 - node_id: sf:bank.deposit.dim_deposit_product
   descriptor:
     qualified_name: bank.deposit.dim_deposit_product
-    display_name: "Deposit Product"
-    description: "Deposit product Bank Inc offers."
+    display_name: Deposit Product
+    description: Deposit product offered by Bank Inc.
     synonyms: []
     tags:
     - dimension
-    - deposit
-    - bank
+    - balance
+    - diversified-banks
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
@@ -408,155 +134,305 @@ nodes:
       object: DIM_DEPOSIT_PRODUCT
       format: table
   grain:
-    description: "One row is one deposit product."
+    description: One row is one deposit product, identified by deposit_product_id.
     components:
     - identity_id: deposit_product_identity
       dataset_columns:
       - deposit_product_id
-      description: "Identifier of the deposit product."
+      description: Identifier of the deposit product.
   columns:
   - name: deposit_product_id
-    description: "Identifier of the deposit product."
-  - name: customer_segment_id
-    description: "Customer Segment referenced by this row."
-  - name: product_code
-    description: "Deposit product code."
-    value_description: "checking, savings, time_deposit, smart_cash, stablecoin_alternative"
-  - name: product_name
-    description: "Name of the deposit product."
+    description: Identifier of the deposit product.
+  - name: deposit_product_name
+    description: Name of the deposit product.
+  - name: deposit_product_code
+    description: Code of the deposit product.
+    value_description: checking, savings, time_deposit
+  - name: interest_bearing_code
+    description: Whether the deposit product bears interest.
+    value_description: interest_bearing, noninterest_bearing
   entity_definitions:
   - identity_id: deposit_product_identity
     dataset_columns:
     - deposit_product_id
     entity_universe: complete
+- node_id: sf:bank.customer.dim_customer_segment
+  descriptor:
+    qualified_name: bank.customer.dim_customer_segment
+    display_name: Customer Segment
+    description: Customer segment served by Bank Inc.
+    synonyms: []
+    tags:
+    - dimension
+    - balance
+    - diversified-banks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: bank.us-east-1
+      database: BANK
+      schema: CUSTOMER
+      object: DIM_CUSTOMER_SEGMENT
+      format: table
+  grain:
+    description: One row is one customer segment, identified by customer_segment_id.
+    components:
+    - identity_id: customer_segment_identity
+      dataset_columns:
+      - customer_segment_id
+      description: Identifier of the customer segment.
+  columns:
+  - name: customer_segment_id
+    description: Identifier of the customer segment.
+  - name: customer_segment_name
+    description: Name of the customer segment.
+  - name: customer_segment_code
+    description: Code of the customer segment.
+    value_description: consumer, small_business, commercial, institutional
+  entity_definitions:
   - identity_id: customer_segment_identity
     dataset_columns:
     - customer_segment_id
-    entity_universe: partial
-- node_id: sf:bank.balance.dim_nii_driver
-  descriptor:
-    qualified_name: bank.balance.dim_nii_driver
-    display_name: "NII Driver"
-    description: "Driver of Bank Inc net interest income."
-    synonyms: []
-    tags:
-    - dimension
-    - balance
-    - bank
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: bank.us-east-1
-      database: BANK
-      schema: BALANCE
-      object: DIM_NII_DRIVER
-      format: table
-  grain:
-    description: "One row is one nii driver."
-    components:
-    - identity_id: nii_driver_identity
-      dataset_columns:
-      - nii_driver_id
-      description: "Identifier of the nii driver."
-  columns:
-  - name: nii_driver_id
-    description: "Identifier of the nii driver."
-  - name: driver_code
-    description: "NII driver code."
-    value_description: "balance_growth, mix, rate, markets_offset, fee_shift, funding_optimization"
-  - name: driver_name
-    description: "Name of the NII driver."
-  entity_definitions:
-  - identity_id: nii_driver_identity
-    dataset_columns:
-    - nii_driver_id
     entity_universe: complete
-- node_id: sf:bank.balance.dim_asset_class
+- node_id: sf:bank.customer.dim_industry_client_type
   descriptor:
-    qualified_name: bank.balance.dim_asset_class
-    display_name: "Asset Class"
-    description: "Earning-asset class on the Bank Inc balance sheet."
+    qualified_name: bank.customer.dim_industry_client_type
+    display_name: Industry Client Type
+    description: Industry of a commercial client.
     synonyms: []
     tags:
     - dimension
     - balance
-    - bank
+    - diversified-banks
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: bank.us-east-1
       database: BANK
-      schema: BALANCE
-      object: DIM_ASSET_CLASS
+      schema: CUSTOMER
+      object: DIM_INDUSTRY_CLIENT_TYPE
       format: table
   grain:
-    description: "One row is one asset class."
+    description: One row is one industry client type, identified by industry_client_type_id.
     components:
-    - identity_id: asset_class_identity
+    - identity_id: industry_client_type_identity
       dataset_columns:
-      - asset_class_id
-      description: "Identifier of the asset class."
+      - industry_client_type_id
+      description: Identifier of the industry client type.
   columns:
-  - name: asset_class_id
-    description: "Identifier of the asset class."
-  - name: asset_class_code
-    description: "Asset-class code."
-    value_description: "loan, securities, swap, card, markets_loan, mortgage, auto"
-  - name: asset_class_name
-    description: "Name of the asset class."
+  - name: industry_client_type_id
+    description: Identifier of the industry client type.
+  - name: industry_client_type_name
+    description: Name of the industry client type.
+  - name: industry_client_type_code
+    description: Code of the industry client type.
+    value_description: technology, hyperscaler, healthcare, energy, real_estate, manufacturing, retail,
+      other
   entity_definitions:
-  - identity_id: asset_class_identity
+  - identity_id: industry_client_type_identity
     dataset_columns:
-    - asset_class_id
+    - industry_client_type_id
     entity_universe: complete
-- node_id: sf:bank.balance.dim_hedge_program
+- node_id: sf:bank.channel.dim_channel
   descriptor:
-    qualified_name: bank.balance.dim_hedge_program
-    display_name: "Hedge Program"
-    description: "Duration or hedge program Bank Inc uses to change rate sensitivity."
+    qualified_name: bank.channel.dim_channel
+    display_name: Channel
+    description: Channel through which Bank Inc serves customers.
     synonyms: []
     tags:
     - dimension
     - balance
-    - bank
+    - diversified-banks
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: bank.us-east-1
       database: BANK
-      schema: BALANCE
-      object: DIM_HEDGE_PROGRAM
+      schema: CHANNEL
+      object: DIM_CHANNEL
       format: table
   grain:
-    description: "One row is one hedge program."
+    description: One row is one channel, identified by channel_id.
     components:
-    - identity_id: hedge_program_identity
+    - identity_id: channel_identity
       dataset_columns:
-      - hedge_program_id
-      description: "Identifier of the hedge program."
+      - channel_id
+      description: Identifier of the channel.
   columns:
-  - name: hedge_program_id
-    description: "Identifier of the hedge program."
-  - name: hedge_code
-    description: "Hedge program code."
-    value_description: "duration_extension, receive_fixed_swap, none"
-  - name: hedge_name
-    description: "Name of the hedge program."
+  - name: channel_id
+    description: Identifier of the channel.
+  - name: channel_name
+    description: Name of the channel.
+  - name: channel_code
+    description: Code of the channel.
+    value_description: branch, digital, atm, advisor, call_center
   entity_definitions:
-  - identity_id: hedge_program_identity
+  - identity_id: channel_identity
     dataset_columns:
-    - hedge_program_id
+    - channel_id
+    entity_universe: complete
+- node_id: sf:bank.geography.dim_region
+  descriptor:
+    qualified_name: bank.geography.dim_region
+    display_name: Region
+    description: Geographic region for Bank Inc activity.
+    synonyms: []
+    tags:
+    - dimension
+    - balance
+    - diversified-banks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: bank.us-east-1
+      database: BANK
+      schema: GEOGRAPHY
+      object: DIM_REGION
+      format: table
+  grain:
+    description: One row is one region, identified by region_id.
+    components:
+    - identity_id: region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+  columns:
+  - name: region_id
+    description: Identifier of the region.
+  - name: region_name
+    description: Name of the region.
+  - name: region_code
+    description: Code of the region.
+    value_description: united_states, europe, asia, latin_america, other
+  entity_definitions:
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: complete
+- node_id: sf:bank.geography.dim_rate_path
+  descriptor:
+    qualified_name: bank.geography.dim_rate_path
+    display_name: Rate Path
+    description: Policy rate path assumption used in a guide scenario.
+    synonyms: []
+    tags:
+    - dimension
+    - balance
+    - diversified-banks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: bank.us-east-1
+      database: BANK
+      schema: GEOGRAPHY
+      object: DIM_RATE_PATH
+      format: table
+  grain:
+    description: One row is one rate path, identified by rate_path_id.
+    components:
+    - identity_id: rate_path_identity
+      dataset_columns:
+      - rate_path_id
+      description: Identifier of the rate path.
+  columns:
+  - name: rate_path_id
+    description: Identifier of the rate path.
+  - name: rate_path_name
+    description: Name of the rate path.
+  - name: rate_path_code
+    description: Code of the rate path.
+    value_description: higher_for_longer, gradual_cuts, rapid_cuts, hikes
+  entity_definitions:
+  - identity_id: rate_path_identity
+    dataset_columns:
+    - rate_path_id
+    entity_universe: complete
+- node_id: sf:bank.product.dim_bank_product
+  descriptor:
+    qualified_name: bank.product.dim_bank_product
+    display_name: Bank Product
+    description: Product family inside a reporting segment; cards and payments are products, not segments.
+    synonyms: []
+    tags:
+    - dimension
+    - balance
+    - diversified-banks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: bank.us-east-1
+      database: BANK
+      schema: PRODUCT
+      object: DIM_BANK_PRODUCT
+      format: table
+  grain:
+    description: One row is one bank product, identified by bank_product_id.
+    components:
+    - identity_id: bank_product_identity
+      dataset_columns:
+      - bank_product_id
+      description: Identifier of the bank product.
+  columns:
+  - name: bank_product_id
+    description: Identifier of the bank product.
+  - name: bank_product_name
+    description: Name of the bank product.
+  - name: bank_product_code
+    description: Code of the bank product.
+    value_description: credit_card, debit_card, payments, mortgage_lending, auto_lending, treasury_services
+  entity_definitions:
+  - identity_id: bank_product_identity
+    dataset_columns:
+    - bank_product_id
+    entity_universe: complete
+- node_id: sf:bank.funding.dim_funding_type
+  descriptor:
+    qualified_name: bank.funding.dim_funding_type
+    display_name: Funding Type
+    description: Funding source on the Bank Inc balance sheet.
+    synonyms: []
+    tags:
+    - dimension
+    - balance
+    - diversified-banks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: bank.us-east-1
+      database: BANK
+      schema: FUNDING
+      object: DIM_FUNDING_TYPE
+      format: table
+  grain:
+    description: One row is one funding type, identified by funding_type_id.
+    components:
+    - identity_id: funding_type_identity
+      dataset_columns:
+      - funding_type_id
+      description: Identifier of the funding type.
+  columns:
+  - name: funding_type_id
+    description: Identifier of the funding type.
+  - name: funding_type_name
+    description: Name of the funding type.
+  - name: funding_type_code
+    description: Code of the funding type.
+    value_description: deposits, long_term_debt, short_term_borrowing, securities_financing
+  entity_definitions:
+  - identity_id: funding_type_identity
+    dataset_columns:
+    - funding_type_id
     entity_universe: complete
 - node_id: sf:bank.deposit.fact_deposit_balance
   descriptor:
     qualified_name: bank.deposit.fact_deposit_balance
-    display_name: "Deposit Balance"
-    description: "Deposit quantity held by Bank Inc. This fact stores balances, not the rate paid."
+    display_name: Deposit Balance
+    description: Deposit balances held at Bank Inc.
     synonyms: []
     tags:
     - fact
-    - deposit
-    - bank
+    - balance
+    - diversified-banks
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
@@ -566,38 +442,57 @@ nodes:
       object: FACT_DEPOSIT_BALANCE
       format: table
   grain:
-    description: "One row is one deposit balance."
+    description: One row is one deposit balance observation for the combination of fiscal quarter, scenario,
+      reporting segment, deposit product, customer segment.
     components:
-    - identity_id: deposit_balance_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - deposit_balance_id
-      description: "Identifier of the deposit balance."
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: reporting_segment_identity
+      dataset_columns:
+      - reporting_segment_id
+      description: Identifier of the reporting segment.
+    - identity_id: deposit_product_identity
+      dataset_columns:
+      - deposit_product_id
+      description: Identifier of the deposit product.
+    - identity_id: customer_segment_identity
+      dataset_columns:
+      - customer_segment_id
+      description: Identifier of the customer segment.
   columns:
-  - name: deposit_balance_id
-    description: "Identifier of the deposit balance."
-  - name: deposit_product_id
-    description: "Deposit Product referenced by this row."
-  - name: customer_segment_id
-    description: "Customer Segment referenced by this row."
-  - name: country_id
-    description: "Country referenced by this row."
-  - name: business_line_id
-    description: "Business Line referenced by this row."
   - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: channel_id
-    description: "Channel referenced by this row."
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: reporting_segment_id
+    description: Identifier of the reporting segment.
+  - name: deposit_product_id
+    description: Identifier of the deposit product.
+  - name: customer_segment_id
+    description: Identifier of the customer segment.
   - name: deposit_balance_amount
-    description: "Deposit balance amount."
-  - name: growth_rate
-    description: "Growth rate of the deposit balance."
-  - name: balance_sluggish_flag
-    description: "Whether the balance is sluggish despite new accounts."
+    description: Deposit balance in dollars.
+  - name: average_deposit_balance_amount
+    description: Average deposit balance in dollars for the quarter.
   entity_definitions:
-  - identity_id: deposit_balance_identity
+  - identity_id: fiscal_quarter_identity
     dataset_columns:
-    - deposit_balance_id
-    entity_universe: complete
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: reporting_segment_identity
+    dataset_columns:
+    - reporting_segment_id
+    entity_universe: partial
   - identity_id: deposit_product_identity
     dataset_columns:
     - deposit_product_id
@@ -606,77 +501,76 @@ nodes:
     dataset_columns:
     - customer_segment_id
     entity_universe: partial
-  - identity_id: country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
-  - identity_id: business_line_identity
-    dataset_columns:
-    - business_line_id
-    entity_universe: partial
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: channel_identity
-    dataset_columns:
-    - channel_id
-    entity_universe: partial
-- node_id: sf:bank.deposit.fact_deposit_rate
+- node_id: sf:bank.deposit.fact_deposit_account_count
   descriptor:
-    qualified_name: bank.deposit.fact_deposit_rate
-    display_name: "Deposit Rate"
-    description: "Price Bank Inc pays on deposits. This fact stores rates and betas, not the deposit quantity."
+    qualified_name: bank.deposit.fact_deposit_account_count
+    display_name: Deposit Account Count
+    description: Deposit accounts held at Bank Inc.
     synonyms: []
     tags:
     - fact
-    - deposit
-    - bank
+    - balance
+    - diversified-banks
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: bank.us-east-1
       database: BANK
       schema: DEPOSIT
-      object: FACT_DEPOSIT_RATE
+      object: FACT_DEPOSIT_ACCOUNT_COUNT
       format: table
   grain:
-    description: "One row is one deposit rate."
+    description: One row is one deposit account count observation for the combination of fiscal quarter,
+      scenario, reporting segment, deposit product, customer segment.
     components:
-    - identity_id: deposit_rate_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - deposit_rate_id
-      description: "Identifier of the deposit rate."
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: reporting_segment_identity
+      dataset_columns:
+      - reporting_segment_id
+      description: Identifier of the reporting segment.
+    - identity_id: deposit_product_identity
+      dataset_columns:
+      - deposit_product_id
+      description: Identifier of the deposit product.
+    - identity_id: customer_segment_identity
+      dataset_columns:
+      - customer_segment_id
+      description: Identifier of the customer segment.
   columns:
-  - name: deposit_rate_id
-    description: "Identifier of the deposit rate."
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: reporting_segment_id
+    description: Identifier of the reporting segment.
   - name: deposit_product_id
-    description: "Deposit Product referenced by this row."
+    description: Identifier of the deposit product.
   - name: customer_segment_id
-    description: "Customer Segment referenced by this row."
-  - name: rate_scenario_id
-    description: "Rate Scenario referenced by this row."
-  - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: competitor_id
-    description: "Competitor referenced by this row."
-  - name: peer_set_id
-    description: "Peer Set referenced by this row."
-  - name: rate_paid
-    description: "Rate paid on the deposit."
-  - name: peer_rate
-    description: "Peer rate for the same product."
-  - name: beat_peers_flag
-    description: "Whether Bank Inc priced through peers."
-  - name: beta
-    description: "Deposit beta."
-  - name: contained_without_cuts_flag
-    description: "Whether the cost stays contained if the central bank does not cut."
+    description: Identifier of the customer segment.
+  - name: deposit_account_count
+    description: Number of deposit accounts.
+  - name: new_deposit_account_count
+    description: Number of deposit accounts opened in the quarter.
   entity_definitions:
-  - identity_id: deposit_rate_identity
+  - identity_id: fiscal_quarter_identity
     dataset_columns:
-    - deposit_rate_id
-    entity_universe: complete
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: reporting_segment_identity
+    dataset_columns:
+    - reporting_segment_id
+    entity_universe: partial
   - identity_id: deposit_product_identity
     dataset_columns:
     - deposit_product_id
@@ -685,1049 +579,817 @@ nodes:
     dataset_columns:
     - customer_segment_id
     entity_universe: partial
-  - identity_id: rate_scenario_identity
-    dataset_columns:
-    - rate_scenario_id
-    entity_universe: partial
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: competitor_identity
-    dataset_columns:
-    - competitor_id
-    entity_universe: partial
-  - identity_id: peer_set_identity
-    dataset_columns:
-    - peer_set_id
-    entity_universe: partial
-- node_id: sf:bank.deposit.fact_checking_account
+- node_id: sf:bank.deposit.fact_deposit_price
   descriptor:
-    qualified_name: bank.deposit.fact_checking_account
-    display_name: "Checking Account"
-    description: "New checking and card-account quantity. Counts are not balances and not prices."
+    qualified_name: bank.deposit.fact_deposit_price
+    display_name: Deposit Price
+    description: Price paid on deposits; the deposit balance is stored on the deposit balance fact.
     synonyms: []
     tags:
     - fact
-    - deposit
-    - bank
+    - balance
+    - diversified-banks
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: bank.us-east-1
       database: BANK
       schema: DEPOSIT
-      object: FACT_CHECKING_ACCOUNT
+      object: FACT_DEPOSIT_PRICE
       format: table
   grain:
-    description: "One row is one checking account."
+    description: One row is one deposit price observation for the combination of fiscal quarter, scenario,
+      deposit product, customer segment.
     components:
-    - identity_id: checking_account_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - checking_account_id
-      description: "Identifier of the checking account."
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: deposit_product_identity
+      dataset_columns:
+      - deposit_product_id
+      description: Identifier of the deposit product.
+    - identity_id: customer_segment_identity
+      dataset_columns:
+      - customer_segment_id
+      description: Identifier of the customer segment.
   columns:
-  - name: checking_account_id
-    description: "Identifier of the checking account."
-  - name: customer_segment_id
-    description: "Customer Segment referenced by this row."
-  - name: country_id
-    description: "Country referenced by this row."
-  - name: channel_id
-    description: "Channel referenced by this row."
   - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: new_checking_quantity
-    description: "New checking accounts opened."
-  - name: new_card_account_quantity
-    description: "New card accounts opened."
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: deposit_product_id
+    description: Identifier of the deposit product.
+  - name: customer_segment_id
+    description: Identifier of the customer segment.
+  - name: deposit_rate_percent
+    description: Average rate paid on deposits in percent.
+  - name: deposit_beta_percent
+    description: Cumulative deposit beta in percent of the policy rate change.
   entity_definitions:
-  - identity_id: checking_account_identity
+  - identity_id: fiscal_quarter_identity
     dataset_columns:
-    - checking_account_id
-    entity_universe: complete
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: deposit_product_identity
+    dataset_columns:
+    - deposit_product_id
+    entity_universe: partial
   - identity_id: customer_segment_identity
     dataset_columns:
     - customer_segment_id
     entity_universe: partial
-  - identity_id: country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
-  - identity_id: channel_identity
-    dataset_columns:
-    - channel_id
-    entity_universe: partial
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-- node_id: sf:bank.deposit.fact_deposit_share
+- node_id: sf:bank.balance.fact_earning_asset_balance
   descriptor:
-    qualified_name: bank.deposit.fact_deposit_share
-    display_name: "Deposit Share"
-    description: "Retail or consumer deposit share. Share is not a balance amount and not a rate."
-    synonyms: []
-    tags:
-    - fact
-    - deposit
-    - bank
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: bank.us-east-1
-      database: BANK
-      schema: DEPOSIT
-      object: FACT_DEPOSIT_SHARE
-      format: table
-  grain:
-    description: "One row is one deposit share."
-    components:
-    - identity_id: deposit_share_identity
-      dataset_columns:
-      - deposit_share_id
-      description: "Identifier of the deposit share."
-  columns:
-  - name: deposit_share_id
-    description: "Identifier of the deposit share."
-  - name: customer_segment_id
-    description: "Customer Segment referenced by this row."
-  - name: country_id
-    description: "Country referenced by this row."
-  - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: share_rate
-    description: "Deposit market share."
-  - name: target_share_rate
-    description: "Share goal on the internal scorecard."
-  - name: scorecard_index
-    description: "Progress against the share scorecard."
-  entity_definitions:
-  - identity_id: deposit_share_identity
-    dataset_columns:
-    - deposit_share_id
-    entity_universe: complete
-  - identity_id: customer_segment_identity
-    dataset_columns:
-    - customer_segment_id
-    entity_universe: partial
-  - identity_id: country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-- node_id: sf:bank.balance.fact_nii_result
-  descriptor:
-    qualified_name: bank.balance.fact_nii_result
-    display_name: "NII Result"
-    description: "Bank Inc net interest income. Income is not the deposit quantity and not the deposit rate."
+    qualified_name: bank.balance.fact_earning_asset_balance
+    display_name: Earning Asset Balance
+    description: Earning assets on the Bank Inc balance sheet.
     synonyms: []
     tags:
     - fact
     - balance
-    - bank
+    - diversified-banks
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: bank.us-east-1
       database: BANK
       schema: BALANCE
-      object: FACT_NII_RESULT
+      object: FACT_EARNING_ASSET_BALANCE
       format: table
   grain:
-    description: "One row is one nii result."
+    description: One row is one earning asset balance observation for the combination of fiscal quarter,
+      scenario, asset class.
     components:
-    - identity_id: nii_result_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - nii_result_id
-      description: "Identifier of the nii result."
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: asset_class_identity
+      dataset_columns:
+      - asset_class_id
+      description: Identifier of the asset class.
   columns:
-  - name: nii_result_id
-    description: "Identifier of the nii result."
-  - name: business_line_id
-    description: "Business Line referenced by this row."
   - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: rate_scenario_id
-    description: "Rate Scenario referenced by this row."
-  - name: nii_amount
-    description: "Net interest income amount."
-  - name: guide_low_amount
-    description: "Low end of the NII guide."
-  - name: guide_high_amount
-    description: "High end of the NII guide."
-  - name: guide_unchanged_flag
-    description: "Whether the full-year guide was left unchanged."
-  - name: bottom_line_share
-    description: "Share of NII upside that drops to earnings."
-  - name: growth_rate
-    description: "NII growth rate."
-  - name: hold_for_year_flag
-    description: "Whether the quarter growth rate is expected to hold for the year."
-  entity_definitions:
-  - identity_id: nii_result_identity
-    dataset_columns:
-    - nii_result_id
-    entity_universe: complete
-  - identity_id: business_line_identity
-    dataset_columns:
-    - business_line_id
-    entity_universe: partial
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: rate_scenario_identity
-    dataset_columns:
-    - rate_scenario_id
-    entity_universe: partial
-- node_id: sf:bank.balance.fact_nii_bridge
-  descriptor:
-    qualified_name: bank.balance.fact_nii_bridge
-    display_name: "NII Bridge"
-    description: "Effect of one driver on Bank Inc net interest income. An effect is not the unit balance and not the unit rate."
-    synonyms: []
-    tags:
-    - fact
-    - balance
-    - bank
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: bank.us-east-1
-      database: BANK
-      schema: BALANCE
-      object: FACT_NII_BRIDGE
-      format: table
-  grain:
-    description: "One row is one nii bridge."
-    components:
-    - identity_id: nii_bridge_identity
-      dataset_columns:
-      - nii_bridge_id
-      description: "Identifier of the nii bridge."
-  columns:
-  - name: nii_bridge_id
-    description: "Identifier of the nii bridge."
-  - name: nii_driver_id
-    description: "NII Driver referenced by this row."
-  - name: business_line_id
-    description: "Business Line referenced by this row."
-  - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: rate_scenario_id
-    description: "Rate Scenario referenced by this row."
-  - name: effect_amount
-    description: "Income effect of the driver."
-  - name: guide_moves_with_path_flag
-    description: "Whether the guide moves if the rate path changes."
-  - name: markets_offset_flag
-    description: "Whether markets results offset the path inside the range."
-  entity_definitions:
-  - identity_id: nii_bridge_identity
-    dataset_columns:
-    - nii_bridge_id
-    entity_universe: complete
-  - identity_id: nii_driver_identity
-    dataset_columns:
-    - nii_driver_id
-    entity_universe: partial
-  - identity_id: business_line_identity
-    dataset_columns:
-    - business_line_id
-    entity_universe: partial
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: rate_scenario_identity
-    dataset_columns:
-    - rate_scenario_id
-    entity_universe: partial
-- node_id: sf:bank.balance.fact_nim
-  descriptor:
-    qualified_name: bank.balance.fact_nim
-    display_name: NIM
-    description: "Net interest margin. The margin rate does not store the earning-asset quantity."
-    synonyms: []
-    tags:
-    - fact
-    - balance
-    - bank
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: bank.us-east-1
-      database: BANK
-      schema: BALANCE
-      object: FACT_NIM
-      format: table
-  grain:
-    description: "One row is one nim."
-    components:
-    - identity_id: nim_identity
-      dataset_columns:
-      - nim_id
-      description: "Identifier of the nim."
-  columns:
-  - name: nim_id
-    description: "Identifier of the nim."
-  - name: business_line_id
-    description: "Business Line referenced by this row."
-  - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: nim_rate
-    description: "Net interest margin."
-  - name: expansion_amount
-    description: "Margin expansion or compression."
-  - name: little_expansion_flag
-    description: "Whether the half has little margin expansion."
-  entity_definitions:
-  - identity_id: nim_identity
-    dataset_columns:
-    - nim_id
-    entity_universe: complete
-  - identity_id: business_line_identity
-    dataset_columns:
-    - business_line_id
-    entity_universe: partial
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-- node_id: sf:bank.balance.fact_earning_asset
-  descriptor:
-    qualified_name: bank.balance.fact_earning_asset
-    display_name: "Earning Asset"
-    description: "Earning-asset quantity. The amount does not store a yield."
-    synonyms: []
-    tags:
-    - fact
-    - balance
-    - bank
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: bank.us-east-1
-      database: BANK
-      schema: BALANCE
-      object: FACT_EARNING_ASSET
-      format: table
-  grain:
-    description: "One row is one earning asset."
-    components:
-    - identity_id: earning_asset_identity
-      dataset_columns:
-      - earning_asset_id
-      description: "Identifier of the earning asset."
-  columns:
-  - name: earning_asset_id
-    description: "Identifier of the earning asset."
-  - name: business_line_id
-    description: "Business Line referenced by this row."
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
   - name: asset_class_id
-    description: "Asset Class referenced by this row."
-  - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
+    description: Identifier of the asset class.
   - name: earning_asset_amount
-    description: "Earning-asset amount."
-  - name: growth_rate
-    description: "Growth rate of earning assets."
-  - name: static_mix_flag
-    description: "Whether the guide assumes a static mix."
-  - name: shift_toward_loans_flag
-    description: "Whether the mix keeps shifting toward loans."
+    description: Earning asset balance in dollars.
+  - name: average_earning_asset_amount
+    description: Average earning asset balance in dollars for the quarter.
   entity_definitions:
-  - identity_id: earning_asset_identity
+  - identity_id: fiscal_quarter_identity
     dataset_columns:
-    - earning_asset_id
-    entity_universe: complete
-  - identity_id: business_line_identity
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
     dataset_columns:
-    - business_line_id
+    - scenario_id
     entity_universe: partial
   - identity_id: asset_class_identity
     dataset_columns:
     - asset_class_id
     entity_universe: partial
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-- node_id: sf:bank.balance.fact_funding_capacity
+- node_id: sf:bank.balance.fact_interest_income
   descriptor:
-    qualified_name: bank.balance.fact_funding_capacity
-    display_name: "Funding Capacity"
-    description: "Remaining funding optimization capacity. Capacity is not the deposit rate."
+    qualified_name: bank.balance.fact_interest_income
+    display_name: Interest Income
+    description: Interest income earned by Bank Inc.
     synonyms: []
     tags:
     - fact
     - balance
-    - bank
+    - diversified-banks
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: bank.us-east-1
       database: BANK
       schema: BALANCE
-      object: FACT_FUNDING_CAPACITY
+      object: FACT_INTEREST_INCOME
       format: table
   grain:
-    description: "One row is one funding capacity."
+    description: One row is one interest income observation for the combination of fiscal quarter, scenario,
+      reporting segment, asset class.
     components:
-    - identity_id: funding_capacity_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - funding_capacity_id
-      description: "Identifier of the funding capacity."
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: reporting_segment_identity
+      dataset_columns:
+      - reporting_segment_id
+      description: Identifier of the reporting segment.
+    - identity_id: asset_class_identity
+      dataset_columns:
+      - asset_class_id
+      description: Identifier of the asset class.
   columns:
-  - name: funding_capacity_id
-    description: "Identifier of the funding capacity."
-  - name: deposit_product_id
-    description: "Deposit Product referenced by this row."
   - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: business_line_id
-    description: "Business Line referenced by this row."
-  - name: remaining_optimization_amount
-    description: "Optimization still available."
-  - name: embedded_in_guide_flag
-    description: "Whether that remainder is already in the guide."
-  - name: growth_interaction_flag
-    description: "Whether optimization competes with funding growth."
-  entity_definitions:
-  - identity_id: funding_capacity_identity
-    dataset_columns:
-    - funding_capacity_id
-    entity_universe: complete
-  - identity_id: deposit_product_identity
-    dataset_columns:
-    - deposit_product_id
-    entity_universe: partial
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: business_line_identity
-    dataset_columns:
-    - business_line_id
-    entity_universe: partial
-- node_id: sf:bank.balance.fact_liability_mix
-  descriptor:
-    qualified_name: bank.balance.fact_liability_mix
-    display_name: "Liability Mix"
-    description: "Liability mix share. Mix is not a rate."
-    synonyms: []
-    tags:
-    - fact
-    - balance
-    - bank
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: bank.us-east-1
-      database: BANK
-      schema: BALANCE
-      object: FACT_LIABILITY_MIX
-      format: table
-  grain:
-    description: "One row is one liability mix."
-    components:
-    - identity_id: liability_mix_identity
-      dataset_columns:
-      - liability_mix_id
-      description: "Identifier of the liability mix."
-  columns:
-  - name: liability_mix_id
-    description: "Identifier of the liability mix."
-  - name: deposit_product_id
-    description: "Deposit Product referenced by this row."
-  - name: customer_segment_id
-    description: "Customer Segment referenced by this row."
-  - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: mix_share
-    description: "Share of the liability book."
-  - name: room_to_optimize_flag
-    description: "Whether that side of the balance sheet still has room."
-  entity_definitions:
-  - identity_id: liability_mix_identity
-    dataset_columns:
-    - liability_mix_id
-    entity_universe: complete
-  - identity_id: deposit_product_identity
-    dataset_columns:
-    - deposit_product_id
-    entity_universe: partial
-  - identity_id: customer_segment_identity
-    dataset_columns:
-    - customer_segment_id
-    entity_universe: partial
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-- node_id: sf:bank.balance.fact_asset_mix
-  descriptor:
-    qualified_name: bank.balance.fact_asset_mix
-    display_name: "Asset Mix"
-    description: "Asset mix share and whether Bank Inc is pushing growth there. Mix is not a yield."
-    synonyms: []
-    tags:
-    - fact
-    - balance
-    - bank
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: bank.us-east-1
-      database: BANK
-      schema: BALANCE
-      object: FACT_ASSET_MIX
-      format: table
-  grain:
-    description: "One row is one asset mix."
-    components:
-    - identity_id: asset_mix_identity
-      dataset_columns:
-      - asset_mix_id
-      description: "Identifier of the asset mix."
-  columns:
-  - name: asset_mix_id
-    description: "Identifier of the asset mix."
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: reporting_segment_id
+    description: Identifier of the reporting segment.
   - name: asset_class_id
-    description: "Asset Class referenced by this row."
-  - name: business_line_id
-    description: "Business Line referenced by this row."
-  - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: mix_share
-    description: "Share of the asset book."
-  - name: attractive_flag
-    description: "Whether the asset class still looks attractive."
-  - name: growth_pushed_flag
-    description: "Whether growth is being pushed in the class."
+    description: Identifier of the asset class.
+  - name: interest_income_amount
+    description: Interest income in dollars.
   entity_definitions:
-  - identity_id: asset_mix_identity
+  - identity_id: fiscal_quarter_identity
     dataset_columns:
-    - asset_mix_id
-    entity_universe: complete
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: reporting_segment_identity
+    dataset_columns:
+    - reporting_segment_id
+    entity_universe: partial
   - identity_id: asset_class_identity
     dataset_columns:
     - asset_class_id
     entity_universe: partial
-  - identity_id: business_line_identity
-    dataset_columns:
-    - business_line_id
-    entity_universe: partial
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-- node_id: sf:bank.deposit.fact_client_behavior
+- node_id: sf:bank.balance.fact_interest_expense
   descriptor:
-    qualified_name: bank.deposit.fact_client_behavior
-    display_name: "Client Behavior"
-    description: "How clients seek rate. Behavior is not the deposit quantity."
-    synonyms: []
-    tags:
-    - fact
-    - deposit
-    - bank
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: bank.us-east-1
-      database: BANK
-      schema: DEPOSIT
-      object: FACT_CLIENT_BEHAVIOR
-      format: table
-  grain:
-    description: "One row is one client behavior."
-    components:
-    - identity_id: client_behavior_identity
-      dataset_columns:
-      - client_behavior_id
-      description: "Identifier of the client behavior."
-  columns:
-  - name: client_behavior_id
-    description: "Identifier of the client behavior."
-  - name: customer_segment_id
-    description: "Customer Segment referenced by this row."
-  - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: deposit_product_id
-    description: "Deposit Product referenced by this row."
-  - name: rate_seeking_index
-    description: "How actively clients seek rate."
-  - name: beta_versus_plan_code
-    description: "Whether realized beta is better or worse than plan."
-    value_description: "better, worse, in_line"
-  entity_definitions:
-  - identity_id: client_behavior_identity
-    dataset_columns:
-    - client_behavior_id
-    entity_universe: complete
-  - identity_id: customer_segment_identity
-    dataset_columns:
-    - customer_segment_id
-    entity_universe: partial
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: deposit_product_identity
-    dataset_columns:
-    - deposit_product_id
-    entity_universe: partial
-- node_id: sf:bank.deposit.fact_smart_cash_offer
-  descriptor:
-    qualified_name: bank.deposit.fact_smart_cash_offer
-    display_name: "Smart Cash Offer"
-    description: "Smart-cash offer. The offered rate is a price and does not store a balance."
-    synonyms: []
-    tags:
-    - fact
-    - deposit
-    - bank
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: bank.us-east-1
-      database: BANK
-      schema: DEPOSIT
-      object: FACT_SMART_CASH_OFFER
-      format: table
-  grain:
-    description: "One row is one smart cash offer."
-    components:
-    - identity_id: smart_cash_offer_identity
-      dataset_columns:
-      - smart_cash_offer_id
-      description: "Identifier of the smart cash offer."
-  columns:
-  - name: smart_cash_offer_id
-    description: "Identifier of the smart cash offer."
-  - name: deposit_product_id
-    description: "Deposit Product referenced by this row."
-  - name: customer_segment_id
-    description: "Customer Segment referenced by this row."
-  - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: audience_code
-    description: "Who the tool is offered to."
-    value_description: "wealth, consumer, commercial, not_yet"
-  - name: rollout_status
-    description: "Rollout status."
-    value_description: "pilot, expanding, broad"
-  - name: offered_rate
-    description: "Rate the tool offers."
-  entity_definitions:
-  - identity_id: smart_cash_offer_identity
-    dataset_columns:
-    - smart_cash_offer_id
-    entity_universe: complete
-  - identity_id: deposit_product_identity
-    dataset_columns:
-    - deposit_product_id
-    entity_universe: partial
-  - identity_id: customer_segment_identity
-    dataset_columns:
-    - customer_segment_id
-    entity_universe: partial
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-- node_id: sf:bank.deposit.fact_stablecoin_flow
-  descriptor:
-    qualified_name: bank.deposit.fact_stablecoin_flow
-    display_name: "Stablecoin Flow"
-    description: "Deposit quantity that could leave for a yield-bearing stablecoin. Quantity is not the payments fee."
-    synonyms: []
-    tags:
-    - fact
-    - deposit
-    - bank
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: bank.us-east-1
-      database: BANK
-      schema: DEPOSIT
-      object: FACT_STABLECOIN_FLOW
-      format: table
-  grain:
-    description: "One row is one stablecoin flow."
-    components:
-    - identity_id: stablecoin_flow_identity
-      dataset_columns:
-      - stablecoin_flow_id
-      description: "Identifier of the stablecoin flow."
-  columns:
-  - name: stablecoin_flow_id
-    description: "Identifier of the stablecoin flow."
-  - name: deposit_product_id
-    description: "Deposit Product referenced by this row."
-  - name: country_id
-    description: "Country referenced by this row."
-  - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: outflow_quantity
-    description: "Deposit quantity at risk of leaving."
-  - name: yield_loophole_open_flag
-    description: "Whether the yield loophole stays open."
-  - name: consortium_response_flag
-    description: "Whether the response is a bank consortium."
-  entity_definitions:
-  - identity_id: stablecoin_flow_identity
-    dataset_columns:
-    - stablecoin_flow_id
-    entity_universe: complete
-  - identity_id: deposit_product_identity
-    dataset_columns:
-    - deposit_product_id
-    entity_universe: partial
-  - identity_id: country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-- node_id: sf:bank.deposit.fact_deposit_competition
-  descriptor:
-    qualified_name: bank.deposit.fact_deposit_competition
-    display_name: "Deposit Competition"
-    description: "How deposit competition changes as cash tools spread. Adoption is not the rate."
-    synonyms: []
-    tags:
-    - fact
-    - deposit
-    - bank
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: bank.us-east-1
-      database: BANK
-      schema: DEPOSIT
-      object: FACT_DEPOSIT_COMPETITION
-      format: table
-  grain:
-    description: "One row is one deposit competition."
-    components:
-    - identity_id: deposit_competition_identity
-      dataset_columns:
-      - deposit_competition_id
-      description: "Identifier of the deposit competition."
-  columns:
-  - name: deposit_competition_id
-    description: "Identifier of the deposit competition."
-  - name: competitor_id
-    description: "Competitor referenced by this row."
-  - name: deposit_product_id
-    description: "Deposit Product referenced by this row."
-  - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: tool_adoption_rate
-    description: "Adoption of competing cash tools."
-  - name: mitigation_in_guide_flag
-    description: "Whether the outlook includes a pricing response."
-  entity_definitions:
-  - identity_id: deposit_competition_identity
-    dataset_columns:
-    - deposit_competition_id
-    entity_universe: complete
-  - identity_id: competitor_identity
-    dataset_columns:
-    - competitor_id
-    entity_universe: partial
-  - identity_id: deposit_product_identity
-    dataset_columns:
-    - deposit_product_id
-    entity_universe: partial
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-- node_id: sf:bank.balance.fact_balance_position
-  descriptor:
-    qualified_name: bank.balance.fact_balance_position
-    display_name: "Balance Position"
-    description: "Rate sensitivity of the Bank Inc balance sheet. Duration is not a balance amount and not a deposit rate."
+    qualified_name: bank.balance.fact_interest_expense
+    display_name: Interest Expense
+    description: Interest expense paid by Bank Inc.
     synonyms: []
     tags:
     - fact
     - balance
-    - bank
+    - diversified-banks
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: bank.us-east-1
       database: BANK
       schema: BALANCE
-      object: FACT_BALANCE_POSITION
+      object: FACT_INTEREST_EXPENSE
       format: table
   grain:
-    description: "One row is one balance position."
+    description: One row is one interest expense observation for the combination of fiscal quarter, scenario,
+      funding type.
     components:
-    - identity_id: balance_position_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - balance_position_id
-      description: "Identifier of the balance position."
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: funding_type_identity
+      dataset_columns:
+      - funding_type_id
+      description: Identifier of the funding type.
   columns:
-  - name: balance_position_id
-    description: "Identifier of the balance position."
-  - name: hedge_program_id
-    description: "Hedge Program referenced by this row."
-  - name: rate_scenario_id
-    description: "Rate Scenario referenced by this row."
   - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: business_line_id
-    description: "Business Line referenced by this row."
-  - name: asset_sensitive_flag
-    description: "Whether the book is asset sensitive."
-  - name: duration_years
-    description: "Duration of the positioned book."
-  - name: hedge_added_flag
-    description: "Whether a hedge or duration extension was added."
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: funding_type_id
+    description: Identifier of the funding type.
+  - name: interest_expense_amount
+    description: Interest expense in dollars.
   entity_definitions:
-  - identity_id: balance_position_identity
-    dataset_columns:
-    - balance_position_id
-    entity_universe: complete
-  - identity_id: hedge_program_identity
-    dataset_columns:
-    - hedge_program_id
-    entity_universe: partial
-  - identity_id: rate_scenario_identity
-    dataset_columns:
-    - rate_scenario_id
-    entity_universe: partial
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: business_line_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - business_line_id
+    - scenario_id
     entity_universe: partial
-- node_id: sf:bank.balance.fact_repricing_path
+  - identity_id: funding_type_identity
+    dataset_columns:
+    - funding_type_id
+    entity_universe: partial
+- node_id: sf:bank.balance.fact_yield_earning_assets
   descriptor:
-    qualified_name: bank.balance.fact_repricing_path
-    display_name: "Repricing Path"
-    description: "Timing of loan, securities, and swap repricing. Timing is not the rate and not the balance."
+    qualified_name: bank.balance.fact_yield_earning_assets
+    display_name: Yield On Earning Assets
+    description: Yield on earning assets; the earning-asset balance is stored on its own fact.
     synonyms: []
     tags:
     - fact
     - balance
-    - bank
+    - diversified-banks
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: bank.us-east-1
       database: BANK
       schema: BALANCE
-      object: FACT_REPRICING_PATH
+      object: FACT_YIELD_EARNING_ASSETS
       format: table
   grain:
-    description: "One row is one repricing path."
+    description: One row is one yield on earning assets observation for the combination of fiscal quarter,
+      scenario, asset class.
     components:
-    - identity_id: repricing_path_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - repricing_path_id
-      description: "Identifier of the repricing path."
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: asset_class_identity
+      dataset_columns:
+      - asset_class_id
+      description: Identifier of the asset class.
   columns:
-  - name: repricing_path_id
-    description: "Identifier of the repricing path."
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
   - name: asset_class_id
-    description: "Asset Class referenced by this row."
-  - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: step_share
-    description: "Share of the repricing step landing in the quarter."
-  - name: back_loaded_flag
-    description: "Whether the step-up is back-loaded."
-  - name: linear_flag
-    description: "Whether the step-up is linear."
+    description: Identifier of the asset class.
+  - name: yield_percent
+    description: Annualized yield on earning assets in percent.
   entity_definitions:
-  - identity_id: repricing_path_identity
-    dataset_columns:
-    - repricing_path_id
-    entity_universe: complete
-  - identity_id: asset_class_identity
-    dataset_columns:
-    - asset_class_id
-    entity_universe: partial
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-- node_id: sf:bank.deposit.fact_consumer_spend
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: asset_class_identity
+    dataset_columns:
+    - asset_class_id
+    entity_universe: partial
+- node_id: sf:bank.balance.fact_cost_of_funds
   descriptor:
-    qualified_name: bank.deposit.fact_consumer_spend
-    display_name: "Consumer Spend"
-    description: "Consumer spend quantity. Spend is not a card balance and not a fee."
+    qualified_name: bank.balance.fact_cost_of_funds
+    display_name: Cost Of Funds
+    description: Cost of funding the balance sheet; the funding balance is stored on its own fact.
     synonyms: []
     tags:
     - fact
-    - deposit
-    - bank
+    - balance
+    - diversified-banks
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: bank.us-east-1
       database: BANK
-      schema: DEPOSIT
+      schema: BALANCE
+      object: FACT_COST_OF_FUNDS
+      format: table
+  grain:
+    description: One row is one cost of funds observation for the combination of fiscal quarter, scenario,
+      funding type.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: funding_type_identity
+      dataset_columns:
+      - funding_type_id
+      description: Identifier of the funding type.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: funding_type_id
+    description: Identifier of the funding type.
+  - name: cost_of_funds_percent
+    description: Annualized cost of funds in percent.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: funding_type_identity
+    dataset_columns:
+    - funding_type_id
+    entity_universe: partial
+- node_id: sf:bank.balance.fact_net_interest_margin
+  descriptor:
+    qualified_name: bank.balance.fact_net_interest_margin
+    display_name: Net Interest Margin
+    description: Consolidated net interest margin, decomposed by yield on earning assets and cost of funds
+      stored on their own facts.
+    synonyms: []
+    tags:
+    - fact
+    - balance
+    - diversified-banks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: bank.us-east-1
+      database: BANK
+      schema: BALANCE
+      object: FACT_NET_INTEREST_MARGIN
+      format: table
+  grain:
+    description: One row is one net interest margin observation for the combination of fiscal quarter,
+      scenario.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: net_interest_margin_percent
+    description: Net interest margin in percent.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+- node_id: sf:bank.balance.fact_segment_net_interest_income
+  descriptor:
+    qualified_name: bank.balance.fact_segment_net_interest_income
+    display_name: Segment Net Interest Income
+    description: Net interest income by reporting segment.
+    synonyms: []
+    tags:
+    - fact
+    - balance
+    - diversified-banks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: bank.us-east-1
+      database: BANK
+      schema: BALANCE
+      object: FACT_SEGMENT_NET_INTEREST_INCOME
+      format: table
+  grain:
+    description: One row is one segment net interest income observation for the combination of fiscal
+      quarter, scenario, reporting segment.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: reporting_segment_identity
+      dataset_columns:
+      - reporting_segment_id
+      description: Identifier of the reporting segment.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: reporting_segment_id
+    description: Identifier of the reporting segment.
+  - name: net_interest_income_amount
+    description: Net interest income in dollars.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: reporting_segment_identity
+    dataset_columns:
+    - reporting_segment_id
+    entity_universe: partial
+- node_id: sf:bank.balance.fact_securities_balance
+  descriptor:
+    qualified_name: bank.balance.fact_securities_balance
+    display_name: Securities Balance
+    description: Securities portfolio balance.
+    synonyms: []
+    tags:
+    - fact
+    - balance
+    - diversified-banks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: bank.us-east-1
+      database: BANK
+      schema: BALANCE
+      object: FACT_SECURITIES_BALANCE
+      format: table
+  grain:
+    description: One row is one securities balance observation for the combination of fiscal quarter,
+      scenario, securities type.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: securities_type_identity
+      dataset_columns:
+      - securities_type_id
+      description: Identifier of the securities type.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: securities_type_id
+    description: Identifier of the securities type.
+  - name: securities_balance_amount
+    description: Securities portfolio balance in dollars.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: securities_type_identity
+    dataset_columns:
+    - securities_type_id
+    entity_universe: partial
+- node_id: sf:bank.balance.fact_securities_yield
+  descriptor:
+    qualified_name: bank.balance.fact_securities_yield
+    display_name: Securities Yield
+    description: Yield on the securities portfolio; the portfolio balance is stored on its own fact.
+    synonyms: []
+    tags:
+    - fact
+    - balance
+    - diversified-banks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: bank.us-east-1
+      database: BANK
+      schema: BALANCE
+      object: FACT_SECURITIES_YIELD
+      format: table
+  grain:
+    description: One row is one securities yield observation for the combination of fiscal quarter, scenario,
+      securities type.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: securities_type_identity
+      dataset_columns:
+      - securities_type_id
+      description: Identifier of the securities type.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: securities_type_id
+    description: Identifier of the securities type.
+  - name: securities_yield_percent
+    description: Annualized securities yield in percent.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: securities_type_identity
+    dataset_columns:
+    - securities_type_id
+    entity_universe: partial
+- node_id: sf:bank.balance.fact_aoci_balance
+  descriptor:
+    qualified_name: bank.balance.fact_aoci_balance
+    display_name: Accumulated Other Comprehensive Income
+    description: Accumulated other comprehensive income from the securities portfolio.
+    synonyms: []
+    tags:
+    - fact
+    - balance
+    - diversified-banks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: bank.us-east-1
+      database: BANK
+      schema: BALANCE
+      object: FACT_AOCI_BALANCE
+      format: table
+  grain:
+    description: One row is one accumulated other comprehensive income observation for the combination
+      of fiscal quarter, scenario, securities type.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: securities_type_identity
+      dataset_columns:
+      - securities_type_id
+      description: Identifier of the securities type.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: securities_type_id
+    description: Identifier of the securities type.
+  - name: aoci_amount
+    description: Accumulated other comprehensive income in dollars (negative is a loss).
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: securities_type_identity
+    dataset_columns:
+    - securities_type_id
+    entity_universe: partial
+- node_id: sf:bank.balance.fact_funding_balance
+  descriptor:
+    qualified_name: bank.balance.fact_funding_balance
+    display_name: Funding Balance
+    description: Funding balances by funding source.
+    synonyms: []
+    tags:
+    - fact
+    - balance
+    - diversified-banks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: bank.us-east-1
+      database: BANK
+      schema: BALANCE
+      object: FACT_FUNDING_BALANCE
+      format: table
+  grain:
+    description: One row is one funding balance observation for the combination of fiscal quarter, scenario,
+      funding type.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: funding_type_identity
+      dataset_columns:
+      - funding_type_id
+      description: Identifier of the funding type.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: funding_type_id
+    description: Identifier of the funding type.
+  - name: funding_balance_amount
+    description: Funding balance in dollars.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: funding_type_identity
+    dataset_columns:
+    - funding_type_id
+    entity_universe: partial
+- node_id: sf:bank.balance.fact_consumer_spend
+  descriptor:
+    qualified_name: bank.balance.fact_consumer_spend
+    display_name: Consumer Spend
+    description: Consumer spending transacted through Bank Inc accounts.
+    synonyms: []
+    tags:
+    - fact
+    - balance
+    - diversified-banks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: bank.us-east-1
+      database: BANK
+      schema: BALANCE
       object: FACT_CONSUMER_SPEND
       format: table
   grain:
-    description: "One row is one consumer spend."
+    description: One row is one consumer spend observation for the combination of fiscal quarter, scenario,
+      customer segment, channel.
     components:
-    - identity_id: consumer_spend_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - consumer_spend_id
-      description: "Identifier of the consumer spend."
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: customer_segment_identity
+      dataset_columns:
+      - customer_segment_id
+      description: Identifier of the customer segment.
+    - identity_id: channel_identity
+      dataset_columns:
+      - channel_id
+      description: Identifier of the channel.
   columns:
-  - name: consumer_spend_id
-    description: "Identifier of the consumer spend."
-  - name: customer_segment_id
-    description: "Customer Segment referenced by this row."
-  - name: country_id
-    description: "Country referenced by this row."
   - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: customer_segment_id
+    description: Identifier of the customer segment.
+  - name: channel_id
+    description: Identifier of the channel.
   - name: spend_amount
-    description: "Card and consumer spend amount."
-  - name: employment_strong_flag
-    description: "Whether employment still supports spend."
+    description: Consumer spend in dollars transacted in the quarter.
   entity_definitions:
-  - identity_id: consumer_spend_identity
-    dataset_columns:
-    - consumer_spend_id
-    entity_universe: complete
-  - identity_id: customer_segment_identity
-    dataset_columns:
-    - customer_segment_id
-    entity_universe: partial
-  - identity_id: country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-- node_id: sf:bank.customer.fact_europe_ambition
-  descriptor:
-    qualified_name: bank.customer.fact_europe_ambition
-    display_name: "Europe Ambition"
-    description: "Where the Bank Inc consumer bank is open in Europe. Presence is not a deposit rate."
-    synonyms: []
-    tags:
-    - fact
-    - customer
-    - bank
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: bank.us-east-1
-      database: BANK
-      schema: CUSTOMER
-      object: FACT_EUROPE_AMBITION
-      format: table
-  grain:
-    description: "One row is one europe ambition."
-    components:
-    - identity_id: europe_ambition_identity
-      dataset_columns:
-      - europe_ambition_id
-      description: "Identifier of the europe ambition."
-  columns:
-  - name: europe_ambition_id
-    description: "Identifier of the europe ambition."
-  - name: country_id
-    description: "Country referenced by this row."
-  - name: channel_id
-    description: "Channel referenced by this row."
-  - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: business_line_id
-    description: "Business Line referenced by this row."
-  - name: market_open_flag
-    description: "Whether the consumer bank is open in the country."
-  - name: customer_quantity
-    description: "Customers already on the European franchise."
-  - name: product_live_count
-    description: "Products live in that market."
-  entity_definitions:
-  - identity_id: europe_ambition_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - europe_ambition_id
-    entity_universe: complete
-  - identity_id: country_identity
+    - scenario_id
+    entity_universe: partial
+  - identity_id: customer_segment_identity
     dataset_columns:
-    - country_id
+    - customer_segment_id
     entity_universe: partial
   - identity_id: channel_identity
     dataset_columns:
     - channel_id
     entity_universe: partial
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: business_line_identity
-    dataset_columns:
-    - business_line_id
-    entity_universe: partial
-- node_id: sf:bank.deposit.fact_deposit_margin
+- node_id: sf:bank.balance.fact_deposit_mix
   descriptor:
-    qualified_name: bank.deposit.fact_deposit_margin
-    display_name: "Deposit Margin"
-    description: "Deposit margin. The margin rate does not store the deposit quantity."
+    qualified_name: bank.balance.fact_deposit_mix
+    display_name: Deposit Mix
+    description: Share of deposits by product and segment.
     synonyms: []
     tags:
     - fact
-    - deposit
-    - bank
+    - balance
+    - diversified-banks
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: bank.us-east-1
       database: BANK
-      schema: DEPOSIT
-      object: FACT_DEPOSIT_MARGIN
+      schema: BALANCE
+      object: FACT_DEPOSIT_MIX
       format: table
   grain:
-    description: "One row is one deposit margin."
+    description: One row is one deposit mix observation for the combination of fiscal quarter, scenario,
+      deposit product, customer segment.
     components:
-    - identity_id: deposit_margin_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - deposit_margin_id
-      description: "Identifier of the deposit margin."
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: deposit_product_identity
+      dataset_columns:
+      - deposit_product_id
+      description: Identifier of the deposit product.
+    - identity_id: customer_segment_identity
+      dataset_columns:
+      - customer_segment_id
+      description: Identifier of the customer segment.
   columns:
-  - name: deposit_margin_id
-    description: "Identifier of the deposit margin."
-  - name: deposit_product_id
-    description: "Deposit Product referenced by this row."
-  - name: customer_segment_id
-    description: "Customer Segment referenced by this row."
   - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: margin_rate
-    description: "Deposit margin."
-  - name: confidence_flag
-    description: "Whether the margin supports the stated growth confidence."
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: deposit_product_id
+    description: Identifier of the deposit product.
+  - name: customer_segment_id
+    description: Identifier of the customer segment.
+  - name: deposit_mix_percent
+    description: Share of total deposits in percent.
   entity_definitions:
-  - identity_id: deposit_margin_identity
+  - identity_id: fiscal_quarter_identity
     dataset_columns:
-    - deposit_margin_id
-    entity_universe: complete
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
   - identity_id: deposit_product_identity
     dataset_columns:
     - deposit_product_id
@@ -1736,117 +1398,69 @@ nodes:
     dataset_columns:
     - customer_segment_id
     entity_universe: partial
+- node_id: sf:bank.balance.fact_client_balance
+  descriptor:
+    qualified_name: bank.balance.fact_client_balance
+    display_name: Client Balance
+    description: Client balances across deposits and wealth.
+    synonyms: []
+    tags:
+    - fact
+    - balance
+    - diversified-banks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: bank.us-east-1
+      database: BANK
+      schema: BALANCE
+      object: FACT_CLIENT_BALANCE
+      format: table
+  grain:
+    description: One row is one client balance observation for the combination of fiscal quarter, scenario,
+      customer segment, reporting segment.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: customer_segment_identity
+      dataset_columns:
+      - customer_segment_id
+      description: Identifier of the customer segment.
+    - identity_id: reporting_segment_identity
+      dataset_columns:
+      - reporting_segment_id
+      description: Identifier of the reporting segment.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: customer_segment_id
+    description: Identifier of the customer segment.
+  - name: reporting_segment_id
+    description: Identifier of the reporting segment.
+  - name: client_balance_amount
+    description: Client balance in dollars.
+  entity_definitions:
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-- node_id: sf:bank.deposit.fact_rate_threshold
-  descriptor:
-    qualified_name: bank.deposit.fact_rate_threshold
-    display_name: "Rate Threshold"
-    description: "Rate level at which deposit volumes or betas would change. The threshold is a price and does not store the volume."
-    synonyms: []
-    tags:
-    - fact
-    - deposit
-    - bank
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: bank.us-east-1
-      database: BANK
-      schema: DEPOSIT
-      object: FACT_RATE_THRESHOLD
-      format: table
-  grain:
-    description: "One row is one rate threshold."
-    components:
-    - identity_id: rate_threshold_identity
-      dataset_columns:
-      - rate_threshold_id
-      description: "Identifier of the rate threshold."
-  columns:
-  - name: rate_threshold_id
-    description: "Identifier of the rate threshold."
-  - name: rate_scenario_id
-    description: "Rate Scenario referenced by this row."
-  - name: deposit_product_id
-    description: "Deposit Product referenced by this row."
-  - name: threshold_rate
-    description: "Rate level that would reprice or shrink balances."
-  - name: volume_changes_above_flag
-    description: "Whether volumes change above that level."
-  entity_definitions:
-  - identity_id: rate_threshold_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - rate_threshold_id
-    entity_universe: complete
-  - identity_id: rate_scenario_identity
-    dataset_columns:
-    - rate_scenario_id
+    - scenario_id
     entity_universe: partial
-  - identity_id: deposit_product_identity
-    dataset_columns:
-    - deposit_product_id
-    entity_universe: partial
-- node_id: sf:bank.customer.fact_client_flow
-  descriptor:
-    qualified_name: bank.customer.fact_client_flow
-    display_name: "Client Flow"
-    description: "Net client-flow quantity in wealth and banking. Flow is not a rate."
-    synonyms: []
-    tags:
-    - fact
-    - customer
-    - bank
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: bank.us-east-1
-      database: BANK
-      schema: CUSTOMER
-      object: FACT_CLIENT_FLOW
-      format: table
-  grain:
-    description: "One row is one client flow."
-    components:
-    - identity_id: client_flow_identity
-      dataset_columns:
-      - client_flow_id
-      description: "Identifier of the client flow."
-  columns:
-  - name: client_flow_id
-    description: "Identifier of the client flow."
-  - name: customer_segment_id
-    description: "Customer Segment referenced by this row."
-  - name: business_line_id
-    description: "Business Line referenced by this row."
-  - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: channel_id
-    description: "Channel referenced by this row."
-  - name: net_flow_amount
-    description: "Net client flow."
-  - name: softer_flag
-    description: "Whether flows were softer than the recent run rate."
-  entity_definitions:
-  - identity_id: client_flow_identity
-    dataset_columns:
-    - client_flow_id
-    entity_universe: complete
   - identity_id: customer_segment_identity
     dataset_columns:
     - customer_segment_id
     entity_universe: partial
-  - identity_id: business_line_identity
+  - identity_id: reporting_segment_identity
     dataset_columns:
-    - business_line_id
-    entity_universe: partial
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: channel_identity
-    dataset_columns:
-    - channel_id
+    - reporting_segment_id
     entity_universe: partial

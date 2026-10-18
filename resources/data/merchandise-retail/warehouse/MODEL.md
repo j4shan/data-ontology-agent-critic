@@ -2,22 +2,18 @@
 
 Loadable intermediary schema version 3. The builder input is `directory-manifest.yaml` beside `yaml/`.
 
-The catalog was assembled from three subject slices that were written separately: member and traffic, merchandise price and mix, network, fuel, and capacity. Question-to-column notes stay in `member/coverage.md`, `merchandise/coverage.md`, `network/coverage.md`.
+The catalog was assembled from 3 subject slices that were written separately. Question-to-column notes stay in `member/coverage.md`, `merchandise/coverage.md`, `network/coverage.md`.
 
 | | |
 | --- | ---: |
-| Datasets | 109 |
-| Relationships | 297 |
-| Logical identities | 109 |
+| Datasets | 73 |
+| Relationships | 211 |
+| Logical identities | 16 |
 
-Snowflake database `MERCHANDISE`, account `merchandise.us-east-1`. Node ids use the `sf:` prefix. Qualified names start with `merchandise.`.
+Snowflake database `MERCHANDISE`, account `merchandise.us-east-1`. Node ids use the `sf:merchandise` prefix. Qualified names start with `merchandise.`.
 
 ## What the model covers
 
-Member and traffic own the banner, the member, the cohort, and trip quantity. Member counts, sign-ups, households, and trips are quantities. They do not store a shelf price. Renewal is a rate and does not store the member count.
+Every fact grain is the natural combination of fiscal quarter, scenario, and the business keys named in its grain description; a surrogate column is never the grain. The scenario dimension carries `reported` and `guide`, so the same fiscal quarter can be both a reported result and a later guide, and the fiscal-quarter dimension has no `guidance_horizon` column. Demand quantity, supply or capacity, and price or margin stay on separate facts: a quantity fact does not store a price, and a price fact does not store the unit quantity; the denominator a price needs is a quantity measure on its own fact joined by the shared grain keys. No column is an analyst-conclusion flag; operational classifications are dimension codes, and measure descriptions name their unit.
 
-Merchandise price and mix own items, departments, and price actions. Unit volume is a quantity. Shelf price, vendor cost, fuel price per gallon, and inflation rates are prices. A price-investment dollar amount does not store the unit quantity.
-
-Network, fuel, and capacity own sites, openings, gallons, and ad inventory. Warehouse potential and fast-delivery coverage are capacity. Fuel gallons are a quantity and fuel profit per gallon is a margin. Retail-media revenue does not store the ad-inventory quantity.
-
-A graph build of this directory reports 109 datasets, 297 relationships, no unknown claims, and no contradictory edges.
+A graph build of this directory reports 73 datasets, 211 relationships, no unknown claims, and no contradictory edges.

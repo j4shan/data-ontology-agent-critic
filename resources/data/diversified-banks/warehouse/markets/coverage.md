@@ -1,286 +1,228 @@
-# Bank Inc markets, capital, and expense
+# Bank Inc markets, wealth, capital, and expense
 
-This slice owns markets revenue, capital, fees, expenses, and AI outcomes. Deposit quantities, loan quantities, and net interest income live in the other slices and are partial when named here. A markets balance does not store the revenue, and a fee does not store the unit quantity.
-
-Identifiers owned by another slice are partial here. Their complete populations are not re-authored in this slice.
-
-| Identity | Column on this slice | Complete population |
-| --- | --- | --- |
-| `business_line_identity` | `business_line_id` | `sf:bank.customer.dim_business_line` `business_line_id` |
-| `card_program_identity` | `card_program_id` | `sf:bank.credit.dim_card_program` `card_program_id` |
-| `channel_identity` | `channel_id` | `sf:bank.customer.dim_channel` `channel_id` |
-| `competitor_identity` | `competitor_id` | `sf:bank.customer.dim_competitor` `competitor_id` |
-| `country_identity` | `country_id` | `sf:bank.geography.dim_country` `country_id` |
-| `customer_segment_identity` | `customer_segment_id` | `sf:bank.customer.dim_customer_segment` `customer_segment_id` |
-| `fiscal_quarter_identity` | `fiscal_quarter_id` | `sf:bank.geography.dim_fiscal_quarter` `fiscal_quarter_id` |
-| `rate_scenario_identity` | `rate_scenario_id` | `sf:bank.geography.dim_rate_scenario` `rate_scenario_id` |
+Coverage maps each numbered question to datasets and columns that exist in the YAML and can express the distinction the question asks. Demand quantity, supply or capacity, and price or margin are stored on separate facts joined by the shared grain keys (fiscal quarter, scenario, and the business keys).
 
 ## Numbered questions
 
 ## Bank of America
 
-### Q2 2026 (2)
+### Q2 2026 (2) Bank of America
 
-How sustainable is the 200 to 300 basis points of operating leverage discussed in November once comparisons get harder, and what role does AI play at Bank of America?
+How sustainable is the 200 to 300 basis points of operating leverage discussed in November once comparisons get harder, and what role does AI play?
 
-- `bank.markets.fact_operating_leverage`: `leverage_bps`, `sustainable_flag`, `comparison_harder_flag`
-- `bank.markets.fact_ai_outcome`: `efficiency_flag`, `revenue_flag`
-- `bank.markets.fact_ai_spend`: `spend_amount`
+- `bank.technology.fact_ai_spend`: `fiscal_quarter_id`, `scenario_id`, `ai_use_case_id`, `ai_spend_amount`
+- `bank.technology.fact_ai_outcome`: `fiscal_quarter_id`, `scenario_id`, `ai_use_case_id`, `hours_saved_count`, `revenue_per_employee_amount`
+- `bank.people.fact_headcount`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `employee_group_id`, `headcount_count`
 
-### Q2 2026 (7)
+### Q2 2026 (7) Bank of America
 
-If revenue runs hotter, will spending be pulled forward and reduce this year's operating leverage at Bank of America?
+If revenue runs hotter, will spending be pulled forward and reduce this year's operating leverage?
 
-- `bank.markets.fact_operating_leverage`: `reduced_by_spend_flag`, `leverage_bps`
-- `bank.markets.fact_expense_actual`: `pulled_forward_flag`, `expense_amount`
-- `bank.markets.fact_expense_guide`: `guide_amount`, `increase_amount`
+- `bank.expense.fact_expense`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `expense_category_id`, `expense_amount`
+- `bank.segment.fact_segment_profit`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `pretax_income_amount`, `segment_revenue_amount`
+- `bank.people.fact_headcount`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `employee_group_id`, `headcount_count`
 
-### Q2 2026 (9)
+### Q2 2026 (9) Bank of America
 
-Will Bank of America invest in lower-return businesses such as equities financing, below the 16% to 18% target, to support later earnings growth if banking and markets pipelines stay full?
+Will the firm invest in lower-return businesses such as equities financing, below the 16% to 18% target, to support later earnings growth if banking and markets pipelines stay full?
 
-- `bank.markets.fact_return_hurdle`: `target_low_rate`, `target_high_rate`, `below_hurdle_flag`, `invest_anyway_flag`
-- `bank.markets.fact_lower_margin_capacity`: `capacity_amount`
-- `bank.markets.fact_ib_pipeline`: `full_flag`, `pipeline_amount`
-- `bank.markets.dim_markets_desk`: `desk_code`
+- `bank.markets.fact_trading_revenue`: `fiscal_quarter_id`, `scenario_id`, `markets_desk_id`, `trading_revenue_amount`
+- `bank.markets.fact_markets_balance`: `fiscal_quarter_id`, `scenario_id`, `markets_desk_id`, `markets_balance_amount`
+- `bank.markets.fact_fee_revenue`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `fee_line_id`, `fee_revenue_amount`
 
-### Q2 2026 (10)
+### Q2 2026 (11) Bank of America
 
-Which areas drove the change in the operating-leverage outlook at Bank of America?
+Are cards still on the path toward about 5% growth, why were net client flows softer, and is traditional commercial and industrial demand returning away from hyperscalers?
 
-- `bank.markets.fact_operating_leverage`: `leverage_bps`
-- `bank.markets.fact_expense_actual`: `expense_amount`, `growth_rate`
-- `bank.customer.dim_business_line`: `line_code`
-- `bank.markets.dim_expense_bucket`: `bucket_code`
+- `bank.wealth.fact_wealth_aum`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `aum_amount`
+- `bank.wealth.fact_wealth_net_flow`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `net_flow_amount`
+- `bank.wealth.fact_advisor_count`: `fiscal_quarter_id`, `scenario_id`, `employee_group_id`, `advisor_count`, `advisor_hires_count`
 
-### Q1 2026 (3)
+### Q1 2026 (3) Bank of America
 
-Where is headcount being added or reduced, and where is AI in replacing attrition at Bank of America?
+Where is headcount being added or reduced, and where is AI in replacing attrition?
 
-- `bank.markets.fact_headcount`: `headcount_quantity`, `direction_code`, `attrition_replaced_by_ai_flag`
-- `bank.markets.fact_ai_outcome`: `efficiency_flag`
-- `bank.markets.dim_ai_use_case`: `use_case_code`
+- `bank.technology.fact_ai_spend`: `fiscal_quarter_id`, `scenario_id`, `ai_use_case_id`, `ai_spend_amount`
+- `bank.technology.fact_ai_outcome`: `fiscal_quarter_id`, `scenario_id`, `ai_use_case_id`, `hours_saved_count`, `revenue_per_employee_amount`
+- `bank.people.fact_headcount`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `employee_group_id`, `headcount_count`
 
-### Q1 2026 (7)
+### Q1 2026 (7) Bank of America
 
 Why would Bank of America be a beneficiary of AI rather than a victim, including the effect on revenue per employee?
 
-- `bank.markets.fact_ai_outcome`: `revenue_flag`, `efficiency_flag`, `extends_franchise_flag`
-- `bank.markets.fact_revenue_per_employee`: `revenue_per_employee_amount`
-- `bank.markets.dim_ai_use_case`: `use_case_code`
+- `bank.technology.fact_ai_spend`: `fiscal_quarter_id`, `scenario_id`, `ai_use_case_id`, `ai_spend_amount`
+- `bank.technology.fact_ai_outcome`: `fiscal_quarter_id`, `scenario_id`, `ai_use_case_id`, `hours_saved_count`, `revenue_per_employee_amount`
+- `bank.people.fact_headcount`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `employee_group_id`, `headcount_count`
 
-### Q1 2026 (8)
+### Q1 2026 (8) Bank of America
 
-Five years out, do AI benefits show up as stickier relationships or as efficiency at Bank of America?
+Five years out, do AI benefits show up as stickier relationships or as efficiency?
 
-- `bank.markets.fact_ai_outcome`: `stickier_relationship_flag`, `efficiency_flag`
-- `bank.markets.fact_relationship_outcome`: `retention_index`, `stickier_flag`
+- `bank.technology.fact_ai_spend`: `fiscal_quarter_id`, `scenario_id`, `ai_use_case_id`, `ai_spend_amount`
+- `bank.technology.fact_ai_outcome`: `fiscal_quarter_id`, `scenario_id`, `ai_use_case_id`, `hours_saved_count`, `revenue_per_employee_amount`
+- `bank.people.fact_headcount`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `employee_group_id`, `headcount_count`
 
-### Q1 2026 (11)
+### Q1 2026 (11) Bank of America
 
-How does wealth recruiting and retention compare with the November acquisition targets at Bank of America?
+How does wealth recruiting and retention compare with the November acquisition targets?
 
-- `bank.markets.fact_wealth_advisor_flow`: `recruited_quantity`, `retained_quantity`, `versus_target_flag`
-- `bank.markets.dim_advisor_cohort`: `cohort_code`
+- `bank.wealth.fact_wealth_aum`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `aum_amount`
+- `bank.wealth.fact_wealth_net_flow`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `net_flow_amount`
+- `bank.wealth.fact_advisor_count`: `fiscal_quarter_id`, `scenario_id`, `employee_group_id`, `advisor_count`, `advisor_hires_count`
 
-### Q1 2026 (12)
+### Q1 2026 (12) Bank of America
 
-How should trading revenue and its mix grow over the near to medium term, and are commercial drawdowns since Middle East tensions defensive or normal at Bank of America?
+How should trading revenue and its mix grow over the near to medium term, and are commercial drawdowns since Middle East tensions defensive or normal?
 
-- `bank.markets.fact_trading_mix`: `mix_share`, `medium_term_growth_rate`
-- `bank.markets.fact_markets_revenue`: `revenue_amount`
-- `bank.credit.fact_line_utilization`: `utilization_rate`, `defensive_draw_flag`
+- `bank.markets.fact_trading_revenue`: `fiscal_quarter_id`, `scenario_id`, `markets_desk_id`, `trading_revenue_amount`
+- `bank.markets.fact_markets_balance`: `fiscal_quarter_id`, `scenario_id`, `markets_desk_id`, `markets_balance_amount`
+- `bank.markets.fact_fee_revenue`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `fee_line_id`, `fee_revenue_amount`
 
-### Q4 2025 (1)
+### Q4 2025 (1) Bank of America
 
-How does AI spend this year compare with last year, and what outcomes is that spend meant to produce at Bank of America?
+How does AI spend this year compare with last year, and what outcomes is that spend meant to produce?
 
-- `bank.markets.fact_ai_spend`: `spend_amount`, `versus_prior_year_amount`
-- `bank.markets.fact_ai_outcome`: `efficiency_flag`, `revenue_flag`
-- `bank.markets.dim_expense_bucket`: `bucket_code`
+- `bank.technology.fact_ai_spend`: `fiscal_quarter_id`, `scenario_id`, `ai_use_case_id`, `ai_spend_amount`
+- `bank.technology.fact_ai_outcome`: `fiscal_quarter_id`, `scenario_id`, `ai_use_case_id`, `hours_saved_count`, `revenue_per_employee_amount`
+- `bank.people.fact_headcount`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `employee_group_id`, `headcount_count`
 
-### Q4 2025 (3)
+### Q4 2025 (9) Bank of America
 
-What is the operating-leverage message for this year and the next three years underneath the return target, after the fee restatement at Bank of America?
+If the stablecoin yield loophole is not closed, what happens to deposit trends?
 
-- `bank.markets.fact_operating_leverage`: `leverage_bps`, `sustainable_flag`
-- `bank.markets.fact_fee_revenue`: `fee_amount`, `growth_rate`
-- `bank.markets.fact_efficiency_ratio`: `efficiency_rate`
-- `bank.customer.dim_business_line`: `line_code`
+- `bank.payments.fact_payments_volume`: `fiscal_quarter_id`, `scenario_id`, `bank_product_id`, `channel_id`, `payment_transaction_count`, `payment_volume_amount`
+- `bank.deposit.fact_deposit_balance`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `deposit_product_id`, `customer_segment_id`, `deposit_balance_amount`, `average_deposit_balance_amount`
+- `bank.markets.fact_fee_revenue`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `fee_line_id`, `fee_revenue_amount`
 
-### Q2 2025 (3)
+### Q2 2025 (3) Bank of America
 
-Which regulatory costs are keeping expenses above the prior view, and what does sustainable expense growth look like after this year at Bank of America?
+Which regulatory costs are keeping expenses above the prior view, and what does sustainable expense growth look like after this year?
 
-- `bank.markets.fact_regulatory_cost`: `cost_amount`, `above_prior_view_flag`
-- `bank.markets.fact_expense_actual`: `expense_amount`, `growth_rate`
-- `bank.markets.dim_regulatory_item`: `item_code`
+- `bank.expense.fact_expense`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `expense_category_id`, `expense_amount`
+- `bank.segment.fact_segment_profit`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `pretax_income_amount`, `segment_revenue_amount`
+- `bank.people.fact_headcount`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `employee_group_id`, `headcount_count`
 
-### Q2 2025 (4)
+### Q2 2025 (4) Bank of America
 
-Can the efficiency ratio get back under 60%, where it was before the pandemic, or has the business mix changed enough that the high 50s is a floor at Bank of America?
+Can the efficiency ratio get back under 60%, where it was before the pandemic, or has the business mix changed enough that the high 50s is a floor?
 
-- `bank.markets.fact_efficiency_ratio`: `efficiency_rate`, `floor_rate`, `under_sixty_flag`
-- `bank.customer.dim_business_line`: `line_code`
+- `bank.expense.fact_expense`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `expense_category_id`, `expense_amount`
+- `bank.segment.fact_segment_profit`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `pretax_income_amount`, `segment_revenue_amount`
+- `bank.people.fact_headcount`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `employee_group_id`, `headcount_count`
+
+### Q2 2025 (5) Bank of America
+
+How could stablecoin adoption affect payments revenue and deposits, and would banks respond as a consortium or one by one?
+
+- `bank.payments.fact_payments_volume`: `fiscal_quarter_id`, `scenario_id`, `bank_product_id`, `channel_id`, `payment_transaction_count`, `payment_volume_amount`
+- `bank.deposit.fact_deposit_balance`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `deposit_product_id`, `customer_segment_id`, `deposit_balance_amount`, `average_deposit_balance_amount`
+- `bank.markets.fact_fee_revenue`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `fee_line_id`, `fee_revenue_amount`
 
 ## JPMorgan Chase
 
-### Q2 2026 (1)
+### Q2 2026 (3) JPMorgan Chase
 
-How sustainable is the current risk-on stance across the businesses at JPMorgan Chase?
+Where is the firm in its investment cycle, and what does that imply for medium-term operating leverage?
 
-- `bank.markets.fact_risk_stance`: `risk_on_flag`, `sustainable_flag`
-- `bank.markets.fact_client_activity`: `activity_index`, `risk_on_flag`
-- `bank.markets.fact_markets_revenue`: `revenue_amount`, `sustainable_flag`
-- `bank.markets.fact_ib_pipeline`: `pipeline_amount`, `full_flag`
+- `bank.expense.fact_expense`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `expense_category_id`, `expense_amount`
+- `bank.segment.fact_segment_profit`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `pretax_income_amount`, `segment_revenue_amount`
+- `bank.people.fact_headcount`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `employee_group_id`, `headcount_count`
 
-### Q2 2026 (3)
+### Q2 2026 (6) JPMorgan Chase
 
-Where is JPMorgan Chase in its investment cycle, and what does that imply for medium-term operating leverage?
+Over the next few years, can AI and technology slow expense growth enough to make operating leverage more likely?
 
-- `bank.markets.fact_investment_cycle`: `stage_code`, `spend_still_ahead_flag`
-- `bank.markets.fact_operating_leverage`: `leverage_bps`
-- `bank.markets.fact_expense_actual`: `expense_amount`
-- `bank.markets.dim_expense_bucket`: `bucket_code`
+- `bank.technology.fact_ai_spend`: `fiscal_quarter_id`, `scenario_id`, `ai_use_case_id`, `ai_spend_amount`
+- `bank.technology.fact_ai_outcome`: `fiscal_quarter_id`, `scenario_id`, `ai_use_case_id`, `hours_saved_count`, `revenue_per_employee_amount`
+- `bank.people.fact_headcount`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `employee_group_id`, `headcount_count`
 
-### Q2 2026 (6)
+### Q2 2026 (7) JPMorgan Chase
 
-Over the next few years, can AI and technology slow expense growth enough to make operating leverage more likely at JPMorgan Chase?
+Is the environment as good as it gets, or early-cycle because of AI investment, defense spending, and supply-chain shifts?
 
-- `bank.markets.fact_ai_outcome`: `efficiency_flag`
-- `bank.markets.fact_expense_actual`: `growth_rate`, `expense_amount`
-- `bank.markets.fact_operating_leverage`: `leverage_bps`, `sustainable_flag`
+- `bank.technology.fact_ai_spend`: `fiscal_quarter_id`, `scenario_id`, `ai_use_case_id`, `ai_spend_amount`
+- `bank.technology.fact_ai_outcome`: `fiscal_quarter_id`, `scenario_id`, `ai_use_case_id`, `hours_saved_count`, `revenue_per_employee_amount`
+- `bank.people.fact_headcount`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `employee_group_id`, `headcount_count`
 
-### Q2 2026 (7)
+### Q2 2026 (10) JPMorgan Chase
 
-Is the environment as good as it gets, or early-cycle because of AI investment, defense spending, and supply-chain shifts at JPMorgan Chase?
+Is commercial-lending capex demand broadening beyond AI?
 
-- `bank.markets.fact_client_activity`: `early_cycle_flag`, `activity_index`
-- `bank.markets.dim_investment_theme`: `theme_code`
-- `bank.credit.fact_loan_purpose_mix`: `mix_share`
-- `bank.credit.dim_borrower_purpose`: `purpose_code`
+- `bank.technology.fact_ai_spend`: `fiscal_quarter_id`, `scenario_id`, `ai_use_case_id`, `ai_spend_amount`
+- `bank.technology.fact_ai_outcome`: `fiscal_quarter_id`, `scenario_id`, `ai_use_case_id`, `hours_saved_count`, `revenue_per_employee_amount`
+- `bank.people.fact_headcount`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `employee_group_id`, `headcount_count`
 
-### Q2 2026 (9)
+### Q2 2026 (14) JPMorgan Chase
 
-Which products or geographies were unusually strong this quarter and may be hard to sustain at JPMorgan Chase?
+Besides revenue-related costs, are technology or marketing expenses being pulled forward inside the higher expense outlook?
 
-- `bank.markets.fact_markets_standout`: `standout_flag`, `hard_to_sustain_flag`
-- `bank.geography.dim_country`: `country_code`
-- `bank.markets.dim_markets_desk`: `desk_code`
+- `bank.expense.fact_expense`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `expense_category_id`, `expense_amount`
+- `bank.segment.fact_segment_profit`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `pretax_income_amount`, `segment_revenue_amount`
+- `bank.people.fact_headcount`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `employee_group_id`, `headcount_count`
 
-### Q2 2026 (14)
+### Q1 2026 (6) JPMorgan Chase
 
-Besides revenue-related costs, are technology or marketing expenses being pulled forward inside the higher expense outlook at JPMorgan Chase?
+Was markets strength in March ordinary client activity or deployment of excess capital, and was any of it bad volatility?
 
-- `bank.markets.fact_expense_actual`: `pulled_forward_flag`, `expense_amount`
-- `bank.markets.fact_expense_guide`: `increase_amount`, `guide_amount`
-- `bank.markets.dim_expense_bucket`: `bucket_code`
+- `bank.capital.fact_cet1_ratio`: `fiscal_quarter_id`, `scenario_id`, `cet1_ratio_percent`, `cet1_capital_amount`, `risk_weighted_asset_amount`
+- `bank.capital.fact_tangible_book_value`: `fiscal_quarter_id`, `scenario_id`, `tangible_book_value_amount`, `tangible_book_value_per_share_amount`
+- `bank.capital.fact_buyback`: `fiscal_quarter_id`, `scenario_id`, `buyback_amount`, `shares_repurchased_count`
+- `bank.capital.fact_dividend`: `fiscal_quarter_id`, `scenario_id`, `dividend_amount`, `dividend_per_share_amount`
 
-### Q2 2026 (15)
+### Q1 2026 (10) JPMorgan Chase
 
-Is markets balance-sheet allocation at a peak, or can more be allocated if activity stays high at JPMorgan Chase?
+Does AI extend the firm into businesses that were previously harder to assemble?
 
-- `bank.markets.fact_markets_balance`: `allocated_amount`, `at_peak_flag`, `limit_headroom_amount`
-- `bank.markets.fact_rwa_usage`: `rwa_amount`
-- `bank.markets.dim_capital_constraint`: `constraint_code`
+- `bank.technology.fact_ai_spend`: `fiscal_quarter_id`, `scenario_id`, `ai_use_case_id`, `ai_spend_amount`
+- `bank.technology.fact_ai_outcome`: `fiscal_quarter_id`, `scenario_id`, `ai_use_case_id`, `hours_saved_count`, `revenue_per_employee_amount`
+- `bank.people.fact_headcount`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `employee_group_id`, `headcount_count`
 
-### Q1 2026 (6)
+### Q1 2026 (11) JPMorgan Chase
 
-Was markets strength in March ordinary client activity or deployment of excess capital, and was any of it bad volatility at JPMorgan Chase?
+Why has trading stayed strong across shocks in commodities, rates, credit, and equities?
 
-- `bank.markets.fact_markets_revenue`: `revenue_amount`, `ordinary_client_flag`
-- `bank.markets.dim_activity_driver`: `driver_code`
-- `bank.markets.fact_markets_balance`: `allocated_amount`
+- `bank.markets.fact_trading_revenue`: `fiscal_quarter_id`, `scenario_id`, `markets_desk_id`, `trading_revenue_amount`
+- `bank.markets.fact_markets_balance`: `fiscal_quarter_id`, `scenario_id`, `markets_desk_id`, `markets_balance_amount`
+- `bank.markets.fact_fee_revenue`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `fee_line_id`, `fee_revenue_amount`
 
-### Q1 2026 (10)
+### Q1 2026 (15) JPMorgan Chase
 
-Does AI extend JPMorgan Chase into businesses that were previously harder to assemble?
+Does the G-SIB surcharge limit how far the markets business can grow, and how does that enter capital allocation?
 
-- `bank.markets.fact_ai_outcome`: `extends_franchise_flag`
-- `bank.markets.dim_ai_use_case`: `use_case_code`, `use_case_name`
+- `bank.capital.fact_cet1_ratio`: `fiscal_quarter_id`, `scenario_id`, `cet1_ratio_percent`, `cet1_capital_amount`, `risk_weighted_asset_amount`
+- `bank.capital.fact_tangible_book_value`: `fiscal_quarter_id`, `scenario_id`, `tangible_book_value_amount`, `tangible_book_value_per_share_amount`
+- `bank.capital.fact_buyback`: `fiscal_quarter_id`, `scenario_id`, `buyback_amount`, `shares_repurchased_count`
+- `bank.capital.fact_dividend`: `fiscal_quarter_id`, `scenario_id`, `dividend_amount`, `dividend_per_share_amount`
 
-### Q1 2026 (11)
+### Q4 2025 (2) JPMorgan Chase
 
-Why has trading stayed strong across shocks in commodities, rates, credit, and equities at JPMorgan Chase?
+Which fee lines are expected to drive fee-revenue growth across the businesses?
 
-- `bank.markets.fact_markets_revenue`: `revenue_amount`, `sustainable_flag`
-- `bank.markets.fact_client_activity`: `activity_index`
-- `bank.markets.dim_markets_desk`: `desk_code`
+- `bank.segment.fact_segment_profit`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `pretax_income_amount`, `segment_revenue_amount`
+- `bank.markets.fact_fee_revenue`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `fee_line_id`, `fee_revenue_amount`
+- `bank.balance.fact_segment_net_interest_income`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `net_interest_income_amount`
 
-### Q1 2026 (14)
+### Q4 2025 (6) JPMorgan Chase
 
-Has any investment-banking pipeline been paused or pushed out at JPMorgan Chase?
+Where is technology and AI spend going in 2026 versus last year, and what payoffs are expected?
 
-- `bank.markets.fact_ib_pipeline`: `pipeline_amount`, `paused_flag`, `pushed_out_flag`
-- `bank.markets.dim_ib_product`: `product_code`
+- `bank.technology.fact_ai_spend`: `fiscal_quarter_id`, `scenario_id`, `ai_use_case_id`, `ai_spend_amount`
+- `bank.technology.fact_ai_outcome`: `fiscal_quarter_id`, `scenario_id`, `ai_use_case_id`, `hours_saved_count`, `revenue_per_employee_amount`
+- `bank.people.fact_headcount`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `employee_group_id`, `headcount_count`
 
-### Q1 2026 (15)
+### Q2 2025 (3) JPMorgan Chase
 
-Does the G-SIB surcharge limit how far the markets business can grow, and how does that enter capital allocation at JPMorgan Chase?
+What is stopping banks from offering a joint deposit-like product, as with Zelle, before stablecoin firms offer a more convenient alternative?
 
-- `bank.markets.fact_gsib_surcharge`: `surcharge_bps`, `limits_growth_flag`
-- `bank.markets.fact_capital_allocation`: `allocated_amount`, `decision_code`
-- `bank.markets.dim_capital_constraint`: `constraint_code`
+- `bank.payments.fact_payments_volume`: `fiscal_quarter_id`, `scenario_id`, `bank_product_id`, `channel_id`, `payment_transaction_count`, `payment_volume_amount`
+- `bank.deposit.fact_deposit_balance`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `deposit_product_id`, `customer_segment_id`, `deposit_balance_amount`, `average_deposit_balance_amount`
+- `bank.markets.fact_fee_revenue`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `fee_line_id`, `fee_revenue_amount`
 
-### Q4 2025 (2)
+### Q2 2025 (7) JPMorgan Chase
 
-Which fee lines are expected to drive fee-revenue growth across the businesses at JPMorgan Chase?
+If capital and liquidity rules were simplified, would that raise the natural return or be given back in client pricing?
 
-- `bank.markets.fact_fee_revenue`: `fee_amount`, `growth_rate`
-- `bank.markets.dim_fee_line`: `fee_code`
-- `bank.customer.dim_business_line`: `line_code`
-
-### Q4 2025 (6)
-
-Where is technology and AI spend going in 2026 versus last year, and what payoffs are expected at JPMorgan Chase?
-
-- `bank.markets.fact_ai_spend`: `spend_amount`, `versus_prior_year_amount`
-- `bank.markets.fact_expense_actual`: `expense_amount`
-- `bank.markets.dim_expense_bucket`: `bucket_code`
-- `bank.markets.fact_ai_outcome`: `efficiency_flag`, `revenue_flag`
-
-### Q2 2025 (2)
-
-Did the open-banking hold period change pricing for fintech relationships at JPMorgan Chase?
-
-- `bank.markets.fact_open_banking_price`: `fee_rate`, `changed_after_hold_flag`
-- `bank.customer.dim_channel`: `channel_code`
-- `bank.markets.dim_fee_line`: `fee_code`
-
-### Q2 2025 (7)
-
-If capital and liquidity rules were simplified, would that raise the natural return or be given back in client pricing at JPMorgan Chase?
-
-- `bank.markets.fact_capital_relief`: `relief_flag`, `kept_in_return_flag`, `given_back_in_price_flag`
-- `bank.markets.fact_return_hurdle`: `target_low_rate`, `target_high_rate`
-
-### Q2 2025 (8)
-
-Have tariff and tax uncertainties that froze client activity in the spring cleared enough for second-half activity to continue at JPMorgan Chase?
-
-- `bank.markets.fact_tariff_pause`: `frozen_flag`, `cleared_flag`
-- `bank.markets.fact_client_activity`: `activity_index`
-- `bank.markets.dim_ib_product`: `product_code`
-
-### Q2 2025 (10)
-
-Is growth in lower-margin areas a supply issue or a demand issue if leverage rules loosen at JPMorgan Chase?
-
-- `bank.markets.fact_lower_margin_capacity`: `demand_limited_flag`, `supply_limited_flag`, `capacity_amount`
-- `bank.markets.dim_capital_constraint`: `constraint_code`
-
-### Q2 2025 (11)
-
-How are customers responding to the Sapphire price changes, and how does that sit in the card competitive set at JPMorgan Chase?
-
-- `bank.markets.fact_sapphire_price`: `annual_fee_amount`, `response_code`
-- `bank.credit.dim_card_program`: `program_code`
-- `bank.customer.dim_competitor`: `competitor_code`
-
-### Q2 2025 (12)
-
-How much of markets strength was the environment versus balance-sheet use, and has the environment calmed at JPMorgan Chase?
-
-- `bank.markets.fact_environment_contribution`: `environment_share`, `balance_sheet_share`, `calmed_flag`
-- `bank.markets.fact_markets_balance`: `allocated_amount`
-- `bank.markets.fact_markets_revenue`: `revenue_amount`
+- `bank.capital.fact_cet1_ratio`: `fiscal_quarter_id`, `scenario_id`, `cet1_ratio_percent`, `cet1_capital_amount`, `risk_weighted_asset_amount`
+- `bank.capital.fact_tangible_book_value`: `fiscal_quarter_id`, `scenario_id`, `tangible_book_value_amount`, `tangible_book_value_per_share_amount`
+- `bank.capital.fact_buyback`: `fiscal_quarter_id`, `scenario_id`, `buyback_amount`, `shares_repurchased_count`
+- `bank.capital.fact_dividend`: `fiscal_quarter_id`, `scenario_id`, `dividend_amount`, `dividend_per_share_amount`

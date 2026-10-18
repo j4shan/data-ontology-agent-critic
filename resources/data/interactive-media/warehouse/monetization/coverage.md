@@ -1,199 +1,237 @@
-# Social Inc monetization and price
+# Social Inc monetization, segments, and Reality Labs
 
-This slice owns ad prices, conversion, subscriptions, and cloud margin. Query counts and compute capacity are owned in the other slices and are partial when named here. A price fact does not store the click quantity.
-
-Identifiers owned by another slice are partial here. Their complete populations are not re-authored in this slice.
-
-| Identity | Column on this slice | Complete population |
-| --- | --- | --- |
-| `country_identity` | `country_id` | `sf:social.geography.dim_country` `country_id` |
-| `fiscal_quarter_identity` | `fiscal_quarter_id` | `sf:social.geography.dim_fiscal_quarter` `fiscal_quarter_id` |
-| `query_class_identity` | `query_class_id` | `sf:social.audience.dim_query_class` `query_class_id` |
-| `surface_identity` | `surface_id` | `sf:social.audience.dim_surface` `surface_id` |
+Coverage maps each numbered question to datasets and columns that exist in the YAML and can express the distinction the question asks. Demand quantity, supply or capacity, and price or margin are stored on separate facts joined by the shared grain keys (fiscal quarter, scenario, and the business keys).
 
 ## Numbered questions
 
 ## Alphabet
 
-### Q1 2026 (6)
+### Q1 2026 (1) Alphabet
 
-Are AI tools shortening purchase journeys and lifting conversion, and how much of Search strength is that behavior versus newer advertiser AI tools at Alphabet?
+With compute still tight, which parts of Search should get next-generation capacity over the next 12 months if the goal is a return on that spend?
 
-- `social.audience.fact_journey`: `shortened_flag`, `journey_steps`
-- `social.monetization.fact_conversion`: `conversion_rate`
-- `social.monetization.fact_tool_contribution`: `contribution_share`
-- `social.monetization.dim_ad_product`: `product_code`
+- `social.search.fact_search_query_volume`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `presentation_feature_id`, `consumer_surface_id`, `query_count`
+- `social.search.fact_search_clicks`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `presentation_feature_id`, `paid_click_count`, `total_click_count`
+- `social.search.fact_search_cpc`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `advertiser_size_id`, `cost_per_click_amount`
 
-### Q1 2026 (8)
+### Q1 2026 (3) Alphabet
 
-How much of backlog growth is TPU sales versus cloud, and can the margins on very large generative-AI deals match the existing cloud business at Alphabet?
+What is pushing Search queries to a record, and how much room is left to cover more of those queries with ads?
 
-- `social.monetization.fact_backlog_composition`: `tpu_share`, `cloud_share`
-- `social.monetization.fact_deal_economics`: `margin_rate`
-- `social.monetization.fact_cloud_margin`: `matches_existing_flag`, `margin_rate`
-- `social.monetization.dim_deal_class`: `class_code`
+- `social.search.fact_search_query_volume`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `presentation_feature_id`, `consumer_surface_id`, `query_count`
+- `social.search.fact_search_clicks`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `presentation_feature_id`, `paid_click_count`, `total_click_count`
+- `social.search.fact_search_cpc`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `advertiser_size_id`, `cost_per_click_amount`
 
-### Q4 2025 (1)
+### Q1 2026 (4) Alphabet
 
-Where did agentic commerce advance most in 2025, and where should utility for users and advertisers move further in 2026 at Alphabet?
+How does Alphabet’s infrastructure approach compare with peers on both compute supply and margin?
 
-- `social.monetization.fact_commerce_roadmap`: `utility_advanced_flag`, `year_focus_code`
-- `social.audience.dim_surface`: `surface_code`
-- `social.monetization.dim_revenue_pool`: `pool_code`
+- `social.ads.fact_ad_revenue`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `consumer_surface_id`, `ad_format_id`, `ad_revenue_amount`
 
-### Q4 2025 (4)
+### Q4 2025 (2) Alphabet
 
-Why did YouTube ad growth look softer if direct response was healthy and retail was strong in Search at Alphabet?
+How do generative creation tools fit YouTube’s longer-term content model?
 
-- `social.monetization.fact_youtube_ad`: `growth_rate`, `direct_response_healthy_flag`, `softer_flag`
-- `social.monetization.fact_ad_revenue`: `revenue_amount`, `growth_rate`
-- `social.monetization.dim_advertiser_vertical`: `vertical_code`
-- `social.audience.dim_surface`: `surface_code`
+- `social.ads.fact_video_watch`: `fiscal_quarter_id`, `scenario_id`, `video_format_id`, `consumer_surface_id`, `view_count`, `watch_minutes_count`
+- `social.ads.fact_ad_price`: `fiscal_quarter_id`, `scenario_id`, `consumer_surface_id`, `ad_format_id`, `average_price_per_ad_amount`, `cpm_amount`
+- `social.audience.fact_surface_audience`: `fiscal_quarter_id`, `scenario_id`, `consumer_surface_id`, `surface_daily_user_count`, `surface_monthly_user_count`
 
-### Q4 2025 (7)
+### Q4 2025 (4) Alphabet
 
-As AI Search sessions get longer and more of the answer stays on the page, how does revenue keep up with that utility, including any role for subscriptions at Alphabet?
+Why did YouTube ad growth look softer if direct response was healthy and retail was strong in Search?
 
-- `social.audience.fact_session_engagement`: `session_minutes`, `on_page_share`, `longer_flag`
-- `social.monetization.fact_ad_revenue`: `revenue_amount`
-- `social.monetization.fact_subscription_role`: `needed_for_revenue_flag`
-- `social.monetization.dim_subscription_plan`: `plan_code`
+- `social.ads.fact_video_watch`: `fiscal_quarter_id`, `scenario_id`, `video_format_id`, `consumer_surface_id`, `view_count`, `watch_minutes_count`
+- `social.ads.fact_ad_price`: `fiscal_quarter_id`, `scenario_id`, `consumer_surface_id`, `ad_format_id`, `average_price_per_ad_amount`, `cpm_amount`
+- `social.audience.fact_surface_audience`: `fiscal_quarter_id`, `scenario_id`, `consumer_surface_id`, `surface_daily_user_count`, `surface_monthly_user_count`
 
-### Q3 2025 (1)
+### Q4 2025 (5) Alphabet
 
-What has to stay true so Search and advertisers are not worse off if agentic shopping and travel monetize below classic Search at Alphabet?
+Is there an operating-income or free-cash-flow hurdle that decides which investment projects get resources, or is core performance the binding constraint?
 
-- `social.monetization.fact_agentic_yield`: `monetization_rate`, `below_classic_flag`, `advertiser_worse_flag`
-- `social.audience.dim_surface`: `surface_code`
-- `social.monetization.dim_revenue_pool`: `pool_code`
+- `social.ads.fact_ad_revenue`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `consumer_surface_id`, `ad_format_id`, `ad_revenue_amount`
 
-### Q3 2025 (3)
+### Q3 2025 (1) Alphabet
 
-Inside AI Overviews and AI Mode, what is happening to clicks per query, conversion, and price even as query growth accelerates at Alphabet?
+What has to stay true so Search and advertisers are not worse off if agentic shopping and travel monetize below classic Search?
 
-- `social.audience.fact_click_volume`: `click_quantity`, `clicks_per_query`
-- `social.monetization.fact_conversion`: `conversion_rate`
-- `social.monetization.fact_ad_price`: `price_index`, `cpc_amount`
-- `social.audience.fact_query_volume`: `query_quantity`
-- `social.audience.dim_surface`: `surface_code`
+- `social.search.fact_search_query_volume`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `presentation_feature_id`, `consumer_surface_id`, `query_count`
+- `social.search.fact_search_clicks`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `presentation_feature_id`, `paid_click_count`, `total_click_count`
+- `social.search.fact_search_cpc`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `advertiser_size_id`, `cost_per_click_amount`
 
-### Q3 2025 (6)
+### Q3 2025 (4) Alphabet
 
-How do longer AI Mode queries change return on ad spend at Alphabet?
+Where can core costs be reduced to absorb faster infrastructure growth?
 
-- `social.audience.fact_session_engagement`: `session_minutes`, `longer_flag`
-- `social.monetization.fact_advertiser_roas`: `roas_rate`
-- `social.audience.dim_surface`: `surface_code`
+- `social.ads.fact_ad_revenue`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `consumer_surface_id`, `ad_format_id`, `ad_revenue_amount`
 
-### Q3 2025 (7)
+### Q3 2025 (5) Alphabet
 
-Can products such as AI Max lift the share of queries that are commercial above the historical level at Alphabet?
+With each generation of custom silicon, how much of the gain is internal efficiency versus revenue from selling that capability outside?
 
-- `social.audience.fact_commercial_mix`: `commercial_share`, `above_historical_flag`
-- `social.monetization.dim_ad_product`: `product_code`
-- `social.audience.dim_query_class`: `class_code`
+- `social.segment.fact_segment_revenue`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `segment_revenue_amount`
+- `social.segment.fact_segment_operating_income`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `segment_operating_income_amount`
 
-### Q3 2025 (8)
+### Q2 2025 (3) Alphabet
 
-What supports the view that AI Overviews, AI Mode, and similar assistants expand marketing revenue, not only engagement at Alphabet?
+Within Search growth, how much is paid-click volume versus pricing?
 
-- `social.monetization.fact_marketing_expansion`: `revenue_expands_flag`, `engagement_only_flag`
-- `social.audience.fact_engagement_gain`: `gain_index`
-- `social.audience.dim_surface`: `surface_code`
+- `social.search.fact_search_query_volume`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `presentation_feature_id`, `consumer_surface_id`, `query_count`
+- `social.search.fact_search_clicks`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `presentation_feature_id`, `paid_click_count`, `total_click_count`
+- `social.search.fact_search_cpc`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `advertiser_size_id`, `cost_per_click_amount`
 
-### Q3 2025 (10)
+### Q2 2025 (4) Alphabet
 
-Have the large cloud deals signed over the prior nine months changed the long-term profit profile of cloud at Alphabet?
+What technical hurdles still block scalable agents on commercial queries?
 
-- `social.monetization.fact_deal_economics`: `margin_rate`, `changed_long_term_profile_flag`
-- `social.monetization.fact_cloud_margin`: `margin_rate`
-- `social.monetization.dim_deal_class`: `class_code`
+- `social.search.fact_search_query_volume`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `presentation_feature_id`, `consumer_surface_id`, `query_count`
+- `social.search.fact_search_clicks`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `presentation_feature_id`, `paid_click_count`, `total_click_count`
+- `social.search.fact_search_cpc`: `fiscal_quarter_id`, `scenario_id`, `query_intent_id`, `advertiser_size_id`, `cost_per_click_amount`
 
-### Q2 2025 (1)
+### Q2 2025 (9) Alphabet
 
-As consumer behavior shifts, should investors track volume or monetization, given that click economics may not describe AI usage at Alphabet?
+Does the ad environment for the second half look as firm as the prior year, or are there unusual category risks?
 
-- `social.audience.fact_query_volume`: `query_quantity`
-- `social.monetization.fact_search_bridge`: `volume_effect_amount`, `price_effect_amount`
-- `social.monetization.dim_monetization_lens`: `lens_code`
+- `social.ads.fact_ad_revenue`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `consumer_surface_id`, `ad_format_id`, `ad_revenue_amount`
 
-### Q2 2025 (3)
+## Meta
 
-Within Search growth, how much is paid-click volume versus pricing at Alphabet?
+### Q2 2026 (1) Meta
 
-- `social.monetization.fact_search_bridge`: `volume_effect_amount`, `price_effect_amount`
-- `social.audience.fact_click_volume`: `click_quantity`
-- `social.monetization.fact_ad_price`: `cpc_amount`, `price_index`
+Among consumer agents, business agents, API tools, and compute rental, which can reach material scale in 2026 and 2027 given today’s products and compute?
 
-### Q2 2025 (8)
+- `social.ads.fact_ad_revenue`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `consumer_surface_id`, `ad_format_id`, `ad_revenue_amount`
 
-Can click-through rates still rise as AI Overviews reduce ad impressions on a results page at Alphabet?
+### Q2 2026 (2) Meta
 
-- `social.monetization.fact_click_through`: `ctr_rate`, `can_still_rise_flag`
-- `social.monetization.fact_impression`: `impression_quantity`, `reduced_by_overview_flag`
-- `social.audience.dim_surface`: `surface_code`
+How much of the enterprise opportunity can be sold through the existing advertising and marketing motion, versus a go-to-market system that still has to be built?
 
-### Q2 2025 (9)
+- `social.ads.fact_ad_revenue`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `consumer_surface_id`, `ad_format_id`, `ad_revenue_amount`
+- `social.ads.fact_ad_impressions`: `fiscal_quarter_id`, `scenario_id`, `consumer_surface_id`, `ad_format_id`, `region_id`, `impression_count`
+- `social.ads.fact_ad_price`: `fiscal_quarter_id`, `scenario_id`, `consumer_surface_id`, `ad_format_id`, `average_price_per_ad_amount`, `cpm_amount`
 
-Does the ad environment for the second half look as firm as the prior year, or are there unusual category risks at Alphabet?
+### Q2 2026 (4) Meta
 
-- `social.monetization.fact_advertiser_demand`: `demand_index`, `firm_versus_prior_flag`, `category_risk_flag`
-- `social.monetization.dim_advertiser_vertical`: `vertical_code`
+How far along is the shift to larger models and more compute for ranking and recommendations?
 
-### Q2 2025 (11)
+- `social.ads.fact_ad_revenue`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `consumer_surface_id`, `ad_format_id`, `ad_revenue_amount`
 
-How are Gemini subscriptions inside Google One progressing, and what would speed consumer adoption?
+### Q2 2026 (5) Meta
 
-- `social.monetization.fact_subscription`: `subscriber_quantity`, `attach_rate`, `adoption_speed_code`
-- `social.monetization.dim_subscription_plan`: `plan_code`
-- `social.audience.dim_surface`: `surface_code`
+Why sell compute to others while also buying capacity from third parties?
 
-## Meta Platforms
+- `social.ads.fact_ad_revenue`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `consumer_surface_id`, `ad_format_id`, `ad_revenue_amount`
 
-### Q1 2026 (11)
+### Q2 2026 (7) Meta
 
-What engagement and monetization unlocks come from moving ads from smaller models to Muse Spark and later large models at Meta Platforms?
+What advantages is the lab building that should last beyond a single model generation?
 
-- `social.infrastructure.fact_ranking_model`: `production_share`, `ad_benefit_captured_flag`
-- `social.monetization.fact_ad_revenue`: `revenue_amount`, `growth_rate`
-- `social.audience.fact_engagement_gain`: `gain_index`
-- `social.infrastructure.dim_model_family`: `family_code`
+- `social.ads.fact_ad_revenue`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `consumer_surface_id`, `ad_format_id`, `ad_revenue_amount`
 
-### Q4 2025 (1)
+### Q2 2026 (8) Meta
 
-Which revenue pools — personal intelligence or external compute — are the largest long-term payoffs for the investment, over three to ten years at Meta Platforms?
+Why compete at both the cheaper end of the model range and the high-performance end?
 
-- `social.monetization.fact_non_ad_revenue`: `revenue_amount`, `realistic_flag`
-- `social.monetization.dim_revenue_pool`: `pool_code`
-- `social.infrastructure.fact_return_signal`: `on_path_flag`, `signal_code`
+- `social.ads.fact_ad_revenue`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `consumer_surface_id`, `ad_format_id`, `ad_revenue_amount`
 
-### Q4 2025 (3)
+### Q2 2026 (9) Meta
 
-Has advertising growth yet captured the full first-order benefit of the model and capacity work at Meta Platforms?
+If open-weight models spread, does Meta still need to build its own closed frontier models?
 
-- `social.infrastructure.fact_ranking_model`: `ad_benefit_captured_flag`, `production_share`
-- `social.monetization.fact_ad_revenue`: `growth_rate`, `revenue_amount`
+- `social.ads.fact_ad_revenue`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `consumer_surface_id`, `ad_format_id`, `ad_revenue_amount`
 
-### Q4 2025 (6)
+### Q1 2026 (2) Meta
 
-With so much capacity coming, what non-ad businesses — subscriptions, model licensing, or cloud-style access — become realistic at Meta Platforms?
+How is lab effort split between further training toward personal superintelligence and shipping products?
 
-- `social.monetization.fact_non_ad_revenue`: `revenue_amount`, `realistic_flag`
-- `social.monetization.fact_licensing`: `revenue_amount`
-- `social.monetization.fact_subscription`: `subscriber_quantity`
-- `social.monetization.dim_revenue_pool`: `pool_code`
+- `social.ads.fact_ad_revenue`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `consumer_surface_id`, `ad_format_id`, `ad_revenue_amount`
 
-### Q4 2025 (7)
+### Q1 2026 (4) Meta
 
-Is the advertising acceleration, excluding currency, a broader pickup in e-commerce activity at Meta Platforms?
+How do the media and commerce parts of the business become more agentic for consumers, alongside offering compute to enterprises?
 
-- `social.monetization.fact_ad_revenue`: `ex_fx_growth_rate`, `growth_rate`, `acceleration_flag`
-- `social.monetization.fact_ecommerce_ad`: `ecommerce_driven_flag`
-- `social.monetization.dim_advertiser_vertical`: `vertical_code`
+- `social.ads.fact_ad_revenue`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `consumer_surface_id`, `ad_format_id`, `ad_revenue_amount`
 
-### Q3 2025 (4)
+### Q1 2026 (7) Meta
 
-How large are next year’s ad and engagement gains expected to be versus the progress of the prior two years at Meta Platforms?
+What does Muse Spark unlock for products still in development, and what is the consumer versus enterprise release pace over the next nine months?
 
-- `social.audience.fact_engagement_gain`: `gain_index`, `versus_two_year_pace`
-- `social.monetization.fact_ad_revenue`: `growth_rate`, `acceleration_flag`
+- `social.ads.fact_ad_revenue`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `consumer_surface_id`, `ad_format_id`, `ad_revenue_amount`
+
+### Q1 2026 (9) Meta
+
+Is a personal agent a near-term product or a longer-term goal now that Muse Spark is live?
+
+- `social.ads.fact_ad_revenue`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `consumer_surface_id`, `ad_format_id`, `ad_revenue_amount`
+
+### Q1 2026 (10) Meta
+
+What changes in ranking when the interaction history those models can use gets much longer?
+
+- `social.ads.fact_ad_revenue`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `consumer_surface_id`, `ad_format_id`, `ad_revenue_amount`
+
+### Q1 2026 (12) Meta
+
+What role does Manus play in agentic products, and where does that effort stand?
+
+- `social.ads.fact_ad_revenue`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `consumer_surface_id`, `ad_format_id`, `ad_revenue_amount`
+
+### Q4 2025 (1) Meta
+
+Which revenue pools — personal intelligence or external compute — are the largest long-term payoffs for the investment, over three to ten years?
+
+- `social.segment.fact_segment_revenue`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `segment_revenue_amount`
+- `social.segment.fact_segment_operating_income`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `segment_operating_income_amount`
+
+### Q4 2025 (3) Meta
+
+Has advertising growth yet captured the full first-order benefit of the model and capacity work?
+
+- `social.ads.fact_ad_revenue`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `consumer_surface_id`, `ad_format_id`, `ad_revenue_amount`
+- `social.ads.fact_ad_impressions`: `fiscal_quarter_id`, `scenario_id`, `consumer_surface_id`, `ad_format_id`, `region_id`, `impression_count`
+- `social.ads.fact_ad_price`: `fiscal_quarter_id`, `scenario_id`, `consumer_surface_id`, `ad_format_id`, `average_price_per_ad_amount`, `cpm_amount`
+
+### Q4 2025 (4) Meta
+
+How far is the new model team toward a frontier model this year?
+
+- `social.ads.fact_ad_revenue`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `consumer_surface_id`, `ad_format_id`, `ad_revenue_amount`
+
+### Q4 2025 (7) Meta
+
+Is the advertising acceleration, excluding currency, a broader pickup in e-commerce activity?
+
+- `social.ads.fact_ad_revenue`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `consumer_surface_id`, `ad_format_id`, `ad_revenue_amount`
+- `social.ads.fact_ad_impressions`: `fiscal_quarter_id`, `scenario_id`, `consumer_surface_id`, `ad_format_id`, `region_id`, `impression_count`
+- `social.ads.fact_ad_price`: `fiscal_quarter_id`, `scenario_id`, `consumer_surface_id`, `ad_format_id`, `average_price_per_ad_amount`, `cpm_amount`
+
+### Q4 2025 (8) Meta
+
+What is the plan for bringing Horizon Worlds to mobile, and what do AI and Horizon open in gaming or new communication?
+
+- `social.reality.fact_reality_labs_result`: `fiscal_quarter_id`, `scenario_id`, `device_id`, `reality_labs_revenue_amount`, `reality_labs_operating_loss_amount`
+- `social.reality.fact_headset_units`: `fiscal_quarter_id`, `scenario_id`, `device_id`, `headset_unit_count`
+- `social.reality.fact_headset_price`: `fiscal_quarter_id`, `scenario_id`, `device_id`, `average_headset_price_amount`
+
+### Q4 2025 (10) Meta
+
+Does Meta need a leading general-purpose model, or is a model that is excellent at specific tasks enough?
+
+- `social.ads.fact_ad_revenue`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `consumer_surface_id`, `ad_format_id`, `ad_revenue_amount`
+
+### Q3 2025 (1) Meta
+
+Which early tests of 2026 ranking and ad models already support a return on the infrastructure build?
+
+- `social.ads.fact_ad_revenue`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `consumer_surface_id`, `ad_format_id`, `ad_revenue_amount`
+
+### Q3 2025 (5) Meta
+
+Are the newer lab efforts timed to an updated frontier model next year?
+
+- `social.ads.fact_ad_revenue`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `consumer_surface_id`, `ad_format_id`, `ad_revenue_amount`
+
+### Q3 2025 (10) Meta
+
+Once a leading frontier model exists, does the value sit with the platform or with scaled first-party apps?
+
+- `social.ads.fact_ad_revenue`: `fiscal_quarter_id`, `scenario_id`, `reporting_segment_id`, `consumer_surface_id`, `ad_format_id`, `ad_revenue_amount`

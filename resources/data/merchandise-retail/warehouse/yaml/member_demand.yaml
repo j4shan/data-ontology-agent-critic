@@ -1,698 +1,578 @@
 schema_version: '3'
 nodes:
-- node_id: sf:merchandise.geography.dim_region
+- node_id: sf:merchandise.time.dim_fiscal_quarter
   descriptor:
-    qualified_name: merchandise.geography.dim_region
-    display_name: Region
-    description: "Commercial region in which Merchandise Inc sells."
+    qualified_name: merchandise.time.dim_fiscal_quarter
+    display_name: Fiscal Quarter
+    description: Fiscal quarter on the Merchandise Inc earnings calendar.
     synonyms: []
     tags:
     - dimension
-    - geography
-    - merchandise
+    - member
+    - merchandise-retail
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: merchandise.us-east-1
       database: MERCHANDISE
-      schema: GEOGRAPHY
-      object: DIM_REGION
-      format: table
-  grain:
-    description: "One row is one region."
-    components:
-    - identity_id: region_identity
-      dataset_columns:
-      - region_id
-      description: "Identifier of the region."
-  columns:
-  - name: region_id
-    description: "Identifier of the region."
-  - name: region_name
-    description: "Name of the region."
-  - name: region_code
-    description: "Region code."
-    value_description: "united_states, canada, europe, asia, mexico"
-  entity_definitions:
-  - identity_id: region_identity
-    dataset_columns:
-    - region_id
-    entity_universe: complete
-- node_id: sf:merchandise.geography.dim_country
-  descriptor:
-    qualified_name: merchandise.geography.dim_country
-    display_name: Country
-    description: "Country where Merchandise Inc operates clubs, supercenters, or a payments arm."
-    synonyms: []
-    tags:
-    - dimension
-    - geography
-    - merchandise
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: merchandise.us-east-1
-      database: MERCHANDISE
-      schema: GEOGRAPHY
-      object: DIM_COUNTRY
-      format: table
-  grain:
-    description: "One row is one country."
-    components:
-    - identity_id: country_identity
-      dataset_columns:
-      - country_id
-      description: "Identifier of the country."
-  columns:
-  - name: country_id
-    description: "Identifier of the country."
-  - name: region_id
-    description: "Region referenced by this row."
-  - name: country_name
-    description: "Name of the country."
-  - name: country_code
-    description: "Country code."
-    value_description: "united_states, canada, mexico, united_kingdom, japan, korea, china, other"
-  entity_definitions:
-  - identity_id: country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: complete
-  - identity_id: region_identity
-    dataset_columns:
-    - region_id
-    entity_universe: partial
-- node_id: sf:merchandise.geography.dim_fiscal_quarter
-  descriptor:
-    qualified_name: merchandise.geography.dim_fiscal_quarter
-    display_name: "Fiscal Quarter"
-    description: "Reporting quarter on the Merchandise Inc calendar."
-    synonyms: []
-    tags:
-    - dimension
-    - geography
-    - merchandise
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: merchandise.us-east-1
-      database: MERCHANDISE
-      schema: GEOGRAPHY
+      schema: TIME
       object: DIM_FISCAL_QUARTER
       format: table
   grain:
-    description: "One row is one fiscal quarter."
+    description: One row is one fiscal quarter, identified by fiscal_quarter_id.
     components:
     - identity_id: fiscal_quarter_identity
       dataset_columns:
       - fiscal_quarter_id
-      description: "Identifier of the fiscal quarter."
+      description: Identifier of the fiscal quarter.
   columns:
   - name: fiscal_quarter_id
-    description: "Identifier of the fiscal quarter."
-  - name: quarter_label
-    description: "Label of the quarter."
-  - name: quarter_code
-    description: "Quarter code."
-    value_description: "FY2025Q4, FY2026Q1, FY2026Q2, FY2026Q3, FY2026Q4, FY2027Q1, FY2027Q2"
-  - name: guidance_horizon
-    description: "Whether the quarter is reported or guided."
-    value_description: "reported, guided_next"
+    description: Identifier of the fiscal quarter.
+  - name: fiscal_quarter_name
+    description: Name of the fiscal quarter.
+  - name: fiscal_quarter_code
+    description: Code of the fiscal quarter.
+    value_description: 2025Q3, 2025Q4, 2026Q1, 2026Q2, 2026Q3
   entity_definitions:
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: complete
-- node_id: sf:merchandise.geography.dim_calendar_month
+- node_id: sf:merchandise.time.dim_scenario
   descriptor:
-    qualified_name: merchandise.geography.dim_calendar_month
-    display_name: "Calendar Month"
-    description: "Month inside a reporting quarter, including holiday months."
+    qualified_name: merchandise.time.dim_scenario
+    display_name: Scenario
+    description: 'Reporting scenario: an actual reported result or a management guide for the same fiscal
+      quarter.'
     synonyms: []
     tags:
     - dimension
-    - geography
-    - merchandise
+    - member
+    - merchandise-retail
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: merchandise.us-east-1
+      database: MERCHANDISE
+      schema: TIME
+      object: DIM_SCENARIO
+      format: table
+  grain:
+    description: One row is one scenario, identified by scenario_id.
+    components:
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+  columns:
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: scenario_name
+    description: Name of the scenario.
+  - name: scenario_code
+    description: Code of the scenario.
+    value_description: reported, guide
+  entity_definitions:
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: complete
+- node_id: sf:merchandise.retail.dim_store_format
+  descriptor:
+    qualified_name: merchandise.retail.dim_store_format
+    display_name: Store Format
+    description: Retail format, distinct from banner and geography.
+    synonyms: []
+    tags:
+    - dimension
+    - member
+    - merchandise-retail
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: merchandise.us-east-1
+      database: MERCHANDISE
+      schema: RETAIL
+      object: DIM_STORE_FORMAT
+      format: table
+  grain:
+    description: One row is one store format, identified by store_format_id.
+    components:
+    - identity_id: store_format_identity
+      dataset_columns:
+      - store_format_id
+      description: Identifier of the store format.
+  columns:
+  - name: store_format_id
+    description: Identifier of the store format.
+  - name: store_format_name
+    description: Name of the store format.
+  - name: store_format_code
+    description: Code of the store format.
+    value_description: warehouse_club, supercenter, discount_store, neighborhood_market
+  entity_definitions:
+  - identity_id: store_format_identity
+    dataset_columns:
+    - store_format_id
+    entity_universe: complete
+- node_id: sf:merchandise.retail.dim_banner
+  descriptor:
+    qualified_name: merchandise.retail.dim_banner
+    display_name: Banner
+    description: Retail banner; a club banner can operate in the domestic or international geography.
+    synonyms: []
+    tags:
+    - dimension
+    - member
+    - merchandise-retail
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: merchandise.us-east-1
+      database: MERCHANDISE
+      schema: RETAIL
+      object: DIM_BANNER
+      format: table
+  grain:
+    description: One row is one banner, identified by banner_id.
+    components:
+    - identity_id: banner_identity
+      dataset_columns:
+      - banner_id
+      description: Identifier of the banner.
+  columns:
+  - name: banner_id
+    description: Identifier of the banner.
+  - name: banner_name
+    description: Name of the banner.
+  - name: banner_code
+    description: Code of the banner.
+    value_description: costco_club, sams_club, walmart_mass, walmart_international_banner
+  entity_definitions:
+  - identity_id: banner_identity
+    dataset_columns:
+    - banner_id
+    entity_universe: complete
+- node_id: sf:merchandise.geography.dim_geography_segment
+  descriptor:
+    qualified_name: merchandise.geography.dim_geography_segment
+    display_name: Geography Segment
+    description: Geographic segment, distinct from format and banner.
+    synonyms: []
+    tags:
+    - dimension
+    - member
+    - merchandise-retail
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: merchandise.us-east-1
       database: MERCHANDISE
       schema: GEOGRAPHY
-      object: DIM_CALENDAR_MONTH
+      object: DIM_GEOGRAPHY_SEGMENT
       format: table
   grain:
-    description: "One row is one calendar month."
+    description: One row is one geography segment, identified by geography_segment_id.
     components:
-    - identity_id: calendar_month_identity
+    - identity_id: geography_segment_identity
       dataset_columns:
-      - calendar_month_id
-      description: "Identifier of the calendar month."
+      - geography_segment_id
+      description: Identifier of the geography segment.
   columns:
-  - name: calendar_month_id
-    description: "Identifier of the calendar month."
-  - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: month_code
-    description: "Month code."
-    value_description: "january, february, november, december, other"
-  - name: month_name
-    description: "Name of the month."
+  - name: geography_segment_id
+    description: Identifier of the geography segment.
+  - name: geography_segment_name
+    description: Name of the geography segment.
+  - name: geography_segment_code
+    description: Code of the geography segment.
+    value_description: domestic, international
   entity_definitions:
-  - identity_id: calendar_month_identity
+  - identity_id: geography_segment_identity
     dataset_columns:
-    - calendar_month_id
+    - geography_segment_id
     entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-- node_id: sf:merchandise.member.dim_banner
+- node_id: sf:merchandise.member.dim_membership_program
   descriptor:
-    qualified_name: merchandise.member.dim_banner
-    display_name: Banner
-    description: "Banner Merchandise Inc operates."
+    qualified_name: merchandise.member.dim_membership_program
+    display_name: Membership Program
+    description: Membership program; each program belongs to one banner family.
     synonyms: []
     tags:
     - dimension
     - member
-    - merchandise
+    - merchandise-retail
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: merchandise.us-east-1
       database: MERCHANDISE
       schema: MEMBER
-      object: DIM_BANNER
+      object: DIM_MEMBERSHIP_PROGRAM
       format: table
   grain:
-    description: "One row is one banner."
+    description: One row is one membership program, identified by membership_program_id.
     components:
+    - identity_id: membership_program_identity
+      dataset_columns:
+      - membership_program_id
+      description: Identifier of the membership program.
+  columns:
+  - name: membership_program_id
+    description: Identifier of the membership program.
+  - name: membership_program_name
+    description: Name of the membership program.
+  - name: membership_program_code
+    description: Code of the membership program.
+    value_description: costco_membership, sams_club_membership, walmart_plus
+  entity_definitions:
+  - identity_id: membership_program_identity
+    dataset_columns:
+    - membership_program_id
+    entity_universe: complete
+- node_id: sf:merchandise.member.dim_membership_tier
+  descriptor:
+    qualified_name: merchandise.member.dim_membership_tier
+    display_name: Membership Tier
+    description: 'Tier inside one membership program: Gold Star and Executive are Costco tiers; Plus is
+      a Walmart Plus tier.'
+    synonyms: []
+    tags:
+    - dimension
+    - member
+    - merchandise-retail
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: merchandise.us-east-1
+      database: MERCHANDISE
+      schema: MEMBER
+      object: DIM_MEMBERSHIP_TIER
+      format: table
+  grain:
+    description: One row is one membership tier, identified by membership_tier_id.
+    components:
+    - identity_id: membership_tier_identity
+      dataset_columns:
+      - membership_tier_id
+      description: Identifier of the membership tier.
+  columns:
+  - name: membership_tier_id
+    description: Identifier of the membership tier.
+  - name: membership_tier_name
+    description: Name of the membership tier.
+  - name: membership_tier_code
+    description: Code of the membership tier.
+    value_description: gold_star, executive, business, club_member, plus
+  - name: membership_program_id
+    description: Identifier of the membership program.
+  entity_definitions:
+  - identity_id: membership_tier_identity
+    dataset_columns:
+    - membership_tier_id
+    entity_universe: complete
+  - identity_id: membership_program_identity
+    dataset_columns:
+    - membership_program_id
+    entity_universe: partial
+- node_id: sf:merchandise.member.fact_membership_count
+  descriptor:
+    qualified_name: merchandise.member.fact_membership_count
+    display_name: Membership Count
+    description: Members enrolled in club membership programs; supercenter sales do not require a membership.
+    synonyms: []
+    tags:
+    - fact
+    - member
+    - merchandise-retail
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: merchandise.us-east-1
+      database: MERCHANDISE
+      schema: MEMBER
+      object: FACT_MEMBERSHIP_COUNT
+      format: table
+  grain:
+    description: One row is one membership count observation for the combination of fiscal quarter, scenario,
+      membership program, membership tier, banner.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: membership_program_identity
+      dataset_columns:
+      - membership_program_id
+      description: Identifier of the membership program.
+    - identity_id: membership_tier_identity
+      dataset_columns:
+      - membership_tier_id
+      description: Identifier of the membership tier.
     - identity_id: banner_identity
       dataset_columns:
       - banner_id
-      description: "Identifier of the banner."
+      description: Identifier of the banner.
   columns:
-  - name: banner_id
-    description: "Identifier of the banner."
-  - name: banner_code
-    description: "Banner code."
-    value_description: "warehouse_club, supercenter, sams_club, international"
-  - name: banner_name
-    description: "Name of the banner."
-  entity_definitions:
-  - identity_id: banner_identity
-    dataset_columns:
-    - banner_id
-    entity_universe: complete
-- node_id: sf:merchandise.member.dim_member_tier
-  descriptor:
-    qualified_name: merchandise.member.dim_member_tier
-    display_name: "Member Tier"
-    description: "Membership tier."
-    synonyms: []
-    tags:
-    - dimension
-    - member
-    - merchandise
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: merchandise.us-east-1
-      database: MERCHANDISE
-      schema: MEMBER
-      object: DIM_MEMBER_TIER
-      format: table
-  grain:
-    description: "One row is one member tier."
-    components:
-    - identity_id: member_tier_identity
-      dataset_columns:
-      - member_tier_id
-      description: "Identifier of the member tier."
-  columns:
-  - name: member_tier_id
-    description: "Identifier of the member tier."
-  - name: tier_code
-    description: "Tier code."
-    value_description: "gold_star, executive, plus, assist, paid"
-  - name: tier_name
-    description: "Name of the tier."
-  entity_definitions:
-  - identity_id: member_tier_identity
-    dataset_columns:
-    - member_tier_id
-    entity_universe: complete
-- node_id: sf:merchandise.member.dim_age_cohort
-  descriptor:
-    qualified_name: merchandise.member.dim_age_cohort
-    display_name: "Age Cohort"
-    description: "Member age cohort."
-    synonyms: []
-    tags:
-    - dimension
-    - member
-    - merchandise
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: merchandise.us-east-1
-      database: MERCHANDISE
-      schema: MEMBER
-      object: DIM_AGE_COHORT
-      format: table
-  grain:
-    description: "One row is one age cohort."
-    components:
-    - identity_id: age_cohort_identity
-      dataset_columns:
-      - age_cohort_id
-      description: "Identifier of the age cohort."
-  columns:
-  - name: age_cohort_id
-    description: "Identifier of the age cohort."
-  - name: cohort_code
-    description: "Age cohort."
-    value_description: "younger, older, other"
-  - name: cohort_name
-    description: "Name of the cohort."
-  entity_definitions:
-  - identity_id: age_cohort_identity
-    dataset_columns:
-    - age_cohort_id
-    entity_universe: complete
-- node_id: sf:merchandise.member.dim_income_cohort
-  descriptor:
-    qualified_name: merchandise.member.dim_income_cohort
-    display_name: "Income Cohort"
-    description: "Shopper income cohort."
-    synonyms: []
-    tags:
-    - dimension
-    - member
-    - merchandise
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: merchandise.us-east-1
-      database: MERCHANDISE
-      schema: MEMBER
-      object: DIM_INCOME_COHORT
-      format: table
-  grain:
-    description: "One row is one income cohort."
-    components:
-    - identity_id: income_cohort_identity
-      dataset_columns:
-      - income_cohort_id
-      description: "Identifier of the income cohort."
-  columns:
-  - name: income_cohort_id
-    description: "Identifier of the income cohort."
-  - name: cohort_code
-    description: "Income cohort."
-    value_description: "lower, middle, higher"
-  - name: cohort_name
-    description: "Name of the cohort."
-  entity_definitions:
-  - identity_id: income_cohort_identity
-    dataset_columns:
-    - income_cohort_id
-    entity_universe: complete
-- node_id: sf:merchandise.member.dim_channel
-  descriptor:
-    qualified_name: merchandise.member.dim_channel
-    display_name: Channel
-    description: "How a member shops."
-    synonyms: []
-    tags:
-    - dimension
-    - member
-    - merchandise
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: merchandise.us-east-1
-      database: MERCHANDISE
-      schema: MEMBER
-      object: DIM_CHANNEL
-      format: table
-  grain:
-    description: "One row is one channel."
-    components:
-    - identity_id: channel_identity
-      dataset_columns:
-      - channel_id
-      description: "Identifier of the channel."
-  columns:
-  - name: channel_id
-    description: "Identifier of the channel."
-  - name: channel_code
-    description: "Channel code."
-    value_description: "club, store, digital, third_party_delivery, fast_delivery, agent"
-  - name: channel_name
-    description: "Name of the channel."
-  entity_definitions:
-  - identity_id: channel_identity
-    dataset_columns:
-    - channel_id
-    entity_universe: complete
-- node_id: sf:merchandise.member.dim_competitor
-  descriptor:
-    qualified_name: merchandise.member.dim_competitor
-    display_name: Competitor
-    description: "Competitor opening nearby or cutting price."
-    synonyms: []
-    tags:
-    - dimension
-    - member
-    - merchandise
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: merchandise.us-east-1
-      database: MERCHANDISE
-      schema: MEMBER
-      object: DIM_COMPETITOR
-      format: table
-  grain:
-    description: "One row is one competitor."
-    components:
-    - identity_id: competitor_identity
-      dataset_columns:
-      - competitor_id
-      description: "Identifier of the competitor."
-  columns:
-  - name: competitor_id
-    description: "Identifier of the competitor."
-  - name: competitor_code
-    description: "Competitor code."
-  - name: competitor_name
-    description: "Name of the competitor."
-  entity_definitions:
-  - identity_id: competitor_identity
-    dataset_columns:
-    - competitor_id
-    entity_universe: complete
-- node_id: sf:merchandise.member.dim_weather_event
-  descriptor:
-    qualified_name: merchandise.member.dim_weather_event
-    display_name: "Weather Event"
-    description: "Weather episode that can move a month."
-    synonyms: []
-    tags:
-    - dimension
-    - member
-    - merchandise
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: merchandise.us-east-1
-      database: MERCHANDISE
-      schema: MEMBER
-      object: DIM_WEATHER_EVENT
-      format: table
-  grain:
-    description: "One row is one weather event."
-    components:
-    - identity_id: weather_event_identity
-      dataset_columns:
-      - weather_event_id
-      description: "Identifier of the weather event."
-  columns:
-  - name: weather_event_id
-    description: "Identifier of the weather event."
-  - name: event_code
-    description: "Weather code."
-    value_description: "mild, disruptive"
-  - name: event_name
-    description: "Name of the weather episode."
-  entity_definitions:
-  - identity_id: weather_event_identity
-    dataset_columns:
-    - weather_event_id
-    entity_universe: complete
-- node_id: sf:merchandise.member.dim_join_path
-  descriptor:
-    qualified_name: merchandise.member.dim_join_path
-    display_name: "Join Path"
-    description: "How a member joined."
-    synonyms: []
-    tags:
-    - dimension
-    - member
-    - merchandise
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: merchandise.us-east-1
-      database: MERCHANDISE
-      schema: MEMBER
-      object: DIM_JOIN_PATH
-      format: table
-  grain:
-    description: "One row is one join path."
-    components:
-    - identity_id: join_path_identity
-      dataset_columns:
-      - join_path_id
-      description: "Identifier of the join path."
-  columns:
-  - name: join_path_id
-    description: "Identifier of the join path."
-  - name: path_code
-    description: "Join path."
-    value_description: "club, digital, promotion"
-  - name: path_name
-    description: "Name of the join path."
-  entity_definitions:
-  - identity_id: join_path_identity
-    dataset_columns:
-    - join_path_id
-    entity_universe: complete
-- node_id: sf:merchandise.member.fact_member_count
-  descriptor:
-    qualified_name: merchandise.member.fact_member_count
-    display_name: "Member Count"
-    description: "Paid-member quantity. The count does not store spend per member."
-    synonyms: []
-    tags:
-    - fact
-    - member
-    - merchandise
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: merchandise.us-east-1
-      database: MERCHANDISE
-      schema: MEMBER
-      object: FACT_MEMBER_COUNT
-      format: table
-  grain:
-    description: "One row is one member count."
-    components:
-    - identity_id: member_count_identity
-      dataset_columns:
-      - member_count_id
-      description: "Identifier of the member count."
-  columns:
-  - name: member_count_id
-    description: "Identifier of the member count."
-  - name: banner_id
-    description: "Banner referenced by this row."
-  - name: member_tier_id
-    description: "Member Tier referenced by this row."
-  - name: country_id
-    description: "Country referenced by this row."
   - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: age_cohort_id
-    description: "Age Cohort referenced by this row."
-  - name: member_quantity
-    description: "Paid members."
-  - name: growth_rate
-    description: "Membership growth rate."
-  - name: slowed_flag
-    description: "Whether growth has slowed."
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: membership_program_id
+    description: Identifier of the membership program.
+  - name: membership_tier_id
+    description: Identifier of the membership tier.
+  - name: banner_id
+    description: Identifier of the banner.
+  - name: member_count
+    description: Number of members.
+  - name: household_count
+    description: Number of member households.
   entity_definitions:
-  - identity_id: member_count_identity
-    dataset_columns:
-    - member_count_id
-    entity_universe: complete
-  - identity_id: banner_identity
-    dataset_columns:
-    - banner_id
-    entity_universe: partial
-  - identity_id: member_tier_identity
-    dataset_columns:
-    - member_tier_id
-    entity_universe: partial
-  - identity_id: country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: age_cohort_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - age_cohort_id
+    - scenario_id
     entity_universe: partial
-- node_id: sf:merchandise.member.fact_member_signup
+  - identity_id: membership_program_identity
+    dataset_columns:
+    - membership_program_id
+    entity_universe: partial
+  - identity_id: membership_tier_identity
+    dataset_columns:
+    - membership_tier_id
+    entity_universe: partial
+  - identity_id: banner_identity
+    dataset_columns:
+    - banner_id
+    entity_universe: partial
+- node_id: sf:merchandise.member.fact_membership_signup
   descriptor:
-    qualified_name: merchandise.member.fact_member_signup
-    display_name: "Member Signup"
-    description: "New-member quantity. Sign-ups are not renewal rates."
+    qualified_name: merchandise.member.fact_membership_signup
+    display_name: Membership Signup
+    description: New membership sign-ups in the quarter.
     synonyms: []
     tags:
     - fact
     - member
-    - merchandise
+    - merchandise-retail
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: merchandise.us-east-1
       database: MERCHANDISE
       schema: MEMBER
-      object: FACT_MEMBER_SIGNUP
+      object: FACT_MEMBERSHIP_SIGNUP
       format: table
   grain:
-    description: "One row is one member signup."
+    description: One row is one membership signup observation for the combination of fiscal quarter, scenario,
+      membership program, membership tier.
     components:
-    - identity_id: member_signup_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - member_signup_id
-      description: "Identifier of the member signup."
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: membership_program_identity
+      dataset_columns:
+      - membership_program_id
+      description: Identifier of the membership program.
+    - identity_id: membership_tier_identity
+      dataset_columns:
+      - membership_tier_id
+      description: Identifier of the membership tier.
   columns:
-  - name: member_signup_id
-    description: "Identifier of the member signup."
-  - name: banner_id
-    description: "Banner referenced by this row."
-  - name: member_tier_id
-    description: "Member Tier referenced by this row."
-  - name: country_id
-    description: "Country referenced by this row."
   - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: join_path_id
-    description: "Join Path referenced by this row."
-  - name: signup_quantity
-    description: "New sign-ups."
-  - name: promotion_lapped_flag
-    description: "Whether a short-term promotion is being lapped."
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: membership_program_id
+    description: Identifier of the membership program.
+  - name: membership_tier_id
+    description: Identifier of the membership tier.
+  - name: signup_count
+    description: Number of new membership sign-ups.
   entity_definitions:
-  - identity_id: member_signup_identity
-    dataset_columns:
-    - member_signup_id
-    entity_universe: complete
-  - identity_id: banner_identity
-    dataset_columns:
-    - banner_id
-    entity_universe: partial
-  - identity_id: member_tier_identity
-    dataset_columns:
-    - member_tier_id
-    entity_universe: partial
-  - identity_id: country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: join_path_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - join_path_id
+    - scenario_id
     entity_universe: partial
-- node_id: sf:merchandise.member.fact_member_renewal
+  - identity_id: membership_program_identity
+    dataset_columns:
+    - membership_program_id
+    entity_universe: partial
+  - identity_id: membership_tier_identity
+    dataset_columns:
+    - membership_tier_id
+    entity_universe: partial
+- node_id: sf:merchandise.member.fact_membership_renewal
   descriptor:
-    qualified_name: merchandise.member.fact_member_renewal
-    display_name: "Member Renewal"
-    description: "Renewal rate. The rate does not store the member count."
+    qualified_name: merchandise.member.fact_membership_renewal
+    display_name: Membership Renewal
+    description: Membership renewals and the renewal rate.
     synonyms: []
     tags:
     - fact
     - member
-    - merchandise
+    - merchandise-retail
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: merchandise.us-east-1
       database: MERCHANDISE
       schema: MEMBER
-      object: FACT_MEMBER_RENEWAL
+      object: FACT_MEMBERSHIP_RENEWAL
       format: table
   grain:
-    description: "One row is one member renewal."
+    description: One row is one membership renewal observation for the combination of fiscal quarter,
+      scenario, membership program, membership tier.
     components:
-    - identity_id: member_renewal_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - member_renewal_id
-      description: "Identifier of the member renewal."
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: membership_program_identity
+      dataset_columns:
+      - membership_program_id
+      description: Identifier of the membership program.
+    - identity_id: membership_tier_identity
+      dataset_columns:
+      - membership_tier_id
+      description: Identifier of the membership tier.
   columns:
-  - name: member_renewal_id
-    description: "Identifier of the member renewal."
-  - name: banner_id
-    description: "Banner referenced by this row."
-  - name: member_tier_id
-    description: "Member Tier referenced by this row."
-  - name: country_id
-    description: "Country referenced by this row."
   - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: join_path_id
-    description: "Join Path referenced by this row."
-  - name: age_cohort_id
-    description: "Age Cohort referenced by this row."
-  - name: renewal_rate
-    description: "Renewal rate."
-  - name: dip_is_bottom_flag
-    description: "Whether the dip looks like the bottom."
-  - name: outlook_dip_flag
-    description: "Whether a further dip is the planning case."
-  - name: digital_soft_flag
-    description: "Whether digital joiners renew more softly."
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: membership_program_id
+    description: Identifier of the membership program.
+  - name: membership_tier_id
+    description: Identifier of the membership tier.
+  - name: renewal_count
+    description: Number of memberships renewed.
+  - name: renewal_rate_percent
+    description: Membership renewal rate in percent.
   entity_definitions:
-  - identity_id: member_renewal_identity
-    dataset_columns:
-    - member_renewal_id
-    entity_universe: complete
-  - identity_id: banner_identity
-    dataset_columns:
-    - banner_id
-    entity_universe: partial
-  - identity_id: member_tier_identity
-    dataset_columns:
-    - member_tier_id
-    entity_universe: partial
-  - identity_id: country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: join_path_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - join_path_id
+    - scenario_id
     entity_universe: partial
-  - identity_id: age_cohort_identity
+  - identity_id: membership_program_identity
     dataset_columns:
-    - age_cohort_id
+    - membership_program_id
+    entity_universe: partial
+  - identity_id: membership_tier_identity
+    dataset_columns:
+    - membership_tier_id
+    entity_universe: partial
+- node_id: sf:merchandise.member.fact_membership_fee_revenue
+  descriptor:
+    qualified_name: merchandise.member.fact_membership_fee_revenue
+    display_name: Membership Fee Revenue
+    description: Membership-fee income, which can be compared with merchandise gross margin to express
+      profit concentration in fees.
+    synonyms: []
+    tags:
+    - fact
+    - member
+    - merchandise-retail
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: merchandise.us-east-1
+      database: MERCHANDISE
+      schema: MEMBER
+      object: FACT_MEMBERSHIP_FEE_REVENUE
+      format: table
+  grain:
+    description: One row is one membership fee revenue observation for the combination of fiscal quarter,
+      scenario, membership program, membership tier, banner.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: membership_program_identity
+      dataset_columns:
+      - membership_program_id
+      description: Identifier of the membership program.
+    - identity_id: membership_tier_identity
+      dataset_columns:
+      - membership_tier_id
+      description: Identifier of the membership tier.
+    - identity_id: banner_identity
+      dataset_columns:
+      - banner_id
+      description: Identifier of the banner.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: membership_program_id
+    description: Identifier of the membership program.
+  - name: membership_tier_id
+    description: Identifier of the membership tier.
+  - name: banner_id
+    description: Identifier of the banner.
+  - name: membership_fee_revenue_amount
+    description: Membership fee income in dollars.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: membership_program_identity
+    dataset_columns:
+    - membership_program_id
+    entity_universe: partial
+  - identity_id: membership_tier_identity
+    dataset_columns:
+    - membership_tier_id
+    entity_universe: partial
+  - identity_id: banner_identity
+    dataset_columns:
+    - banner_id
     entity_universe: partial
 - node_id: sf:merchandise.member.fact_member_spend
   descriptor:
     qualified_name: merchandise.member.fact_member_spend
-    display_name: "Member Spend"
-    description: "Spend per existing member. Spend is not the new-member count."
+    display_name: Member Spend
+    description: Spend per member household in the quarter.
     synonyms: []
     tags:
     - fact
     - member
-    - merchandise
+    - merchandise-retail
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
@@ -702,895 +582,374 @@ nodes:
       object: FACT_MEMBER_SPEND
       format: table
   grain:
-    description: "One row is one member spend."
+    description: One row is one member spend observation for the combination of fiscal quarter, scenario,
+      membership tier, category.
     components:
-    - identity_id: member_spend_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - member_spend_id
-      description: "Identifier of the member spend."
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: membership_tier_identity
+      dataset_columns:
+      - membership_tier_id
+      description: Identifier of the membership tier.
+    - identity_id: category_identity
+      dataset_columns:
+      - category_id
+      description: Identifier of the category.
   columns:
-  - name: member_spend_id
-    description: "Identifier of the member spend."
-  - name: banner_id
-    description: "Banner referenced by this row."
-  - name: member_tier_id
-    description: "Member Tier referenced by this row."
-  - name: age_cohort_id
-    description: "Age Cohort referenced by this row."
   - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: country_id
-    description: "Country referenced by this row."
-  - name: spend_per_member_amount
-    description: "Spend per member."
-  - name: existing_member_carry_flag
-    description: "Whether existing-member spend can carry the business."
-  entity_definitions:
-  - identity_id: member_spend_identity
-    dataset_columns:
-    - member_spend_id
-    entity_universe: complete
-  - identity_id: banner_identity
-    dataset_columns:
-    - banner_id
-    entity_universe: partial
-  - identity_id: member_tier_identity
-    dataset_columns:
-    - member_tier_id
-    entity_universe: partial
-  - identity_id: age_cohort_identity
-    dataset_columns:
-    - age_cohort_id
-    entity_universe: partial
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
-- node_id: sf:merchandise.member.fact_member_tenure
-  descriptor:
-    qualified_name: merchandise.member.fact_member_tenure
-    display_name: "Member Tenure"
-    description: "Spend curve by years of membership. Tenure is not a shelf price."
-    synonyms: []
-    tags:
-    - fact
-    - member
-    - merchandise
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: merchandise.us-east-1
-      database: MERCHANDISE
-      schema: MEMBER
-      object: FACT_MEMBER_TENURE
-      format: table
-  grain:
-    description: "One row is one member tenure."
-    components:
-    - identity_id: member_tenure_identity
-      dataset_columns:
-      - member_tenure_id
-      description: "Identifier of the member tenure."
-  columns:
-  - name: member_tenure_id
-    description: "Identifier of the member tenure."
-  - name: age_cohort_id
-    description: "Age Cohort referenced by this row."
-  - name: member_tier_id
-    description: "Member Tier referenced by this row."
-  - name: banner_id
-    description: "Banner referenced by this row."
-  - name: tenure_year
-    description: "Year of membership."
-  - name: spend_index
-    description: "Spend index versus the first year."
-  - name: lifetime_value_ahead_amount
-    description: "Lifetime value still ahead."
-  entity_definitions:
-  - identity_id: member_tenure_identity
-    dataset_columns:
-    - member_tenure_id
-    entity_universe: complete
-  - identity_id: age_cohort_identity
-    dataset_columns:
-    - age_cohort_id
-    entity_universe: partial
-  - identity_id: member_tier_identity
-    dataset_columns:
-    - member_tier_id
-    entity_universe: partial
-  - identity_id: banner_identity
-    dataset_columns:
-    - banner_id
-    entity_universe: partial
-- node_id: sf:merchandise.demand.fact_traffic
-  descriptor:
-    qualified_name: merchandise.demand.fact_traffic
-    display_name: Traffic
-    description: "Trip quantity. Traffic is not the average ticket."
-    synonyms: []
-    tags:
-    - fact
-    - demand
-    - merchandise
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: merchandise.us-east-1
-      database: MERCHANDISE
-      schema: DEMAND
-      object: FACT_TRAFFIC
-      format: table
-  grain:
-    description: "One row is one traffic."
-    components:
-    - identity_id: traffic_identity
-      dataset_columns:
-      - traffic_id
-      description: "Identifier of the traffic."
-  columns:
-  - name: traffic_id
-    description: "Identifier of the traffic."
-  - name: banner_id
-    description: "Banner referenced by this row."
-  - name: channel_id
-    description: "Channel referenced by this row."
-  - name: country_id
-    description: "Country referenced by this row."
-  - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: income_cohort_id
-    description: "Income Cohort referenced by this row."
-  - name: weather_event_id
-    description: "Weather Event referenced by this row."
-  - name: traffic_quantity
-    description: "Trips or traffic."
-  - name: concern_flag
-    description: "Whether traffic is a concern despite strong sales."
-  entity_definitions:
-  - identity_id: traffic_identity
-    dataset_columns:
-    - traffic_id
-    entity_universe: complete
-  - identity_id: banner_identity
-    dataset_columns:
-    - banner_id
-    entity_universe: partial
-  - identity_id: channel_identity
-    dataset_columns:
-    - channel_id
-    entity_universe: partial
-  - identity_id: country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: income_cohort_identity
-    dataset_columns:
-    - income_cohort_id
-    entity_universe: partial
-  - identity_id: weather_event_identity
-    dataset_columns:
-    - weather_event_id
-    entity_universe: partial
-- node_id: sf:merchandise.member.fact_digital_engagement
-  descriptor:
-    qualified_name: merchandise.member.fact_digital_engagement
-    display_name: "Digital Engagement"
-    description: "Share of members who engage digitally. The share is not a sales amount."
-    synonyms: []
-    tags:
-    - fact
-    - member
-    - merchandise
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: merchandise.us-east-1
-      database: MERCHANDISE
-      schema: MEMBER
-      object: FACT_DIGITAL_ENGAGEMENT
-      format: table
-  grain:
-    description: "One row is one digital engagement."
-    components:
-    - identity_id: digital_engagement_identity
-      dataset_columns:
-      - digital_engagement_id
-      description: "Identifier of the digital engagement."
-  columns:
-  - name: digital_engagement_id
-    description: "Identifier of the digital engagement."
-  - name: banner_id
-    description: "Banner referenced by this row."
-  - name: age_cohort_id
-    description: "Age Cohort referenced by this row."
-  - name: channel_id
-    description: "Channel referenced by this row."
-  - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: engaged_share
-    description: "Share of members engaging digitally."
-  - name: versus_prior_share
-    description: "Change versus the prior period."
-  entity_definitions:
-  - identity_id: digital_engagement_identity
-    dataset_columns:
-    - digital_engagement_id
-    entity_universe: complete
-  - identity_id: banner_identity
-    dataset_columns:
-    - banner_id
-    entity_universe: partial
-  - identity_id: age_cohort_identity
-    dataset_columns:
-    - age_cohort_id
-    entity_universe: partial
-  - identity_id: channel_identity
-    dataset_columns:
-    - channel_id
-    entity_universe: partial
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-- node_id: sf:merchandise.member.fact_household_growth
-  descriptor:
-    qualified_name: merchandise.member.fact_household_growth
-    display_name: "Household Growth"
-    description: "New member households, including international markets."
-    synonyms: []
-    tags:
-    - fact
-    - member
-    - merchandise
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: merchandise.us-east-1
-      database: MERCHANDISE
-      schema: MEMBER
-      object: FACT_HOUSEHOLD_GROWTH
-      format: table
-  grain:
-    description: "One row is one household growth."
-    components:
-    - identity_id: household_growth_identity
-      dataset_columns:
-      - household_growth_id
-      description: "Identifier of the household growth."
-  columns:
-  - name: household_growth_id
-    description: "Identifier of the household growth."
-  - name: country_id
-    description: "Country referenced by this row."
-  - name: banner_id
-    description: "Banner referenced by this row."
-  - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: age_cohort_id
-    description: "Age Cohort referenced by this row."
-  - name: new_household_quantity
-    description: "New households."
-  entity_definitions:
-  - identity_id: household_growth_identity
-    dataset_columns:
-    - household_growth_id
-    entity_universe: complete
-  - identity_id: country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
-  - identity_id: banner_identity
-    dataset_columns:
-    - banner_id
-    entity_universe: partial
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: age_cohort_identity
-    dataset_columns:
-    - age_cohort_id
-    entity_universe: partial
-- node_id: sf:merchandise.demand.fact_delivery_use
-  descriptor:
-    qualified_name: merchandise.demand.fact_delivery_use
-    display_name: "Delivery Use"
-    description: "Share of trips that use third-party delivery. Mix is not the delivery fee."
-    synonyms: []
-    tags:
-    - fact
-    - demand
-    - merchandise
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: merchandise.us-east-1
-      database: MERCHANDISE
-      schema: DEMAND
-      object: FACT_DELIVERY_USE
-      format: table
-  grain:
-    description: "One row is one delivery use."
-    components:
-    - identity_id: delivery_use_identity
-      dataset_columns:
-      - delivery_use_id
-      description: "Identifier of the delivery use."
-  columns:
-  - name: delivery_use_id
-    description: "Identifier of the delivery use."
-  - name: channel_id
-    description: "Channel referenced by this row."
-  - name: age_cohort_id
-    description: "Age Cohort referenced by this row."
-  - name: banner_id
-    description: "Banner referenced by this row."
-  - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: order_share
-    description: "Share of orders on third-party delivery."
-  - name: speed_met_flag
-    description: "Whether speed meets what younger members want."
-  - name: long_term_answer_flag
-    description: "Whether delivery is the long-term answer."
-  entity_definitions:
-  - identity_id: delivery_use_identity
-    dataset_columns:
-    - delivery_use_id
-    entity_universe: complete
-  - identity_id: channel_identity
-    dataset_columns:
-    - channel_id
-    entity_universe: partial
-  - identity_id: age_cohort_identity
-    dataset_columns:
-    - age_cohort_id
-    entity_universe: partial
-  - identity_id: banner_identity
-    dataset_columns:
-    - banner_id
-    entity_universe: partial
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-- node_id: sf:merchandise.member.fact_personalization
-  descriptor:
-    qualified_name: merchandise.member.fact_personalization
-    display_name: Personalization
-    description: "Personalization coverage and lift. Lift is not the member count."
-    synonyms: []
-    tags:
-    - fact
-    - member
-    - merchandise
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: merchandise.us-east-1
-      database: MERCHANDISE
-      schema: MEMBER
-      object: FACT_PERSONALIZATION
-      format: table
-  grain:
-    description: "One row is one personalization."
-    components:
-    - identity_id: personalization_identity
-      dataset_columns:
-      - personalization_id
-      description: "Identifier of the personalization."
-  columns:
-  - name: personalization_id
-    description: "Identifier of the personalization."
-  - name: banner_id
-    description: "Banner referenced by this row."
-  - name: channel_id
-    description: "Channel referenced by this row."
-  - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: coverage_share
-    description: "Share of the member file covered."
-  - name: conversion_lift
-    description: "Conversion lift."
-  - name: attachment_lift
-    description: "Attachment lift."
-  entity_definitions:
-  - identity_id: personalization_identity
-    dataset_columns:
-    - personalization_id
-    entity_universe: complete
-  - identity_id: banner_identity
-    dataset_columns:
-    - banner_id
-    entity_universe: partial
-  - identity_id: channel_identity
-    dataset_columns:
-    - channel_id
-    entity_universe: partial
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-- node_id: sf:merchandise.member.fact_loyalty_response
-  descriptor:
-    qualified_name: merchandise.member.fact_loyalty_response
-    display_name: "Loyalty Response"
-    description: "Membership-program growth by tier. The pace is not a fee."
-    synonyms: []
-    tags:
-    - fact
-    - member
-    - merchandise
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: merchandise.us-east-1
-      database: MERCHANDISE
-      schema: MEMBER
-      object: FACT_LOYALTY_RESPONSE
-      format: table
-  grain:
-    description: "One row is one loyalty response."
-    components:
-    - identity_id: loyalty_response_identity
-      dataset_columns:
-      - loyalty_response_id
-      description: "Identifier of the loyalty response."
-  columns:
-  - name: loyalty_response_id
-    description: "Identifier of the loyalty response."
-  - name: member_tier_id
-    description: "Member Tier referenced by this row."
-  - name: banner_id
-    description: "Banner referenced by this row."
-  - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: response_code
-    description: "How members are responding."
-    value_description: "steady, accelerating"
-  - name: assist_tier_share
-    description: "Share of growth from the assist tier."
-  - name: growth_pace_code
-    description: "Growth pace."
-    value_description: "steady, accelerating"
-  entity_definitions:
-  - identity_id: loyalty_response_identity
-    dataset_columns:
-    - loyalty_response_id
-    entity_universe: complete
-  - identity_id: member_tier_identity
-    dataset_columns:
-    - member_tier_id
-    entity_universe: partial
-  - identity_id: banner_identity
-    dataset_columns:
-    - banner_id
-    entity_universe: partial
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-- node_id: sf:merchandise.demand.fact_income_trade
-  descriptor:
-    qualified_name: merchandise.demand.fact_income_trade
-    display_name: "Income Trade"
-    description: "Traffic by income cohort. The index is not a price."
-    synonyms: []
-    tags:
-    - fact
-    - demand
-    - merchandise
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: merchandise.us-east-1
-      database: MERCHANDISE
-      schema: DEMAND
-      object: FACT_INCOME_TRADE
-      format: table
-  grain:
-    description: "One row is one income trade."
-    components:
-    - identity_id: income_trade_identity
-      dataset_columns:
-      - income_trade_id
-      description: "Identifier of the income trade."
-  columns:
-  - name: income_trade_id
-    description: "Identifier of the income trade."
-  - name: income_cohort_id
-    description: "Income Cohort referenced by this row."
-  - name: banner_id
-    description: "Banner referenced by this row."
-  - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: country_id
-    description: "Country referenced by this row."
-  - name: traffic_index
-    description: "Traffic index for the cohort."
-  - name: trade_in_flag
-    description: "Whether higher-income shoppers are trading in."
-  entity_definitions:
-  - identity_id: income_trade_identity
-    dataset_columns:
-    - income_trade_id
-    entity_universe: complete
-  - identity_id: income_cohort_identity
-    dataset_columns:
-    - income_cohort_id
-    entity_universe: partial
-  - identity_id: banner_identity
-    dataset_columns:
-    - banner_id
-    entity_universe: partial
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
-- node_id: sf:merchandise.demand.fact_trip_frequency
-  descriptor:
-    qualified_name: merchandise.demand.fact_trip_frequency
-    display_name: "Trip Frequency"
-    description: "Trip frequency and basket size index. Frequency is not a unit price."
-    synonyms: []
-    tags:
-    - fact
-    - demand
-    - merchandise
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: merchandise.us-east-1
-      database: MERCHANDISE
-      schema: DEMAND
-      object: FACT_TRIP_FREQUENCY
-      format: table
-  grain:
-    description: "One row is one trip frequency."
-    components:
-    - identity_id: trip_frequency_identity
-      dataset_columns:
-      - trip_frequency_id
-      description: "Identifier of the trip frequency."
-  columns:
-  - name: trip_frequency_id
-    description: "Identifier of the trip frequency."
-  - name: income_cohort_id
-    description: "Income Cohort referenced by this row."
-  - name: banner_id
-    description: "Banner referenced by this row."
-  - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: channel_id
-    description: "Channel referenced by this row."
-  - name: trip_quantity
-    description: Trips.
-  - name: basket_size_index
-    description: "Basket-size index."
-  entity_definitions:
-  - identity_id: trip_frequency_identity
-    dataset_columns:
-    - trip_frequency_id
-    entity_universe: complete
-  - identity_id: income_cohort_identity
-    dataset_columns:
-    - income_cohort_id
-    entity_universe: partial
-  - identity_id: banner_identity
-    dataset_columns:
-    - banner_id
-    entity_universe: partial
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: channel_identity
-    dataset_columns:
-    - channel_id
-    entity_universe: partial
-- node_id: sf:merchandise.demand.fact_assistant_order
-  descriptor:
-    qualified_name: merchandise.demand.fact_assistant_order
-    display_name: "Assistant Order"
-    description: "Order lift from the shopping assistant. Lift quantity is not the assistant's price."
-    synonyms: []
-    tags:
-    - fact
-    - demand
-    - merchandise
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: merchandise.us-east-1
-      database: MERCHANDISE
-      schema: DEMAND
-      object: FACT_ASSISTANT_ORDER
-      format: table
-  grain:
-    description: "One row is one assistant order."
-    components:
-    - identity_id: assistant_order_identity
-      dataset_columns:
-      - assistant_order_id
-      description: "Identifier of the assistant order."
-  columns:
-  - name: assistant_order_id
-    description: "Identifier of the assistant order."
-  - name: channel_id
-    description: "Channel referenced by this row."
-  - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: banner_id
-    description: "Banner referenced by this row."
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: membership_tier_id
+    description: Identifier of the membership tier.
   - name: category_id
-    description: "Category referenced by this row."
-  - name: order_lift_quantity
-    description: "Incremental orders."
+    description: Identifier of the category.
+  - name: spend_per_member_amount
+    description: Spend per member in dollars.
+  - name: member_sales_amount
+    description: Sales to members in dollars.
   entity_definitions:
-  - identity_id: assistant_order_identity
-    dataset_columns:
-    - assistant_order_id
-    entity_universe: complete
-  - identity_id: channel_identity
-    dataset_columns:
-    - channel_id
-    entity_universe: partial
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: banner_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - banner_id
+    - scenario_id
+    entity_universe: partial
+  - identity_id: membership_tier_identity
+    dataset_columns:
+    - membership_tier_id
     entity_universe: partial
   - identity_id: category_identity
     dataset_columns:
     - category_id
     entity_universe: partial
-- node_id: sf:merchandise.demand.fact_monthly_sales
+- node_id: sf:merchandise.member.fact_member_visit
   descriptor:
-    qualified_name: merchandise.demand.fact_monthly_sales
-    display_name: "Monthly Sales"
-    description: "Sales amount for a month. The amount does not store a unit price."
-    synonyms: []
-    tags:
-    - fact
-    - demand
-    - merchandise
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: merchandise.us-east-1
-      database: MERCHANDISE
-      schema: DEMAND
-      object: FACT_MONTHLY_SALES
-      format: table
-  grain:
-    description: "One row is one monthly sales."
-    components:
-    - identity_id: monthly_sales_identity
-      dataset_columns:
-      - monthly_sales_id
-      description: "Identifier of the monthly sales."
-  columns:
-  - name: monthly_sales_id
-    description: "Identifier of the monthly sales."
-  - name: banner_id
-    description: "Banner referenced by this row."
-  - name: calendar_month_id
-    description: "Calendar Month referenced by this row."
-  - name: country_id
-    description: "Country referenced by this row."
-  - name: weather_event_id
-    description: "Weather Event referenced by this row."
-  - name: sales_amount
-    description: "Sales amount."
-  entity_definitions:
-  - identity_id: monthly_sales_identity
-    dataset_columns:
-    - monthly_sales_id
-    entity_universe: complete
-  - identity_id: banner_identity
-    dataset_columns:
-    - banner_id
-    entity_universe: partial
-  - identity_id: calendar_month_identity
-    dataset_columns:
-    - calendar_month_id
-    entity_universe: partial
-  - identity_id: country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
-  - identity_id: weather_event_identity
-    dataset_columns:
-    - weather_event_id
-    entity_universe: partial
-- node_id: sf:merchandise.demand.fact_agent_commerce
-  descriptor:
-    qualified_name: merchandise.demand.fact_agent_commerce
-    display_name: "Agent Commerce"
-    description: "Whether agent-style shopping is covered. Readiness is not a traffic count."
-    synonyms: []
-    tags:
-    - fact
-    - demand
-    - merchandise
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: merchandise.us-east-1
-      database: MERCHANDISE
-      schema: DEMAND
-      object: FACT_AGENT_COMMERCE
-      format: table
-  grain:
-    description: "One row is one agent commerce."
-    components:
-    - identity_id: agent_commerce_identity
-      dataset_columns:
-      - agent_commerce_id
-      description: "Identifier of the agent commerce."
-  columns:
-  - name: agent_commerce_id
-    description: "Identifier of the agent commerce."
-  - name: channel_id
-    description: "Channel referenced by this row."
-  - name: banner_id
-    description: "Banner referenced by this row."
-  - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: interface_ready_flag
-    description: "Whether the digital path is ready for agents."
-  - name: represented_in_answers_flag
-    description: "Whether the brand shows up when a member asks a chatbot."
-  entity_definitions:
-  - identity_id: agent_commerce_identity
-    dataset_columns:
-    - agent_commerce_id
-    entity_universe: complete
-  - identity_id: channel_identity
-    dataset_columns:
-    - channel_id
-    entity_universe: partial
-  - identity_id: banner_identity
-    dataset_columns:
-    - banner_id
-    entity_universe: partial
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-- node_id: sf:merchandise.member.fact_competitor_opening
-  descriptor:
-    qualified_name: merchandise.member.fact_competitor_opening
-    display_name: "Competitor Opening"
-    description: "Nearby competitor openings and the membership effect. The count is not a price."
+    qualified_name: merchandise.member.fact_member_visit
+    display_name: Member Visit
+    description: Visits by member tier.
     synonyms: []
     tags:
     - fact
     - member
-    - merchandise
+    - merchandise-retail
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: merchandise.us-east-1
       database: MERCHANDISE
       schema: MEMBER
-      object: FACT_COMPETITOR_OPENING
+      object: FACT_MEMBER_VISIT
       format: table
   grain:
-    description: "One row is one competitor opening."
+    description: One row is one member visit observation for the combination of fiscal quarter, scenario,
+      membership tier, banner.
     components:
-    - identity_id: competitor_opening_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - competitor_opening_id
-      description: "Identifier of the competitor opening."
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: membership_tier_identity
+      dataset_columns:
+      - membership_tier_id
+      description: Identifier of the membership tier.
+    - identity_id: banner_identity
+      dataset_columns:
+      - banner_id
+      description: Identifier of the banner.
   columns:
-  - name: competitor_opening_id
-    description: "Identifier of the competitor opening."
-  - name: competitor_id
-    description: "Competitor referenced by this row."
-  - name: country_id
-    description: "Country referenced by this row."
   - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: membership_tier_id
+    description: Identifier of the membership tier.
   - name: banner_id
-    description: "Banner referenced by this row."
-  - name: nearby_opening_quantity
-    description: "Nearby competitive openings."
-  - name: membership_hit_flag
-    description: "Whether nearby membership is hit."
+    description: Identifier of the banner.
+  - name: member_visit_count
+    description: Number of member visits.
   entity_definitions:
-  - identity_id: competitor_opening_identity
-    dataset_columns:
-    - competitor_opening_id
-    entity_universe: complete
-  - identity_id: competitor_identity
-    dataset_columns:
-    - competitor_id
-    entity_universe: partial
-  - identity_id: country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: membership_tier_identity
+    dataset_columns:
+    - membership_tier_id
     entity_universe: partial
   - identity_id: banner_identity
     dataset_columns:
     - banner_id
     entity_universe: partial
-- node_id: sf:merchandise.member.fact_digital_offer
+- node_id: sf:merchandise.member.fact_member_retention
   descriptor:
-    qualified_name: merchandise.member.fact_digital_offer
-    display_name: "Digital Offer"
-    description: "Whether the offer fits younger digital members."
+    qualified_name: merchandise.member.fact_member_retention
+    display_name: Member Retention
+    description: Members retained from prior year.
     synonyms: []
     tags:
     - fact
     - member
-    - merchandise
+    - merchandise-retail
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: merchandise.us-east-1
       database: MERCHANDISE
       schema: MEMBER
-      object: FACT_DIGITAL_OFFER
+      object: FACT_MEMBER_RETENTION
       format: table
   grain:
-    description: "One row is one digital offer."
+    description: One row is one member retention observation for the combination of fiscal quarter, scenario,
+      membership program, membership tier.
     components:
-    - identity_id: digital_offer_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - digital_offer_id
-      description: "Identifier of the digital offer."
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: membership_program_identity
+      dataset_columns:
+      - membership_program_id
+      description: Identifier of the membership program.
+    - identity_id: membership_tier_identity
+      dataset_columns:
+      - membership_tier_id
+      description: Identifier of the membership tier.
   columns:
-  - name: digital_offer_id
-    description: "Identifier of the digital offer."
-  - name: age_cohort_id
-    description: "Age Cohort referenced by this row."
-  - name: channel_id
-    description: "Channel referenced by this row."
-  - name: banner_id
-    description: "Banner referenced by this row."
   - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: offer_fits_younger_flag
-    description: "Whether the offer fits younger members."
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: membership_program_id
+    description: Identifier of the membership program.
+  - name: membership_tier_id
+    description: Identifier of the membership tier.
+  - name: retained_member_count
+    description: Number of members retained.
   entity_definitions:
-  - identity_id: digital_offer_identity
-    dataset_columns:
-    - digital_offer_id
-    entity_universe: complete
-  - identity_id: age_cohort_identity
-    dataset_columns:
-    - age_cohort_id
-    entity_universe: partial
-  - identity_id: channel_identity
-    dataset_columns:
-    - channel_id
-    entity_universe: partial
-  - identity_id: banner_identity
-    dataset_columns:
-    - banner_id
-    entity_universe: partial
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: membership_program_identity
+    dataset_columns:
+    - membership_program_id
+    entity_universe: partial
+  - identity_id: membership_tier_identity
+    dataset_columns:
+    - membership_tier_id
+    entity_universe: partial
+- node_id: sf:merchandise.member.fact_digital_member_sales
+  descriptor:
+    qualified_name: merchandise.member.fact_digital_member_sales
+    display_name: Digital Member Sales
+    description: Digital sales to members.
+    synonyms: []
+    tags:
+    - fact
+    - member
+    - merchandise-retail
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: merchandise.us-east-1
+      database: MERCHANDISE
+      schema: MEMBER
+      object: FACT_DIGITAL_MEMBER_SALES
+      format: table
+  grain:
+    description: One row is one digital member sales observation for the combination of fiscal quarter,
+      scenario, membership tier, sales channel.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: membership_tier_identity
+      dataset_columns:
+      - membership_tier_id
+      description: Identifier of the membership tier.
+    - identity_id: sales_channel_identity
+      dataset_columns:
+      - sales_channel_id
+      description: Identifier of the sales channel.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: membership_tier_id
+    description: Identifier of the membership tier.
+  - name: sales_channel_id
+    description: Identifier of the sales channel.
+  - name: digital_member_sales_amount
+    description: Digital sales to members in dollars.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: membership_tier_identity
+    dataset_columns:
+    - membership_tier_id
+    entity_universe: partial
+  - identity_id: sales_channel_identity
+    dataset_columns:
+    - sales_channel_id
+    entity_universe: partial
+- node_id: sf:merchandise.member.fact_membership_fee_per_member
+  descriptor:
+    qualified_name: merchandise.member.fact_membership_fee_per_member
+    display_name: Membership Fee Per Member
+    description: Average membership fee per member; member count is stored on its own fact.
+    synonyms: []
+    tags:
+    - fact
+    - member
+    - merchandise-retail
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: merchandise.us-east-1
+      database: MERCHANDISE
+      schema: MEMBER
+      object: FACT_MEMBERSHIP_FEE_PER_MEMBER
+      format: table
+  grain:
+    description: One row is one membership fee per member observation for the combination of fiscal quarter,
+      scenario, membership program, membership tier.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: membership_program_identity
+      dataset_columns:
+      - membership_program_id
+      description: Identifier of the membership program.
+    - identity_id: membership_tier_identity
+      dataset_columns:
+      - membership_tier_id
+      description: Identifier of the membership tier.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: membership_program_id
+    description: Identifier of the membership program.
+  - name: membership_tier_id
+    description: Identifier of the membership tier.
+  - name: average_fee_per_member_amount
+    description: Average membership fee in dollars per member.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: membership_program_identity
+    dataset_columns:
+    - membership_program_id
+    entity_universe: partial
+  - identity_id: membership_tier_identity
+    dataset_columns:
+    - membership_tier_id
+    entity_universe: partial
+- node_id: sf:merchandise.member.fact_executive_member_share
+  descriptor:
+    qualified_name: merchandise.member.fact_executive_member_share
+    display_name: Executive Member Share
+    description: Executive-tier share of members and sales (a measured share, not a conclusion).
+    synonyms: []
+    tags:
+    - fact
+    - member
+    - merchandise-retail
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: merchandise.us-east-1
+      database: MERCHANDISE
+      schema: MEMBER
+      object: FACT_EXECUTIVE_MEMBER_SHARE
+      format: table
+  grain:
+    description: One row is one executive member share observation for the combination of fiscal quarter,
+      scenario, membership program.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: membership_program_identity
+      dataset_columns:
+      - membership_program_id
+      description: Identifier of the membership program.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: membership_program_id
+    description: Identifier of the membership program.
+  - name: executive_member_count
+    description: Number of executive-tier members.
+  - name: executive_sales_amount
+    description: Sales to executive-tier members in dollars.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: membership_program_identity
+    dataset_columns:
+    - membership_program_id
     entity_universe: partial

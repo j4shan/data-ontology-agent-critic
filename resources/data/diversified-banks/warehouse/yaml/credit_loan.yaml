@@ -1,1567 +1,580 @@
 schema_version: '3'
 nodes:
-- node_id: sf:bank.credit.dim_loan_product
+- node_id: sf:bank.loan.dim_loan_product
   descriptor:
-    qualified_name: bank.credit.dim_loan_product
-    display_name: "Loan Product"
-    description: "Loan product Bank Inc originates."
+    qualified_name: bank.loan.dim_loan_product
+    display_name: Loan Product
+    description: Loan product; commercial real estate is a loan product.
     synonyms: []
     tags:
     - dimension
     - credit
-    - bank
+    - diversified-banks
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: bank.us-east-1
       database: BANK
-      schema: CREDIT
+      schema: LOAN
       object: DIM_LOAN_PRODUCT
       format: table
   grain:
-    description: "One row is one loan product."
+    description: One row is one loan product, identified by loan_product_id.
     components:
     - identity_id: loan_product_identity
       dataset_columns:
       - loan_product_id
-      description: "Identifier of the loan product."
+      description: Identifier of the loan product.
   columns:
   - name: loan_product_id
-    description: "Identifier of the loan product."
-  - name: asset_class_id
-    description: "Asset Class referenced by this row."
-  - name: product_code
-    description: "Loan product code."
-    value_description: "middle_market_ci, traditional_ci, card, mortgage, auto, equities_financing, leveraged, housing, renewable, wholesale"
-  - name: product_name
-    description: "Name of the loan product."
+    description: Identifier of the loan product.
+  - name: loan_product_name
+    description: Name of the loan product.
+  - name: loan_product_code
+    description: Code of the loan product.
+    value_description: commercial_and_industrial, commercial_real_estate, residential_mortgage, home_equity,
+      credit_card, auto, small_business
   entity_definitions:
   - identity_id: loan_product_identity
     dataset_columns:
     - loan_product_id
     entity_universe: complete
-  - identity_id: asset_class_identity
-    dataset_columns:
-    - asset_class_id
-    entity_universe: partial
-- node_id: sf:bank.credit.dim_card_program
+- node_id: sf:bank.asset.dim_asset_class
   descriptor:
-    qualified_name: bank.credit.dim_card_program
-    display_name: "Card Program"
-    description: "Card program Bank Inc issues or migrates."
+    qualified_name: bank.asset.dim_asset_class
+    display_name: Asset Class
+    description: Balance-sheet asset class, distinct from the loan product.
     synonyms: []
     tags:
     - dimension
     - credit
-    - bank
+    - diversified-banks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: bank.us-east-1
+      database: BANK
+      schema: ASSET
+      object: DIM_ASSET_CLASS
+      format: table
+  grain:
+    description: One row is one asset class, identified by asset_class_id.
+    components:
+    - identity_id: asset_class_identity
+      dataset_columns:
+      - asset_class_id
+      description: Identifier of the asset class.
+  columns:
+  - name: asset_class_id
+    description: Identifier of the asset class.
+  - name: asset_class_name
+    description: Name of the asset class.
+  - name: asset_class_code
+    description: Code of the asset class.
+    value_description: loans, securities, derivatives, cash, other_earning_assets
+  entity_definitions:
+  - identity_id: asset_class_identity
+    dataset_columns:
+    - asset_class_id
+    entity_universe: complete
+- node_id: sf:bank.credit.dim_credit_quality
+  descriptor:
+    qualified_name: bank.credit.dim_credit_quality
+    display_name: Credit Quality
+    description: Operational credit-quality classification of a loan portfolio.
+    synonyms: []
+    tags:
+    - dimension
+    - credit
+    - diversified-banks
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: bank.us-east-1
       database: BANK
       schema: CREDIT
+      object: DIM_CREDIT_QUALITY
+      format: table
+  grain:
+    description: One row is one credit quality, identified by credit_quality_id.
+    components:
+    - identity_id: credit_quality_identity
+      dataset_columns:
+      - credit_quality_id
+      description: Identifier of the credit quality.
+  columns:
+  - name: credit_quality_id
+    description: Identifier of the credit quality.
+  - name: credit_quality_name
+    description: Name of the credit quality.
+  - name: credit_quality_code
+    description: Code of the credit quality.
+    value_description: performing, watch, nonperforming, charged_off
+  entity_definitions:
+  - identity_id: credit_quality_identity
+    dataset_columns:
+    - credit_quality_id
+    entity_universe: complete
+- node_id: sf:bank.card.dim_card_program
+  descriptor:
+    qualified_name: bank.card.dim_card_program
+    display_name: Card Program
+    description: Consumer and commercial card program.
+    synonyms: []
+    tags:
+    - dimension
+    - credit
+    - diversified-banks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: bank.us-east-1
+      database: BANK
+      schema: CARD
       object: DIM_CARD_PROGRAM
       format: table
   grain:
-    description: "One row is one card program."
+    description: One row is one card program, identified by card_program_id.
     components:
     - identity_id: card_program_identity
       dataset_columns:
       - card_program_id
-      description: "Identifier of the card program."
+      description: Identifier of the card program.
   columns:
   - name: card_program_id
-    description: "Identifier of the card program."
-  - name: program_code
-    description: "Card program code."
-    value_description: "consumer_revolving, premium_sapphire, apple_card"
-  - name: program_name
-    description: "Name of the card program."
+    description: Identifier of the card program.
+  - name: card_program_name
+    description: Name of the card program.
+  - name: card_program_code
+    description: Code of the card program.
+    value_description: sapphire, freedom, united_co_brand, amazon_co_brand, commercial_card
   entity_definitions:
   - identity_id: card_program_identity
     dataset_columns:
     - card_program_id
     entity_universe: complete
-- node_id: sf:bank.credit.dim_borrower_purpose
+- node_id: sf:bank.loan.dim_collateral_type
   descriptor:
-    qualified_name: bank.credit.dim_borrower_purpose
-    display_name: "Borrower Purpose"
-    description: "Purpose of a commercial borrowing."
+    qualified_name: bank.loan.dim_collateral_type
+    display_name: Collateral Type
+    description: Collateral backing a loan product.
     synonyms: []
     tags:
     - dimension
     - credit
-    - bank
+    - diversified-banks
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: bank.us-east-1
       database: BANK
-      schema: CREDIT
-      object: DIM_BORROWER_PURPOSE
-      format: table
-  grain:
-    description: "One row is one borrower purpose."
-    components:
-    - identity_id: borrower_purpose_identity
-      dataset_columns:
-      - borrower_purpose_id
-      description: "Identifier of the borrower purpose."
-  columns:
-  - name: borrower_purpose_id
-    description: "Identifier of the borrower purpose."
-  - name: purpose_code
-    description: "Purpose code."
-    value_description: "ai_capex, defense, supply_chain, inventory, ma_financing, hyperscale, traditional_ci, housing, renewable, other"
-  - name: purpose_name
-    description: "Name of the purpose."
-  entity_definitions:
-  - identity_id: borrower_purpose_identity
-    dataset_columns:
-    - borrower_purpose_id
-    entity_universe: complete
-- node_id: sf:bank.credit.dim_collateral_type
-  descriptor:
-    qualified_name: bank.credit.dim_collateral_type
-    display_name: "Collateral Type"
-    description: "Collateral behind a Bank Inc loan."
-    synonyms: []
-    tags:
-    - dimension
-    - credit
-    - bank
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: bank.us-east-1
-      database: BANK
-      schema: CREDIT
+      schema: LOAN
       object: DIM_COLLATERAL_TYPE
       format: table
   grain:
-    description: "One row is one collateral type."
+    description: One row is one collateral type, identified by collateral_type_id.
     components:
     - identity_id: collateral_type_identity
       dataset_columns:
       - collateral_type_id
-      description: "Identifier of the collateral type."
+      description: Identifier of the collateral type.
   columns:
   - name: collateral_type_id
-    description: "Identifier of the collateral type."
-  - name: collateral_code
-    description: "Collateral code."
-    value_description: "unsecured, receivables, securities, project, real_estate"
-  - name: collateral_name
-    description: "Name of the collateral."
+    description: Identifier of the collateral type.
+  - name: collateral_type_name
+    description: Name of the collateral type.
+  - name: collateral_type_code
+    description: Code of the collateral type.
+    value_description: real_estate, receivables, equipment, unsecured, other
   entity_definitions:
   - identity_id: collateral_type_identity
     dataset_columns:
     - collateral_type_id
     entity_universe: complete
-- node_id: sf:bank.credit.dim_credit_category
+- node_id: sf:bank.loan.fact_loan_balance
   descriptor:
-    qualified_name: bank.credit.dim_credit_category
-    display_name: "Credit Category"
-    description: "Credit book used for losses and underwriting."
-    synonyms: []
-    tags:
-    - dimension
-    - credit
-    - bank
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: bank.us-east-1
-      database: BANK
-      schema: CREDIT
-      object: DIM_CREDIT_CATEGORY
-      format: table
-  grain:
-    description: "One row is one credit category."
-    components:
-    - identity_id: credit_category_identity
-      dataset_columns:
-      - credit_category_id
-      description: "Identifier of the credit category."
-  columns:
-  - name: credit_category_id
-    description: "Identifier of the credit category."
-  - name: category_code
-    description: "Credit category code."
-    value_description: "consumer, commercial, corporate, card, leveraged, single_b, double_b"
-  - name: category_name
-    description: "Name of the credit category."
-  entity_definitions:
-  - identity_id: credit_category_identity
-    dataset_columns:
-    - credit_category_id
-    entity_universe: complete
-- node_id: sf:bank.credit.dim_loss_category
-  descriptor:
-    qualified_name: bank.credit.dim_loss_category
-    display_name: "Loss Category"
-    description: "Category in which a credit loss is tracked."
-    synonyms: []
-    tags:
-    - dimension
-    - credit
-    - bank
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: bank.us-east-1
-      database: BANK
-      schema: CREDIT
-      object: DIM_LOSS_CATEGORY
-      format: table
-  grain:
-    description: "One row is one loss category."
-    components:
-    - identity_id: loss_category_identity
-      dataset_columns:
-      - loss_category_id
-      description: "Identifier of the loss category."
-  columns:
-  - name: loss_category_id
-    description: "Identifier of the loss category."
-  - name: loss_code
-    description: "Loss category code."
-    value_description: "card, consumer, commercial, corporate, leveraged"
-  - name: loss_name
-    description: "Name of the loss category."
-  entity_definitions:
-  - identity_id: loss_category_identity
-    dataset_columns:
-    - loss_category_id
-    entity_universe: complete
-- node_id: sf:bank.credit.dim_underwriting_term
-  descriptor:
-    qualified_name: bank.credit.dim_underwriting_term
-    display_name: "Underwriting Term"
-    description: "Term competitors may loosen."
-    synonyms: []
-    tags:
-    - dimension
-    - credit
-    - bank
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: bank.us-east-1
-      database: BANK
-      schema: CREDIT
-      object: DIM_UNDERWRITING_TERM
-      format: table
-  grain:
-    description: "One row is one underwriting term."
-    components:
-    - identity_id: underwriting_term_identity
-      dataset_columns:
-      - underwriting_term_id
-      description: "Identifier of the underwriting term."
-  columns:
-  - name: underwriting_term_id
-    description: "Identifier of the underwriting term."
-  - name: term_code
-    description: "Underwriting term code."
-    value_description: "covenant, rate_exposure, advance, tenor"
-  - name: term_name
-    description: "Name of the term."
-  entity_definitions:
-  - identity_id: underwriting_term_identity
-    dataset_columns:
-    - underwriting_term_id
-    entity_universe: complete
-- node_id: sf:bank.credit.dim_macro_scenario
-  descriptor:
-    qualified_name: bank.credit.dim_macro_scenario
-    display_name: "Macro Scenario"
-    description: "Macro scenario weighted into the reserve."
-    synonyms: []
-    tags:
-    - dimension
-    - credit
-    - bank
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: bank.us-east-1
-      database: BANK
-      schema: CREDIT
-      object: DIM_MACRO_SCENARIO
-      format: table
-  grain:
-    description: "One row is one macro scenario."
-    components:
-    - identity_id: macro_scenario_identity
-      dataset_columns:
-      - macro_scenario_id
-      description: "Identifier of the macro scenario."
-  columns:
-  - name: macro_scenario_id
-    description: "Identifier of the macro scenario."
-  - name: scenario_code
-    description: "Macro scenario code."
-    value_description: "base, downside, recession"
-  - name: scenario_name
-    description: "Name of the macro scenario."
-  entity_definitions:
-  - identity_id: macro_scenario_identity
-    dataset_columns:
-    - macro_scenario_id
-    entity_universe: complete
-- node_id: sf:bank.credit.dim_exposure_ring
-  descriptor:
-    qualified_name: bank.credit.dim_exposure_ring
-    display_name: "Exposure Ring"
-    description: "Whether a data-center exposure is direct or one step removed."
-    synonyms: []
-    tags:
-    - dimension
-    - credit
-    - bank
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: bank.us-east-1
-      database: BANK
-      schema: CREDIT
-      object: DIM_EXPOSURE_RING
-      format: table
-  grain:
-    description: "One row is one exposure ring."
-    components:
-    - identity_id: exposure_ring_identity
-      dataset_columns:
-      - exposure_ring_id
-      description: "Identifier of the exposure ring."
-  columns:
-  - name: exposure_ring_id
-    description: "Identifier of the exposure ring."
-  - name: ring_code
-    description: "Exposure ring code."
-    value_description: "direct_project, second_order"
-  - name: ring_name
-    description: "Name of the exposure ring."
-  entity_definitions:
-  - identity_id: exposure_ring_identity
-    dataset_columns:
-    - exposure_ring_id
-    entity_universe: complete
-- node_id: sf:bank.credit.fact_loan_balance
-  descriptor:
-    qualified_name: bank.credit.fact_loan_balance
-    display_name: "Loan Balance"
-    description: "Loan quantity. The balance does not store the credit spread."
+    qualified_name: bank.loan.fact_loan_balance
+    display_name: Loan Balance
+    description: Loan balances outstanding.
     synonyms: []
     tags:
     - fact
     - credit
-    - bank
+    - diversified-banks
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: bank.us-east-1
       database: BANK
-      schema: CREDIT
+      schema: LOAN
       object: FACT_LOAN_BALANCE
       format: table
   grain:
-    description: "One row is one loan balance."
+    description: One row is one loan balance observation for the combination of fiscal quarter, scenario,
+      loan product, industry client type.
     components:
-    - identity_id: loan_balance_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - loan_balance_id
-      description: "Identifier of the loan balance."
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: loan_product_identity
+      dataset_columns:
+      - loan_product_id
+      description: Identifier of the loan product.
+    - identity_id: industry_client_type_identity
+      dataset_columns:
+      - industry_client_type_id
+      description: Identifier of the industry client type.
   columns:
-  - name: loan_balance_id
-    description: "Identifier of the loan balance."
-  - name: loan_product_id
-    description: "Loan Product referenced by this row."
-  - name: customer_segment_id
-    description: "Customer Segment referenced by this row."
-  - name: country_id
-    description: "Country referenced by this row."
-  - name: business_line_id
-    description: "Business Line referenced by this row."
   - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: borrower_purpose_id
-    description: "Borrower Purpose referenced by this row."
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: loan_product_id
+    description: Identifier of the loan product.
+  - name: industry_client_type_id
+    description: Identifier of the industry client type.
   - name: loan_balance_amount
-    description: "Loan balance amount."
-  - name: growth_rate
-    description: "Loan growth rate."
-  - name: sluggish_flag
-    description: "Whether the book is sluggish."
+    description: Loan balance in dollars.
+  - name: average_loan_balance_amount
+    description: Average loan balance in dollars for the quarter.
   entity_definitions:
-  - identity_id: loan_balance_identity
-    dataset_columns:
-    - loan_balance_id
-    entity_universe: complete
-  - identity_id: loan_product_identity
-    dataset_columns:
-    - loan_product_id
-    entity_universe: partial
-  - identity_id: customer_segment_identity
-    dataset_columns:
-    - customer_segment_id
-    entity_universe: partial
-  - identity_id: country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
-  - identity_id: business_line_identity
-    dataset_columns:
-    - business_line_id
-    entity_universe: partial
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: borrower_purpose_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - borrower_purpose_id
+    - scenario_id
     entity_universe: partial
-- node_id: sf:bank.credit.fact_loan_origination
+  - identity_id: loan_product_identity
+    dataset_columns:
+    - loan_product_id
+    entity_universe: partial
+  - identity_id: industry_client_type_identity
+    dataset_columns:
+    - industry_client_type_id
+    entity_universe: partial
+- node_id: sf:bank.loan.fact_loan_origination
   descriptor:
-    qualified_name: bank.credit.fact_loan_origination
-    display_name: "Loan Origination"
-    description: "Origination quantity. Originations do not store a spread."
+    qualified_name: bank.loan.fact_loan_origination
+    display_name: Loan Origination
+    description: Loans originated in the quarter.
     synonyms: []
     tags:
     - fact
     - credit
-    - bank
+    - diversified-banks
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: bank.us-east-1
       database: BANK
-      schema: CREDIT
+      schema: LOAN
       object: FACT_LOAN_ORIGINATION
       format: table
   grain:
-    description: "One row is one loan origination."
+    description: One row is one loan origination observation for the combination of fiscal quarter, scenario,
+      loan product, industry client type.
     components:
-    - identity_id: loan_origination_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - loan_origination_id
-      description: "Identifier of the loan origination."
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: loan_product_identity
+      dataset_columns:
+      - loan_product_id
+      description: Identifier of the loan product.
+    - identity_id: industry_client_type_identity
+      dataset_columns:
+      - industry_client_type_id
+      description: Identifier of the industry client type.
   columns:
-  - name: loan_origination_id
-    description: "Identifier of the loan origination."
-  - name: loan_product_id
-    description: "Loan Product referenced by this row."
-  - name: customer_segment_id
-    description: "Customer Segment referenced by this row."
   - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: country_id
-    description: "Country referenced by this row."
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: loan_product_id
+    description: Identifier of the loan product.
+  - name: industry_client_type_id
+    description: Identifier of the industry client type.
   - name: origination_amount
-    description: "Amount originated in the period."
+    description: Loans originated in dollars.
+  - name: origination_count
+    description: Number of loans originated.
   entity_definitions:
-  - identity_id: loan_origination_identity
-    dataset_columns:
-    - loan_origination_id
-    entity_universe: complete
-  - identity_id: loan_product_identity
-    dataset_columns:
-    - loan_product_id
-    entity_universe: partial
-  - identity_id: customer_segment_identity
-    dataset_columns:
-    - customer_segment_id
-    entity_universe: partial
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: country_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - country_id
+    - scenario_id
     entity_universe: partial
-- node_id: sf:bank.credit.fact_line_utilization
+  - identity_id: loan_product_identity
+    dataset_columns:
+    - loan_product_id
+    entity_universe: partial
+  - identity_id: industry_client_type_identity
+    dataset_columns:
+    - industry_client_type_id
+    entity_universe: partial
+- node_id: sf:bank.loan.fact_line_utilization
   descriptor:
-    qualified_name: bank.credit.fact_line_utilization
-    display_name: "Line Utilization"
-    description: "Line utilization. Utilization is not a loan price."
+    qualified_name: bank.loan.fact_line_utilization
+    display_name: Line Utilization
+    description: Drawn and undrawn committed credit lines.
     synonyms: []
     tags:
     - fact
     - credit
-    - bank
+    - diversified-banks
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: bank.us-east-1
       database: BANK
-      schema: CREDIT
+      schema: LOAN
       object: FACT_LINE_UTILIZATION
       format: table
   grain:
-    description: "One row is one line utilization."
+    description: One row is one line utilization observation for the combination of fiscal quarter, scenario,
+      loan product, industry client type.
     components:
-    - identity_id: line_utilization_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - line_utilization_id
-      description: "Identifier of the line utilization."
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: loan_product_identity
+      dataset_columns:
+      - loan_product_id
+      description: Identifier of the loan product.
+    - identity_id: industry_client_type_identity
+      dataset_columns:
+      - industry_client_type_id
+      description: Identifier of the industry client type.
   columns:
-  - name: line_utilization_id
-    description: "Identifier of the line utilization."
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
   - name: loan_product_id
-    description: "Loan Product referenced by this row."
-  - name: customer_segment_id
-    description: "Customer Segment referenced by this row."
-  - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: utilization_rate
-    description: "Share of commitments drawn."
-  - name: defensive_draw_flag
-    description: "Whether draws look defensive rather than ordinary."
+    description: Identifier of the loan product.
+  - name: industry_client_type_id
+    description: Identifier of the industry client type.
+  - name: drawn_balance_amount
+    description: Drawn line balance in dollars.
+  - name: undrawn_commitment_amount
+    description: Undrawn commitment in dollars.
   entity_definitions:
-  - identity_id: line_utilization_identity
-    dataset_columns:
-    - line_utilization_id
-    entity_universe: complete
-  - identity_id: loan_product_identity
-    dataset_columns:
-    - loan_product_id
-    entity_universe: partial
-  - identity_id: customer_segment_identity
-    dataset_columns:
-    - customer_segment_id
-    entity_universe: partial
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-- node_id: sf:bank.credit.fact_loan_outlook
-  descriptor:
-    qualified_name: bank.credit.fact_loan_outlook
-    display_name: "Loan Outlook"
-    description: "Direction of loan demand. The outlook does not store a spread."
-    synonyms: []
-    tags:
-    - fact
-    - credit
-    - bank
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: bank.us-east-1
-      database: BANK
-      schema: CREDIT
-      object: FACT_LOAN_OUTLOOK
-      format: table
-  grain:
-    description: "One row is one loan outlook."
-    components:
-    - identity_id: loan_outlook_identity
-      dataset_columns:
-      - loan_outlook_id
-      description: "Identifier of the loan outlook."
-  columns:
-  - name: loan_outlook_id
-    description: "Identifier of the loan outlook."
-  - name: loan_product_id
-    description: "Loan Product referenced by this row."
-  - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: country_id
-    description: "Country referenced by this row."
-  - name: borrower_purpose_id
-    description: "Borrower Purpose referenced by this row."
-  - name: outlook_direction
-    description: "Demand direction."
-    value_description: "broadening, narrow, flat, up"
-  - name: confident_flag
-    description: "Whether the pipeline confidence is high."
-  - name: broadening_flag
-    description: "Whether demand is moving beyond a single purpose."
-  entity_definitions:
-  - identity_id: loan_outlook_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - loan_outlook_id
-    entity_universe: complete
-  - identity_id: loan_product_identity
-    dataset_columns:
-    - loan_product_id
-    entity_universe: partial
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
-  - identity_id: borrower_purpose_identity
-    dataset_columns:
-    - borrower_purpose_id
-    entity_universe: partial
-- node_id: sf:bank.credit.fact_credit_loss
-  descriptor:
-    qualified_name: bank.credit.fact_credit_loss
-    display_name: "Credit Loss"
-    description: "Credit loss rate. The loss rate does not store the loan balance."
-    synonyms: []
-    tags:
-    - fact
-    - credit
-    - bank
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: bank.us-east-1
-      database: BANK
-      schema: CREDIT
-      object: FACT_CREDIT_LOSS
-      format: table
-  grain:
-    description: "One row is one credit loss."
-    components:
-    - identity_id: credit_loss_identity
-      dataset_columns:
-      - credit_loss_id
-      description: "Identifier of the credit loss."
-  columns:
-  - name: credit_loss_id
-    description: "Identifier of the credit loss."
-  - name: loss_category_id
-    description: "Loss Category referenced by this row."
-  - name: credit_category_id
-    description: "Credit Category referenced by this row."
-  - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: customer_segment_id
-    description: "Customer Segment referenced by this row."
-  - name: loss_rate
-    description: "Loss rate."
-  - name: below_trend_flag
-    description: "Whether losses are below trend."
-  entity_definitions:
-  - identity_id: credit_loss_identity
-    dataset_columns:
-    - credit_loss_id
-    entity_universe: complete
-  - identity_id: loss_category_identity
-    dataset_columns:
-    - loss_category_id
-    entity_universe: partial
-  - identity_id: credit_category_identity
-    dataset_columns:
-    - credit_category_id
-    entity_universe: partial
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: customer_segment_identity
-    dataset_columns:
-    - customer_segment_id
-    entity_universe: partial
-- node_id: sf:bank.credit.fact_underwriting_stance
-  descriptor:
-    qualified_name: bank.credit.fact_underwriting_stance
-    display_name: "Underwriting Stance"
-    description: "Whether underwriting is turning risk-on. Stance is not a balance."
-    synonyms: []
-    tags:
-    - fact
-    - credit
-    - bank
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: bank.us-east-1
-      database: BANK
-      schema: CREDIT
-      object: FACT_UNDERWRITING_STANCE
-      format: table
-  grain:
-    description: "One row is one underwriting stance."
-    components:
-    - identity_id: underwriting_stance_identity
-      dataset_columns:
-      - underwriting_stance_id
-      description: "Identifier of the underwriting stance."
-  columns:
-  - name: underwriting_stance_id
-    description: "Identifier of the underwriting stance."
-  - name: competitor_id
-    description: "Competitor referenced by this row."
-  - name: credit_category_id
-    description: "Credit Category referenced by this row."
-  - name: underwriting_term_id
-    description: "Underwriting Term referenced by this row."
-  - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: risk_on_flag
-    description: "Whether standards are easing."
-  - name: covenant_loosening_flag
-    description: "Whether competitor covenants are loosening."
-  - name: standards_held_flag
-    description: "Whether Bank Inc held its own standards."
-  entity_definitions:
-  - identity_id: underwriting_stance_identity
-    dataset_columns:
-    - underwriting_stance_id
-    entity_universe: complete
-  - identity_id: competitor_identity
-    dataset_columns:
-    - competitor_id
-    entity_universe: partial
-  - identity_id: credit_category_identity
-    dataset_columns:
-    - credit_category_id
-    entity_universe: partial
-  - identity_id: underwriting_term_identity
-    dataset_columns:
-    - underwriting_term_id
-    entity_universe: partial
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-- node_id: sf:bank.credit.fact_private_credit_book
-  descriptor:
-    qualified_name: bank.credit.fact_private_credit_book
-    display_name: "Private Credit Book"
-    description: "Private-credit quantity and whether Bank Inc would have done the credit. Quantity is not the spread."
-    synonyms: []
-    tags:
-    - fact
-    - credit
-    - bank
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: bank.us-east-1
-      database: BANK
-      schema: CREDIT
-      object: FACT_PRIVATE_CREDIT_BOOK
-      format: table
-  grain:
-    description: "One row is one private credit book."
-    components:
-    - identity_id: private_credit_book_identity
-      dataset_columns:
-      - private_credit_book_id
-      description: "Identifier of the private credit book."
-  columns:
-  - name: private_credit_book_id
-    description: "Identifier of the private credit book."
-  - name: loan_product_id
-    description: "Loan Product referenced by this row."
-  - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: collateral_type_id
-    description: "Collateral Type referenced by this row."
-  - name: migrated_amount
-    description: "Volume that moved to private credit."
-  - name: bank_would_not_have_done_flag
-    description: "Whether the bank would have declined the credit."
-  - name: recapture_flag
-    description: "Whether share can be recaptured."
-  - name: systemic_flag
-    description: "Whether a private-credit default cycle looks systemic."
-  - name: exposure_amount
-    description: "Bank Inc exposure to the private-credit book."
-  entity_definitions:
-  - identity_id: private_credit_book_identity
-    dataset_columns:
-    - private_credit_book_id
-    entity_universe: complete
-  - identity_id: loan_product_identity
-    dataset_columns:
-    - loan_product_id
-    entity_universe: partial
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: collateral_type_identity
-    dataset_columns:
-    - collateral_type_id
-    entity_universe: partial
-- node_id: sf:bank.credit.fact_reserve_build
-  descriptor:
-    qualified_name: bank.credit.fact_reserve_build
-    display_name: "Reserve Build"
-    description: "Reserve amount and the scenario weight behind it. The reserve is not a loss rate."
-    synonyms: []
-    tags:
-    - fact
-    - credit
-    - bank
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: bank.us-east-1
-      database: BANK
-      schema: CREDIT
-      object: FACT_RESERVE_BUILD
-      format: table
-  grain:
-    description: "One row is one reserve build."
-    components:
-    - identity_id: reserve_build_identity
-      dataset_columns:
-      - reserve_build_id
-      description: "Identifier of the reserve build."
-  columns:
-  - name: reserve_build_id
-    description: "Identifier of the reserve build."
-  - name: macro_scenario_id
-    description: "Macro Scenario referenced by this row."
-  - name: credit_category_id
-    description: "Credit Category referenced by this row."
-  - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: reserve_amount
-    description: "Reserve stock or build."
-  - name: scenario_weight
-    description: "Weight on the macro scenario."
-  entity_definitions:
-  - identity_id: reserve_build_identity
-    dataset_columns:
-    - reserve_build_id
-    entity_universe: complete
-  - identity_id: macro_scenario_identity
-    dataset_columns:
-    - macro_scenario_id
-    entity_universe: partial
-  - identity_id: credit_category_identity
-    dataset_columns:
-    - credit_category_id
-    entity_universe: partial
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-- node_id: sf:bank.credit.fact_card_balance
-  descriptor:
-    qualified_name: bank.credit.fact_card_balance
-    display_name: "Card Balance"
-    description: "Card balance quantity. The balance does not store the yield or the fee."
-    synonyms: []
-    tags:
-    - fact
-    - credit
-    - bank
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: bank.us-east-1
-      database: BANK
-      schema: CREDIT
-      object: FACT_CARD_BALANCE
-      format: table
-  grain:
-    description: "One row is one card balance."
-    components:
-    - identity_id: card_balance_identity
-      dataset_columns:
-      - card_balance_id
-      description: "Identifier of the card balance."
-  columns:
-  - name: card_balance_id
-    description: "Identifier of the card balance."
-  - name: card_program_id
-    description: "Card Program referenced by this row."
-  - name: customer_segment_id
-    description: "Customer Segment referenced by this row."
-  - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: card_balance_amount
-    description: "Card balance amount."
-  - name: growth_rate
-    description: "Card balance growth rate."
-  - name: on_five_percent_path_flag
-    description: "Whether the book is still on a path near 5 percent growth."
-  entity_definitions:
-  - identity_id: card_balance_identity
-    dataset_columns:
-    - card_balance_id
-    entity_universe: complete
-  - identity_id: card_program_identity
-    dataset_columns:
-    - card_program_id
-    entity_universe: partial
-  - identity_id: customer_segment_identity
-    dataset_columns:
-    - customer_segment_id
-    entity_universe: partial
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-- node_id: sf:bank.credit.fact_card_fee
-  descriptor:
-    qualified_name: bank.credit.fact_card_fee
-    display_name: "Card Fee"
-    description: "Card fee. The fee does not store spend quantity or the revolving balance."
-    synonyms: []
-    tags:
-    - fact
-    - credit
-    - bank
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: bank.us-east-1
-      database: BANK
-      schema: CREDIT
-      object: FACT_CARD_FEE
-      format: table
-  grain:
-    description: "One row is one card fee."
-    components:
-    - identity_id: card_fee_identity
-      dataset_columns:
-      - card_fee_id
-      description: "Identifier of the card fee."
-  columns:
-  - name: card_fee_id
-    description: "Identifier of the card fee."
-  - name: card_program_id
-    description: "Card Program referenced by this row."
-  - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: fee_amount
-    description: "Card fee amount."
-  - name: fee_down_flag
-    description: "Whether fees fell while spend rose."
-  entity_definitions:
-  - identity_id: card_fee_identity
-    dataset_columns:
-    - card_fee_id
-    entity_universe: complete
-  - identity_id: card_program_identity
-    dataset_columns:
-    - card_program_id
-    entity_universe: partial
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-- node_id: sf:bank.credit.fact_card_yield
-  descriptor:
-    qualified_name: bank.credit.fact_card_yield
-    display_name: "Card Yield"
-    description: "Card yield. The yield does not store the card balance."
-    synonyms: []
-    tags:
-    - fact
-    - credit
-    - bank
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: bank.us-east-1
-      database: BANK
-      schema: CREDIT
-      object: FACT_CARD_YIELD
-      format: table
-  grain:
-    description: "One row is one card yield."
-    components:
-    - identity_id: card_yield_identity
-      dataset_columns:
-      - card_yield_id
-      description: "Identifier of the card yield."
-  columns:
-  - name: card_yield_id
-    description: "Identifier of the card yield."
-  - name: card_program_id
-    description: "Card Program referenced by this row."
-  - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: rate_scenario_id
-    description: "Rate Scenario referenced by this row."
-  - name: yield_rate
-    description: "Card yield."
-  - name: cap_near_ten_flag
-    description: "Whether a cap near 10 percent would apply."
-  - name: product_change_flag
-    description: "Whether the issuer would change the product under a cap."
-  entity_definitions:
-  - identity_id: card_yield_identity
-    dataset_columns:
-    - card_yield_id
-    entity_universe: complete
-  - identity_id: card_program_identity
-    dataset_columns:
-    - card_program_id
-    entity_universe: partial
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: rate_scenario_identity
-    dataset_columns:
-    - rate_scenario_id
-    entity_universe: partial
-- node_id: sf:bank.credit.fact_collateral_standard
-  descriptor:
-    qualified_name: bank.credit.fact_collateral_standard
-    display_name: "Collateral Standard"
-    description: "Collateral standard. The standard index is not a loan quantity."
-    synonyms: []
-    tags:
-    - fact
-    - credit
-    - bank
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: bank.us-east-1
-      database: BANK
-      schema: CREDIT
-      object: FACT_COLLATERAL_STANDARD
-      format: table
-  grain:
-    description: "One row is one collateral standard."
-    components:
-    - identity_id: collateral_standard_identity
-      dataset_columns:
-      - collateral_standard_id
-      description: "Identifier of the collateral standard."
-  columns:
-  - name: collateral_standard_id
-    description: "Identifier of the collateral standard."
-  - name: collateral_type_id
-    description: "Collateral Type referenced by this row."
-  - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: loan_product_id
-    description: "Loan Product referenced by this row."
-  - name: tightening_flag
-    description: "Whether collateral standards are tightening."
-  - name: standard_index
-    description: "Collateral standard versus the prior book."
-  entity_definitions:
-  - identity_id: collateral_standard_identity
-    dataset_columns:
-    - collateral_standard_id
-    entity_universe: complete
-  - identity_id: collateral_type_identity
-    dataset_columns:
-    - collateral_type_id
-    entity_universe: partial
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
+    - scenario_id
     entity_universe: partial
   - identity_id: loan_product_identity
     dataset_columns:
     - loan_product_id
     entity_universe: partial
-- node_id: sf:bank.credit.fact_credit_enhancement
+  - identity_id: industry_client_type_identity
+    dataset_columns:
+    - industry_client_type_id
+    entity_universe: partial
+- node_id: sf:bank.credit.fact_provision_expense
   descriptor:
-    qualified_name: bank.credit.fact_credit_enhancement
-    display_name: "Credit Enhancement"
-    description: "Credit enhancement that absorbs loss. Enhancement is not the loan quantity."
+    qualified_name: bank.credit.fact_provision_expense
+    display_name: Provision Expense
+    description: 'Provision for credit losses: the flow expense recognized in the quarter.'
     synonyms: []
     tags:
     - fact
     - credit
-    - bank
+    - diversified-banks
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: bank.us-east-1
       database: BANK
       schema: CREDIT
-      object: FACT_CREDIT_ENHANCEMENT
+      object: FACT_PROVISION_EXPENSE
       format: table
   grain:
-    description: "One row is one credit enhancement."
+    description: One row is one provision expense observation for the combination of fiscal quarter, scenario,
+      loan product.
     components:
-    - identity_id: credit_enhancement_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - credit_enhancement_id
-      description: "Identifier of the credit enhancement."
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: loan_product_identity
+      dataset_columns:
+      - loan_product_id
+      description: Identifier of the loan product.
   columns:
-  - name: credit_enhancement_id
-    description: "Identifier of the credit enhancement."
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
   - name: loan_product_id
-    description: "Loan Product referenced by this row."
-  - name: collateral_type_id
-    description: "Collateral Type referenced by this row."
-  - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: enhancement_rate
-    description: "Credit enhancement."
-  - name: loss_absorption_rate
-    description: "Loss the enhancement can absorb."
+    description: Identifier of the loan product.
+  - name: provision_expense_amount
+    description: Provision for credit losses in dollars (flow for the quarter).
   entity_definitions:
-  - identity_id: credit_enhancement_identity
-    dataset_columns:
-    - credit_enhancement_id
-    entity_universe: complete
-  - identity_id: loan_product_identity
-    dataset_columns:
-    - loan_product_id
-    entity_universe: partial
-  - identity_id: collateral_type_identity
-    dataset_columns:
-    - collateral_type_id
-    entity_universe: partial
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-- node_id: sf:bank.credit.fact_refinancing_wall
-  descriptor:
-    qualified_name: bank.credit.fact_refinancing_wall
-    display_name: "Refinancing Wall"
-    description: "Maturity quantity coming due. The wall is a quantity and does not store the rate."
-    synonyms: []
-    tags:
-    - fact
-    - credit
-    - bank
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: bank.us-east-1
-      database: BANK
-      schema: CREDIT
-      object: FACT_REFINANCING_WALL
-      format: table
-  grain:
-    description: "One row is one refinancing wall."
-    components:
-    - identity_id: refinancing_wall_identity
-      dataset_columns:
-      - refinancing_wall_id
-      description: "Identifier of the refinancing wall."
-  columns:
-  - name: refinancing_wall_id
-    description: "Identifier of the refinancing wall."
-  - name: credit_category_id
-    description: "Credit Category referenced by this row."
-  - name: rate_scenario_id
-    description: "Rate Scenario referenced by this row."
-  - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: maturity_amount
-    description: "Amount maturing."
-  - name: borrower_capacity_flag
-    description: "Whether borrowers can refinance."
-  - name: pressure_flag
-    description: "Whether higher-for-longer pressures the wall."
-  entity_definitions:
-  - identity_id: refinancing_wall_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - refinancing_wall_id
-    entity_universe: complete
-  - identity_id: credit_category_identity
-    dataset_columns:
-    - credit_category_id
-    entity_universe: partial
-  - identity_id: rate_scenario_identity
-    dataset_columns:
-    - rate_scenario_id
-    entity_universe: partial
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-- node_id: sf:bank.credit.fact_borrower_pipeline
-  descriptor:
-    qualified_name: bank.credit.fact_borrower_pipeline
-    display_name: "Borrower Pipeline"
-    description: "Borrower pipeline quantity and confidence. Pipeline is not a spread."
-    synonyms: []
-    tags:
-    - fact
-    - credit
-    - bank
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: bank.us-east-1
-      database: BANK
-      schema: CREDIT
-      object: FACT_BORROWER_PIPELINE
-      format: table
-  grain:
-    description: "One row is one borrower pipeline."
-    components:
-    - identity_id: borrower_pipeline_identity
-      dataset_columns:
-      - borrower_pipeline_id
-      description: "Identifier of the borrower pipeline."
-  columns:
-  - name: borrower_pipeline_id
-    description: "Identifier of the borrower pipeline."
-  - name: loan_product_id
-    description: "Loan Product referenced by this row."
-  - name: customer_segment_id
-    description: "Customer Segment referenced by this row."
-  - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: pipeline_amount
-    description: "Pipeline amount."
-  - name: confidence_index
-    description: "Confidence in the borrower conversations."
-  entity_definitions:
-  - identity_id: borrower_pipeline_identity
-    dataset_columns:
-    - borrower_pipeline_id
-    entity_universe: complete
-  - identity_id: loan_product_identity
-    dataset_columns:
-    - loan_product_id
-    entity_universe: partial
-  - identity_id: customer_segment_identity
-    dataset_columns:
-    - customer_segment_id
-    entity_universe: partial
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-- node_id: sf:bank.credit.fact_data_center_exposure
-  descriptor:
-    qualified_name: bank.credit.fact_data_center_exposure
-    display_name: "Data Center Exposure"
-    description: "Direct data-center loan quantity."
-    synonyms: []
-    tags:
-    - fact
-    - credit
-    - bank
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: bank.us-east-1
-      database: BANK
-      schema: CREDIT
-      object: FACT_DATA_CENTER_EXPOSURE
-      format: table
-  grain:
-    description: "One row is one data center exposure."
-    components:
-    - identity_id: data_center_exposure_identity
-      dataset_columns:
-      - data_center_exposure_id
-      description: "Identifier of the data center exposure."
-  columns:
-  - name: data_center_exposure_id
-    description: "Identifier of the data center exposure."
-  - name: borrower_purpose_id
-    description: "Borrower Purpose referenced by this row."
-  - name: exposure_ring_id
-    description: "Exposure Ring referenced by this row."
-  - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: loan_product_id
-    description: "Loan Product referenced by this row."
-  - name: direct_amount
-    description: "Direct project-loan amount."
-  entity_definitions:
-  - identity_id: data_center_exposure_identity
-    dataset_columns:
-    - data_center_exposure_id
-    entity_universe: complete
-  - identity_id: borrower_purpose_identity
-    dataset_columns:
-    - borrower_purpose_id
-    entity_universe: partial
-  - identity_id: exposure_ring_identity
-    dataset_columns:
-    - exposure_ring_id
-    entity_universe: partial
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
+    - scenario_id
     entity_universe: partial
   - identity_id: loan_product_identity
     dataset_columns:
     - loan_product_id
     entity_universe: partial
-- node_id: sf:bank.credit.fact_second_order_exposure
+- node_id: sf:bank.credit.fact_net_charge_off
   descriptor:
-    qualified_name: bank.credit.fact_second_order_exposure
-    display_name: "Second Order Exposure"
-    description: "Credit quantity one step removed from a project. Quantity is not a spread."
+    qualified_name: bank.credit.fact_net_charge_off
+    display_name: Net Charge Off
+    description: 'Net charge-offs: dollars charged off net of recoveries, and the annualized rate.'
     synonyms: []
     tags:
     - fact
     - credit
-    - bank
+    - diversified-banks
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: bank.us-east-1
       database: BANK
       schema: CREDIT
-      object: FACT_SECOND_ORDER_EXPOSURE
+      object: FACT_NET_CHARGE_OFF
       format: table
   grain:
-    description: "One row is one second order exposure."
+    description: One row is one net charge off observation for the combination of fiscal quarter, scenario,
+      loan product.
     components:
-    - identity_id: second_order_exposure_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - second_order_exposure_id
-      description: "Identifier of the second order exposure."
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: loan_product_identity
+      dataset_columns:
+      - loan_product_id
+      description: Identifier of the loan product.
   columns:
-  - name: second_order_exposure_id
-    description: "Identifier of the second order exposure."
-  - name: exposure_ring_id
-    description: "Exposure Ring referenced by this row."
-  - name: borrower_purpose_id
-    description: "Borrower Purpose referenced by this row."
   - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: indirect_amount
-    description: "Second-order exposure amount."
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: loan_product_id
+    description: Identifier of the loan product.
+  - name: net_charge_off_amount
+    description: Net charge-off amount in dollars.
+  - name: net_charge_off_rate_percent
+    description: Annualized net charge-off rate in percent.
   entity_definitions:
-  - identity_id: second_order_exposure_identity
-    dataset_columns:
-    - second_order_exposure_id
-    entity_universe: complete
-  - identity_id: exposure_ring_identity
-    dataset_columns:
-    - exposure_ring_id
-    entity_universe: partial
-  - identity_id: borrower_purpose_identity
-    dataset_columns:
-    - borrower_purpose_id
-    entity_universe: partial
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-- node_id: sf:bank.credit.fact_loan_purpose_mix
-  descriptor:
-    qualified_name: bank.credit.fact_loan_purpose_mix
-    display_name: "Loan Purpose Mix"
-    description: "Share of loan growth by purpose. Mix is not a spread."
-    synonyms: []
-    tags:
-    - fact
-    - credit
-    - bank
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: bank.us-east-1
-      database: BANK
-      schema: CREDIT
-      object: FACT_LOAN_PURPOSE_MIX
-      format: table
-  grain:
-    description: "One row is one loan purpose mix."
-    components:
-    - identity_id: loan_purpose_mix_identity
-      dataset_columns:
-      - loan_purpose_mix_id
-      description: "Identifier of the loan purpose mix."
-  columns:
-  - name: loan_purpose_mix_id
-    description: "Identifier of the loan purpose mix."
-  - name: borrower_purpose_id
-    description: "Borrower Purpose referenced by this row."
-  - name: loan_product_id
-    description: "Loan Product referenced by this row."
-  - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: country_id
-    description: "Country referenced by this row."
-  - name: mix_share
-    description: "Share of growth or balances in the purpose."
-  entity_definitions:
-  - identity_id: loan_purpose_mix_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - loan_purpose_mix_id
-    entity_universe: complete
-  - identity_id: borrower_purpose_identity
-    dataset_columns:
-    - borrower_purpose_id
+    - scenario_id
     entity_universe: partial
   - identity_id: loan_product_identity
     dataset_columns:
     - loan_product_id
     entity_universe: partial
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
-- node_id: sf:bank.credit.fact_housing_pipeline
+- node_id: sf:bank.credit.fact_allowance_balance
   descriptor:
-    qualified_name: bank.credit.fact_housing_pipeline
-    display_name: "Housing Pipeline"
-    description: "Housing-loan pipeline quantity."
+    qualified_name: bank.credit.fact_allowance_balance
+    display_name: Allowance Balance
+    description: 'Allowance for credit losses: the stock reserve balance at quarter end.'
     synonyms: []
     tags:
     - fact
     - credit
-    - bank
+    - diversified-banks
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: bank.us-east-1
       database: BANK
       schema: CREDIT
-      object: FACT_HOUSING_PIPELINE
+      object: FACT_ALLOWANCE_BALANCE
       format: table
   grain:
-    description: "One row is one housing pipeline."
+    description: One row is one allowance balance observation for the combination of fiscal quarter, scenario,
+      loan product.
     components:
-    - identity_id: housing_pipeline_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - housing_pipeline_id
-      description: "Identifier of the housing pipeline."
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: loan_product_identity
+      dataset_columns:
+      - loan_product_id
+      description: Identifier of the loan product.
   columns:
-  - name: housing_pipeline_id
-    description: "Identifier of the housing pipeline."
-  - name: loan_product_id
-    description: "Loan Product referenced by this row."
   - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: country_id
-    description: "Country referenced by this row."
-  - name: pipeline_amount
-    description: "Housing pipeline amount."
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: loan_product_id
+    description: Identifier of the loan product.
+  - name: allowance_balance_amount
+    description: Allowance for credit losses balance in dollars (stock at quarter end).
   entity_definitions:
-  - identity_id: housing_pipeline_identity
-    dataset_columns:
-    - housing_pipeline_id
-    entity_universe: complete
-  - identity_id: loan_product_identity
-    dataset_columns:
-    - loan_product_id
-    entity_universe: partial
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: country_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - country_id
+    - scenario_id
     entity_universe: partial
-- node_id: sf:bank.credit.fact_renewable_book
-  descriptor:
-    qualified_name: bank.credit.fact_renewable_book
-    display_name: "Renewable Book"
-    description: "Renewable financing quantity and whether it is fading."
-    synonyms: []
-    tags:
-    - fact
-    - credit
-    - bank
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: bank.us-east-1
-      database: BANK
-      schema: CREDIT
-      object: FACT_RENEWABLE_BOOK
-      format: table
-  grain:
-    description: "One row is one renewable book."
-    components:
-    - identity_id: renewable_book_identity
-      dataset_columns:
-      - renewable_book_id
-      description: "Identifier of the renewable book."
-  columns:
-  - name: renewable_book_id
-    description: "Identifier of the renewable book."
-  - name: loan_product_id
-    description: "Loan Product referenced by this row."
-  - name: borrower_purpose_id
-    description: "Borrower Purpose referenced by this row."
-  - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: balance_amount
-    description: "Renewable book amount."
-  - name: fade_flag
-    description: "Whether wind and solar financing is fading."
-  entity_definitions:
-  - identity_id: renewable_book_identity
-    dataset_columns:
-    - renewable_book_id
-    entity_universe: complete
   - identity_id: loan_product_identity
     dataset_columns:
     - loan_product_id
-    entity_universe: partial
-  - identity_id: borrower_purpose_identity
-    dataset_columns:
-    - borrower_purpose_id
-    entity_universe: partial
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-- node_id: sf:bank.credit.fact_advance_rate
-  descriptor:
-    qualified_name: bank.credit.fact_advance_rate
-    display_name: "Advance Rate"
-    description: "Advance rate on a secured book. The rate is not the loan quantity."
-    synonyms: []
-    tags:
-    - fact
-    - credit
-    - bank
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: bank.us-east-1
-      database: BANK
-      schema: CREDIT
-      object: FACT_ADVANCE_RATE
-      format: table
-  grain:
-    description: "One row is one advance rate."
-    components:
-    - identity_id: advance_rate_identity
-      dataset_columns:
-      - advance_rate_id
-      description: "Identifier of the advance rate."
-  columns:
-  - name: advance_rate_id
-    description: "Identifier of the advance rate."
-  - name: loan_product_id
-    description: "Loan Product referenced by this row."
-  - name: collateral_type_id
-    description: "Collateral Type referenced by this row."
-  - name: advance_rate
-    description: "Advance rate against collateral."
-  entity_definitions:
-  - identity_id: advance_rate_identity
-    dataset_columns:
-    - advance_rate_id
-    entity_universe: complete
-  - identity_id: loan_product_identity
-    dataset_columns:
-    - loan_product_id
-    entity_universe: partial
-  - identity_id: collateral_type_identity
-    dataset_columns:
-    - collateral_type_id
     entity_universe: partial
 - node_id: sf:bank.credit.fact_delinquency
   descriptor:
     qualified_name: bank.credit.fact_delinquency
     display_name: Delinquency
-    description: "Delinquency rate. The rate does not store the balance."
+    description: Past-due loan balances by credit quality.
     synonyms: []
     tags:
     - fact
     - credit
-    - bank
+    - diversified-banks
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
@@ -1571,261 +584,547 @@ nodes:
       object: FACT_DELINQUENCY
       format: table
   grain:
-    description: "One row is one delinquency."
+    description: One row is one delinquency observation for the combination of fiscal quarter, scenario,
+      loan product, credit quality.
     components:
-    - identity_id: delinquency_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - delinquency_id
-      description: "Identifier of the delinquency."
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: loan_product_identity
+      dataset_columns:
+      - loan_product_id
+      description: Identifier of the loan product.
+    - identity_id: credit_quality_identity
+      dataset_columns:
+      - credit_quality_id
+      description: Identifier of the credit quality.
   columns:
-  - name: delinquency_id
-    description: "Identifier of the delinquency."
-  - name: credit_category_id
-    description: "Credit Category referenced by this row."
-  - name: customer_segment_id
-    description: "Customer Segment referenced by this row."
   - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: country_id
-    description: "Country referenced by this row."
-  - name: delinquency_rate
-    description: "Delinquency rate."
-  - name: stress_building_flag
-    description: "Whether stress is building over the next six to twelve months."
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: loan_product_id
+    description: Identifier of the loan product.
+  - name: credit_quality_id
+    description: Identifier of the credit quality.
+  - name: past_due_amount
+    description: Past-due loan balance in dollars.
+  - name: nonperforming_amount
+    description: Nonperforming loan balance in dollars.
   entity_definitions:
-  - identity_id: delinquency_identity
+  - identity_id: fiscal_quarter_identity
     dataset_columns:
-    - delinquency_id
-    entity_universe: complete
-  - identity_id: credit_category_identity
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
     dataset_columns:
-    - credit_category_id
+    - scenario_id
+    entity_universe: partial
+  - identity_id: loan_product_identity
+    dataset_columns:
+    - loan_product_id
+    entity_universe: partial
+  - identity_id: credit_quality_identity
+    dataset_columns:
+    - credit_quality_id
+    entity_universe: partial
+- node_id: sf:bank.card.fact_card_balance
+  descriptor:
+    qualified_name: bank.card.fact_card_balance
+    display_name: Card Balance
+    description: Credit card balances outstanding.
+    synonyms: []
+    tags:
+    - fact
+    - credit
+    - diversified-banks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: bank.us-east-1
+      database: BANK
+      schema: CARD
+      object: FACT_CARD_BALANCE
+      format: table
+  grain:
+    description: One row is one card balance observation for the combination of fiscal quarter, scenario,
+      card program, customer segment.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: card_program_identity
+      dataset_columns:
+      - card_program_id
+      description: Identifier of the card program.
+    - identity_id: customer_segment_identity
+      dataset_columns:
+      - customer_segment_id
+      description: Identifier of the customer segment.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: card_program_id
+    description: Identifier of the card program.
+  - name: customer_segment_id
+    description: Identifier of the customer segment.
+  - name: card_balance_amount
+    description: Credit card balance in dollars.
+  - name: revolving_balance_amount
+    description: Revolving card balance in dollars.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: card_program_identity
+    dataset_columns:
+    - card_program_id
     entity_universe: partial
   - identity_id: customer_segment_identity
     dataset_columns:
     - customer_segment_id
     entity_universe: partial
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
-- node_id: sf:bank.credit.fact_card_migration
+- node_id: sf:bank.card.fact_card_spend
   descriptor:
-    qualified_name: bank.credit.fact_card_migration
-    display_name: "Card Migration"
-    description: "Card-platform migration. Timeline is not a balance and not a yield."
+    qualified_name: bank.card.fact_card_spend
+    display_name: Card Spend
+    description: Purchase volume on Bank Inc cards.
     synonyms: []
     tags:
     - fact
     - credit
-    - bank
+    - diversified-banks
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: bank.us-east-1
       database: BANK
-      schema: CREDIT
-      object: FACT_CARD_MIGRATION
+      schema: CARD
+      object: FACT_CARD_SPEND
       format: table
   grain:
-    description: "One row is one card migration."
+    description: One row is one card spend observation for the combination of fiscal quarter, scenario,
+      card program.
     components:
-    - identity_id: card_migration_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - card_migration_id
-      description: "Identifier of the card migration."
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: card_program_identity
+      dataset_columns:
+      - card_program_id
+      description: Identifier of the card program.
   columns:
-  - name: card_migration_id
-    description: "Identifier of the card migration."
-  - name: card_program_id
-    description: "Card Program referenced by this row."
   - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: stack_new_flag
-    description: "Whether the migration is a new stack rather than an enhancement."
-  - name: timeline_months
-    description: "Months the migration is expected to take."
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: card_program_id
+    description: Identifier of the card program.
+  - name: card_spend_amount
+    description: Card purchase volume in dollars.
   entity_definitions:
-  - identity_id: card_migration_identity
+  - identity_id: fiscal_quarter_identity
     dataset_columns:
-    - card_migration_id
-    entity_universe: complete
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
   - identity_id: card_program_identity
     dataset_columns:
     - card_program_id
     entity_universe: partial
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-- node_id: sf:bank.credit.fact_credit_spread
+- node_id: sf:bank.card.fact_card_account_count
   descriptor:
-    qualified_name: bank.credit.fact_credit_spread
-    display_name: "Credit Spread"
-    description: "Credit spread. The spread does not store the loan quantity."
+    qualified_name: bank.card.fact_card_account_count
+    display_name: Card Account Count
+    description: Credit card accounts.
     synonyms: []
     tags:
     - fact
     - credit
-    - bank
+    - diversified-banks
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: bank.us-east-1
       database: BANK
-      schema: CREDIT
-      object: FACT_CREDIT_SPREAD
+      schema: CARD
+      object: FACT_CARD_ACCOUNT_COUNT
       format: table
   grain:
-    description: "One row is one credit spread."
+    description: One row is one card account count observation for the combination of fiscal quarter,
+      scenario, card program.
     components:
-    - identity_id: credit_spread_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - credit_spread_id
-      description: "Identifier of the credit spread."
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: card_program_identity
+      dataset_columns:
+      - card_program_id
+      description: Identifier of the card program.
   columns:
-  - name: credit_spread_id
-    description: "Identifier of the credit spread."
-  - name: loan_product_id
-    description: "Loan Product referenced by this row."
   - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: credit_category_id
-    description: "Credit Category referenced by this row."
-  - name: spread_bps
-    description: "Spread in basis points."
-  - name: tightening_flag
-    description: "Whether spreads are tightening."
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: card_program_id
+    description: Identifier of the card program.
+  - name: card_account_count
+    description: Number of card accounts.
+  - name: new_card_account_count
+    description: Number of card accounts opened in the quarter.
   entity_definitions:
-  - identity_id: credit_spread_identity
+  - identity_id: fiscal_quarter_identity
     dataset_columns:
-    - credit_spread_id
-    entity_universe: complete
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: card_program_identity
+    dataset_columns:
+    - card_program_id
+    entity_universe: partial
+- node_id: sf:bank.card.fact_card_price
+  descriptor:
+    qualified_name: bank.card.fact_card_price
+    display_name: Card Price
+    description: Consumer card pricing, including the Sapphire annual fee; card balances are stored on
+      their own fact.
+    synonyms: []
+    tags:
+    - fact
+    - credit
+    - diversified-banks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: bank.us-east-1
+      database: BANK
+      schema: CARD
+      object: FACT_CARD_PRICE
+      format: table
+  grain:
+    description: One row is one card price observation for the combination of fiscal quarter, scenario,
+      card program.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: card_program_identity
+      dataset_columns:
+      - card_program_id
+      description: Identifier of the card program.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: card_program_id
+    description: Identifier of the card program.
+  - name: annual_fee_amount
+    description: Annual card fee in dollars per account.
+  - name: card_apr_percent
+    description: Card annual percentage rate in percent.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: card_program_identity
+    dataset_columns:
+    - card_program_id
+    entity_universe: partial
+- node_id: sf:bank.loan.fact_loan_pipeline
+  descriptor:
+    qualified_name: bank.loan.fact_loan_pipeline
+    display_name: Loan Pipeline
+    description: Committed loan pipeline reported by bankers.
+    synonyms: []
+    tags:
+    - fact
+    - credit
+    - diversified-banks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: bank.us-east-1
+      database: BANK
+      schema: LOAN
+      object: FACT_LOAN_PIPELINE
+      format: table
+  grain:
+    description: One row is one loan pipeline observation for the combination of fiscal quarter, scenario,
+      loan product, industry client type.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: loan_product_identity
+      dataset_columns:
+      - loan_product_id
+      description: Identifier of the loan product.
+    - identity_id: industry_client_type_identity
+      dataset_columns:
+      - industry_client_type_id
+      description: Identifier of the industry client type.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: loan_product_id
+    description: Identifier of the loan product.
+  - name: industry_client_type_id
+    description: Identifier of the industry client type.
+  - name: pipeline_amount
+    description: Loan pipeline in dollars.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
   - identity_id: loan_product_identity
     dataset_columns:
     - loan_product_id
     entity_universe: partial
-  - identity_id: fiscal_quarter_identity
+  - identity_id: industry_client_type_identity
     dataset_columns:
-    - fiscal_quarter_id
+    - industry_client_type_id
     entity_universe: partial
-  - identity_id: credit_category_identity
-    dataset_columns:
-    - credit_category_id
-    entity_universe: partial
-- node_id: sf:bank.credit.fact_growth_source
+- node_id: sf:bank.loan.fact_maturity_wall
   descriptor:
-    qualified_name: bank.credit.fact_growth_source
-    display_name: "Growth Source"
-    description: "Where loan growth came from. The source flag is not a spread."
+    qualified_name: bank.loan.fact_maturity_wall
+    display_name: Maturity Wall
+    description: Loans maturing in the stated fiscal quarter.
     synonyms: []
     tags:
     - fact
     - credit
-    - bank
+    - diversified-banks
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: bank.us-east-1
       database: BANK
-      schema: CREDIT
-      object: FACT_GROWTH_SOURCE
+      schema: LOAN
+      object: FACT_MATURITY_WALL
       format: table
   grain:
-    description: "One row is one growth source."
+    description: One row is one maturity wall observation for the combination of fiscal quarter, scenario,
+      loan product, collateral type.
     components:
-    - identity_id: growth_source_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - growth_source_id
-      description: "Identifier of the growth source."
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: loan_product_identity
+      dataset_columns:
+      - loan_product_id
+      description: Identifier of the loan product.
+    - identity_id: collateral_type_identity
+      dataset_columns:
+      - collateral_type_id
+      description: Identifier of the collateral type.
   columns:
-  - name: growth_source_id
-    description: "Identifier of the growth source."
-  - name: loan_product_id
-    description: "Loan Product referenced by this row."
   - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: borrower_purpose_id
-    description: "Borrower Purpose referenced by this row."
-  - name: source_code
-    description: "Growth source."
-    value_description: "private_credit_share, broader_demand, line_utilization"
-  - name: private_credit_share_taken_flag
-    description: "Whether growth is share taken from private credit."
-  - name: broader_demand_flag
-    description: "Whether growth is broader demand."
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: loan_product_id
+    description: Identifier of the loan product.
+  - name: collateral_type_id
+    description: Identifier of the collateral type.
+  - name: maturing_amount
+    description: Loan amount maturing in dollars.
   entity_definitions:
-  - identity_id: growth_source_identity
+  - identity_id: fiscal_quarter_identity
     dataset_columns:
-    - growth_source_id
-    entity_universe: complete
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
   - identity_id: loan_product_identity
     dataset_columns:
     - loan_product_id
     entity_universe: partial
-  - identity_id: fiscal_quarter_identity
+  - identity_id: collateral_type_identity
     dataset_columns:
-    - fiscal_quarter_id
+    - collateral_type_id
     entity_universe: partial
-  - identity_id: borrower_purpose_identity
-    dataset_columns:
-    - borrower_purpose_id
-    entity_universe: partial
-- node_id: sf:bank.credit.fact_corporate_credit_view
+- node_id: sf:bank.credit.fact_loan_yield
   descriptor:
-    qualified_name: bank.credit.fact_corporate_credit_view
-    display_name: "Corporate Credit View"
-    description: "Stance on corporate credit. The stance is not a balance."
+    qualified_name: bank.credit.fact_loan_yield
+    display_name: Loan Yield
+    description: Yield on loans; loan balances are stored on their own fact.
     synonyms: []
     tags:
     - fact
     - credit
-    - bank
+    - diversified-banks
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: bank.us-east-1
       database: BANK
       schema: CREDIT
-      object: FACT_CORPORATE_CREDIT_VIEW
+      object: FACT_LOAN_YIELD
       format: table
   grain:
-    description: "One row is one corporate credit view."
+    description: One row is one loan yield observation for the combination of fiscal quarter, scenario,
+      loan product.
     components:
-    - identity_id: corporate_credit_view_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - corporate_credit_view_id
-      description: "Identifier of the corporate credit view."
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: loan_product_identity
+      dataset_columns:
+      - loan_product_id
+      description: Identifier of the loan product.
   columns:
-  - name: corporate_credit_view_id
-    description: "Identifier of the corporate credit view."
-  - name: credit_category_id
-    description: "Credit Category referenced by this row."
-  - name: rate_scenario_id
-    description: "Rate Scenario referenced by this row."
   - name: fiscal_quarter_id
-    description: "Fiscal Quarter referenced by this row."
-  - name: stance_code
-    description: "Corporate credit stance."
-    value_description: "steady, improving, concern"
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: loan_product_id
+    description: Identifier of the loan product.
+  - name: loan_yield_percent
+    description: Annualized loan yield in percent.
   entity_definitions:
-  - identity_id: corporate_credit_view_identity
-    dataset_columns:
-    - corporate_credit_view_id
-    entity_universe: complete
-  - identity_id: credit_category_identity
-    dataset_columns:
-    - credit_category_id
-    entity_universe: partial
-  - identity_id: rate_scenario_identity
-    dataset_columns:
-    - rate_scenario_id
-    entity_universe: partial
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: loan_product_identity
+    dataset_columns:
+    - loan_product_id
+    entity_universe: partial
+- node_id: sf:bank.credit.fact_loan_spread
+  descriptor:
+    qualified_name: bank.credit.fact_loan_spread
+    display_name: Loan Spread
+    description: Loan spread over benchmark; originations are stored separately.
+    synonyms: []
+    tags:
+    - fact
+    - credit
+    - diversified-banks
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: bank.us-east-1
+      database: BANK
+      schema: CREDIT
+      object: FACT_LOAN_SPREAD
+      format: table
+  grain:
+    description: One row is one loan spread observation for the combination of fiscal quarter, scenario,
+      loan product, industry client type.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: loan_product_identity
+      dataset_columns:
+      - loan_product_id
+      description: Identifier of the loan product.
+    - identity_id: industry_client_type_identity
+      dataset_columns:
+      - industry_client_type_id
+      description: Identifier of the industry client type.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: loan_product_id
+    description: Identifier of the loan product.
+  - name: industry_client_type_id
+    description: Identifier of the industry client type.
+  - name: spread_basis_points
+    description: Loan spread in basis points.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: loan_product_identity
+    dataset_columns:
+    - loan_product_id
+    entity_universe: partial
+  - identity_id: industry_client_type_identity
+    dataset_columns:
+    - industry_client_type_id
     entity_universe: partial
