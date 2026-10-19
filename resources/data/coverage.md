@@ -13,7 +13,8 @@ Status values: `selected` (pair locked, transcripts not read), `extracting`, `qu
 Every pair below is `questions-ready`: four recent calls were read and analyst questions were
 paraphrased into `{slug}/{ticker}/questions.md`. Each industry directory has `references.md`
 naming those companies and calls. Seventeen industries have one schema version 3 warehouse at
-`{slug}/warehouse/`. See `summary-report.md` for counts and the simulation shortlist.
+`{slug}/warehouse/`. See `summary-report.md` for model size, the agent that wrote each model,
+and the simulation shortlist.
 
 | # | GICS sector | GICS sub-industry | Ticker | Company | Status |
 | --- | --- | --- | --- | --- | --- |

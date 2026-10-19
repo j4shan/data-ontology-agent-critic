@@ -166,29 +166,31 @@ share an entity chain rather than a single KPI.
    specialty-chemicals or airline sheets, which are large but more often a price-volume-region
    triangle than a multi-entity product graph.
 
-## One warehouse per industry
+## Data models
 
-Each industry directory keeps one schema version 3 warehouse, owned by a naive industry name. Question paraphrases stay in `{ticker}/questions.md`. `references.md` in the industry directory names the companies and earnings calls, without links.
+Each industry directory keeps one schema version 3 warehouse, owned by a naive industry name. These seventeen warehouses are the current test suite. Question paraphrases stay in `{ticker}/questions.md`. `references.md` in the industry directory names the companies and earnings calls, without links.
 
-| Owner | Industry | Catalog | Datasets | Relationships | Identities |
-| --- | --- | --- | ---: | ---: | ---: |
-| Burger Inc | Restaurants | `restaurants/warehouse/` | 71 | 283 | 38 |
-| Colocation Inc | Data center REITs | `data-center-reits/warehouse/` | 67 | 162 | 67 |
-| Device Inc | Technology hardware | `technology-hardware/warehouse/` | 78 | 180 | 78 |
-| Surgical Supply Inc | Health care equipment | `health-care-equipment/warehouse/` | 74 | 200 | 74 |
-| Machinery Inc | Construction machinery | `construction-machinery/warehouse/` | 74 | 177 | 74 |
-| Chemical Inc | Specialty chemicals | `specialty-chemicals/warehouse/` | 103 | 247 | 103 |
-| Airline Inc | Passenger airlines | `passenger-airlines/warehouse/` | 97 | 213 | 97 |
-| Food Inc | Packaged foods | `packaged-foods/warehouse/` | 94 | 235 | 94 |
-| Health Plan Inc | Managed care | `managed-care/warehouse/` | 116 | 297 | 116 |
-| Beverage Inc | Soft drinks | `soft-drinks/warehouse/` | 105 | 312 | 105 |
-| Automaker Inc | Automobile manufacturers | `automobile-manufacturers/warehouse/` | 113 | 303 | 113 |
-| Railroad Inc | Rail transportation | `rail-transportation/warehouse/` | 78 | 197 | 39 |
-| Energy Inc | Integrated oil and gas | `integrated-oil-gas/warehouse/` | 78 | 206 | 33 |
-| Utility Inc | Electric utilities | `electric-utilities/warehouse/` | 71 | 201 | 26 |
-| Bank Inc | Diversified banks | `diversified-banks/warehouse/` | 74 | 172 | 22 |
-| Merchandise Inc | Merchandise retail | `merchandise-retail/warehouse/` | 73 | 211 | 16 |
-| Social Inc | Interactive media | `interactive-media/warehouse/` | 73 | 187 | 17 |
+Size is the dataset, relationship, and logical-identity counts in each `warehouse/MODEL.md`. The eleven models built before the four-checkpoint plan were written by Grok 4.7. Checkpoint A, the first of those four, is the Muse Wonder rebuild now on disk. Checkpoints B, C, and D do not have a model yet.
+
+| Owner | Industry | Catalog | Datasets | Relationships | Identities | Agent |
+| --- | --- | --- | ---: | ---: | ---: | --- |
+| Burger Inc | Restaurants | `restaurants/warehouse/` | 71 | 283 | 38 | Grok 4.7 |
+| Colocation Inc | Data center REITs | `data-center-reits/warehouse/` | 67 | 162 | 67 | Grok 4.7 |
+| Device Inc | Technology hardware | `technology-hardware/warehouse/` | 78 | 180 | 78 | Grok 4.7 |
+| Surgical Supply Inc | Health care equipment | `health-care-equipment/warehouse/` | 74 | 200 | 74 | Grok 4.7 |
+| Machinery Inc | Construction machinery | `construction-machinery/warehouse/` | 74 | 177 | 74 | Grok 4.7 |
+| Chemical Inc | Specialty chemicals | `specialty-chemicals/warehouse/` | 103 | 247 | 103 | Grok 4.7 |
+| Airline Inc | Passenger airlines | `passenger-airlines/warehouse/` | 97 | 213 | 97 | Grok 4.7 |
+| Food Inc | Packaged foods | `packaged-foods/warehouse/` | 94 | 235 | 94 | Grok 4.7 |
+| Health Plan Inc | Managed care | `managed-care/warehouse/` | 116 | 297 | 116 | Grok 4.7 |
+| Beverage Inc | Soft drinks | `soft-drinks/warehouse/` | 105 | 312 | 105 | Grok 4.7 |
+| Automaker Inc | Automobile manufacturers | `automobile-manufacturers/warehouse/` | 113 | 303 | 113 | Grok 4.7 |
+| Railroad Inc | Rail transportation | `rail-transportation/warehouse/` | 78 | 197 | 39 | Muse Wonder |
+| Energy Inc | Integrated oil and gas | `integrated-oil-gas/warehouse/` | 78 | 206 | 33 | Muse Wonder |
+| Utility Inc | Electric utilities | `electric-utilities/warehouse/` | 71 | 201 | 26 | Muse Wonder |
+| Bank Inc | Diversified banks | `diversified-banks/warehouse/` | 74 | 172 | 22 | Muse Wonder |
+| Merchandise Inc | Merchandise retail | `merchandise-retail/warehouse/` | 73 | 211 | 16 | Muse Wonder |
+| Social Inc | Interactive media | `interactive-media/warehouse/` | 73 | 187 | 17 | Muse Wonder |
 
 Burger Inc finance separates company-operated margin, franchisee cash flow, royalty, rent, capex, and the inflation-versus-mix bridge. Colocation Inc separates a booking from quarterly occupancy, planned megawatts from power actually available, and a cross-connect from a lease line. Device Inc keeps demand quantity, component supply, and the price file as separate facts. Surgical Supply Inc keeps procedure volume, capital backlog, and the reimbursement context as separate facts. It is a device-maker graph, separate from the healthcare-payer claims catalog. Machinery Inc keeps dealer inventory, the power-versus-construction mix, and price, volume, and backlog as separate facts. Chemical Inc, Airline Inc, Food Inc, Health Plan Inc, Beverage Inc, and Automaker Inc each keep demand, supply or capacity, and price or margin as separate facts. Railroad Inc, Energy Inc, Utility Inc, Bank Inc, Merchandise Inc, and Social Inc do the same. Health Plan Inc is a membership and medical-cost graph, separate from the healthcare-payer claims catalog. Colocation Inc, Device Inc, Surgical Supply Inc, Machinery Inc, and these twelve build with no unknown claims and no contradictory edges. Burger Inc builds with no unknown claims. See each `warehouse/MODEL.md`.
 
