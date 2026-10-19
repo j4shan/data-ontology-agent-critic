@@ -1,0 +1,1111 @@
+schema_version: '3'
+nodes:
+- node_id: sf:social.cloud.dim_cloud_product
+  descriptor:
+    qualified_name: social.cloud.dim_cloud_product
+    display_name: Cloud Product
+    description: Cloud product inside the cloud reporting segment.
+    synonyms: []
+    tags:
+    - dimension
+    - infrastructure
+    - interactive-media
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: social.us-west-1
+      database: SOCIAL
+      schema: CLOUD
+      object: DIM_CLOUD_PRODUCT
+      format: table
+  grain:
+    description: One row is one cloud product, identified by cloud_product_id.
+    components:
+    - identity_id: cloud_product_identity
+      dataset_columns:
+      - cloud_product_id
+      description: Identifier of the cloud product.
+  columns:
+  - name: cloud_product_id
+    description: Identifier of the cloud product.
+  - name: cloud_product_name
+    description: Name of the cloud product.
+  - name: cloud_product_code
+    description: Code of the cloud product.
+    value_description: compute, storage, data_analytics, ai_platform, security, other_cloud
+  entity_definitions:
+  - identity_id: cloud_product_identity
+    dataset_columns:
+    - cloud_product_id
+    entity_universe: complete
+- node_id: sf:social.capex.dim_capex_program
+  descriptor:
+    qualified_name: social.capex.dim_capex_program
+    display_name: Capex Program
+    description: Capital-spending program; free cash flow is corporate and is not keyed by this program.
+    synonyms: []
+    tags:
+    - dimension
+    - infrastructure
+    - interactive-media
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: social.us-west-1
+      database: SOCIAL
+      schema: CAPEX
+      object: DIM_CAPEX_PROGRAM
+      format: table
+  grain:
+    description: One row is one capex program, identified by capex_program_id.
+    components:
+    - identity_id: capex_program_identity
+      dataset_columns:
+      - capex_program_id
+      description: Identifier of the capex program.
+  columns:
+  - name: capex_program_id
+    description: Identifier of the capex program.
+  - name: capex_program_name
+    description: Name of the capex program.
+  - name: capex_program_code
+    description: Code of the capex program.
+    value_description: data_center, servers, network, reality_labs_hardware, office
+  entity_definitions:
+  - identity_id: capex_program_identity
+    dataset_columns:
+    - capex_program_id
+    entity_universe: complete
+- node_id: sf:social.expense.dim_expense_category
+  descriptor:
+    qualified_name: social.expense.dim_expense_category
+    display_name: Expense Category
+    description: Operating expense category.
+    synonyms: []
+    tags:
+    - dimension
+    - infrastructure
+    - interactive-media
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: social.us-west-1
+      database: SOCIAL
+      schema: EXPENSE
+      object: DIM_EXPENSE_CATEGORY
+      format: table
+  grain:
+    description: One row is one expense category, identified by expense_category_id.
+    components:
+    - identity_id: expense_category_identity
+      dataset_columns:
+      - expense_category_id
+      description: Identifier of the expense category.
+  columns:
+  - name: expense_category_id
+    description: Identifier of the expense category.
+  - name: expense_category_name
+    description: Name of the expense category.
+  - name: expense_category_code
+    description: Code of the expense category.
+    value_description: cost_of_revenue, research_and_development, sales_and_marketing, general_and_administrative
+  entity_definitions:
+  - identity_id: expense_category_identity
+    dataset_columns:
+    - expense_category_id
+    entity_universe: complete
+- node_id: sf:social.cloud.fact_cloud_revenue
+  descriptor:
+    qualified_name: social.cloud.fact_cloud_revenue
+    display_name: Cloud Revenue
+    description: Cloud revenue split by cloud product, not only by deal class.
+    synonyms: []
+    tags:
+    - fact
+    - infrastructure
+    - interactive-media
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: social.us-west-1
+      database: SOCIAL
+      schema: CLOUD
+      object: FACT_CLOUD_REVENUE
+      format: table
+  grain:
+    description: One row is one cloud revenue observation for the combination of fiscal quarter, scenario,
+      cloud product, region.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: cloud_product_identity
+      dataset_columns:
+      - cloud_product_id
+      description: Identifier of the cloud product.
+    - identity_id: region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: cloud_product_id
+    description: Identifier of the cloud product.
+  - name: region_id
+    description: Identifier of the region.
+  - name: cloud_revenue_amount
+    description: Cloud revenue in dollars.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: cloud_product_identity
+    dataset_columns:
+    - cloud_product_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:social.cost.fact_depreciation
+  descriptor:
+    qualified_name: social.cost.fact_depreciation
+    display_name: Depreciation
+    description: Depreciation expense, including data-center depreciation.
+    synonyms: []
+    tags:
+    - fact
+    - infrastructure
+    - interactive-media
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: social.us-west-1
+      database: SOCIAL
+      schema: COST
+      object: FACT_DEPRECIATION
+      format: table
+  grain:
+    description: One row is one depreciation observation for the combination of fiscal quarter, scenario,
+      capex program.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: capex_program_identity
+      dataset_columns:
+      - capex_program_id
+      description: Identifier of the capex program.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: capex_program_id
+    description: Identifier of the capex program.
+  - name: depreciation_amount
+    description: Depreciation expense in dollars.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: capex_program_identity
+    dataset_columns:
+    - capex_program_id
+    entity_universe: partial
+- node_id: sf:social.capex.fact_capital_spending
+  descriptor:
+    qualified_name: social.capex.fact_capital_spending
+    display_name: Capital Spending
+    description: Capital spending by program; free cash flow is a separate corporate fact.
+    synonyms: []
+    tags:
+    - fact
+    - infrastructure
+    - interactive-media
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: social.us-west-1
+      database: SOCIAL
+      schema: CAPEX
+      object: FACT_CAPITAL_SPENDING
+      format: table
+  grain:
+    description: One row is one capital spending observation for the combination of fiscal quarter, scenario,
+      capex program.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: capex_program_identity
+      dataset_columns:
+      - capex_program_id
+      description: Identifier of the capex program.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: capex_program_id
+    description: Identifier of the capex program.
+  - name: capex_amount
+    description: Capital spending in dollars.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: capex_program_identity
+    dataset_columns:
+    - capex_program_id
+    entity_universe: partial
+- node_id: sf:social.cashflow.fact_free_cash_flow
+  descriptor:
+    qualified_name: social.cashflow.fact_free_cash_flow
+    display_name: Free Cash Flow
+    description: Corporate free cash flow, not keyed by capital-spending program.
+    synonyms: []
+    tags:
+    - fact
+    - infrastructure
+    - interactive-media
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: social.us-west-1
+      database: SOCIAL
+      schema: CASHFLOW
+      object: FACT_FREE_CASH_FLOW
+      format: table
+  grain:
+    description: One row is one free cash flow observation for the combination of fiscal quarter, scenario.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: free_cash_flow_amount
+    description: Free cash flow in dollars.
+  - name: operating_cash_flow_amount
+    description: Operating cash flow in dollars.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+- node_id: sf:social.expense.fact_operating_expense
+  descriptor:
+    qualified_name: social.expense.fact_operating_expense
+    display_name: Operating Expense
+    description: Operating expense by category and segment.
+    synonyms: []
+    tags:
+    - fact
+    - infrastructure
+    - interactive-media
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: social.us-west-1
+      database: SOCIAL
+      schema: EXPENSE
+      object: FACT_OPERATING_EXPENSE
+      format: table
+  grain:
+    description: One row is one operating expense observation for the combination of fiscal quarter, scenario,
+      reporting segment, expense category.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: reporting_segment_identity
+      dataset_columns:
+      - reporting_segment_id
+      description: Identifier of the reporting segment.
+    - identity_id: expense_category_identity
+      dataset_columns:
+      - expense_category_id
+      description: Identifier of the expense category.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: reporting_segment_id
+    description: Identifier of the reporting segment.
+  - name: expense_category_id
+    description: Identifier of the expense category.
+  - name: operating_expense_amount
+    description: Operating expense in dollars.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: reporting_segment_identity
+    dataset_columns:
+    - reporting_segment_id
+    entity_universe: partial
+  - identity_id: expense_category_identity
+    dataset_columns:
+    - expense_category_id
+    entity_universe: partial
+- node_id: sf:social.people.fact_headcount
+  descriptor:
+    qualified_name: social.people.fact_headcount
+    display_name: Headcount
+    description: Employees at quarter end.
+    synonyms: []
+    tags:
+    - fact
+    - infrastructure
+    - interactive-media
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: social.us-west-1
+      database: SOCIAL
+      schema: PEOPLE
+      object: FACT_HEADCOUNT
+      format: table
+  grain:
+    description: One row is one headcount observation for the combination of fiscal quarter, scenario,
+      reporting segment.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: reporting_segment_identity
+      dataset_columns:
+      - reporting_segment_id
+      description: Identifier of the reporting segment.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: reporting_segment_id
+    description: Identifier of the reporting segment.
+  - name: headcount_count
+    description: Number of employees.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: reporting_segment_identity
+    dataset_columns:
+    - reporting_segment_id
+    entity_universe: partial
+- node_id: sf:social.cloud.fact_cloud_backlog
+  descriptor:
+    qualified_name: social.cloud.fact_cloud_backlog
+    display_name: Cloud Backlog
+    description: Remaining performance obligations for cloud contracts.
+    synonyms: []
+    tags:
+    - fact
+    - infrastructure
+    - interactive-media
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: social.us-west-1
+      database: SOCIAL
+      schema: CLOUD
+      object: FACT_CLOUD_BACKLOG
+      format: table
+  grain:
+    description: One row is one cloud backlog observation for the combination of fiscal quarter, scenario,
+      cloud product.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: cloud_product_identity
+      dataset_columns:
+      - cloud_product_id
+      description: Identifier of the cloud product.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: cloud_product_id
+    description: Identifier of the cloud product.
+  - name: backlog_amount
+    description: Cloud backlog in dollars.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: cloud_product_identity
+    dataset_columns:
+    - cloud_product_id
+    entity_universe: partial
+- node_id: sf:social.infra.dim_data_center_region
+  descriptor:
+    qualified_name: social.infra.dim_data_center_region
+    display_name: Data Center Region
+    description: Region where data-center capacity is built.
+    synonyms: []
+    tags:
+    - dimension
+    - infrastructure
+    - interactive-media
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: social.us-west-1
+      database: SOCIAL
+      schema: INFRA
+      object: DIM_DATA_CENTER_REGION
+      format: table
+  grain:
+    description: One row is one data center region, identified by data_center_region_id.
+    components:
+    - identity_id: data_center_region_identity
+      dataset_columns:
+      - data_center_region_id
+      description: Identifier of the data center region.
+  columns:
+  - name: data_center_region_id
+    description: Identifier of the data center region.
+  - name: data_center_region_name
+    description: Name of the data center region.
+  - name: data_center_region_code
+    description: Code of the data center region.
+    value_description: north_america, europe, asia_pacific
+  entity_definitions:
+  - identity_id: data_center_region_identity
+    dataset_columns:
+    - data_center_region_id
+    entity_universe: complete
+- node_id: sf:social.infra.fact_compute_capacity
+  descriptor:
+    qualified_name: social.infra.fact_compute_capacity
+    display_name: Compute Capacity
+    description: Compute capacity deployed (quantity, not spending).
+    synonyms: []
+    tags:
+    - fact
+    - infrastructure
+    - interactive-media
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: social.us-west-1
+      database: SOCIAL
+      schema: INFRA
+      object: FACT_COMPUTE_CAPACITY
+      format: table
+  grain:
+    description: One row is one compute capacity observation for the combination of fiscal quarter, scenario,
+      data center region, capex program.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: data_center_region_identity
+      dataset_columns:
+      - data_center_region_id
+      description: Identifier of the data center region.
+    - identity_id: capex_program_identity
+      dataset_columns:
+      - capex_program_id
+      description: Identifier of the capex program.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: data_center_region_id
+    description: Identifier of the data center region.
+  - name: capex_program_id
+    description: Identifier of the capex program.
+  - name: server_count
+    description: Number of servers deployed.
+  - name: compute_unit_count
+    description: Number of compute units deployed.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: data_center_region_identity
+    dataset_columns:
+    - data_center_region_id
+    entity_universe: partial
+  - identity_id: capex_program_identity
+    dataset_columns:
+    - capex_program_id
+    entity_universe: partial
+- node_id: sf:social.infra.fact_data_center_power
+  descriptor:
+    qualified_name: social.infra.fact_data_center_power
+    display_name: Data Center Power
+    description: Data-center power capacity and use.
+    synonyms: []
+    tags:
+    - fact
+    - infrastructure
+    - interactive-media
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: social.us-west-1
+      database: SOCIAL
+      schema: INFRA
+      object: FACT_DATA_CENTER_POWER
+      format: table
+  grain:
+    description: One row is one data center power observation for the combination of fiscal quarter, scenario,
+      data center region.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: data_center_region_identity
+      dataset_columns:
+      - data_center_region_id
+      description: Identifier of the data center region.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: data_center_region_id
+    description: Identifier of the data center region.
+  - name: power_capacity_megawatt_count
+    description: Power capacity in megawatts.
+  - name: power_used_megawatt_count
+    description: Power used in megawatts.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: data_center_region_identity
+    dataset_columns:
+    - data_center_region_id
+    entity_universe: partial
+- node_id: sf:social.infra.fact_energy_use
+  descriptor:
+    qualified_name: social.infra.fact_energy_use
+    display_name: Energy Use
+    description: Energy consumed by infrastructure.
+    synonyms: []
+    tags:
+    - fact
+    - infrastructure
+    - interactive-media
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: social.us-west-1
+      database: SOCIAL
+      schema: INFRA
+      object: FACT_ENERGY_USE
+      format: table
+  grain:
+    description: One row is one energy use observation for the combination of fiscal quarter, scenario,
+      data center region.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: data_center_region_identity
+      dataset_columns:
+      - data_center_region_id
+      description: Identifier of the data center region.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: data_center_region_id
+    description: Identifier of the data center region.
+  - name: energy_megawatt_hour_count
+    description: Energy used in megawatt-hours.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: data_center_region_identity
+    dataset_columns:
+    - data_center_region_id
+    entity_universe: partial
+- node_id: sf:social.cashflow.fact_cash_balance
+  descriptor:
+    qualified_name: social.cashflow.fact_cash_balance
+    display_name: Cash Balance
+    description: Cash, cash equivalents, and marketable securities at quarter end.
+    synonyms: []
+    tags:
+    - fact
+    - infrastructure
+    - interactive-media
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: social.us-west-1
+      database: SOCIAL
+      schema: CASHFLOW
+      object: FACT_CASH_BALANCE
+      format: table
+  grain:
+    description: One row is one cash balance observation for the combination of fiscal quarter, scenario.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: cash_and_securities_amount
+    description: Cash and marketable securities in dollars.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+- node_id: sf:social.cashflow.fact_buyback
+  descriptor:
+    qualified_name: social.cashflow.fact_buyback
+    display_name: Share Repurchase
+    description: Shares repurchased (corporate capital return).
+    synonyms: []
+    tags:
+    - fact
+    - infrastructure
+    - interactive-media
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: social.us-west-1
+      database: SOCIAL
+      schema: CASHFLOW
+      object: FACT_BUYBACK
+      format: table
+  grain:
+    description: One row is one share repurchase observation for the combination of fiscal quarter, scenario.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: buyback_amount
+    description: Share repurchases in dollars.
+  - name: shares_repurchased_count
+    description: Number of shares repurchased.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+- node_id: sf:social.cashflow.fact_dividend_equivalent
+  descriptor:
+    qualified_name: social.cashflow.fact_dividend_equivalent
+    display_name: Capital Return
+    description: Other capital return amounts.
+    synonyms: []
+    tags:
+    - fact
+    - infrastructure
+    - interactive-media
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: social.us-west-1
+      database: SOCIAL
+      schema: CASHFLOW
+      object: FACT_DIVIDEND_EQUIVALENT
+      format: table
+  grain:
+    description: One row is one capital return observation for the combination of fiscal quarter, scenario.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: capital_return_amount
+    description: Other capital returned in dollars.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+- node_id: sf:social.cloud.fact_cloud_capacity
+  descriptor:
+    qualified_name: social.cloud.fact_cloud_capacity
+    display_name: Cloud Capacity
+    description: Cloud capacity deployed by product.
+    synonyms: []
+    tags:
+    - fact
+    - infrastructure
+    - interactive-media
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: social.us-west-1
+      database: SOCIAL
+      schema: CLOUD
+      object: FACT_CLOUD_CAPACITY
+      format: table
+  grain:
+    description: One row is one cloud capacity observation for the combination of fiscal quarter, scenario,
+      cloud product, data center region.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: cloud_product_identity
+      dataset_columns:
+      - cloud_product_id
+      description: Identifier of the cloud product.
+    - identity_id: data_center_region_identity
+      dataset_columns:
+      - data_center_region_id
+      description: Identifier of the data center region.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: cloud_product_id
+    description: Identifier of the cloud product.
+  - name: data_center_region_id
+    description: Identifier of the data center region.
+  - name: cloud_capacity_unit_count
+    description: Number of cloud capacity units.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: cloud_product_identity
+    dataset_columns:
+    - cloud_product_id
+    entity_universe: partial
+  - identity_id: data_center_region_identity
+    dataset_columns:
+    - data_center_region_id
+    entity_universe: partial
+- node_id: sf:social.people.fact_engineering_headcount
+  descriptor:
+    qualified_name: social.people.fact_engineering_headcount
+    display_name: Engineering Headcount
+    description: Engineering employees by segment.
+    synonyms: []
+    tags:
+    - fact
+    - infrastructure
+    - interactive-media
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: social.us-west-1
+      database: SOCIAL
+      schema: PEOPLE
+      object: FACT_ENGINEERING_HEADCOUNT
+      format: table
+  grain:
+    description: One row is one engineering headcount observation for the combination of fiscal quarter,
+      scenario, reporting segment, expense category.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: reporting_segment_identity
+      dataset_columns:
+      - reporting_segment_id
+      description: Identifier of the reporting segment.
+    - identity_id: expense_category_identity
+      dataset_columns:
+      - expense_category_id
+      description: Identifier of the expense category.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: reporting_segment_id
+    description: Identifier of the reporting segment.
+  - name: expense_category_id
+    description: Identifier of the expense category.
+  - name: engineering_headcount_count
+    description: Number of engineering employees.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: reporting_segment_identity
+    dataset_columns:
+    - reporting_segment_id
+    entity_universe: partial
+  - identity_id: expense_category_identity
+    dataset_columns:
+    - expense_category_id
+    entity_universe: partial
+- node_id: sf:social.infra.fact_server_depreciation_life
+  descriptor:
+    qualified_name: social.infra.fact_server_depreciation_life
+    display_name: Server Depreciation Detail
+    description: Depreciation by data-center region.
+    synonyms: []
+    tags:
+    - fact
+    - infrastructure
+    - interactive-media
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: social.us-west-1
+      database: SOCIAL
+      schema: INFRA
+      object: FACT_SERVER_DEPRECIATION_LIFE
+      format: table
+  grain:
+    description: One row is one server depreciation detail observation for the combination of fiscal quarter,
+      scenario, data center region.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: data_center_region_identity
+      dataset_columns:
+      - data_center_region_id
+      description: Identifier of the data center region.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: data_center_region_id
+    description: Identifier of the data center region.
+  - name: regional_depreciation_amount
+    description: Depreciation in dollars for the region.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: data_center_region_identity
+    dataset_columns:
+    - data_center_region_id
+    entity_universe: partial
+- node_id: sf:social.cashflow.fact_income_tax
+  descriptor:
+    qualified_name: social.cashflow.fact_income_tax
+    display_name: Income Tax
+    description: Income tax expense (corporate).
+    synonyms: []
+    tags:
+    - fact
+    - infrastructure
+    - interactive-media
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: social.us-west-1
+      database: SOCIAL
+      schema: CASHFLOW
+      object: FACT_INCOME_TAX
+      format: table
+  grain:
+    description: One row is one income tax observation for the combination of fiscal quarter, scenario.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: income_tax_amount
+    description: Income tax expense in dollars.
+  - name: effective_tax_rate_percent
+    description: Effective tax rate in percent.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial

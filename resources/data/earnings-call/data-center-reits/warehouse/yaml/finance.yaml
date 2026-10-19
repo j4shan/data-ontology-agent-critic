@@ -1,0 +1,364 @@
+schema_version: '3'
+nodes:
+- node_id: sf:colocation.finance.dim_cost_category
+  descriptor:
+    qualified_name: colocation.finance.dim_cost_category
+    display_name: Cost Category
+    description: One operating cost category.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: colocation.us-west-1
+      database: COLOCATION
+      schema: FINANCE
+      object: DIM_COST_CATEGORY
+      format: table
+  grain:
+    description: One row per Cost Category identified by cost_category_id.
+    components:
+    - identity_id: cost_category_identity
+      dataset_columns:
+      - cost_category_id
+      description: Identifier of the Cost Category.
+  columns:
+  - name: cost_category_id
+    description: Identifier of the Cost Category. This dataset holds the complete population.
+  - name: cost_category_name
+    description: Name of the Cost Category.
+  - name: cost_category_code
+    description: Code of the Cost Category.
+    value_description: energy, labor, maintenance, information_technology, other_operating.
+  entity_definitions:
+  - identity_id: cost_category_identity
+    dataset_columns:
+    - cost_category_id
+    entity_universe: complete
+- node_id: sf:colocation.finance.dim_currency
+  descriptor:
+    qualified_name: colocation.finance.dim_currency
+    display_name: Currency
+    description: One currency.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: colocation.us-west-1
+      database: COLOCATION
+      schema: FINANCE
+      object: DIM_CURRENCY
+      format: table
+  grain:
+    description: One row per Currency identified by currency_id.
+    components:
+    - identity_id: currency_identity
+      dataset_columns:
+      - currency_id
+      description: Identifier of the Currency.
+  columns:
+  - name: currency_id
+    description: Identifier of the Currency. This dataset holds the complete population.
+  - name: currency_name
+    description: Name of the Currency.
+  - name: currency_code
+    description: Code of the Currency.
+    value_description: usd, eur, gbp, other.
+  entity_definitions:
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: complete
+- node_id: sf:colocation.finance.fact_enterprise_portfolio_amount
+  descriptor:
+    qualified_name: colocation.finance.fact_enterprise_portfolio_amount
+    display_name: Enterprise Portfolio Amount
+    description: Enterprise FFO, AFFO and net operating income at portfolio level.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: colocation.us-west-1
+      database: COLOCATION
+      schema: FINANCE
+      object: FACT_ENTERPRISE_PORTFOLIO_AMOUNT
+      format: table
+  grain:
+    description: One row per enterprise portfolio amount for the combination of fiscal_period_id, scenario_id,
+      currency_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: currency_identity
+      dataset_columns:
+      - currency_id
+      description: Identifier of the Currency.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: currency_id
+    description: Identifier of the Currency. The complete population is owned by its owner dataset.
+  - name: ffo_amount
+    description: Ffo Amount measured in currency units.
+  - name: affo_amount
+    description: Affo Amount measured in currency units.
+  - name: net_operating_income_amount
+    description: Net Operating Income Amount measured in currency units.
+  - name: adjusted_ebitda_amount
+    description: Adjusted Ebitda Amount measured in currency units.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: partial
+- node_id: sf:colocation.finance.fact_enterprise_portfolio_rate
+  descriptor:
+    qualified_name: colocation.finance.fact_enterprise_portfolio_rate
+    display_name: Enterprise Portfolio Rate
+    description: Portfolio-level AFFO and revenue rates; portfolio amounts share the currency key.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: colocation.us-west-1
+      database: COLOCATION
+      schema: FINANCE
+      object: FACT_ENTERPRISE_PORTFOLIO_RATE
+      format: table
+  grain:
+    description: One row per enterprise portfolio rate for the combination of fiscal_period_id, scenario_id,
+      currency_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: currency_identity
+      dataset_columns:
+      - currency_id
+      description: Identifier of the Currency.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: currency_id
+    description: Identifier of the Currency. The complete population is owned by its owner dataset.
+  - name: revenue_growth_rate
+    description: Revenue Growth Rate measured in a decimal ratio, where 1.0 equals 100 percent.
+  - name: affo_growth_rate
+    description: Affo Growth Rate measured in a decimal ratio, where 1.0 equals 100 percent.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: partial
+- node_id: sf:colocation.finance.fact_enterprise_revenue_amount
+  descriptor:
+    qualified_name: colocation.finance.fact_enterprise_revenue_amount
+    display_name: Enterprise Revenue Amount
+    description: Enterprise total revenue at enterprise level.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: colocation.us-west-1
+      database: COLOCATION
+      schema: FINANCE
+      object: FACT_ENTERPRISE_REVENUE_AMOUNT
+      format: table
+  grain:
+    description: One row per enterprise revenue amount for the combination of fiscal_period_id, scenario_id,
+      currency_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: currency_identity
+      dataset_columns:
+      - currency_id
+      description: Identifier of the Currency.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: currency_id
+    description: Identifier of the Currency. The complete population is owned by its owner dataset.
+  - name: total_revenue_amount
+    description: Total Revenue Amount measured in currency units.
+  - name: recurring_revenue_amount
+    description: Recurring Revenue Amount measured in currency units.
+  - name: nonrecurring_revenue_amount
+    description: Nonrecurring Revenue Amount measured in currency units.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: partial
+- node_id: sf:colocation.finance.fact_joint_venture_amount
+  descriptor:
+    qualified_name: colocation.finance.fact_joint_venture_amount
+    display_name: Joint Venture Amount
+    description: Joint-venture and fund amounts by region, separate from consolidated portfolio amounts.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: colocation.us-west-1
+      database: COLOCATION
+      schema: FINANCE
+      object: FACT_JOINT_VENTURE_AMOUNT
+      format: table
+  grain:
+    description: One row per joint venture amount for the combination of fiscal_period_id, scenario_id,
+      region_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the Region.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: region_id
+    description: Identifier of the Region. The complete population is owned by its owner dataset.
+  - name: joint_venture_investment_amount
+    description: Joint Venture Investment Amount measured in currency units.
+  - name: fund_fee_amount
+    description: Fund Fee Amount measured in currency units.
+  - name: owned_share_amount
+    description: Owned Share Amount measured in currency units.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:colocation.finance.fact_region_revenue_amount
+  descriptor:
+    qualified_name: colocation.finance.fact_region_revenue_amount
+    display_name: Region Revenue Amount
+    description: Recurring and nonrecurring revenue at reporting-region level.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: colocation.us-west-1
+      database: COLOCATION
+      schema: FINANCE
+      object: FACT_REGION_REVENUE_AMOUNT
+      format: table
+  grain:
+    description: One row per region revenue amount for the combination of fiscal_period_id, scenario_id,
+      region_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the Region.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: region_id
+    description: Identifier of the Region. The complete population is owned by its owner dataset.
+  - name: recurring_revenue_amount
+    description: Recurring Revenue Amount measured in currency units.
+  - name: nonrecurring_revenue_amount
+    description: Nonrecurring Revenue Amount measured in currency units.
+  - name: total_revenue_amount
+    description: Total Revenue Amount measured in currency units.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial

@@ -1,0 +1,1790 @@
+schema_version: '3'
+nodes:
+- node_id: sf:studio.price.dim_cost_bucket
+  descriptor:
+    qualified_name: studio.price.dim_cost_bucket
+    display_name: Cost Bucket
+    description: Operating cost bucket.
+    synonyms: []
+    tags:
+    - dimension
+    - price
+    - studio
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: studio.us-west-1
+      database: STUDIO
+      schema: PRICE
+      object: DIM_COST_BUCKET
+      format: table
+  grain:
+    description: One row is one cost bucket.
+    components:
+    - identity_id: dim_cost_bucket_identity
+      dataset_columns:
+      - cost_bucket_id
+      description: Identifier of the cost bucket.
+  columns:
+  - name: cost_bucket_id
+    description: Identifier of the cost bucket.
+  - name: cost_bucket_code
+    description: Cost Bucket code.
+    value_description: content, marketing, technology, park_operations, sports_rights
+  - name: cost_bucket_name
+    description: Cost Bucket name.
+  entity_definitions:
+  - identity_id: dim_cost_bucket_identity
+    dataset_columns:
+    - cost_bucket_id
+    entity_universe: complete
+- node_id: sf:studio.price.dim_revenue_type
+  descriptor:
+    qualified_name: studio.price.dim_revenue_type
+    display_name: Revenue Type
+    description: Revenue type.
+    synonyms: []
+    tags:
+    - dimension
+    - price
+    - studio
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: studio.us-west-1
+      database: STUDIO
+      schema: PRICE
+      object: DIM_REVENUE_TYPE
+      format: table
+  grain:
+    description: One row is one revenue type.
+    components:
+    - identity_id: dim_revenue_type_identity
+      dataset_columns:
+      - revenue_type_id
+      description: Identifier of the revenue type.
+  columns:
+  - name: revenue_type_id
+    description: Identifier of the revenue type.
+  - name: revenue_type_code
+    description: Revenue Type code.
+    value_description: subscription, advertising, licensing, box_office, park_admissions, food_beverage
+  - name: revenue_type_name
+    description: Revenue Type name.
+  entity_definitions:
+  - identity_id: dim_revenue_type_identity
+    dataset_columns:
+    - revenue_type_id
+    entity_universe: complete
+- node_id: sf:studio.price.fact_dis_segment_revenue
+  descriptor:
+    qualified_name: studio.price.fact_dis_segment_revenue
+    display_name: Disney Segment Revenue
+    description: Disney segment revenue in dollars. Stores no unit quantity.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - studio
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: studio.us-west-1
+      database: STUDIO
+      schema: PRICE
+      object: FACT_DIS_SEGMENT_REVENUE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, disney segment.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_dis_segment_identity
+      dataset_columns:
+      - dis_segment_id
+      description: Identifier of the disney segment.
+  columns:
+  - name: dis_segment_revenue_record_id
+    description: Surrogate record identifier for this disney segment revenue row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: dis_segment_id
+    description: Identifier of the related disney segment.
+  - name: segment_revenue_amount
+    description: Segment revenue in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_dis_segment_identity
+    dataset_columns:
+    - dis_segment_id
+    entity_universe: partial
+- node_id: sf:studio.price.fact_dis_segment_margin
+  descriptor:
+    qualified_name: studio.price.fact_dis_segment_margin
+    display_name: Disney Segment Margin
+    description: Disney segment operating income in dollars and margin rate in percent.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - studio
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: studio.us-west-1
+      database: STUDIO
+      schema: PRICE
+      object: FACT_DIS_SEGMENT_MARGIN
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, disney segment.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_dis_segment_identity
+      dataset_columns:
+      - dis_segment_id
+      description: Identifier of the disney segment.
+  columns:
+  - name: dis_segment_margin_record_id
+    description: Surrogate record identifier for this disney segment margin row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: dis_segment_id
+    description: Identifier of the related disney segment.
+  - name: segment_operating_income_amount
+    description: Segment operating income in dollars.
+  - name: segment_margin_percent
+    description: Segment margin rate in percent.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_dis_segment_identity
+    dataset_columns:
+    - dis_segment_id
+    entity_universe: partial
+- node_id: sf:studio.price.fact_streaming_revenue
+  descriptor:
+    qualified_name: studio.price.fact_streaming_revenue
+    display_name: Streaming Revenue
+    description: Streaming revenue in dollars by service and revenue type.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - studio
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: studio.us-west-1
+      database: STUDIO
+      schema: PRICE
+      object: FACT_STREAMING_REVENUE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, streaming service, revenue type.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_streaming_service_identity
+      dataset_columns:
+      - streaming_service_id
+      description: Identifier of the streaming service.
+    - identity_id: dim_revenue_type_identity
+      dataset_columns:
+      - revenue_type_id
+      description: Identifier of the revenue type.
+  columns:
+  - name: streaming_revenue_record_id
+    description: Surrogate record identifier for this streaming revenue row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: streaming_service_id
+    description: Identifier of the related streaming service.
+  - name: revenue_type_id
+    description: Identifier of the related revenue type.
+  - name: streaming_revenue_amount
+    description: Streaming revenue in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_streaming_service_identity
+    dataset_columns:
+    - streaming_service_id
+    entity_universe: partial
+  - identity_id: dim_revenue_type_identity
+    dataset_columns:
+    - revenue_type_id
+    entity_universe: partial
+- node_id: sf:studio.price.fact_netflix_revenue
+  descriptor:
+    qualified_name: studio.price.fact_netflix_revenue
+    display_name: Netflix Revenue
+    description: Netflix enterprise revenue in dollars at the reporting-unit grain by plan type is not enterprise; this fact
+      is revenue in dollars by plan type.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - studio
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: studio.us-west-1
+      database: STUDIO
+      schema: PRICE
+      object: FACT_NETFLIX_REVENUE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, plan type, region.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_plan_type_identity
+      dataset_columns:
+      - plan_type_id
+      description: Identifier of the plan type.
+    - identity_id: dim_region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+  columns:
+  - name: netflix_revenue_record_id
+    description: Surrogate record identifier for this netflix revenue row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: plan_type_id
+    description: Identifier of the related plan type.
+  - name: region_id
+    description: Identifier of the related region.
+  - name: revenue_amount
+    description: Revenue in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_plan_type_identity
+    dataset_columns:
+    - plan_type_id
+    entity_universe: partial
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:studio.price.fact_enterprise_revenue_mv
+  descriptor:
+    qualified_name: studio.price.fact_enterprise_revenue_mv
+    display_name: Enterprise Revenue
+    description: Enterprise revenue in dollars and operating income in dollars at the reporting-unit grain.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - studio
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: studio.us-west-1
+      database: STUDIO
+      schema: PRICE
+      object: FACT_ENTERPRISE_REVENUE_MV
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, reporting unit.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_reporting_unit_identity
+      dataset_columns:
+      - reporting_unit_id
+      description: Identifier of the reporting unit.
+  columns:
+  - name: enterprise_revenue_mv_record_id
+    description: Surrogate record identifier for this enterprise revenue row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: reporting_unit_id
+    description: Identifier of the related reporting unit.
+  - name: revenue_amount
+    description: Enterprise revenue in dollars.
+  - name: operating_income_amount
+    description: Enterprise operating income in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_reporting_unit_identity
+    dataset_columns:
+    - reporting_unit_id
+    entity_universe: partial
+- node_id: sf:studio.price.fact_enterprise_margin_mv
+  descriptor:
+    qualified_name: studio.price.fact_enterprise_margin_mv
+    display_name: Enterprise Margin
+    description: Enterprise operating margin rate in percent at the reporting-unit grain.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - studio
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: studio.us-west-1
+      database: STUDIO
+      schema: PRICE
+      object: FACT_ENTERPRISE_MARGIN_MV
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, reporting unit.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_reporting_unit_identity
+      dataset_columns:
+      - reporting_unit_id
+      description: Identifier of the reporting unit.
+  columns:
+  - name: enterprise_margin_mv_record_id
+    description: Surrogate record identifier for this enterprise margin row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: reporting_unit_id
+    description: Identifier of the related reporting unit.
+  - name: operating_margin_percent
+    description: Operating margin rate in percent.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_reporting_unit_identity
+    dataset_columns:
+    - reporting_unit_id
+    entity_universe: partial
+- node_id: sf:studio.price.fact_advertising_revenue
+  descriptor:
+    qualified_name: studio.price.fact_advertising_revenue
+    display_name: Advertising Revenue
+    description: Advertising revenue in dollars by service and advertiser type.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - studio
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: studio.us-west-1
+      database: STUDIO
+      schema: PRICE
+      object: FACT_ADVERTISING_REVENUE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, streaming service, advertiser type.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_streaming_service_identity
+      dataset_columns:
+      - streaming_service_id
+      description: Identifier of the streaming service.
+    - identity_id: dim_advertiser_type_identity
+      dataset_columns:
+      - advertiser_type_id
+      description: Identifier of the advertiser type.
+  columns:
+  - name: advertising_revenue_record_id
+    description: Surrogate record identifier for this advertising revenue row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: streaming_service_id
+    description: Identifier of the related streaming service.
+  - name: advertiser_type_id
+    description: Identifier of the related advertiser type.
+  - name: advertising_revenue_amount
+    description: Advertising revenue in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_streaming_service_identity
+    dataset_columns:
+    - streaming_service_id
+    entity_universe: partial
+  - identity_id: dim_advertiser_type_identity
+    dataset_columns:
+    - advertiser_type_id
+    entity_universe: partial
+- node_id: sf:studio.price.fact_content_amortization
+  descriptor:
+    qualified_name: studio.price.fact_content_amortization
+    display_name: Content Amortization
+    description: Content amortization amount in dollars by content type and origin. Stores no title quantity.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - studio
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: studio.us-west-1
+      database: STUDIO
+      schema: PRICE
+      object: FACT_CONTENT_AMORTIZATION
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, content type, content origin.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_content_type_identity
+      dataset_columns:
+      - content_type_id
+      description: Identifier of the content type.
+    - identity_id: dim_content_origin_identity
+      dataset_columns:
+      - content_origin_id
+      description: Identifier of the content origin.
+  columns:
+  - name: content_amortization_record_id
+    description: Surrogate record identifier for this content amortization row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: content_type_id
+    description: Identifier of the related content type.
+  - name: content_origin_id
+    description: Identifier of the related content origin.
+  - name: content_amortization_amount
+    description: Content amortization in dollars.
+  - name: content_cash_spend_amount
+    description: Content cash spend in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_content_type_identity
+    dataset_columns:
+    - content_type_id
+    entity_universe: partial
+  - identity_id: dim_content_origin_identity
+    dataset_columns:
+    - content_origin_id
+    entity_universe: partial
+- node_id: sf:studio.price.fact_park_revenue_rate
+  descriptor:
+    qualified_name: studio.price.fact_park_revenue_rate
+    display_name: Park Revenue Rate
+    description: Park revenue rate in dollars per guest. Stores no guest quantity; denominator is on park attendance at the
+      same grain.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - studio
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: studio.us-west-1
+      database: STUDIO
+      schema: PRICE
+      object: FACT_PARK_REVENUE_RATE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, park location.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_park_location_identity
+      dataset_columns:
+      - park_location_id
+      description: Identifier of the park location.
+  columns:
+  - name: park_revenue_rate_record_id
+    description: Surrogate record identifier for this park revenue rate row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: park_location_id
+    description: Identifier of the related park location.
+  - name: revenue_per_guest_amount
+    description: Park revenue rate in dollars per guest.
+  - name: spending_per_guest_amount
+    description: Guest spending rate in dollars per guest.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_park_location_identity
+    dataset_columns:
+    - park_location_id
+    entity_universe: partial
+- node_id: sf:studio.price.fact_membership_price_rate
+  descriptor:
+    qualified_name: studio.price.fact_membership_price_rate
+    display_name: Membership Price Rate
+    description: Membership price rate in dollars per membership per month. Stores no membership quantity.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - studio
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: studio.us-west-1
+      database: STUDIO
+      schema: PRICE
+      object: FACT_MEMBERSHIP_PRICE_RATE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, plan type, region.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_plan_type_identity
+      dataset_columns:
+      - plan_type_id
+      description: Identifier of the plan type.
+    - identity_id: dim_region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+  columns:
+  - name: membership_price_rate_record_id
+    description: Surrogate record identifier for this membership price rate row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: plan_type_id
+    description: Identifier of the related plan type.
+  - name: region_id
+    description: Identifier of the related region.
+  - name: revenue_per_membership_amount
+    description: Membership price rate in dollars per membership per month.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_plan_type_identity
+    dataset_columns:
+    - plan_type_id
+    entity_universe: partial
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:studio.price.fact_advertising_rate
+  descriptor:
+    qualified_name: studio.price.fact_advertising_rate
+    display_name: Advertising Rate
+    description: Advertising rate in dollars per thousand impressions (CPM). Stores no impression quantity.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - studio
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: studio.us-west-1
+      database: STUDIO
+      schema: PRICE
+      object: FACT_ADVERTISING_RATE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, streaming service, advertiser type.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_streaming_service_identity
+      dataset_columns:
+      - streaming_service_id
+      description: Identifier of the streaming service.
+    - identity_id: dim_advertiser_type_identity
+      dataset_columns:
+      - advertiser_type_id
+      description: Identifier of the advertiser type.
+  columns:
+  - name: advertising_rate_record_id
+    description: Surrogate record identifier for this advertising rate row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: streaming_service_id
+    description: Identifier of the related streaming service.
+  - name: advertiser_type_id
+    description: Identifier of the related advertiser type.
+  - name: cpm_amount
+    description: Advertising rate in dollars per thousand impressions.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_streaming_service_identity
+    dataset_columns:
+    - streaming_service_id
+    entity_universe: partial
+  - identity_id: dim_advertiser_type_identity
+    dataset_columns:
+    - advertiser_type_id
+    entity_universe: partial
+- node_id: sf:studio.price.fact_licensing_revenue
+  descriptor:
+    qualified_name: studio.price.fact_licensing_revenue
+    display_name: Licensing Revenue
+    description: Content licensing revenue in dollars by distribution window.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - studio
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: studio.us-west-1
+      database: STUDIO
+      schema: PRICE
+      object: FACT_LICENSING_REVENUE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, distribution window, content type.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_distribution_window_identity
+      dataset_columns:
+      - distribution_window_id
+      description: Identifier of the distribution window.
+    - identity_id: dim_content_type_identity
+      dataset_columns:
+      - content_type_id
+      description: Identifier of the content type.
+  columns:
+  - name: licensing_revenue_record_id
+    description: Surrogate record identifier for this licensing revenue row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: distribution_window_id
+    description: Identifier of the related distribution window.
+  - name: content_type_id
+    description: Identifier of the related content type.
+  - name: licensing_revenue_amount
+    description: Licensing revenue in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_distribution_window_identity
+    dataset_columns:
+    - distribution_window_id
+    entity_universe: partial
+  - identity_id: dim_content_type_identity
+    dataset_columns:
+    - content_type_id
+    entity_universe: partial
+- node_id: sf:studio.price.fact_sports_revenue
+  descriptor:
+    qualified_name: studio.price.fact_sports_revenue
+    display_name: Sports Revenue
+    description: Sports revenue in dollars by league and network.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - studio
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: studio.us-west-1
+      database: STUDIO
+      schema: PRICE
+      object: FACT_SPORTS_REVENUE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, sports league, linear network.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_sports_league_identity
+      dataset_columns:
+      - sports_league_id
+      description: Identifier of the sports league.
+    - identity_id: dim_linear_network_identity
+      dataset_columns:
+      - linear_network_id
+      description: Identifier of the linear network.
+  columns:
+  - name: sports_revenue_record_id
+    description: Surrogate record identifier for this sports revenue row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: sports_league_id
+    description: Identifier of the related sports league.
+  - name: linear_network_id
+    description: Identifier of the related linear network.
+  - name: sports_revenue_amount
+    description: Sports revenue in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_sports_league_identity
+    dataset_columns:
+    - sports_league_id
+    entity_universe: partial
+  - identity_id: dim_linear_network_identity
+    dataset_columns:
+    - linear_network_id
+    entity_universe: partial
+- node_id: sf:studio.price.fact_park_capital_spending
+  descriptor:
+    qualified_name: studio.price.fact_park_capital_spending
+    display_name: Parks Capital Spending
+    description: Parks capital spending amount in dollars by location and vintage.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - studio
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: studio.us-west-1
+      database: STUDIO
+      schema: PRICE
+      object: FACT_PARK_CAPITAL_SPENDING
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, park location, project vintage.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_park_location_identity
+      dataset_columns:
+      - park_location_id
+      description: Identifier of the park location.
+    - identity_id: dim_project_vintage_identity
+      dataset_columns:
+      - project_vintage_id
+      description: Identifier of the project vintage.
+  columns:
+  - name: park_capital_spending_record_id
+    description: Surrogate record identifier for this parks capital spending row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: park_location_id
+    description: Identifier of the related park location.
+  - name: project_vintage_id
+    description: Identifier of the related project vintage.
+  - name: capital_spending_amount
+    description: Capital spending in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_park_location_identity
+    dataset_columns:
+    - park_location_id
+    entity_universe: partial
+  - identity_id: dim_project_vintage_identity
+    dataset_columns:
+    - project_vintage_id
+    entity_universe: partial
+- node_id: sf:studio.price.fact_operating_expense_mv
+  descriptor:
+    qualified_name: studio.price.fact_operating_expense_mv
+    display_name: Operating Expense
+    description: Operating expense amount in dollars by cost bucket at the reporting-unit grain.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - studio
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: studio.us-west-1
+      database: STUDIO
+      schema: PRICE
+      object: FACT_OPERATING_EXPENSE_MV
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, reporting unit, cost bucket.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_reporting_unit_identity
+      dataset_columns:
+      - reporting_unit_id
+      description: Identifier of the reporting unit.
+    - identity_id: dim_cost_bucket_identity
+      dataset_columns:
+      - cost_bucket_id
+      description: Identifier of the cost bucket.
+  columns:
+  - name: operating_expense_mv_record_id
+    description: Surrogate record identifier for this operating expense row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: reporting_unit_id
+    description: Identifier of the related reporting unit.
+  - name: cost_bucket_id
+    description: Identifier of the related cost bucket.
+  - name: operating_expense_amount
+    description: Operating expense in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_reporting_unit_identity
+    dataset_columns:
+    - reporting_unit_id
+    entity_universe: partial
+  - identity_id: dim_cost_bucket_identity
+    dataset_columns:
+    - cost_bucket_id
+    entity_universe: partial
+- node_id: sf:studio.price.fact_free_cash_flow_mv
+  descriptor:
+    qualified_name: studio.price.fact_free_cash_flow_mv
+    display_name: Free Cash Flow
+    description: Free cash flow amount in dollars at the reporting-unit grain.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - studio
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: studio.us-west-1
+      database: STUDIO
+      schema: PRICE
+      object: FACT_FREE_CASH_FLOW_MV
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, reporting unit.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_reporting_unit_identity
+      dataset_columns:
+      - reporting_unit_id
+      description: Identifier of the reporting unit.
+  columns:
+  - name: free_cash_flow_mv_record_id
+    description: Surrogate record identifier for this free cash flow row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: reporting_unit_id
+    description: Identifier of the related reporting unit.
+  - name: free_cash_flow_amount
+    description: Free cash flow in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_reporting_unit_identity
+    dataset_columns:
+    - reporting_unit_id
+    entity_universe: partial
+- node_id: sf:studio.price.fact_content_revenue
+  descriptor:
+    qualified_name: studio.price.fact_content_revenue
+    display_name: Content Revenue
+    description: Film and content revenue in dollars by content type and window.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - studio
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: studio.us-west-1
+      database: STUDIO
+      schema: PRICE
+      object: FACT_CONTENT_REVENUE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, content type, distribution window.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_content_type_identity
+      dataset_columns:
+      - content_type_id
+      description: Identifier of the content type.
+    - identity_id: dim_distribution_window_identity
+      dataset_columns:
+      - distribution_window_id
+      description: Identifier of the distribution window.
+  columns:
+  - name: content_revenue_record_id
+    description: Surrogate record identifier for this content revenue row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: content_type_id
+    description: Identifier of the related content type.
+  - name: distribution_window_id
+    description: Identifier of the related distribution window.
+  - name: content_revenue_amount
+    description: Content revenue in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_content_type_identity
+    dataset_columns:
+    - content_type_id
+    entity_universe: partial
+  - identity_id: dim_distribution_window_identity
+    dataset_columns:
+    - distribution_window_id
+    entity_universe: partial
+- node_id: sf:studio.price.fact_cruise_revenue_rate
+  descriptor:
+    qualified_name: studio.price.fact_cruise_revenue_rate
+    display_name: Cruise Revenue Rate
+    description: Cruise revenue rate in dollars per passenger. Stores no passenger quantity.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - studio
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: studio.us-west-1
+      database: STUDIO
+      schema: PRICE
+      object: FACT_CRUISE_REVENUE_RATE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, cruise ship.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_cruise_ship_identity
+      dataset_columns:
+      - cruise_ship_id
+      description: Identifier of the cruise ship.
+  columns:
+  - name: cruise_revenue_rate_record_id
+    description: Surrogate record identifier for this cruise revenue rate row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: cruise_ship_id
+    description: Identifier of the related cruise ship.
+  - name: revenue_per_passenger_amount
+    description: Cruise revenue rate in dollars per passenger.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_cruise_ship_identity
+    dataset_columns:
+    - cruise_ship_id
+    entity_universe: partial
+- node_id: sf:studio.price.fact_franchise_revenue
+  descriptor:
+    qualified_name: studio.price.fact_franchise_revenue
+    display_name: Franchise Revenue
+    description: Franchise revenue amount in dollars by franchise.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - studio
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: studio.us-west-1
+      database: STUDIO
+      schema: PRICE
+      object: FACT_FRANCHISE_REVENUE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, franchise, distribution window.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_franchise_identity
+      dataset_columns:
+      - franchise_id
+      description: Identifier of the franchise.
+    - identity_id: dim_distribution_window_identity
+      dataset_columns:
+      - distribution_window_id
+      description: Identifier of the distribution window.
+  columns:
+  - name: franchise_revenue_record_id
+    description: Surrogate record identifier for this franchise revenue row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: franchise_id
+    description: Identifier of the related franchise.
+  - name: distribution_window_id
+    description: Identifier of the related distribution window.
+  - name: franchise_revenue_amount
+    description: Franchise revenue in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_franchise_identity
+    dataset_columns:
+    - franchise_id
+    entity_universe: partial
+  - identity_id: dim_distribution_window_identity
+    dataset_columns:
+    - distribution_window_id
+    entity_universe: partial
+- node_id: sf:studio.price.fact_linear_advertising_revenue
+  descriptor:
+    qualified_name: studio.price.fact_linear_advertising_revenue
+    display_name: Linear Advertising Revenue
+    description: Linear network advertising revenue in dollars by network.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - studio
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: studio.us-west-1
+      database: STUDIO
+      schema: PRICE
+      object: FACT_LINEAR_ADVERTISING_REVENUE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, linear network, advertiser type.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_linear_network_identity
+      dataset_columns:
+      - linear_network_id
+      description: Identifier of the linear network.
+    - identity_id: dim_advertiser_type_identity
+      dataset_columns:
+      - advertiser_type_id
+      description: Identifier of the advertiser type.
+  columns:
+  - name: linear_advertising_revenue_record_id
+    description: Surrogate record identifier for this linear advertising revenue row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: linear_network_id
+    description: Identifier of the related linear network.
+  - name: advertiser_type_id
+    description: Identifier of the related advertiser type.
+  - name: linear_ad_revenue_amount
+    description: Linear advertising revenue in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_linear_network_identity
+    dataset_columns:
+    - linear_network_id
+    entity_universe: partial
+  - identity_id: dim_advertiser_type_identity
+    dataset_columns:
+    - advertiser_type_id
+    entity_universe: partial
+- node_id: sf:studio.price.fact_espn_revenue
+  descriptor:
+    qualified_name: studio.price.fact_espn_revenue
+    display_name: Sports Network Revenue
+    description: Sports network revenue in dollars by league.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - studio
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: studio.us-west-1
+      database: STUDIO
+      schema: PRICE
+      object: FACT_ESPN_REVENUE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, sports league, revenue type.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_sports_league_identity
+      dataset_columns:
+      - sports_league_id
+      description: Identifier of the sports league.
+    - identity_id: dim_revenue_type_identity
+      dataset_columns:
+      - revenue_type_id
+      description: Identifier of the revenue type.
+  columns:
+  - name: espn_revenue_record_id
+    description: Surrogate record identifier for this sports network revenue row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: sports_league_id
+    description: Identifier of the related sports league.
+  - name: revenue_type_id
+    description: Identifier of the related revenue type.
+  - name: espn_revenue_amount
+    description: Sports network revenue in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_sports_league_identity
+    dataset_columns:
+    - sports_league_id
+    entity_universe: partial
+  - identity_id: dim_revenue_type_identity
+    dataset_columns:
+    - revenue_type_id
+    entity_universe: partial
+- node_id: sf:studio.price.fact_theatrical_revenue
+  descriptor:
+    qualified_name: studio.price.fact_theatrical_revenue
+    display_name: Theatrical Revenue
+    description: Theatrical box office revenue amount in dollars by region.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - studio
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: studio.us-west-1
+      database: STUDIO
+      schema: PRICE
+      object: FACT_THEATRICAL_REVENUE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, region, content type.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+    - identity_id: dim_content_type_identity
+      dataset_columns:
+      - content_type_id
+      description: Identifier of the content type.
+  columns:
+  - name: theatrical_revenue_record_id
+    description: Surrogate record identifier for this theatrical revenue row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: region_id
+    description: Identifier of the related region.
+  - name: content_type_id
+    description: Identifier of the related content type.
+  - name: box_office_amount
+    description: Box office revenue in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+  - identity_id: dim_content_type_identity
+    dataset_columns:
+    - content_type_id
+    entity_universe: partial
+- node_id: sf:studio.price.fact_park_operating_income
+  descriptor:
+    qualified_name: studio.price.fact_park_operating_income
+    display_name: Parks Operating Income
+    description: Parks operating income amount in dollars by location.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - studio
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: studio.us-west-1
+      database: STUDIO
+      schema: PRICE
+      object: FACT_PARK_OPERATING_INCOME
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, park location.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_park_location_identity
+      dataset_columns:
+      - park_location_id
+      description: Identifier of the park location.
+  columns:
+  - name: park_operating_income_record_id
+    description: Surrogate record identifier for this parks operating income row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: park_location_id
+    description: Identifier of the related park location.
+  - name: park_operating_income_amount
+    description: Parks operating income in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_park_location_identity
+    dataset_columns:
+    - park_location_id
+    entity_universe: partial
+- node_id: sf:studio.price.fact_cruise_operating_rate
+  descriptor:
+    qualified_name: studio.price.fact_cruise_operating_rate
+    display_name: Cruise Operating Rate
+    description: Cruise operating income rate is not stored; this fact stores cruise operating income amount in dollars by
+      ship.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - studio
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: studio.us-west-1
+      database: STUDIO
+      schema: PRICE
+      object: FACT_CRUISE_OPERATING_RATE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, cruise ship.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_cruise_ship_identity
+      dataset_columns:
+      - cruise_ship_id
+      description: Identifier of the cruise ship.
+  columns:
+  - name: cruise_operating_rate_record_id
+    description: Surrogate record identifier for this cruise operating rate row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: cruise_ship_id
+    description: Identifier of the related cruise ship.
+  - name: cruise_operating_income_amount
+    description: Cruise operating income in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_cruise_ship_identity
+    dataset_columns:
+    - cruise_ship_id
+    entity_universe: partial
+- node_id: sf:studio.price.fact_streaming_margin
+  descriptor:
+    qualified_name: studio.price.fact_streaming_margin
+    display_name: Streaming Margin
+    description: Streaming operating income amount in dollars and margin rate in percent by service.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - studio
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: studio.us-west-1
+      database: STUDIO
+      schema: PRICE
+      object: FACT_STREAMING_MARGIN
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, streaming service.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_streaming_service_identity
+      dataset_columns:
+      - streaming_service_id
+      description: Identifier of the streaming service.
+  columns:
+  - name: streaming_margin_record_id
+    description: Surrogate record identifier for this streaming margin row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: streaming_service_id
+    description: Identifier of the related streaming service.
+  - name: streaming_operating_income_amount
+    description: Streaming operating income in dollars.
+  - name: streaming_margin_percent
+    description: Streaming margin rate in percent.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_streaming_service_identity
+    dataset_columns:
+    - streaming_service_id
+    entity_universe: partial
+- node_id: sf:studio.price.fact_capital_spending_mv
+  descriptor:
+    qualified_name: studio.price.fact_capital_spending_mv
+    display_name: Capital Spending
+    description: Capital spending amount in dollars at the reporting-unit grain.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - studio
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: studio.us-west-1
+      database: STUDIO
+      schema: PRICE
+      object: FACT_CAPITAL_SPENDING_MV
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, reporting unit.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_reporting_unit_identity
+      dataset_columns:
+      - reporting_unit_id
+      description: Identifier of the reporting unit.
+  columns:
+  - name: capital_spending_mv_record_id
+    description: Surrogate record identifier for this capital spending row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: reporting_unit_id
+    description: Identifier of the related reporting unit.
+  - name: capital_spending_amount
+    description: Capital spending in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_reporting_unit_identity
+    dataset_columns:
+    - reporting_unit_id
+    entity_universe: partial
+- node_id: sf:studio.price.fact_marketing_expense
+  descriptor:
+    qualified_name: studio.price.fact_marketing_expense
+    display_name: Marketing Expense
+    description: Content and park marketing expense amount in dollars by cost bucket at reporting-unit grain.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - studio
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: studio.us-west-1
+      database: STUDIO
+      schema: PRICE
+      object: FACT_MARKETING_EXPENSE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, reporting unit, cost bucket.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_reporting_unit_identity
+      dataset_columns:
+      - reporting_unit_id
+      description: Identifier of the reporting unit.
+    - identity_id: dim_cost_bucket_identity
+      dataset_columns:
+      - cost_bucket_id
+      description: Identifier of the cost bucket.
+  columns:
+  - name: marketing_expense_record_id
+    description: Surrogate record identifier for this marketing expense row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: reporting_unit_id
+    description: Identifier of the related reporting unit.
+  - name: cost_bucket_id
+    description: Identifier of the related cost bucket.
+  - name: marketing_expense_amount
+    description: Marketing expense in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_reporting_unit_identity
+    dataset_columns:
+    - reporting_unit_id
+    entity_universe: partial
+  - identity_id: dim_cost_bucket_identity
+    dataset_columns:
+    - cost_bucket_id
+    entity_universe: partial

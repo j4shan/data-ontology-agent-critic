@@ -11,8 +11,10 @@ The actor location, artifact location, and socket path are always configurable i
 
 Authored assets that belong to one business domain must not share a file with another domain.
 
-- Schema-candidate catalogs live under `project_metadata/schema_candidates/<domain>/`.
+- Schema-candidate catalogs live under `resources/data/schema_candidates/<domain>/`.
 - Each domain's question sheet is `questions.md` in that directory.
+- Earnings-call industries live under `resources/data/earnings-call/<gics-slug>/`, with question sheets, `references.md`, and one `warehouse/`.
+- Pre-earnings-call schemas live under `resources/data/pre-earnings-call/<gics-slug>/warehouse/`. They are not derived from transcript question sheets.
 - Reference YAML lives under `resources/data/reference_catalogs/<domain>/`. Each directory contains
   only that domain's `.yaml` files and is gold for scoring generated catalogs.
 - Generated catalogs live under `resources/data/generated_catalogs/<domain>/`. Each committed

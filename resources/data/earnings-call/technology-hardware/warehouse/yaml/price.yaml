@@ -1,0 +1,1381 @@
+schema_version: '3'
+nodes:
+- node_id: sf:device.finance.dim_currency
+  descriptor:
+    qualified_name: device.finance.dim_currency
+    display_name: Currency
+    description: One currency.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: FINANCE
+      object: DIM_CURRENCY
+      format: table
+  grain:
+    description: One row per Currency identified by currency_id.
+    components:
+    - identity_id: currency_identity
+      dataset_columns:
+      - currency_id
+      description: Identifier of the Currency.
+  columns:
+  - name: currency_id
+    description: Identifier of the Currency. This dataset holds the complete population.
+  - name: currency_name
+    description: Name of the Currency.
+  - name: currency_code
+    description: Code of the Currency.
+    value_description: usd, eur, cny, jpy, other.
+  entity_definitions:
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: complete
+- node_id: sf:device.finance.dim_dell_segment
+  descriptor:
+    qualified_name: device.finance.dim_dell_segment
+    display_name: Dell Reporting Segment
+    description: One Dell reporting segment.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: FINANCE
+      object: DIM_DELL_SEGMENT
+      format: table
+  grain:
+    description: One row per Dell Segment identified by dell_segment_id.
+    components:
+    - identity_id: dell_segment_identity
+      dataset_columns:
+      - dell_segment_id
+      description: Identifier of the Dell Segment.
+  columns:
+  - name: dell_segment_id
+    description: Identifier of the Dell Segment. This dataset holds the complete population.
+  - name: dell_segment_name
+    description: Name of the Dell Segment.
+  - name: dell_segment_code
+    description: Code of the Dell Segment.
+    value_description: infrastructure_solutions, client_solutions.
+  entity_definitions:
+  - identity_id: dell_segment_identity
+    dataset_columns:
+    - dell_segment_id
+    entity_universe: complete
+- node_id: sf:device.finance.dim_margin_effect
+  descriptor:
+    qualified_name: device.finance.dim_margin_effect
+    display_name: Margin Effect
+    description: One category of gross-margin effect.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: FINANCE
+      object: DIM_MARGIN_EFFECT
+      format: table
+  grain:
+    description: One row per Margin Effect identified by margin_effect_id.
+    components:
+    - identity_id: margin_effect_identity
+      dataset_columns:
+      - margin_effect_id
+      description: Identifier of the Margin Effect.
+  columns:
+  - name: margin_effect_id
+    description: Identifier of the Margin Effect. This dataset holds the complete population.
+  - name: margin_effect_name
+    description: Name of the Margin Effect.
+  - name: margin_effect_code
+    description: Code of the Margin Effect.
+    value_description: component_cost, product_mix, services_mix, currency, pricing, volume.
+  entity_definitions:
+  - identity_id: margin_effect_identity
+    dataset_columns:
+    - margin_effect_id
+    entity_universe: complete
+- node_id: sf:device.finance.fact_capital_amount
+  descriptor:
+    qualified_name: device.finance.fact_capital_amount
+    display_name: Capital Amount
+    description: Capital and operating investment amounts by feature.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: FINANCE
+      object: FACT_CAPITAL_AMOUNT
+      format: table
+  grain:
+    description: One row per capital amount for the combination of fiscal_period_id, scenario_id, feature_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: feature_identity
+      dataset_columns:
+      - feature_id
+      description: Identifier of the Feature.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: feature_id
+    description: Identifier of the Feature. The complete population is owned by its owner dataset.
+  - name: capital_spend_amount
+    description: Capital Spend Amount measured in currency units.
+  - name: operating_expense_amount
+    description: Operating Expense Amount measured in currency units.
+  - name: infrastructure_investment_amount
+    description: Infrastructure Investment Amount measured in currency units.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: feature_identity
+    dataset_columns:
+    - feature_id
+    entity_universe: partial
+- node_id: sf:device.finance.fact_compute_cost_amount
+  descriptor:
+    qualified_name: device.finance.fact_compute_cost_amount
+    display_name: Compute Cost Amount
+    description: Compute cost and recovered amount by feature and service offering.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: FINANCE
+      object: FACT_COMPUTE_COST_AMOUNT
+      format: table
+  grain:
+    description: One row per compute cost amount for the combination of fiscal_period_id, scenario_id,
+      feature_id, service_offering_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: feature_identity
+      dataset_columns:
+      - feature_id
+      description: Identifier of the Feature.
+    - identity_id: service_offering_identity
+      dataset_columns:
+      - service_offering_id
+      description: Identifier of the Service Offering.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: feature_id
+    description: Identifier of the Feature. The complete population is owned by its owner dataset.
+  - name: service_offering_id
+    description: Identifier of the Service Offering. The complete population is owned by its owner dataset.
+  - name: compute_cost_amount
+    description: Compute Cost Amount measured in currency units.
+  - name: recovered_amount
+    description: Recovered Amount measured in currency units.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: feature_identity
+    dataset_columns:
+    - feature_id
+    entity_universe: partial
+  - identity_id: service_offering_identity
+    dataset_columns:
+    - service_offering_id
+    entity_universe: partial
+- node_id: sf:device.finance.fact_compute_request_quantity
+  descriptor:
+    qualified_name: device.finance.fact_compute_request_quantity
+    display_name: Compute Request Quantity
+    description: Requests by feature and service offering; denominator context for compute cost.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: FINANCE
+      object: FACT_COMPUTE_REQUEST_QUANTITY
+      format: table
+  grain:
+    description: One row per compute request quantity for the combination of fiscal_period_id, scenario_id,
+      feature_id, service_offering_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: feature_identity
+      dataset_columns:
+      - feature_id
+      description: Identifier of the Feature.
+    - identity_id: service_offering_identity
+      dataset_columns:
+      - service_offering_id
+      description: Identifier of the Service Offering.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: feature_id
+    description: Identifier of the Feature. The complete population is owned by its owner dataset.
+  - name: service_offering_id
+    description: Identifier of the Service Offering. The complete population is owned by its owner dataset.
+  - name: request_count
+    description: Request Count measured in records.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: feature_identity
+    dataset_columns:
+    - feature_id
+    entity_universe: partial
+  - identity_id: service_offering_identity
+    dataset_columns:
+    - service_offering_id
+    entity_universe: partial
+- node_id: sf:device.finance.fact_dell_segment_amount
+  descriptor:
+    qualified_name: device.finance.fact_dell_segment_amount
+    display_name: Dell Segment Amount
+    description: Dell revenue and operating income at Dell reporting-segment level.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: FINANCE
+      object: FACT_DELL_SEGMENT_AMOUNT
+      format: table
+  grain:
+    description: One row per dell segment amount for the combination of fiscal_period_id, scenario_id,
+      dell_segment_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: dell_segment_identity
+      dataset_columns:
+      - dell_segment_id
+      description: Identifier of the Dell Segment.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: dell_segment_id
+    description: Identifier of the Dell Segment. The complete population is owned by its owner dataset.
+  - name: segment_revenue_amount
+    description: Segment Revenue Amount measured in currency units.
+  - name: segment_operating_income_amount
+    description: Segment Operating Income Amount measured in currency units.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dell_segment_identity
+    dataset_columns:
+    - dell_segment_id
+    entity_universe: partial
+- node_id: sf:device.finance.fact_dell_segment_margin_rate
+  descriptor:
+    qualified_name: device.finance.fact_dell_segment_margin_rate
+    display_name: Dell Segment Margin Rate
+    description: Dell segment operating margin rate; segment amount shares the segment key.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: FINANCE
+      object: FACT_DELL_SEGMENT_MARGIN_RATE
+      format: table
+  grain:
+    description: One row per dell segment margin rate for the combination of fiscal_period_id, scenario_id,
+      dell_segment_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: dell_segment_identity
+      dataset_columns:
+      - dell_segment_id
+      description: Identifier of the Dell Segment.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: dell_segment_id
+    description: Identifier of the Dell Segment. The complete population is owned by its owner dataset.
+  - name: segment_operating_margin_rate
+    description: Segment Operating Margin Rate measured in a decimal ratio, where 1.0 equals 100 percent.
+  - name: segment_gross_margin_rate
+    description: Segment Gross Margin Rate measured in a decimal ratio, where 1.0 equals 100 percent.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dell_segment_identity
+    dataset_columns:
+    - dell_segment_id
+    entity_universe: partial
+- node_id: sf:device.finance.fact_enterprise_amount
+  descriptor:
+    qualified_name: device.finance.fact_enterprise_amount
+    display_name: Enterprise Amount
+    description: Enterprise revenue, gross profit, operating income and cash at enterprise level.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: FINANCE
+      object: FACT_ENTERPRISE_AMOUNT
+      format: table
+  grain:
+    description: One row per enterprise amount for the combination of fiscal_period_id, scenario_id, currency_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: currency_identity
+      dataset_columns:
+      - currency_id
+      description: Identifier of the Currency.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: currency_id
+    description: Identifier of the Currency. The complete population is owned by its owner dataset.
+  - name: revenue_amount
+    description: Revenue Amount measured in currency units.
+  - name: gross_profit_amount
+    description: Gross Profit Amount measured in currency units.
+  - name: operating_income_amount
+    description: Operating Income Amount measured in currency units.
+  - name: cash_amount
+    description: Cash Amount measured in currency units.
+  - name: operating_expense_amount
+    description: Operating Expense Amount measured in currency units.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: partial
+- node_id: sf:device.finance.fact_enterprise_margin_rate
+  descriptor:
+    qualified_name: device.finance.fact_enterprise_margin_rate
+    display_name: Enterprise Margin Rate
+    description: Enterprise gross and operating margin rates at enterprise level.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: FINANCE
+      object: FACT_ENTERPRISE_MARGIN_RATE
+      format: table
+  grain:
+    description: One row per enterprise margin rate for the combination of fiscal_period_id, scenario_id,
+      currency_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: currency_identity
+      dataset_columns:
+      - currency_id
+      description: Identifier of the Currency.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: currency_id
+    description: Identifier of the Currency. The complete population is owned by its owner dataset.
+  - name: gross_margin_rate
+    description: Gross Margin Rate measured in a decimal ratio, where 1.0 equals 100 percent.
+  - name: operating_margin_rate
+    description: Operating Margin Rate measured in a decimal ratio, where 1.0 equals 100 percent.
+  - name: revenue_growth_rate
+    description: Revenue Growth Rate measured in a decimal ratio, where 1.0 equals 100 percent.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: partial
+- node_id: sf:device.finance.fact_geographic_revenue_amount
+  descriptor:
+    qualified_name: device.finance.fact_geographic_revenue_amount
+    display_name: Geographic Revenue Amount
+    description: Revenue at geographic reporting-region level.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: FINANCE
+      object: FACT_GEOGRAPHIC_REVENUE_AMOUNT
+      format: table
+  grain:
+    description: One row per geographic revenue amount for the combination of fiscal_period_id, scenario_id,
+      region_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the Region.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: region_id
+    description: Identifier of the Region. The complete population is owned by its owner dataset.
+  - name: revenue_amount
+    description: Revenue Amount measured in currency units.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:device.finance.fact_margin_bridge_amount
+  descriptor:
+    qualified_name: device.finance.fact_margin_bridge_amount
+    display_name: Margin Bridge Amount
+    description: Gross-margin effect amounts by margin effect category at enterprise level.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: FINANCE
+      object: FACT_MARGIN_BRIDGE_AMOUNT
+      format: table
+  grain:
+    description: One row per margin bridge amount for the combination of fiscal_period_id, scenario_id,
+      currency_id, margin_effect_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: currency_identity
+      dataset_columns:
+      - currency_id
+      description: Identifier of the Currency.
+    - identity_id: margin_effect_identity
+      dataset_columns:
+      - margin_effect_id
+      description: Identifier of the Margin Effect.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: currency_id
+    description: Identifier of the Currency. The complete population is owned by its owner dataset.
+  - name: margin_effect_id
+    description: Identifier of the Margin Effect. The complete population is owned by its owner dataset.
+  - name: margin_effect_amount
+    description: Margin Effect Amount measured in currency units.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: partial
+  - identity_id: margin_effect_identity
+    dataset_columns:
+    - margin_effect_id
+    entity_universe: partial
+- node_id: sf:device.finance.fact_product_margin_rate
+  descriptor:
+    qualified_name: device.finance.fact_product_margin_rate
+    display_name: Product Margin Rate
+    description: Aggregate product gross margin rate at enterprise level; product revenue is stored on
+      enterprise amount facts.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: FINANCE
+      object: FACT_PRODUCT_MARGIN_RATE
+      format: table
+  grain:
+    description: One row per product margin rate for the combination of fiscal_period_id, scenario_id,
+      currency_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: currency_identity
+      dataset_columns:
+      - currency_id
+      description: Identifier of the Currency.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: currency_id
+    description: Identifier of the Currency. The complete population is owned by its owner dataset.
+  - name: product_gross_margin_rate
+    description: Product Gross Margin Rate measured in a decimal ratio, where 1.0 equals 100 percent.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: partial
+- node_id: sf:device.finance.fact_services_margin_rate
+  descriptor:
+    qualified_name: device.finance.fact_services_margin_rate
+    display_name: Services Margin Rate
+    description: Aggregate services gross margin rate at enterprise level; services revenue by offering
+      is on the services revenue fact.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: FINANCE
+      object: FACT_SERVICES_MARGIN_RATE
+      format: table
+  grain:
+    description: One row per services margin rate for the combination of fiscal_period_id, scenario_id,
+      currency_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: currency_identity
+      dataset_columns:
+      - currency_id
+      description: Identifier of the Currency.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: currency_id
+    description: Identifier of the Currency. The complete population is owned by its owner dataset.
+  - name: services_gross_margin_rate
+    description: Services Gross Margin Rate measured in a decimal ratio, where 1.0 equals 100 percent.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: partial
+- node_id: sf:device.price.fact_product_price
+  descriptor:
+    qualified_name: device.price.fact_product_price
+    display_name: Product Price
+    description: Unit price at product-configuration level; shipment quantity shares configuration, route
+      and country keys.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: PRICE
+      object: FACT_PRODUCT_PRICE
+      format: table
+  grain:
+    description: One row per product price for the combination of fiscal_period_id, scenario_id, country_id,
+      product_configuration_id, sales_route_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: country_identity
+      dataset_columns:
+      - country_id
+      description: Identifier of the Country.
+    - identity_id: product_configuration_identity
+      dataset_columns:
+      - product_configuration_id
+      description: Identifier of the Product Configuration.
+    - identity_id: sales_route_identity
+      dataset_columns:
+      - sales_route_id
+      description: Identifier of the Sales Route.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: country_id
+    description: Identifier of the Country. The complete population is owned by its owner dataset.
+  - name: product_configuration_id
+    description: Identifier of the Product Configuration. The complete population is owned by its owner
+      dataset.
+  - name: sales_route_id
+    description: Identifier of the Sales Route. The complete population is owned by its owner dataset.
+  - name: unit_price_amount
+    description: Unit Price Amount measured in currency units per unit.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: product_configuration_identity
+    dataset_columns:
+    - product_configuration_id
+    entity_universe: partial
+  - identity_id: sales_route_identity
+    dataset_columns:
+    - sales_route_id
+    entity_universe: partial
+- node_id: sf:device.price.fact_product_revenue_amount
+  descriptor:
+    qualified_name: device.price.fact_product_revenue_amount
+    display_name: Product Revenue Amount
+    description: Product revenue by configuration, route and country.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: PRICE
+      object: FACT_PRODUCT_REVENUE_AMOUNT
+      format: table
+  grain:
+    description: One row per product revenue amount for the combination of fiscal_period_id, scenario_id,
+      country_id, product_configuration_id, sales_route_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: country_identity
+      dataset_columns:
+      - country_id
+      description: Identifier of the Country.
+    - identity_id: product_configuration_identity
+      dataset_columns:
+      - product_configuration_id
+      description: Identifier of the Product Configuration.
+    - identity_id: sales_route_identity
+      dataset_columns:
+      - sales_route_id
+      description: Identifier of the Sales Route.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: country_id
+    description: Identifier of the Country. The complete population is owned by its owner dataset.
+  - name: product_configuration_id
+    description: Identifier of the Product Configuration. The complete population is owned by its owner
+      dataset.
+  - name: sales_route_id
+    description: Identifier of the Sales Route. The complete population is owned by its owner dataset.
+  - name: product_revenue_amount
+    description: Product Revenue Amount measured in currency units.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: product_configuration_identity
+    dataset_columns:
+    - product_configuration_id
+    entity_universe: partial
+  - identity_id: sales_route_identity
+    dataset_columns:
+    - sales_route_id
+    entity_universe: partial
+- node_id: sf:device.services.dim_service_family
+  descriptor:
+    qualified_name: device.services.dim_service_family
+    display_name: Service Family
+    description: One services family.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: SERVICES
+      object: DIM_SERVICE_FAMILY
+      format: table
+  grain:
+    description: One row per Service Family identified by service_family_id.
+    components:
+    - identity_id: service_family_identity
+      dataset_columns:
+      - service_family_id
+      description: Identifier of the Service Family.
+  columns:
+  - name: service_family_id
+    description: Identifier of the Service Family. This dataset holds the complete population.
+  - name: service_family_name
+    description: Name of the Service Family.
+  - name: service_family_code
+    description: Code of the Service Family.
+    value_description: app_store, cloud, media, care, advertising, assistant, payments.
+  entity_definitions:
+  - identity_id: service_family_identity
+    dataset_columns:
+    - service_family_id
+    entity_universe: complete
+- node_id: sf:device.services.dim_service_offering
+  descriptor:
+    qualified_name: device.services.dim_service_offering
+    display_name: Service Offering
+    description: One service offering.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: SERVICES
+      object: DIM_SERVICE_OFFERING
+      format: table
+  grain:
+    description: One row per Service Offering identified by service_offering_id.
+    components:
+    - identity_id: service_offering_identity
+      dataset_columns:
+      - service_offering_id
+      description: Identifier of the Service Offering.
+  columns:
+  - name: service_offering_id
+    description: Identifier of the Service Offering. This dataset holds the complete population.
+  - name: service_offering_name
+    description: Name of the Service Offering.
+  - name: service_family_id
+    description: Identifier of the Service Family. The complete population is owned by its owner dataset.
+  entity_definitions:
+  - identity_id: service_offering_identity
+    dataset_columns:
+    - service_offering_id
+    entity_universe: complete
+  - identity_id: service_family_identity
+    dataset_columns:
+    - service_family_id
+    entity_universe: partial
+- node_id: sf:device.services.dim_service_plan
+  descriptor:
+    qualified_name: device.services.dim_service_plan
+    display_name: Service Plan
+    description: One service plan term.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: SERVICES
+      object: DIM_SERVICE_PLAN
+      format: table
+  grain:
+    description: One row per Service Plan identified by service_plan_id.
+    components:
+    - identity_id: service_plan_identity
+      dataset_columns:
+      - service_plan_id
+      description: Identifier of the Service Plan.
+  columns:
+  - name: service_plan_id
+    description: Identifier of the Service Plan. This dataset holds the complete population.
+  - name: service_plan_name
+    description: Name of the Service Plan.
+  - name: service_offering_id
+    description: Identifier of the Service Offering. The complete population is owned by its owner dataset.
+  entity_definitions:
+  - identity_id: service_plan_identity
+    dataset_columns:
+    - service_plan_id
+    entity_universe: complete
+  - identity_id: service_offering_identity
+    dataset_columns:
+    - service_offering_id
+    entity_universe: partial
+- node_id: sf:device.services.fact_advertising_revenue_amount
+  descriptor:
+    qualified_name: device.services.fact_advertising_revenue_amount
+    display_name: Advertising Revenue Amount
+    description: Advertising revenue by service offering.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: SERVICES
+      object: FACT_ADVERTISING_REVENUE_AMOUNT
+      format: table
+  grain:
+    description: One row per advertising revenue amount for the combination of fiscal_period_id, scenario_id,
+      service_offering_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: service_offering_identity
+      dataset_columns:
+      - service_offering_id
+      description: Identifier of the Service Offering.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: service_offering_id
+    description: Identifier of the Service Offering. The complete population is owned by its owner dataset.
+  - name: advertising_revenue_amount
+    description: Advertising Revenue Amount measured in currency units.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: service_offering_identity
+    dataset_columns:
+    - service_offering_id
+    entity_universe: partial
+- node_id: sf:device.services.fact_partner_payment_amount
+  descriptor:
+    qualified_name: device.services.fact_partner_payment_amount
+    display_name: Partner Payment Amount
+    description: Partner payments and receipts by partner and service offering.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: SERVICES
+      object: FACT_PARTNER_PAYMENT_AMOUNT
+      format: table
+  grain:
+    description: One row per partner payment amount for the combination of fiscal_period_id, scenario_id,
+      partner_id, service_offering_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: partner_identity
+      dataset_columns:
+      - partner_id
+      description: Identifier of the Partner.
+    - identity_id: service_offering_identity
+      dataset_columns:
+      - service_offering_id
+      description: Identifier of the Service Offering.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: partner_id
+    description: Identifier of the Partner. The complete population is owned by its owner dataset.
+  - name: service_offering_id
+    description: Identifier of the Service Offering. The complete population is owned by its owner dataset.
+  - name: payment_amount
+    description: Payment Amount measured in currency units.
+  - name: receipt_amount
+    description: Receipt Amount measured in currency units.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: partner_identity
+    dataset_columns:
+    - partner_id
+    entity_universe: partial
+  - identity_id: service_offering_identity
+    dataset_columns:
+    - service_offering_id
+    entity_universe: partial
+- node_id: sf:device.services.fact_service_attachment_quantity
+  descriptor:
+    qualified_name: device.services.fact_service_attachment_quantity
+    display_name: Service Attachment Quantity
+    description: Service plans attached by plan and product configuration.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: SERVICES
+      object: FACT_SERVICE_ATTACHMENT_QUANTITY
+      format: table
+  grain:
+    description: One row per service attachment quantity for the combination of fiscal_period_id, scenario_id,
+      product_configuration_id, service_plan_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: product_configuration_identity
+      dataset_columns:
+      - product_configuration_id
+      description: Identifier of the Product Configuration.
+    - identity_id: service_plan_identity
+      dataset_columns:
+      - service_plan_id
+      description: Identifier of the Service Plan.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: product_configuration_id
+    description: Identifier of the Product Configuration. The complete population is owned by its owner
+      dataset.
+  - name: service_plan_id
+    description: Identifier of the Service Plan. The complete population is owned by its owner dataset.
+  - name: attached_service_count
+    description: Attached Service Count measured in records.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: product_configuration_identity
+    dataset_columns:
+    - product_configuration_id
+    entity_universe: partial
+  - identity_id: service_plan_identity
+    dataset_columns:
+    - service_plan_id
+    entity_universe: partial
+- node_id: sf:device.services.fact_service_attachment_rate
+  descriptor:
+    qualified_name: device.services.fact_service_attachment_rate
+    display_name: Service Attachment Rate
+    description: Attached services per shipped unit; shipment quantity shares the configuration key.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: SERVICES
+      object: FACT_SERVICE_ATTACHMENT_RATE
+      format: table
+  grain:
+    description: One row per service attachment rate for the combination of fiscal_period_id, scenario_id,
+      product_configuration_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: product_configuration_identity
+      dataset_columns:
+      - product_configuration_id
+      description: Identifier of the Product Configuration.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: product_configuration_id
+    description: Identifier of the Product Configuration. The complete population is owned by its owner
+      dataset.
+  - name: attachment_rate
+    description: Attachment Rate measured in a decimal ratio, where 1.0 equals 100 percent.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: product_configuration_identity
+    dataset_columns:
+    - product_configuration_id
+    entity_universe: partial
+- node_id: sf:device.services.fact_services_revenue_amount
+  descriptor:
+    qualified_name: device.services.fact_services_revenue_amount
+    display_name: Services Revenue Amount
+    description: Services revenue by service offering.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: SERVICES
+      object: FACT_SERVICES_REVENUE_AMOUNT
+      format: table
+  grain:
+    description: One row per services revenue amount for the combination of fiscal_period_id, scenario_id,
+      service_offering_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: service_offering_identity
+      dataset_columns:
+      - service_offering_id
+      description: Identifier of the Service Offering.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: service_offering_id
+    description: Identifier of the Service Offering. The complete population is owned by its owner dataset.
+  - name: services_revenue_amount
+    description: Services Revenue Amount measured in currency units.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: service_offering_identity
+    dataset_columns:
+    - service_offering_id
+    entity_universe: partial
+- node_id: sf:device.services.fact_services_subscriber_quantity
+  descriptor:
+    qualified_name: device.services.fact_services_subscriber_quantity
+    display_name: Services Subscriber Quantity
+    description: Paid subscribers and active accounts by service offering and country.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: SERVICES
+      object: FACT_SERVICES_SUBSCRIBER_QUANTITY
+      format: table
+  grain:
+    description: One row per services subscriber quantity for the combination of fiscal_period_id, scenario_id,
+      country_id, service_offering_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: country_identity
+      dataset_columns:
+      - country_id
+      description: Identifier of the Country.
+    - identity_id: service_offering_identity
+      dataset_columns:
+      - service_offering_id
+      description: Identifier of the Service Offering.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: country_id
+    description: Identifier of the Country. The complete population is owned by its owner dataset.
+  - name: service_offering_id
+    description: Identifier of the Service Offering. The complete population is owned by its owner dataset.
+  - name: paid_subscriber_count
+    description: Paid Subscriber Count measured in subscribers.
+  - name: active_account_count
+    description: Active Account Count measured in accounts.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: service_offering_identity
+    dataset_columns:
+    - service_offering_id
+    entity_universe: partial

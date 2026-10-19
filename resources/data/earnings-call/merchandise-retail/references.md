@@ -1,0 +1,17 @@
+# Referenced materials
+
+Warehouse owner: Merchandise Inc.
+
+## Costco
+
+- Q4 FY2026, 2026-09-24
+- Q3 FY2026, 2026-05-28
+- Q2 FY2026, 2026-03-05
+- Q1 FY2026, 2025-12-11
+
+## Walmart
+
+- Q2 FY2027, 2026-08-20
+- Q1 FY2027, 2026-05-21
+- Q4 FY2026, 2026-02-19
+- Q4 FY2025, 2025-02-20

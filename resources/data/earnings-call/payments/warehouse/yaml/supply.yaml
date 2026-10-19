@@ -1,0 +1,551 @@
+schema_version: '3'
+nodes:
+- node_id: sf:payments.supply.dim_processing_asset
+  descriptor:
+    qualified_name: payments.supply.dim_processing_asset
+    display_name: Processing Asset
+    description: Processing platform or asset.
+    synonyms: []
+    tags:
+    - dimension
+    - supply
+    - payments
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: payments.us-east-1
+      database: PAYMENTS
+      schema: SUPPLY
+      object: DIM_PROCESSING_ASSET
+      format: table
+  grain:
+    description: One row is one processing asset.
+    components:
+    - identity_id: dim_processing_asset_identity
+      dataset_columns:
+      - processing_asset_id
+      description: Identifier of the processing asset.
+  columns:
+  - name: processing_asset_id
+    description: Identifier of the processing asset.
+  - name: processing_asset_code
+    description: Processing Asset code.
+    value_description: core_network, pismo, visa_direct_platform, domestic_switch
+  - name: processing_asset_name
+    description: Processing Asset name.
+  entity_definitions:
+  - identity_id: dim_processing_asset_identity
+    dataset_columns:
+    - processing_asset_id
+    entity_universe: complete
+- node_id: sf:payments.supply.dim_acceptance_type
+  descriptor:
+    qualified_name: payments.supply.dim_acceptance_type
+    display_name: Acceptance Type
+    description: Acceptance channel type.
+    synonyms: []
+    tags:
+    - dimension
+    - supply
+    - payments
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: payments.us-east-1
+      database: PAYMENTS
+      schema: SUPPLY
+      object: DIM_ACCEPTANCE_TYPE
+      format: table
+  grain:
+    description: One row is one acceptance type.
+    components:
+    - identity_id: dim_acceptance_type_identity
+      dataset_columns:
+      - acceptance_type_id
+      description: Identifier of the acceptance type.
+  columns:
+  - name: acceptance_type_id
+    description: Identifier of the acceptance type.
+  - name: acceptance_type_code
+    description: Acceptance Type code.
+    value_description: merchant, psp, acquirer_partner, domestic_switch
+  - name: acceptance_type_name
+    description: Acceptance Type name.
+  entity_definitions:
+  - identity_id: dim_acceptance_type_identity
+    dataset_columns:
+    - acceptance_type_id
+    entity_universe: complete
+- node_id: sf:payments.supply.fact_acceptance_supply
+  descriptor:
+    qualified_name: payments.supply.fact_acceptance_supply
+    display_name: Acceptance Supply
+    description: Acceptance supply quantity in acceptance locations or merchants.
+    synonyms: []
+    tags:
+    - fact
+    - supply
+    - payments
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: payments.us-east-1
+      database: PAYMENTS
+      schema: SUPPLY
+      object: FACT_ACCEPTANCE_SUPPLY
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, reporting unit, geography market.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_reporting_unit_identity
+      dataset_columns:
+      - reporting_unit_id
+      description: Identifier of the reporting unit.
+    - identity_id: dim_market_identity
+      dataset_columns:
+      - market_id
+      description: Identifier of the geography market.
+  columns:
+  - name: acceptance_supply_record_id
+    description: Surrogate record identifier for this acceptance supply row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: reporting_unit_id
+    description: Identifier of the related reporting unit.
+  - name: market_id
+    description: Identifier of the related geography market.
+  - name: acceptance_location_quantity
+    description: Acceptance supply quantity in locations.
+  - name: merchant_quantity
+    description: Acceptance supply quantity in merchants.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_reporting_unit_identity
+    dataset_columns:
+    - reporting_unit_id
+    entity_universe: partial
+  - identity_id: dim_market_identity
+    dataset_columns:
+    - market_id
+    entity_universe: partial
+- node_id: sf:payments.supply.fact_credentials_supply
+  descriptor:
+    qualified_name: payments.supply.fact_credentials_supply
+    display_name: Credentials Supply
+    description: Credential supply quantity in active credentials.
+    synonyms: []
+    tags:
+    - fact
+    - supply
+    - payments
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: payments.us-east-1
+      database: PAYMENTS
+      schema: SUPPLY
+      object: FACT_CREDENTIALS_SUPPLY
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, reporting unit, credential type.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_reporting_unit_identity
+      dataset_columns:
+      - reporting_unit_id
+      description: Identifier of the reporting unit.
+    - identity_id: dim_credential_type_identity
+      dataset_columns:
+      - credential_type_id
+      description: Identifier of the credential type.
+  columns:
+  - name: credentials_supply_record_id
+    description: Surrogate record identifier for this credentials supply row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: reporting_unit_id
+    description: Identifier of the related reporting unit.
+  - name: credential_type_id
+    description: Identifier of the related credential type.
+  - name: active_credential_quantity
+    description: Credential supply quantity in credentials.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_reporting_unit_identity
+    dataset_columns:
+    - reporting_unit_id
+    entity_universe: partial
+  - identity_id: dim_credential_type_identity
+    dataset_columns:
+    - credential_type_id
+    entity_universe: partial
+- node_id: sf:payments.supply.fact_processing_capacity
+  descriptor:
+    qualified_name: payments.supply.fact_processing_capacity
+    display_name: Processing Capacity
+    description: Processing capacity in transactions per quarter by processing asset.
+    synonyms: []
+    tags:
+    - fact
+    - supply
+    - payments
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: payments.us-east-1
+      database: PAYMENTS
+      schema: SUPPLY
+      object: FACT_PROCESSING_CAPACITY
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, reporting unit, processing asset.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_reporting_unit_identity
+      dataset_columns:
+      - reporting_unit_id
+      description: Identifier of the reporting unit.
+    - identity_id: dim_processing_asset_identity
+      dataset_columns:
+      - processing_asset_id
+      description: Identifier of the processing asset.
+  columns:
+  - name: processing_capacity_record_id
+    description: Surrogate record identifier for this processing capacity row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: reporting_unit_id
+    description: Identifier of the related reporting unit.
+  - name: processing_asset_id
+    description: Identifier of the related processing asset.
+  - name: processing_capacity_quantity
+    description: Processing capacity in transactions per quarter.
+  - name: processed_transaction_quantity
+    description: Processed quantity in transactions.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_reporting_unit_identity
+    dataset_columns:
+    - reporting_unit_id
+    entity_universe: partial
+  - identity_id: dim_processing_asset_identity
+    dataset_columns:
+    - processing_asset_id
+    entity_universe: partial
+- node_id: sf:payments.supply.fact_fraud_capacity
+  descriptor:
+    qualified_name: payments.supply.fact_fraud_capacity
+    display_name: Fraud Service Capacity
+    description: Fraud and identity service capacity quantity in protected transactions.
+    synonyms: []
+    tags:
+    - fact
+    - supply
+    - payments
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: payments.us-east-1
+      database: PAYMENTS
+      schema: SUPPLY
+      object: FACT_FRAUD_CAPACITY
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, reporting unit, value added service.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_reporting_unit_identity
+      dataset_columns:
+      - reporting_unit_id
+      description: Identifier of the reporting unit.
+    - identity_id: dim_value_added_service_identity
+      dataset_columns:
+      - value_added_service_id
+      description: Identifier of the value added service.
+  columns:
+  - name: fraud_capacity_record_id
+    description: Surrogate record identifier for this fraud service capacity row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: reporting_unit_id
+    description: Identifier of the related reporting unit.
+  - name: value_added_service_id
+    description: Identifier of the related value added service.
+  - name: protected_transaction_quantity
+    description: Protected quantity in transactions.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_reporting_unit_identity
+    dataset_columns:
+    - reporting_unit_id
+    entity_universe: partial
+  - identity_id: dim_value_added_service_identity
+    dataset_columns:
+    - value_added_service_id
+    entity_universe: partial
+- node_id: sf:payments.supply.fact_network_participants
+  descriptor:
+    qualified_name: payments.supply.fact_network_participants
+    display_name: Network Participants
+    description: Network participant quantity in issuers, acquirers or merchants by role.
+    synonyms: []
+    tags:
+    - fact
+    - supply
+    - payments
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: payments.us-east-1
+      database: PAYMENTS
+      schema: SUPPLY
+      object: FACT_NETWORK_PARTICIPANTS
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, reporting unit, network role.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_reporting_unit_identity
+      dataset_columns:
+      - reporting_unit_id
+      description: Identifier of the reporting unit.
+    - identity_id: dim_network_role_identity
+      dataset_columns:
+      - network_role_id
+      description: Identifier of the network role.
+  columns:
+  - name: network_participants_record_id
+    description: Surrogate record identifier for this network participants row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: reporting_unit_id
+    description: Identifier of the related reporting unit.
+  - name: network_role_id
+    description: Identifier of the related network role.
+  - name: participant_quantity
+    description: Participant quantity in participants.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_reporting_unit_identity
+    dataset_columns:
+    - reporting_unit_id
+    entity_universe: partial
+  - identity_id: dim_network_role_identity
+    dataset_columns:
+    - network_role_id
+    entity_universe: partial
+- node_id: sf:payments.supply.fact_switch_capacity
+  descriptor:
+    qualified_name: payments.supply.fact_switch_capacity
+    display_name: Domestic Switch Capacity
+    description: Domestic switch capacity in transactions per quarter by market.
+    synonyms: []
+    tags:
+    - fact
+    - supply
+    - payments
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: payments.us-east-1
+      database: PAYMENTS
+      schema: SUPPLY
+      object: FACT_SWITCH_CAPACITY
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, reporting unit, geography market.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_reporting_unit_identity
+      dataset_columns:
+      - reporting_unit_id
+      description: Identifier of the reporting unit.
+    - identity_id: dim_market_identity
+      dataset_columns:
+      - market_id
+      description: Identifier of the geography market.
+  columns:
+  - name: switch_capacity_record_id
+    description: Surrogate record identifier for this domestic switch capacity row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: reporting_unit_id
+    description: Identifier of the related reporting unit.
+  - name: market_id
+    description: Identifier of the related geography market.
+  - name: switch_capacity_quantity
+    description: Domestic switch capacity in transactions per quarter.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_reporting_unit_identity
+    dataset_columns:
+    - reporting_unit_id
+    entity_universe: partial
+  - identity_id: dim_market_identity
+    dataset_columns:
+    - market_id
+    entity_universe: partial
+- node_id: sf:payments.supply.fact_acceptance_volume
+  descriptor:
+    qualified_name: payments.supply.fact_acceptance_volume
+    display_name: Acceptance Volume
+    description: Acceptance transaction quantity in transactions by acceptance type.
+    synonyms: []
+    tags:
+    - fact
+    - supply
+    - payments
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: payments.us-east-1
+      database: PAYMENTS
+      schema: SUPPLY
+      object: FACT_ACCEPTANCE_VOLUME
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, reporting unit, acceptance type.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_reporting_unit_identity
+      dataset_columns:
+      - reporting_unit_id
+      description: Identifier of the reporting unit.
+    - identity_id: dim_acceptance_type_identity
+      dataset_columns:
+      - acceptance_type_id
+      description: Identifier of the acceptance type.
+  columns:
+  - name: acceptance_volume_record_id
+    description: Surrogate record identifier for this acceptance volume row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: reporting_unit_id
+    description: Identifier of the related reporting unit.
+  - name: acceptance_type_id
+    description: Identifier of the related acceptance type.
+  - name: acceptance_transaction_quantity
+    description: Acceptance quantity in transactions.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_reporting_unit_identity
+    dataset_columns:
+    - reporting_unit_id
+    entity_universe: partial
+  - identity_id: dim_acceptance_type_identity
+    dataset_columns:
+    - acceptance_type_id
+    entity_universe: partial

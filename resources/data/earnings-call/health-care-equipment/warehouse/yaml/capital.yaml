@@ -1,0 +1,2315 @@
+schema_version: '3'
+nodes:
+- node_id: sf:surgicalsupply.capital.dim_payment_arrangement
+  descriptor:
+    qualified_name: surgicalsupply.capital.dim_payment_arrangement
+    display_name: Payment Arrangement
+    description: How a hospital pays for a placed system.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: CAPITAL
+      object: DIM_PAYMENT_ARRANGEMENT
+      format: table
+  grain:
+    description: One row per Payment Arrangement identified by payment_arrangement_id.
+    components:
+    - identity_id: payment_arrangement_identity
+      dataset_columns:
+      - payment_arrangement_id
+      description: Identifier of the Payment Arrangement.
+  columns:
+  - name: payment_arrangement_id
+    description: Identifier of the Payment Arrangement. This dataset holds the complete population.
+  - name: payment_arrangement_name
+    description: Name of the Payment Arrangement.
+  - name: payment_arrangement_code
+    description: Code of the Payment Arrangement.
+    value_description: outright_sale, operating_lease, usage_based, financing.
+  entity_definitions:
+  - identity_id: payment_arrangement_identity
+    dataset_columns:
+    - payment_arrangement_id
+    entity_universe: complete
+- node_id: sf:surgicalsupply.capital.dim_system_condition
+  descriptor:
+    qualified_name: surgicalsupply.capital.dim_system_condition
+    display_name: System Condition
+    description: Condition of a placed system at placement.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: CAPITAL
+      object: DIM_SYSTEM_CONDITION
+      format: table
+  grain:
+    description: One row per System Condition identified by system_condition_id.
+    components:
+    - identity_id: system_condition_identity
+      dataset_columns:
+      - system_condition_id
+      description: Identifier of the System Condition.
+  columns:
+  - name: system_condition_id
+    description: Identifier of the System Condition. This dataset holds the complete population.
+  - name: system_condition_name
+    description: Name of the System Condition.
+  - name: system_condition_code
+    description: Code of the System Condition.
+    value_description: new, refurbished.
+  entity_definitions:
+  - identity_id: system_condition_identity
+    dataset_columns:
+    - system_condition_id
+    entity_universe: complete
+- node_id: sf:surgicalsupply.capital.fact_instruments_accessories_quantity
+  descriptor:
+    qualified_name: surgicalsupply.capital.fact_instruments_accessories_quantity
+    display_name: Instruments and Accessories Quantity
+    description: Instrument and accessory units and procedures by Intuitive generation and procedure family;
+      denominator for per-procedure measures.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: CAPITAL
+      object: FACT_INSTRUMENTS_ACCESSORIES_QUANTITY
+      format: table
+  grain:
+    description: One row per instruments and accessories quantity for the combination of fiscal_period_id,
+      scenario_id, intuitive_system_generation_id, procedure_family_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: intuitive_system_generation_identity
+      dataset_columns:
+      - intuitive_system_generation_id
+      description: Identifier of the Intuitive System Generation.
+    - identity_id: procedure_family_identity
+      dataset_columns:
+      - procedure_family_id
+      description: Identifier of the Procedure Family.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: intuitive_system_generation_id
+    description: Identifier of the Intuitive System Generation. The complete population is owned by its
+      owner dataset.
+  - name: procedure_family_id
+    description: Identifier of the Procedure Family. The complete population is owned by its owner dataset.
+  - name: instrument_unit_count
+    description: Instrument Unit Count measured in units.
+  - name: accessory_unit_count
+    description: Accessory Unit Count measured in units.
+  - name: procedure_count
+    description: Procedure Count measured in procedures.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: intuitive_system_generation_identity
+    dataset_columns:
+    - intuitive_system_generation_id
+    entity_universe: partial
+  - identity_id: procedure_family_identity
+    dataset_columns:
+    - procedure_family_id
+    entity_universe: partial
+- node_id: sf:surgicalsupply.capital.fact_instruments_per_procedure_rate
+  descriptor:
+    qualified_name: surgicalsupply.capital.fact_instruments_per_procedure_rate
+    display_name: Instruments Per Procedure Rate
+    description: Instrument units and revenue per procedure; instruments and accessories quantity shares
+      generation and procedure keys.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: CAPITAL
+      object: FACT_INSTRUMENTS_PER_PROCEDURE_RATE
+      format: table
+  grain:
+    description: One row per instruments per procedure rate for the combination of fiscal_period_id, scenario_id,
+      intuitive_system_generation_id, procedure_family_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: intuitive_system_generation_identity
+      dataset_columns:
+      - intuitive_system_generation_id
+      description: Identifier of the Intuitive System Generation.
+    - identity_id: procedure_family_identity
+      dataset_columns:
+      - procedure_family_id
+      description: Identifier of the Procedure Family.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: intuitive_system_generation_id
+    description: Identifier of the Intuitive System Generation. The complete population is owned by its
+      owner dataset.
+  - name: procedure_family_id
+    description: Identifier of the Procedure Family. The complete population is owned by its owner dataset.
+  - name: instrument_units_per_procedure
+    description: Instrument Units Per Procedure measured in a decimal ratio, where 1.0 equals 100 percent.
+  - name: accessory_revenue_per_procedure_amount
+    description: Accessory Revenue Per Procedure Amount measured in currency units per unit.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: intuitive_system_generation_identity
+    dataset_columns:
+    - intuitive_system_generation_id
+    entity_universe: partial
+  - identity_id: procedure_family_identity
+    dataset_columns:
+    - procedure_family_id
+    entity_universe: partial
+- node_id: sf:surgicalsupply.capital.fact_intuitive_installed_quantity
+  descriptor:
+    qualified_name: surgicalsupply.capital.fact_intuitive_installed_quantity
+    display_name: Intuitive Installed Quantity
+    description: Installed Intuitive systems by generation and hospital; denominator for utilization and
+      instruments measures.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: CAPITAL
+      object: FACT_INTUITIVE_INSTALLED_QUANTITY
+      format: table
+  grain:
+    description: One row per intuitive installed quantity for the combination of fiscal_period_id, scenario_id,
+      hospital_id, intuitive_system_generation_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: hospital_identity
+      dataset_columns:
+      - hospital_id
+      description: Identifier of the Hospital.
+    - identity_id: intuitive_system_generation_identity
+      dataset_columns:
+      - intuitive_system_generation_id
+      description: Identifier of the Intuitive System Generation.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: hospital_id
+    description: Identifier of the Hospital. The complete population is owned by its owner dataset.
+  - name: intuitive_system_generation_id
+    description: Identifier of the Intuitive System Generation. The complete population is owned by its
+      owner dataset.
+  - name: installed_system_count
+    description: Installed System Count measured in systems.
+  - name: active_system_count
+    description: Active System Count measured in systems.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: hospital_identity
+    dataset_columns:
+    - hospital_id
+    entity_universe: partial
+  - identity_id: intuitive_system_generation_identity
+    dataset_columns:
+    - intuitive_system_generation_id
+    entity_universe: partial
+- node_id: sf:surgicalsupply.capital.fact_intuitive_placement_event
+  descriptor:
+    qualified_name: surgicalsupply.capital.fact_intuitive_placement_event
+    display_name: Intuitive Placement Event
+    description: One Intuitive system placement event at one hospital and one facility type, with one
+      payment arrangement and one system condition.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: CAPITAL
+      object: FACT_INTUITIVE_PLACEMENT_EVENT
+      format: table
+  grain:
+    description: One row per intuitive placement event for the combination of fiscal_period_id, scenario_id,
+      intuitive_placement_id, hospital_id, intuitive_system_generation_id, payment_arrangement_id, site_type_id,
+      system_condition_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: intuitive_placement_identity
+      dataset_columns:
+      - intuitive_placement_id
+      description: Identifier of the Intuitive Placement.
+    - identity_id: hospital_identity
+      dataset_columns:
+      - hospital_id
+      description: Identifier of the Hospital.
+    - identity_id: intuitive_system_generation_identity
+      dataset_columns:
+      - intuitive_system_generation_id
+      description: Identifier of the Intuitive System Generation.
+    - identity_id: payment_arrangement_identity
+      dataset_columns:
+      - payment_arrangement_id
+      description: Identifier of the Payment Arrangement.
+    - identity_id: site_type_identity
+      dataset_columns:
+      - site_type_id
+      description: Identifier of the Site Type.
+    - identity_id: system_condition_identity
+      dataset_columns:
+      - system_condition_id
+      description: Identifier of the System Condition.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: intuitive_placement_id
+    description: Identifier of the Intuitive Placement. This dataset holds the complete population.
+  - name: hospital_id
+    description: Identifier of the Hospital. The complete population is owned by its owner dataset.
+  - name: intuitive_system_generation_id
+    description: Identifier of the Intuitive System Generation. The complete population is owned by its
+      owner dataset.
+  - name: payment_arrangement_id
+    description: Identifier of the Payment Arrangement. The complete population is owned by its owner
+      dataset.
+  - name: site_type_id
+    description: Identifier of the Site Type. The complete population is owned by its owner dataset.
+  - name: system_condition_id
+    description: Identifier of the System Condition. The complete population is owned by its owner dataset.
+  - name: placed_system_count
+    description: Placed System Count measured in systems.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: intuitive_placement_identity
+    dataset_columns:
+    - intuitive_placement_id
+    entity_universe: complete
+  - identity_id: hospital_identity
+    dataset_columns:
+    - hospital_id
+    entity_universe: partial
+  - identity_id: intuitive_system_generation_identity
+    dataset_columns:
+    - intuitive_system_generation_id
+    entity_universe: partial
+  - identity_id: payment_arrangement_identity
+    dataset_columns:
+    - payment_arrangement_id
+    entity_universe: partial
+  - identity_id: site_type_identity
+    dataset_columns:
+    - site_type_id
+    entity_universe: partial
+  - identity_id: system_condition_identity
+    dataset_columns:
+    - system_condition_id
+    entity_universe: partial
+- node_id: sf:surgicalsupply.capital.fact_intuitive_utilization_quantity
+  descriptor:
+    qualified_name: surgicalsupply.capital.fact_intuitive_utilization_quantity
+    display_name: Intuitive Utilization Quantity
+    description: Procedures on Intuitive systems by generation, hospital and procedure family.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: CAPITAL
+      object: FACT_INTUITIVE_UTILIZATION_QUANTITY
+      format: table
+  grain:
+    description: One row per intuitive utilization quantity for the combination of fiscal_period_id, scenario_id,
+      hospital_id, intuitive_system_generation_id, procedure_family_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: hospital_identity
+      dataset_columns:
+      - hospital_id
+      description: Identifier of the Hospital.
+    - identity_id: intuitive_system_generation_identity
+      dataset_columns:
+      - intuitive_system_generation_id
+      description: Identifier of the Intuitive System Generation.
+    - identity_id: procedure_family_identity
+      dataset_columns:
+      - procedure_family_id
+      description: Identifier of the Procedure Family.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: hospital_id
+    description: Identifier of the Hospital. The complete population is owned by its owner dataset.
+  - name: intuitive_system_generation_id
+    description: Identifier of the Intuitive System Generation. The complete population is owned by its
+      owner dataset.
+  - name: procedure_family_id
+    description: Identifier of the Procedure Family. The complete population is owned by its owner dataset.
+  - name: system_procedure_count
+    description: System Procedure Count measured in procedures.
+  - name: available_system_day_count
+    description: Available System Day Count measured in days.
+  - name: after_hours_procedure_count
+    description: After Hours Procedure Count measured in procedures.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: hospital_identity
+    dataset_columns:
+    - hospital_id
+    entity_universe: partial
+  - identity_id: intuitive_system_generation_identity
+    dataset_columns:
+    - intuitive_system_generation_id
+    entity_universe: partial
+  - identity_id: procedure_family_identity
+    dataset_columns:
+    - procedure_family_id
+    entity_universe: partial
+- node_id: sf:surgicalsupply.capital.fact_intuitive_utilization_rate
+  descriptor:
+    qualified_name: surgicalsupply.capital.fact_intuitive_utilization_rate
+    display_name: Intuitive Utilization Rate
+    description: Procedures per available system day; utilization quantity shares generation and hospital
+      keys.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: CAPITAL
+      object: FACT_INTUITIVE_UTILIZATION_RATE
+      format: table
+  grain:
+    description: One row per intuitive utilization rate for the combination of fiscal_period_id, scenario_id,
+      hospital_id, intuitive_system_generation_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: hospital_identity
+      dataset_columns:
+      - hospital_id
+      description: Identifier of the Hospital.
+    - identity_id: intuitive_system_generation_identity
+      dataset_columns:
+      - intuitive_system_generation_id
+      description: Identifier of the Intuitive System Generation.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: hospital_id
+    description: Identifier of the Hospital. The complete population is owned by its owner dataset.
+  - name: intuitive_system_generation_id
+    description: Identifier of the Intuitive System Generation. The complete population is owned by its
+      owner dataset.
+  - name: procedures_per_system_day_rate
+    description: Procedures Per System Day Rate measured in a decimal ratio, where 1.0 equals 100 percent.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: hospital_identity
+    dataset_columns:
+    - hospital_id
+    entity_universe: partial
+  - identity_id: intuitive_system_generation_identity
+    dataset_columns:
+    - intuitive_system_generation_id
+    entity_universe: partial
+- node_id: sf:surgicalsupply.capital.fact_stryker_installed_quantity
+  descriptor:
+    qualified_name: surgicalsupply.capital.fact_stryker_installed_quantity
+    display_name: Stryker Installed Quantity
+    description: Installed Stryker systems by platform and hospital.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: CAPITAL
+      object: FACT_STRYKER_INSTALLED_QUANTITY
+      format: table
+  grain:
+    description: One row per stryker installed quantity for the combination of fiscal_period_id, scenario_id,
+      hospital_id, stryker_robot_platform_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: hospital_identity
+      dataset_columns:
+      - hospital_id
+      description: Identifier of the Hospital.
+    - identity_id: stryker_robot_platform_identity
+      dataset_columns:
+      - stryker_robot_platform_id
+      description: Identifier of the Stryker Robot Platform.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: hospital_id
+    description: Identifier of the Hospital. The complete population is owned by its owner dataset.
+  - name: stryker_robot_platform_id
+    description: Identifier of the Stryker Robot Platform. The complete population is owned by its owner
+      dataset.
+  - name: installed_system_count
+    description: Installed System Count measured in systems.
+  - name: active_system_count
+    description: Active System Count measured in systems.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: hospital_identity
+    dataset_columns:
+    - hospital_id
+    entity_universe: partial
+  - identity_id: stryker_robot_platform_identity
+    dataset_columns:
+    - stryker_robot_platform_id
+    entity_universe: partial
+- node_id: sf:surgicalsupply.capital.fact_stryker_placement_event
+  descriptor:
+    qualified_name: surgicalsupply.capital.fact_stryker_placement_event
+    display_name: Stryker Placement Event
+    description: One Stryker capital-system placement event at one hospital and one facility type.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: CAPITAL
+      object: FACT_STRYKER_PLACEMENT_EVENT
+      format: table
+  grain:
+    description: One row per stryker placement event for the combination of fiscal_period_id, scenario_id,
+      stryker_placement_id, hospital_id, site_type_id, stryker_robot_platform_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: stryker_placement_identity
+      dataset_columns:
+      - stryker_placement_id
+      description: Identifier of the Stryker Placement.
+    - identity_id: hospital_identity
+      dataset_columns:
+      - hospital_id
+      description: Identifier of the Hospital.
+    - identity_id: site_type_identity
+      dataset_columns:
+      - site_type_id
+      description: Identifier of the Site Type.
+    - identity_id: stryker_robot_platform_identity
+      dataset_columns:
+      - stryker_robot_platform_id
+      description: Identifier of the Stryker Robot Platform.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: stryker_placement_id
+    description: Identifier of the Stryker Placement. This dataset holds the complete population.
+  - name: hospital_id
+    description: Identifier of the Hospital. The complete population is owned by its owner dataset.
+  - name: site_type_id
+    description: Identifier of the Site Type. The complete population is owned by its owner dataset.
+  - name: stryker_robot_platform_id
+    description: Identifier of the Stryker Robot Platform. The complete population is owned by its owner
+      dataset.
+  - name: placed_system_count
+    description: Placed System Count measured in systems.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: stryker_placement_identity
+    dataset_columns:
+    - stryker_placement_id
+    entity_universe: complete
+  - identity_id: hospital_identity
+    dataset_columns:
+    - hospital_id
+    entity_universe: partial
+  - identity_id: site_type_identity
+    dataset_columns:
+    - site_type_id
+    entity_universe: partial
+  - identity_id: stryker_robot_platform_identity
+    dataset_columns:
+    - stryker_robot_platform_id
+    entity_universe: partial
+- node_id: sf:surgicalsupply.capital.fact_stryker_utilization_quantity
+  descriptor:
+    qualified_name: surgicalsupply.capital.fact_stryker_utilization_quantity
+    display_name: Stryker Utilization Quantity
+    description: Procedures performed on installed Stryker systems by platform and hospital; denominator
+      for utilization rate.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: CAPITAL
+      object: FACT_STRYKER_UTILIZATION_QUANTITY
+      format: table
+  grain:
+    description: One row per stryker utilization quantity for the combination of fiscal_period_id, scenario_id,
+      hospital_id, procedure_family_id, stryker_robot_platform_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: hospital_identity
+      dataset_columns:
+      - hospital_id
+      description: Identifier of the Hospital.
+    - identity_id: procedure_family_identity
+      dataset_columns:
+      - procedure_family_id
+      description: Identifier of the Procedure Family.
+    - identity_id: stryker_robot_platform_identity
+      dataset_columns:
+      - stryker_robot_platform_id
+      description: Identifier of the Stryker Robot Platform.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: hospital_id
+    description: Identifier of the Hospital. The complete population is owned by its owner dataset.
+  - name: procedure_family_id
+    description: Identifier of the Procedure Family. The complete population is owned by its owner dataset.
+  - name: stryker_robot_platform_id
+    description: Identifier of the Stryker Robot Platform. The complete population is owned by its owner
+      dataset.
+  - name: system_procedure_count
+    description: System Procedure Count measured in procedures.
+  - name: available_system_day_count
+    description: Available System Day Count measured in days.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: hospital_identity
+    dataset_columns:
+    - hospital_id
+    entity_universe: partial
+  - identity_id: procedure_family_identity
+    dataset_columns:
+    - procedure_family_id
+    entity_universe: partial
+  - identity_id: stryker_robot_platform_identity
+    dataset_columns:
+    - stryker_robot_platform_id
+    entity_universe: partial
+- node_id: sf:surgicalsupply.capital.fact_stryker_utilization_rate
+  descriptor:
+    qualified_name: surgicalsupply.capital.fact_stryker_utilization_rate
+    display_name: Stryker Utilization Rate
+    description: Procedures per available system day for Stryker systems; utilization quantity shares
+      platform and hospital keys.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: CAPITAL
+      object: FACT_STRYKER_UTILIZATION_RATE
+      format: table
+  grain:
+    description: One row per stryker utilization rate for the combination of fiscal_period_id, scenario_id,
+      hospital_id, stryker_robot_platform_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: hospital_identity
+      dataset_columns:
+      - hospital_id
+      description: Identifier of the Hospital.
+    - identity_id: stryker_robot_platform_identity
+      dataset_columns:
+      - stryker_robot_platform_id
+      description: Identifier of the Stryker Robot Platform.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: hospital_id
+    description: Identifier of the Hospital. The complete population is owned by its owner dataset.
+  - name: stryker_robot_platform_id
+    description: Identifier of the Stryker Robot Platform. The complete population is owned by its owner
+      dataset.
+  - name: procedures_per_system_day_rate
+    description: Procedures Per System Day Rate measured in a decimal ratio, where 1.0 equals 100 percent.
+  - name: procedure_share_on_system_rate
+    description: Procedure Share On System Rate measured in a decimal ratio, where 1.0 equals 100 percent.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: hospital_identity
+    dataset_columns:
+    - hospital_id
+    entity_universe: partial
+  - identity_id: stryker_robot_platform_identity
+    dataset_columns:
+    - stryker_robot_platform_id
+    entity_universe: partial
+- node_id: sf:surgicalsupply.capital.fact_system_price
+  descriptor:
+    qualified_name: surgicalsupply.capital.fact_system_price
+    display_name: System Price
+    description: Capital system price by medical product and country; shipment quantity shares product
+      and country keys.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: CAPITAL
+      object: FACT_SYSTEM_PRICE
+      format: table
+  grain:
+    description: One row per system price for the combination of fiscal_period_id, scenario_id, country_id,
+      medical_product_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: country_identity
+      dataset_columns:
+      - country_id
+      description: Identifier of the Country.
+    - identity_id: medical_product_identity
+      dataset_columns:
+      - medical_product_id
+      description: Identifier of the Medical Product.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: country_id
+    description: Identifier of the Country. The complete population is owned by its owner dataset.
+  - name: medical_product_id
+    description: Identifier of the Medical Product. The complete population is owned by its owner dataset.
+  - name: system_unit_price_amount
+    description: System Unit Price Amount measured in currency units per unit.
+  - name: upgrade_fee_amount
+    description: Upgrade Fee Amount measured in currency units.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: medical_product_identity
+    dataset_columns:
+    - medical_product_id
+    entity_universe: partial
+- node_id: sf:surgicalsupply.capital.fact_system_service_quantity
+  descriptor:
+    qualified_name: surgicalsupply.capital.fact_system_service_quantity
+    display_name: System Service Quantity
+    description: Systems under service arrangement by generation and hospital.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: CAPITAL
+      object: FACT_SYSTEM_SERVICE_QUANTITY
+      format: table
+  grain:
+    description: One row per system service quantity for the combination of fiscal_period_id, scenario_id,
+      hospital_id, intuitive_system_generation_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: hospital_identity
+      dataset_columns:
+      - hospital_id
+      description: Identifier of the Hospital.
+    - identity_id: intuitive_system_generation_identity
+      dataset_columns:
+      - intuitive_system_generation_id
+      description: Identifier of the Intuitive System Generation.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: hospital_id
+    description: Identifier of the Hospital. The complete population is owned by its owner dataset.
+  - name: intuitive_system_generation_id
+    description: Identifier of the Intuitive System Generation. The complete population is owned by its
+      owner dataset.
+  - name: serviced_system_count
+    description: Serviced System Count measured in systems.
+  - name: service_event_count
+    description: Service Event Count measured in records.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: hospital_identity
+    dataset_columns:
+    - hospital_id
+    entity_universe: partial
+  - identity_id: intuitive_system_generation_identity
+    dataset_columns:
+    - intuitive_system_generation_id
+    entity_universe: partial
+- node_id: sf:surgicalsupply.commercial.dim_acquisition_target
+  descriptor:
+    qualified_name: surgicalsupply.commercial.dim_acquisition_target
+    display_name: Acquisition Target
+    description: One acquisition target.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: COMMERCIAL
+      object: DIM_ACQUISITION_TARGET
+      format: table
+  grain:
+    description: One row per Acquisition Target identified by acquisition_target_id.
+    components:
+    - identity_id: acquisition_target_identity
+      dataset_columns:
+      - acquisition_target_id
+      description: Identifier of the Acquisition Target.
+  columns:
+  - name: acquisition_target_id
+    description: Identifier of the Acquisition Target. This dataset holds the complete population.
+  - name: acquisition_target_name
+    description: Name of the Acquisition Target.
+  entity_definitions:
+  - identity_id: acquisition_target_identity
+    dataset_columns:
+    - acquisition_target_id
+    entity_universe: complete
+- node_id: sf:surgicalsupply.commercial.dim_clinical_trial
+  descriptor:
+    qualified_name: surgicalsupply.commercial.dim_clinical_trial
+    display_name: Clinical Trial
+    description: One clinical trial.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: COMMERCIAL
+      object: DIM_CLINICAL_TRIAL
+      format: table
+  grain:
+    description: One row per Clinical Trial identified by clinical_trial_id.
+    components:
+    - identity_id: clinical_trial_identity
+      dataset_columns:
+      - clinical_trial_id
+      description: Identifier of the Clinical Trial.
+  columns:
+  - name: clinical_trial_id
+    description: Identifier of the Clinical Trial. This dataset holds the complete population.
+  - name: clinical_trial_name
+    description: Name of the Clinical Trial.
+  - name: medical_product_id
+    description: Identifier of the Medical Product. The complete population is owned by its owner dataset.
+  - name: procedure_family_id
+    description: Identifier of the Procedure Family. The complete population is owned by its owner dataset.
+  entity_definitions:
+  - identity_id: clinical_trial_identity
+    dataset_columns:
+    - clinical_trial_id
+    entity_universe: complete
+  - identity_id: medical_product_identity
+    dataset_columns:
+    - medical_product_id
+    entity_universe: partial
+  - identity_id: procedure_family_identity
+    dataset_columns:
+    - procedure_family_id
+    entity_universe: partial
+- node_id: sf:surgicalsupply.commercial.dim_competitor
+  descriptor:
+    qualified_name: surgicalsupply.commercial.dim_competitor
+    display_name: Competitor
+    description: One competing device maker.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: COMMERCIAL
+      object: DIM_COMPETITOR
+      format: table
+  grain:
+    description: One row per Competitor identified by competitor_id.
+    components:
+    - identity_id: competitor_identity
+      dataset_columns:
+      - competitor_id
+      description: Identifier of the Competitor.
+  columns:
+  - name: competitor_id
+    description: Identifier of the Competitor. This dataset holds the complete population.
+  - name: competitor_name
+    description: Name of the Competitor.
+  entity_definitions:
+  - identity_id: competitor_identity
+    dataset_columns:
+    - competitor_id
+    entity_universe: complete
+- node_id: sf:surgicalsupply.commercial.dim_sales_channel
+  descriptor:
+    qualified_name: surgicalsupply.commercial.dim_sales_channel
+    display_name: Sales Channel
+    description: One device sales channel.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: COMMERCIAL
+      object: DIM_SALES_CHANNEL
+      format: table
+  grain:
+    description: One row per Sales Channel identified by sales_channel_id.
+    components:
+    - identity_id: sales_channel_identity
+      dataset_columns:
+      - sales_channel_id
+      description: Identifier of the Sales Channel.
+  columns:
+  - name: sales_channel_id
+    description: Identifier of the Sales Channel. This dataset holds the complete population.
+  - name: sales_channel_name
+    description: Name of the Sales Channel.
+  - name: sales_channel_code
+    description: Code of the Sales Channel.
+    value_description: direct_sales_force, distributor, joint_venture.
+  entity_definitions:
+  - identity_id: sales_channel_identity
+    dataset_columns:
+    - sales_channel_id
+    entity_universe: complete
+- node_id: sf:surgicalsupply.commercial.fact_acquisition_amount
+  descriptor:
+    qualified_name: surgicalsupply.commercial.fact_acquisition_amount
+    display_name: Acquisition Amount
+    description: Acquisition consideration and target revenue by acquisition target.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: COMMERCIAL
+      object: FACT_ACQUISITION_AMOUNT
+      format: table
+  grain:
+    description: One row per acquisition amount for the combination of fiscal_period_id, scenario_id,
+      acquisition_target_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: acquisition_target_identity
+      dataset_columns:
+      - acquisition_target_id
+      description: Identifier of the Acquisition Target.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: acquisition_target_id
+    description: Identifier of the Acquisition Target. The complete population is owned by its owner dataset.
+  - name: acquisition_amount
+    description: Acquisition Amount measured in currency units.
+  - name: target_revenue_amount
+    description: Target Revenue Amount measured in currency units.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: acquisition_target_identity
+    dataset_columns:
+    - acquisition_target_id
+    entity_universe: partial
+- node_id: sf:surgicalsupply.commercial.fact_clinical_trial_quantity
+  descriptor:
+    qualified_name: surgicalsupply.commercial.fact_clinical_trial_quantity
+    display_name: Clinical Trial Quantity
+    description: Trial patients and milestones by clinical trial.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: COMMERCIAL
+      object: FACT_CLINICAL_TRIAL_QUANTITY
+      format: table
+  grain:
+    description: One row per clinical trial quantity for the combination of fiscal_period_id, scenario_id,
+      clinical_trial_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: clinical_trial_identity
+      dataset_columns:
+      - clinical_trial_id
+      description: Identifier of the Clinical Trial.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: clinical_trial_id
+    description: Identifier of the Clinical Trial. The complete population is owned by its owner dataset.
+  - name: enrolled_patient_count
+    description: Enrolled Patient Count measured in patients.
+  - name: milestone_count
+    description: Milestone Count measured in records.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: clinical_trial_identity
+    dataset_columns:
+    - clinical_trial_id
+    entity_universe: partial
+- node_id: sf:surgicalsupply.commercial.fact_equipment_order_quantity
+  descriptor:
+    qualified_name: surgicalsupply.commercial.fact_equipment_order_quantity
+    display_name: Equipment Order Quantity
+    description: Capital and implant units ordered by Stryker business and hospital.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: COMMERCIAL
+      object: FACT_EQUIPMENT_ORDER_QUANTITY
+      format: table
+  grain:
+    description: One row per equipment order quantity for the combination of fiscal_period_id, scenario_id,
+      hospital_id, stryker_business_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: hospital_identity
+      dataset_columns:
+      - hospital_id
+      description: Identifier of the Hospital.
+    - identity_id: stryker_business_identity
+      dataset_columns:
+      - stryker_business_id
+      description: Identifier of the Stryker Business.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: hospital_id
+    description: Identifier of the Hospital. The complete population is owned by its owner dataset.
+  - name: stryker_business_id
+    description: Identifier of the Stryker Business. The complete population is owned by its owner dataset.
+  - name: ordered_unit_count
+    description: Ordered Unit Count measured in units.
+  - name: unfilled_unit_count
+    description: Unfilled Unit Count measured in units.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: hospital_identity
+    dataset_columns:
+    - hospital_id
+    entity_universe: partial
+  - identity_id: stryker_business_identity
+    dataset_columns:
+    - stryker_business_id
+    entity_universe: partial
+- node_id: sf:surgicalsupply.commercial.fact_launch_quantity
+  descriptor:
+    qualified_name: surgicalsupply.commercial.fact_launch_quantity
+    display_name: Launch Quantity
+    description: Accounts and procedures reached by a launched product and facility type.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: COMMERCIAL
+      object: FACT_LAUNCH_QUANTITY
+      format: table
+  grain:
+    description: One row per launch quantity for the combination of fiscal_period_id, scenario_id, medical_product_id,
+      site_type_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: medical_product_identity
+      dataset_columns:
+      - medical_product_id
+      description: Identifier of the Medical Product.
+    - identity_id: site_type_identity
+      dataset_columns:
+      - site_type_id
+      description: Identifier of the Site Type.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: medical_product_id
+    description: Identifier of the Medical Product. The complete population is owned by its owner dataset.
+  - name: site_type_id
+    description: Identifier of the Site Type. The complete population is owned by its owner dataset.
+  - name: launch_account_count
+    description: Launch Account Count measured in accounts.
+  - name: launch_procedure_count
+    description: Launch Procedure Count measured in procedures.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: medical_product_identity
+    dataset_columns:
+    - medical_product_id
+    entity_universe: partial
+  - identity_id: site_type_identity
+    dataset_columns:
+    - site_type_id
+    entity_universe: partial
+- node_id: sf:surgicalsupply.commercial.fact_order_backlog_amount
+  descriptor:
+    qualified_name: surgicalsupply.commercial.fact_order_backlog_amount
+    display_name: Order Backlog Amount
+    description: Open backlog amount by Stryker business.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: COMMERCIAL
+      object: FACT_ORDER_BACKLOG_AMOUNT
+      format: table
+  grain:
+    description: One row per order backlog amount for the combination of fiscal_period_id, scenario_id,
+      stryker_business_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: stryker_business_identity
+      dataset_columns:
+      - stryker_business_id
+      description: Identifier of the Stryker Business.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: stryker_business_id
+    description: Identifier of the Stryker Business. The complete population is owned by its owner dataset.
+  - name: open_backlog_amount
+    description: Open Backlog Amount measured in currency units.
+  - name: planned_realization_amount
+    description: Planned Realization Amount measured in currency units.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: stryker_business_identity
+    dataset_columns:
+    - stryker_business_id
+    entity_universe: partial
+- node_id: sf:surgicalsupply.commercial.fact_order_backlog_quantity
+  descriptor:
+    qualified_name: surgicalsupply.commercial.fact_order_backlog_quantity
+    display_name: Order Backlog Quantity
+    description: Open and planned-to-ship backlog units by Stryker business.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: COMMERCIAL
+      object: FACT_ORDER_BACKLOG_QUANTITY
+      format: table
+  grain:
+    description: One row per order backlog quantity for the combination of fiscal_period_id, scenario_id,
+      stryker_business_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: stryker_business_identity
+      dataset_columns:
+      - stryker_business_id
+      description: Identifier of the Stryker Business.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: stryker_business_id
+    description: Identifier of the Stryker Business. The complete population is owned by its owner dataset.
+  - name: open_backlog_unit_count
+    description: Open Backlog Unit Count measured in units.
+  - name: planned_shipment_unit_count
+    description: Planned Shipment Unit Count measured in units.
+  - name: remaining_backlog_unit_count
+    description: Remaining Backlog Unit Count measured in units.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: stryker_business_identity
+    dataset_columns:
+    - stryker_business_id
+    entity_universe: partial
+- node_id: sf:surgicalsupply.commercial.fact_sales_channel_quantity
+  descriptor:
+    qualified_name: surgicalsupply.commercial.fact_sales_channel_quantity
+    display_name: Sales Channel Quantity
+    description: Product units sold through a sales channel by product.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: COMMERCIAL
+      object: FACT_SALES_CHANNEL_QUANTITY
+      format: table
+  grain:
+    description: One row per sales channel quantity for the combination of fiscal_period_id, scenario_id,
+      medical_product_id, sales_channel_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: medical_product_identity
+      dataset_columns:
+      - medical_product_id
+      description: Identifier of the Medical Product.
+    - identity_id: sales_channel_identity
+      dataset_columns:
+      - sales_channel_id
+      description: Identifier of the Sales Channel.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: medical_product_id
+    description: Identifier of the Medical Product. The complete population is owned by its owner dataset.
+  - name: sales_channel_id
+    description: Identifier of the Sales Channel. The complete population is owned by its owner dataset.
+  - name: sold_unit_count
+    description: Sold Unit Count measured in units.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: medical_product_identity
+    dataset_columns:
+    - medical_product_id
+    entity_universe: partial
+  - identity_id: sales_channel_identity
+    dataset_columns:
+    - sales_channel_id
+    entity_universe: partial
+- node_id: sf:surgicalsupply.intuitive.dim_intuitive_system_generation
+  descriptor:
+    qualified_name: surgicalsupply.intuitive.dim_intuitive_system_generation
+    display_name: Intuitive System Generation
+    description: One Intuitive surgical system generation.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: INTUITIVE
+      object: DIM_INTUITIVE_SYSTEM_GENERATION
+      format: table
+  grain:
+    description: One row per Intuitive System Generation identified by intuitive_system_generation_id.
+    components:
+    - identity_id: intuitive_system_generation_identity
+      dataset_columns:
+      - intuitive_system_generation_id
+      description: Identifier of the Intuitive System Generation.
+  columns:
+  - name: intuitive_system_generation_id
+    description: Identifier of the Intuitive System Generation. This dataset holds the complete population.
+  - name: intuitive_system_generation_name
+    description: Name of the Intuitive System Generation.
+  - name: intuitive_system_generation_code
+    description: Code of the Intuitive System Generation.
+    value_description: da_vinci_x, da_vinci_xi, da_vinci_5, da_vinci_sp, ion.
+  entity_definitions:
+  - identity_id: intuitive_system_generation_identity
+    dataset_columns:
+    - intuitive_system_generation_id
+    entity_universe: complete
+- node_id: sf:surgicalsupply.product.dim_implant_type
+  descriptor:
+    qualified_name: surgicalsupply.product.dim_implant_type
+    display_name: Implant Type
+    description: One implant type.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: PRODUCT
+      object: DIM_IMPLANT_TYPE
+      format: table
+  grain:
+    description: One row per Implant Type identified by implant_type_id.
+    components:
+    - identity_id: implant_type_identity
+      dataset_columns:
+      - implant_type_id
+      description: Identifier of the Implant Type.
+  columns:
+  - name: implant_type_id
+    description: Identifier of the Implant Type. This dataset holds the complete population.
+  - name: implant_type_name
+    description: Name of the Implant Type.
+  - name: implant_type_code
+    description: Code of the Implant Type.
+    value_description: hip_implant, knee_implant, shoulder_implant, trauma_implant, spine_implant, other_implant.
+  entity_definitions:
+  - identity_id: implant_type_identity
+    dataset_columns:
+    - implant_type_id
+    entity_universe: complete
+- node_id: sf:surgicalsupply.product.dim_medical_product
+  descriptor:
+    qualified_name: surgicalsupply.product.dim_medical_product
+    display_name: Medical Product
+    description: One sellable medical device product.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: PRODUCT
+      object: DIM_MEDICAL_PRODUCT
+      format: table
+  grain:
+    description: One row per Medical Product identified by medical_product_id.
+    components:
+    - identity_id: medical_product_identity
+      dataset_columns:
+      - medical_product_id
+      description: Identifier of the Medical Product.
+  columns:
+  - name: medical_product_id
+    description: Identifier of the Medical Product. This dataset holds the complete population.
+  - name: medical_product_name
+    description: Name of the Medical Product.
+  - name: implant_type_id
+    description: Identifier of the Implant Type. The complete population is owned by its owner dataset.
+  - name: procedure_family_id
+    description: Identifier of the Procedure Family. The complete population is owned by its owner dataset.
+  - name: stryker_business_id
+    description: Identifier of the Stryker Business. The complete population is owned by its owner dataset.
+  entity_definitions:
+  - identity_id: medical_product_identity
+    dataset_columns:
+    - medical_product_id
+    entity_universe: complete
+  - identity_id: implant_type_identity
+    dataset_columns:
+    - implant_type_id
+    entity_universe: partial
+  - identity_id: procedure_family_identity
+    dataset_columns:
+    - procedure_family_id
+    entity_universe: partial
+  - identity_id: stryker_business_identity
+    dataset_columns:
+    - stryker_business_id
+    entity_universe: partial
+- node_id: sf:surgicalsupply.product.fact_maker_revenue_amount
+  descriptor:
+    qualified_name: surgicalsupply.product.fact_maker_revenue_amount
+    display_name: Maker Revenue Amount
+    description: Revenue paid to the device maker by hospitals and distributors, by product and hospital.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: PRODUCT
+      object: FACT_MAKER_REVENUE_AMOUNT
+      format: table
+  grain:
+    description: One row per maker revenue amount for the combination of fiscal_period_id, scenario_id,
+      hospital_id, medical_product_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: hospital_identity
+      dataset_columns:
+      - hospital_id
+      description: Identifier of the Hospital.
+    - identity_id: medical_product_identity
+      dataset_columns:
+      - medical_product_id
+      description: Identifier of the Medical Product.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: hospital_id
+    description: Identifier of the Hospital. The complete population is owned by its owner dataset.
+  - name: medical_product_id
+    description: Identifier of the Medical Product. The complete population is owned by its owner dataset.
+  - name: device_revenue_amount
+    description: Device Revenue Amount measured in currency units.
+  - name: service_revenue_amount
+    description: Service Revenue Amount measured in currency units.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: hospital_identity
+    dataset_columns:
+    - hospital_id
+    entity_universe: partial
+  - identity_id: medical_product_identity
+    dataset_columns:
+    - medical_product_id
+    entity_universe: partial
+- node_id: sf:surgicalsupply.product.fact_product_price
+  descriptor:
+    qualified_name: surgicalsupply.product.fact_product_price
+    display_name: Product Price
+    description: Medical product unit price by product and country; product shipment quantity shares these
+      keys.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: PRODUCT
+      object: FACT_PRODUCT_PRICE
+      format: table
+  grain:
+    description: One row per product price for the combination of fiscal_period_id, scenario_id, country_id,
+      medical_product_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: country_identity
+      dataset_columns:
+      - country_id
+      description: Identifier of the Country.
+    - identity_id: medical_product_identity
+      dataset_columns:
+      - medical_product_id
+      description: Identifier of the Medical Product.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: country_id
+    description: Identifier of the Country. The complete population is owned by its owner dataset.
+  - name: medical_product_id
+    description: Identifier of the Medical Product. The complete population is owned by its owner dataset.
+  - name: unit_price_amount
+    description: Unit Price Amount measured in currency units per unit.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: medical_product_identity
+    dataset_columns:
+    - medical_product_id
+    entity_universe: partial
+- node_id: sf:surgicalsupply.product.fact_product_revenue_amount
+  descriptor:
+    qualified_name: surgicalsupply.product.fact_product_revenue_amount
+    display_name: Product Revenue Amount
+    description: Product revenue by product and country.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: PRODUCT
+      object: FACT_PRODUCT_REVENUE_AMOUNT
+      format: table
+  grain:
+    description: One row per product revenue amount for the combination of fiscal_period_id, scenario_id,
+      country_id, medical_product_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: country_identity
+      dataset_columns:
+      - country_id
+      description: Identifier of the Country.
+    - identity_id: medical_product_identity
+      dataset_columns:
+      - medical_product_id
+      description: Identifier of the Medical Product.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: country_id
+    description: Identifier of the Country. The complete population is owned by its owner dataset.
+  - name: medical_product_id
+    description: Identifier of the Medical Product. The complete population is owned by its owner dataset.
+  - name: product_revenue_amount
+    description: Product Revenue Amount measured in currency units.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: medical_product_identity
+    dataset_columns:
+    - medical_product_id
+    entity_universe: partial
+- node_id: sf:surgicalsupply.product.fact_product_shipment_quantity
+  descriptor:
+    qualified_name: surgicalsupply.product.fact_product_shipment_quantity
+    display_name: Product Shipment Quantity
+    description: Medical product units shipped by product and country; denominator for product price.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: PRODUCT
+      object: FACT_PRODUCT_SHIPMENT_QUANTITY
+      format: table
+  grain:
+    description: One row per product shipment quantity for the combination of fiscal_period_id, scenario_id,
+      country_id, medical_product_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: country_identity
+      dataset_columns:
+      - country_id
+      description: Identifier of the Country.
+    - identity_id: medical_product_identity
+      dataset_columns:
+      - medical_product_id
+      description: Identifier of the Medical Product.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: country_id
+    description: Identifier of the Country. The complete population is owned by its owner dataset.
+  - name: medical_product_id
+    description: Identifier of the Medical Product. The complete population is owned by its owner dataset.
+  - name: shipped_unit_count
+    description: Shipped Unit Count measured in units.
+  - name: instrument_unit_count
+    description: Instrument Unit Count measured in units.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: medical_product_identity
+    dataset_columns:
+    - medical_product_id
+    entity_universe: partial
+- node_id: sf:surgicalsupply.stryker.dim_stryker_business
+  descriptor:
+    qualified_name: surgicalsupply.stryker.dim_stryker_business
+    display_name: Stryker Business
+    description: One Stryker product business.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: STRYKER
+      object: DIM_STRYKER_BUSINESS
+      format: table
+  grain:
+    description: One row per Stryker Business identified by stryker_business_id.
+    components:
+    - identity_id: stryker_business_identity
+      dataset_columns:
+      - stryker_business_id
+      description: Identifier of the Stryker Business.
+  columns:
+  - name: stryker_business_id
+    description: Identifier of the Stryker Business. This dataset holds the complete population.
+  - name: stryker_business_name
+    description: Name of the Stryker Business.
+  - name: stryker_business_code
+    description: Code of the Stryker Business.
+    value_description: joint_replacement, trauma_extremities, spine, endoscopy, instruments, medical,
+      vascular, neurotechnology.
+  entity_definitions:
+  - identity_id: stryker_business_identity
+    dataset_columns:
+    - stryker_business_id
+    entity_universe: complete
+- node_id: sf:surgicalsupply.stryker.dim_stryker_robot_platform
+  descriptor:
+    qualified_name: surgicalsupply.stryker.dim_stryker_robot_platform
+    display_name: Stryker Robot Platform
+    description: One Stryker robotic platform.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: STRYKER
+      object: DIM_STRYKER_ROBOT_PLATFORM
+      format: table
+  grain:
+    description: One row per Stryker Robot Platform identified by stryker_robot_platform_id.
+    components:
+    - identity_id: stryker_robot_platform_identity
+      dataset_columns:
+      - stryker_robot_platform_id
+      description: Identifier of the Stryker Robot Platform.
+  columns:
+  - name: stryker_robot_platform_id
+    description: Identifier of the Stryker Robot Platform. This dataset holds the complete population.
+  - name: stryker_robot_platform_name
+    description: Name of the Stryker Robot Platform.
+  - name: stryker_robot_platform_code
+    description: Code of the Stryker Robot Platform.
+    value_description: mako, mako_4, handheld_robot, new_robotics_platform.
+  entity_definitions:
+  - identity_id: stryker_robot_platform_identity
+    dataset_columns:
+    - stryker_robot_platform_id
+    entity_universe: complete
+- node_id: sf:surgicalsupply.stryker.dim_stryker_segment
+  descriptor:
+    qualified_name: surgicalsupply.stryker.dim_stryker_segment
+    display_name: Stryker Reporting Segment
+    description: One Stryker reporting segment.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: STRYKER
+      object: DIM_STRYKER_SEGMENT
+      format: table
+  grain:
+    description: One row per Stryker Segment identified by stryker_segment_id.
+    components:
+    - identity_id: stryker_segment_identity
+      dataset_columns:
+      - stryker_segment_id
+      description: Identifier of the Stryker Segment.
+  columns:
+  - name: stryker_segment_id
+    description: Identifier of the Stryker Segment. This dataset holds the complete population.
+  - name: stryker_segment_name
+    description: Name of the Stryker Segment.
+  - name: stryker_segment_code
+    description: Code of the Stryker Segment.
+    value_description: orthopaedics_and_spine, medsurg_and_neurotechnology.
+  entity_definitions:
+  - identity_id: stryker_segment_identity
+    dataset_columns:
+    - stryker_segment_id
+    entity_universe: complete
+- node_id: sf:surgicalsupply.supply.dim_component
+  descriptor:
+    qualified_name: surgicalsupply.supply.dim_component
+    display_name: Component
+    description: One device component.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: SUPPLY
+      object: DIM_COMPONENT
+      format: table
+  grain:
+    description: One row per Component identified by component_id.
+    components:
+    - identity_id: component_identity
+      dataset_columns:
+      - component_id
+      description: Identifier of the Component.
+  columns:
+  - name: component_id
+    description: Identifier of the Component. This dataset holds the complete population.
+  - name: component_name
+    description: Name of the Component.
+  entity_definitions:
+  - identity_id: component_identity
+    dataset_columns:
+    - component_id
+    entity_universe: complete
+- node_id: sf:surgicalsupply.supply.dim_manufacturing_plant
+  descriptor:
+    qualified_name: surgicalsupply.supply.dim_manufacturing_plant
+    display_name: Manufacturing Plant
+    description: One manufacturing plant.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: SUPPLY
+      object: DIM_MANUFACTURING_PLANT
+      format: table
+  grain:
+    description: One row per Manufacturing Plant identified by manufacturing_plant_id.
+    components:
+    - identity_id: manufacturing_plant_identity
+      dataset_columns:
+      - manufacturing_plant_id
+      description: Identifier of the Manufacturing Plant.
+  columns:
+  - name: manufacturing_plant_id
+    description: Identifier of the Manufacturing Plant. This dataset holds the complete population.
+  - name: manufacturing_plant_name
+    description: Name of the Manufacturing Plant.
+  - name: country_id
+    description: Identifier of the Country. The complete population is owned by its owner dataset.
+  entity_definitions:
+  - identity_id: manufacturing_plant_identity
+    dataset_columns:
+    - manufacturing_plant_id
+    entity_universe: complete
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+- node_id: sf:surgicalsupply.supply.fact_capacity_quantity
+  descriptor:
+    qualified_name: surgicalsupply.supply.fact_capacity_quantity
+    display_name: Capacity Quantity
+    description: Planned shifts, required shipments and produced units by plant and Stryker business.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: SUPPLY
+      object: FACT_CAPACITY_QUANTITY
+      format: table
+  grain:
+    description: One row per capacity quantity for the combination of fiscal_period_id, scenario_id, manufacturing_plant_id,
+      stryker_business_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: manufacturing_plant_identity
+      dataset_columns:
+      - manufacturing_plant_id
+      description: Identifier of the Manufacturing Plant.
+    - identity_id: stryker_business_identity
+      dataset_columns:
+      - stryker_business_id
+      description: Identifier of the Stryker Business.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: manufacturing_plant_id
+    description: Identifier of the Manufacturing Plant. The complete population is owned by its owner
+      dataset.
+  - name: stryker_business_id
+    description: Identifier of the Stryker Business. The complete population is owned by its owner dataset.
+  - name: planned_shift_count
+    description: Planned Shift Count measured in records.
+  - name: required_shipment_unit_count
+    description: Required Shipment Unit Count measured in units.
+  - name: produced_unit_count
+    description: Produced Unit Count measured in units.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: manufacturing_plant_identity
+    dataset_columns:
+    - manufacturing_plant_id
+    entity_universe: partial
+  - identity_id: stryker_business_identity
+    dataset_columns:
+    - stryker_business_id
+    entity_universe: partial
+- node_id: sf:surgicalsupply.supply.fact_field_inventory_quantity
+  descriptor:
+    qualified_name: surgicalsupply.supply.fact_field_inventory_quantity
+    display_name: Field Inventory Quantity
+    description: Field inventory units and restock time by Stryker business and plant.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: SUPPLY
+      object: FACT_FIELD_INVENTORY_QUANTITY
+      format: table
+  grain:
+    description: One row per field inventory quantity for the combination of fiscal_period_id, scenario_id,
+      manufacturing_plant_id, stryker_business_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: manufacturing_plant_identity
+      dataset_columns:
+      - manufacturing_plant_id
+      description: Identifier of the Manufacturing Plant.
+    - identity_id: stryker_business_identity
+      dataset_columns:
+      - stryker_business_id
+      description: Identifier of the Stryker Business.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: manufacturing_plant_id
+    description: Identifier of the Manufacturing Plant. The complete population is owned by its owner
+      dataset.
+  - name: stryker_business_id
+    description: Identifier of the Stryker Business. The complete population is owned by its owner dataset.
+  - name: field_inventory_unit_count
+    description: Field Inventory Unit Count measured in units.
+  - name: days_to_restock_count
+    description: Days To Restock Count measured in days.
+  - name: channel_inventory_unit_count
+    description: Channel Inventory Unit Count measured in units.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: manufacturing_plant_identity
+    dataset_columns:
+    - manufacturing_plant_id
+    entity_universe: partial
+  - identity_id: stryker_business_identity
+    dataset_columns:
+    - stryker_business_id
+    entity_universe: partial
+- node_id: sf:surgicalsupply.supply.fact_supply_shortage_quantity
+  descriptor:
+    qualified_name: surgicalsupply.supply.fact_supply_shortage_quantity
+    display_name: Supply Shortage Quantity
+    description: Shortage units and deferred or lost procedures by business, product and component.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: SUPPLY
+      object: FACT_SUPPLY_SHORTAGE_QUANTITY
+      format: table
+  grain:
+    description: One row per supply shortage quantity for the combination of fiscal_period_id, scenario_id,
+      component_id, medical_product_id, stryker_business_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: component_identity
+      dataset_columns:
+      - component_id
+      description: Identifier of the Component.
+    - identity_id: medical_product_identity
+      dataset_columns:
+      - medical_product_id
+      description: Identifier of the Medical Product.
+    - identity_id: stryker_business_identity
+      dataset_columns:
+      - stryker_business_id
+      description: Identifier of the Stryker Business.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: component_id
+    description: Identifier of the Component. The complete population is owned by its owner dataset.
+  - name: medical_product_id
+    description: Identifier of the Medical Product. The complete population is owned by its owner dataset.
+  - name: stryker_business_id
+    description: Identifier of the Stryker Business. The complete population is owned by its owner dataset.
+  - name: shortage_unit_count
+    description: Shortage Unit Count measured in units.
+  - name: deferred_procedure_count
+    description: Deferred Procedure Count measured in procedures.
+  - name: lost_procedure_count
+    description: Lost Procedure Count measured in procedures.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: component_identity
+    dataset_columns:
+    - component_id
+    entity_universe: partial
+  - identity_id: medical_product_identity
+    dataset_columns:
+    - medical_product_id
+    entity_universe: partial
+  - identity_id: stryker_business_identity
+    dataset_columns:
+    - stryker_business_id
+    entity_universe: partial

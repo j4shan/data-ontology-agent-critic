@@ -1,0 +1,1447 @@
+schema_version: '3'
+nodes:
+- accessor:
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      format: table
+      object: DIM_FISCAL_QUARTER
+      schema: MEMBERSHIP
+    schema_id: accessor.snowflake.v1
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: fiscal_quarter_code
+    description: Fiscal Quarter code.
+    value_description: 2025Q2, 2025Q3, 2025Q4, 2026Q1, 2026Q2, 2026Q3, 2026Q4
+  - name: fiscal_quarter_name
+    description: Name of the fiscal quarter.
+  - name: fiscal_year
+    description: Fiscal year number.
+  - name: quarter_number
+    description: Quarter number within the fiscal year.
+  descriptor:
+    description: Fiscal quarter in which Health Plan Inc reports results.
+    display_name: Fiscal Quarter
+    qualified_name: healthplan.membership.dim_fiscal_quarter
+    synonyms: []
+    tags:
+    - dimension
+    - membership_channel
+    - managed-care
+    - both
+    - time
+    - quarter
+  entity_definitions:
+  - dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: complete
+    identity_id: dim_fiscal_quarter_identity
+  grain:
+    components:
+    - dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+      identity_id: dim_fiscal_quarter_identity
+    description: One row is one fiscal quarter.
+  node_id: sf:healthplan.membership.dim_fiscal_quarter
+- accessor:
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      format: table
+      object: DIM_SCENARIO
+      schema: MEMBERSHIP
+    schema_id: accessor.snowflake.v1
+  columns:
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: scenario_code
+    description: Scenario code.
+    value_description: reported, guide
+  - name: scenario_name
+    description: Name of the scenario.
+  descriptor:
+    description: Reporting scenario for a row. The same fiscal quarter can be a reported result and a later guide.
+    display_name: Scenario
+    qualified_name: healthplan.membership.dim_scenario
+    synonyms: []
+    tags:
+    - dimension
+    - membership_channel
+    - managed-care
+    - both
+    - scenario
+    - reported
+    - guide
+  entity_definitions:
+  - dataset_columns:
+    - scenario_id
+    entity_universe: complete
+    identity_id: dim_scenario_identity
+  grain:
+    components:
+    - dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+      identity_id: dim_scenario_identity
+    description: One row is one scenario.
+  node_id: sf:healthplan.membership.dim_scenario
+- accessor:
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      format: table
+      object: DIM_CALENDAR_MONTH
+      schema: MEMBERSHIP
+    schema_id: accessor.snowflake.v1
+  columns:
+  - name: calendar_month_id
+    description: Identifier of the calendar month.
+  - name: calendar_month_code
+    description: Calendar Month code.
+    value_description: january, february, march, april, may, june, july, august, september, october, november, december
+  - name: calendar_month_name
+    description: Name of the calendar month.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  descriptor:
+    description: Calendar month inside a fiscal quarter.
+    display_name: Calendar Month
+    qualified_name: healthplan.membership.dim_calendar_month
+    synonyms: []
+    tags:
+    - dimension
+    - membership_channel
+    - managed-care
+    - both
+    - calendar
+    - month
+    - seasonality
+  entity_definitions:
+  - dataset_columns:
+    - calendar_month_id
+    entity_universe: complete
+    identity_id: dim_calendar_month_identity
+  - dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+    identity_id: dim_fiscal_quarter_identity
+  grain:
+    components:
+    - dataset_columns:
+      - calendar_month_id
+      description: Identifier of the calendar month.
+      identity_id: dim_calendar_month_identity
+    description: One row is one calendar month.
+  node_id: sf:healthplan.membership.dim_calendar_month
+- accessor:
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      format: table
+      object: DIM_PLAN_TYPE
+      schema: MEMBERSHIP
+    schema_id: accessor.snowflake.v1
+  columns:
+  - name: plan_type_id
+    description: Identifier of the plan type.
+  - name: plan_type_code
+    description: Plan Type code.
+    value_description: medicare_advantage, medicaid_managed_care, employer_group_health, individual_market_health
+  - name: plan_type_name
+    description: Name of the plan type.
+  descriptor:
+    description: Insurance plan type a member is enrolled in.
+    display_name: Plan Type
+    qualified_name: healthplan.membership.dim_plan_type
+    synonyms: []
+    tags:
+    - dimension
+    - membership_channel
+    - managed-care
+    - both
+    - insurance
+    - plan
+    - medicare
+    - medicaid
+    - commercial
+    - exchange
+  entity_definitions:
+  - dataset_columns:
+    - plan_type_id
+    entity_universe: complete
+    identity_id: dim_plan_type_identity
+  grain:
+    components:
+    - dataset_columns:
+      - plan_type_id
+      description: Identifier of the plan type.
+      identity_id: dim_plan_type_identity
+    description: One row is one plan type.
+  node_id: sf:healthplan.membership.dim_plan_type
+- accessor:
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      format: table
+      object: DIM_FUNDING_ARRANGEMENT
+      schema: MEMBERSHIP
+    schema_id: accessor.snowflake.v1
+  columns:
+  - name: funding_arrangement_id
+    description: Identifier of the funding arrangement.
+  - name: funding_arrangement_code
+    description: Funding Arrangement code.
+    value_description: fully_insured, administrative_services_only
+  - name: funding_arrangement_name
+    description: Name of the funding arrangement.
+  descriptor:
+    description: Funding arrangement behind an employer or group plan.
+    display_name: Funding Arrangement
+    qualified_name: healthplan.membership.dim_funding_arrangement
+    synonyms: []
+    tags:
+    - dimension
+    - membership_channel
+    - managed-care
+    - both
+    - funding
+    - aso
+    - self_funded
+    - employer
+  entity_definitions:
+  - dataset_columns:
+    - funding_arrangement_id
+    entity_universe: complete
+    identity_id: dim_funding_arrangement_identity
+  grain:
+    components:
+    - dataset_columns:
+      - funding_arrangement_id
+      description: Identifier of the funding arrangement.
+      identity_id: dim_funding_arrangement_identity
+    description: One row is one funding arrangement.
+  node_id: sf:healthplan.membership.dim_funding_arrangement
+- accessor:
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      format: table
+      object: DIM_DUAL_ELIGIBILITY_STATUS
+      schema: MEMBERSHIP
+    schema_id: accessor.snowflake.v1
+  columns:
+  - name: dual_eligibility_status_id
+    description: Identifier of the dual eligibility status.
+  - name: dual_eligibility_status_code
+    description: Dual Eligibility Status code.
+    value_description: dual_eligible, not_dual_eligible
+  - name: dual_eligibility_status_name
+    description: Name of the dual eligibility status.
+  descriptor:
+    description: Dual-eligibility status of a member for Medicare and Medicaid.
+    display_name: Dual Eligibility Status
+    qualified_name: healthplan.membership.dim_dual_eligibility_status
+    synonyms: []
+    tags:
+    - dimension
+    - membership_channel
+    - managed-care
+    - both
+    - dual
+    - medicare
+    - medicaid
+    - eligibility
+  entity_definitions:
+  - dataset_columns:
+    - dual_eligibility_status_id
+    entity_universe: complete
+    identity_id: dim_dual_eligibility_status_identity
+  grain:
+    components:
+    - dataset_columns:
+      - dual_eligibility_status_id
+      description: Identifier of the dual eligibility status.
+      identity_id: dim_dual_eligibility_status_identity
+    description: One row is one dual eligibility status.
+  node_id: sf:healthplan.membership.dim_dual_eligibility_status
+- accessor:
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      format: table
+      object: DIM_ENROLLMENT_CHANNEL
+      schema: MEMBERSHIP
+    schema_id: accessor.snowflake.v1
+  columns:
+  - name: enrollment_channel_id
+    description: Identifier of the enrollment channel.
+  - name: enrollment_channel_code
+    description: Enrollment Channel code.
+    value_description: broker_agent, direct_to_consumer, employer_sponsored, public_exchange
+  - name: enrollment_channel_name
+    description: Name of the enrollment channel.
+  descriptor:
+    description: Primary channel through which a member enrolled.
+    display_name: Enrollment Channel
+    qualified_name: healthplan.membership.dim_enrollment_channel
+    synonyms: []
+    tags:
+    - dimension
+    - membership_channel
+    - managed-care
+    - both
+    - channel
+    - enrollment
+    - broker
+    - exchange
+  entity_definitions:
+  - dataset_columns:
+    - enrollment_channel_id
+    entity_universe: complete
+    identity_id: dim_enrollment_channel_identity
+  grain:
+    components:
+    - dataset_columns:
+      - enrollment_channel_id
+      description: Identifier of the enrollment channel.
+      identity_id: dim_enrollment_channel_identity
+    description: One row is one enrollment channel.
+  node_id: sf:healthplan.membership.dim_enrollment_channel
+- accessor:
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      format: table
+      object: DIM_REGION
+      schema: MEMBERSHIP
+    schema_id: accessor.snowflake.v1
+  columns:
+  - name: region_id
+    description: Identifier of the region.
+  - name: region_code
+    description: Region code.
+    value_description: northeast, midwest, south, west
+  - name: region_name
+    description: Name of the region.
+  descriptor:
+    description: United States census region.
+    display_name: Region
+    qualified_name: healthplan.membership.dim_region
+    synonyms: []
+    tags:
+    - dimension
+    - membership_channel
+    - managed-care
+    - both
+    - geography
+    - region
+  entity_definitions:
+  - dataset_columns:
+    - region_id
+    entity_universe: complete
+    identity_id: dim_region_identity
+  grain:
+    components:
+    - dataset_columns:
+      - region_id
+      description: Identifier of the region.
+      identity_id: dim_region_identity
+    description: One row is one region.
+  node_id: sf:healthplan.membership.dim_region
+- accessor:
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      format: table
+      object: DIM_STATE
+      schema: MEMBERSHIP
+    schema_id: accessor.snowflake.v1
+  columns:
+  - name: state_id
+    description: Identifier of the state.
+  - name: state_name
+    description: Name of the state.
+  - name: region_id
+    description: Identifier of the related region.
+  descriptor:
+    description: State in which a plan is offered or a Medicaid program operates.
+    display_name: State
+    qualified_name: healthplan.membership.dim_state
+    synonyms: []
+    tags:
+    - dimension
+    - membership_channel
+    - managed-care
+    - both
+    - geography
+    - state
+    - medicaid
+    - indiana
+  entity_definitions:
+  - dataset_columns:
+    - state_id
+    entity_universe: complete
+    identity_id: dim_state_identity
+  - dataset_columns:
+    - region_id
+    entity_universe: partial
+    identity_id: dim_region_identity
+  grain:
+    components:
+    - dataset_columns:
+      - state_id
+      description: Identifier of the state.
+      identity_id: dim_state_identity
+    description: One row is one state.
+  node_id: sf:healthplan.membership.dim_state
+- accessor:
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      format: table
+      object: DIM_METAL_TIER
+      schema: MEMBERSHIP
+    schema_id: accessor.snowflake.v1
+  columns:
+  - name: metal_tier_id
+    description: Identifier of the metal tier.
+  - name: metal_tier_code
+    description: Metal Tier code.
+    value_description: bronze, silver, gold, platinum
+  - name: metal_tier_name
+    description: Name of the metal tier.
+  descriptor:
+    description: Actuarial-value metal tier of an exchange plan.
+    display_name: Metal Tier
+    qualified_name: healthplan.membership.dim_metal_tier
+    synonyms: []
+    tags:
+    - dimension
+    - membership_channel
+    - managed-care
+    - both
+    - exchange
+    - metal
+    - bronze
+    - silver
+    - aca
+  entity_definitions:
+  - dataset_columns:
+    - metal_tier_id
+    entity_universe: complete
+    identity_id: dim_metal_tier_identity
+  grain:
+    components:
+    - dataset_columns:
+      - metal_tier_id
+      description: Identifier of the metal tier.
+      identity_id: dim_metal_tier_identity
+    description: One row is one metal tier.
+  node_id: sf:healthplan.membership.dim_metal_tier
+- accessor:
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      format: table
+      object: DIM_MEMBER_COHORT
+      schema: MEMBERSHIP
+    schema_id: accessor.snowflake.v1
+  columns:
+  - name: member_cohort_id
+    description: Identifier of the member cohort.
+  - name: member_cohort_code
+    description: Member Cohort code.
+    value_description: new_enrollee, continuing_member, migrated_from_medicaid, migrated_to_exchange
+  - name: member_cohort_name
+    description: Name of the member cohort.
+  descriptor:
+    description: Membership cohort by enrolment history.
+    display_name: Member Cohort
+    qualified_name: healthplan.membership.dim_member_cohort
+    synonyms: []
+    tags:
+    - dimension
+    - membership_channel
+    - managed-care
+    - both
+    - cohort
+    - membership
+    - migration
+  entity_definitions:
+  - dataset_columns:
+    - member_cohort_id
+    entity_universe: complete
+    identity_id: dim_member_cohort_identity
+  grain:
+    components:
+    - dataset_columns:
+      - member_cohort_id
+      description: Identifier of the member cohort.
+      identity_id: dim_member_cohort_identity
+    description: One row is one member cohort.
+  node_id: sf:healthplan.membership.dim_member_cohort
+- accessor:
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      format: table
+      object: DIM_MEMBERSHIP_CHANGE_REASON
+      schema: MEMBERSHIP
+    schema_id: accessor.snowflake.v1
+  columns:
+  - name: membership_change_reason_id
+    description: Identifier of the membership change reason.
+  - name: membership_change_reason_code
+    description: Membership Change Reason code.
+    value_description: new_enrollment, voluntary_attrition, redetermination_disenrollment, contract_exit, program_exit, death
+  - name: membership_change_reason_name
+    description: Name of the membership change reason.
+  descriptor:
+    description: Reason a member count changed.
+    display_name: Membership Change Reason
+    qualified_name: healthplan.membership.dim_membership_change_reason
+    synonyms: []
+    tags:
+    - dimension
+    - membership_channel
+    - managed-care
+    - both
+    - membership
+    - attrition
+    - exit
+    - redetermination
+  entity_definitions:
+  - dataset_columns:
+    - membership_change_reason_id
+    entity_universe: complete
+    identity_id: dim_membership_change_reason_identity
+  grain:
+    components:
+    - dataset_columns:
+      - membership_change_reason_id
+      description: Identifier of the membership change reason.
+      identity_id: dim_membership_change_reason_identity
+    description: One row is one membership change reason.
+  node_id: sf:healthplan.membership.dim_membership_change_reason
+- accessor:
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      format: table
+      object: DIM_PHARMACY_BENEFIT_PROGRAM
+      schema: MEMBERSHIP
+    schema_id: accessor.snowflake.v1
+  columns:
+  - name: pharmacy_benefit_program_id
+    description: Identifier of the pharmacy benefit program.
+  - name: pharmacy_benefit_program_code
+    description: Pharmacy Benefit Program code.
+    value_description: medicare_part_d, commercial_pharmacy_benefit, medicaid_pharmacy_benefit
+  - name: pharmacy_benefit_program_name
+    description: Name of the pharmacy benefit program.
+  descriptor:
+    description: Pharmacy benefit program under which drug benefits are administered, classified separately from the insurance
+      plan type.
+    display_name: Pharmacy Benefit Program
+    qualified_name: healthplan.membership.dim_pharmacy_benefit_program
+    synonyms: []
+    tags:
+    - dimension
+    - membership_channel
+    - managed-care
+    - both
+    - pharmacy
+    - part_d
+    - drug
+    - benefit
+  entity_definitions:
+  - dataset_columns:
+    - pharmacy_benefit_program_id
+    entity_universe: complete
+    identity_id: dim_pharmacy_benefit_program_identity
+  grain:
+    components:
+    - dataset_columns:
+      - pharmacy_benefit_program_id
+      description: Identifier of the pharmacy benefit program.
+      identity_id: dim_pharmacy_benefit_program_identity
+    description: One row is one pharmacy benefit program.
+  node_id: sf:healthplan.membership.dim_pharmacy_benefit_program
+- accessor:
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      format: table
+      object: DIM_EMPLOYER_ACCOUNT_SIZE
+      schema: MEMBERSHIP
+    schema_id: accessor.snowflake.v1
+  columns:
+  - name: employer_account_size_id
+    description: Identifier of the employer account size.
+  - name: employer_account_size_code
+    description: Employer Account Size code.
+    value_description: national_account, middle_market, small_group
+  - name: employer_account_size_name
+    description: Name of the employer account size.
+  descriptor:
+    description: Size segment of an employer account.
+    display_name: Employer Account Size
+    qualified_name: healthplan.membership.dim_employer_account_size
+    synonyms: []
+    tags:
+    - dimension
+    - membership_channel
+    - managed-care
+    - both
+    - employer
+    - commercial
+    - account
+  entity_definitions:
+  - dataset_columns:
+    - employer_account_size_id
+    entity_universe: complete
+    identity_id: dim_employer_account_size_identity
+  grain:
+    components:
+    - dataset_columns:
+      - employer_account_size_id
+      description: Identifier of the employer account size.
+      identity_id: dim_employer_account_size_identity
+    description: One row is one employer account size.
+  node_id: sf:healthplan.membership.dim_employer_account_size
+- accessor:
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      format: table
+      object: DIM_EMPLOYER_SECTOR
+      schema: MEMBERSHIP
+    schema_id: accessor.snowflake.v1
+  columns:
+  - name: employer_sector_id
+    description: Identifier of the employer sector.
+  - name: employer_sector_code
+    description: Employer Sector code.
+    value_description: private_employer, public_sector, labor_union
+  - name: employer_sector_name
+    description: Name of the employer sector.
+  descriptor:
+    description: Sector of an employer account.
+    display_name: Employer Sector
+    qualified_name: healthplan.membership.dim_employer_sector
+    synonyms: []
+    tags:
+    - dimension
+    - membership_channel
+    - managed-care
+    - both
+    - employer
+    - government
+    - account
+  entity_definitions:
+  - dataset_columns:
+    - employer_sector_id
+    entity_universe: complete
+    identity_id: dim_employer_sector_identity
+  grain:
+    components:
+    - dataset_columns:
+      - employer_sector_id
+      description: Identifier of the employer sector.
+      identity_id: dim_employer_sector_identity
+    description: One row is one employer sector.
+  node_id: sf:healthplan.membership.dim_employer_sector
+- accessor:
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      format: table
+      object: FACT_MEMBER_MONTHS
+      schema: MEMBERSHIP
+    schema_id: accessor.snowflake.v1
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: plan_type_id
+    description: Identifier of the related plan type.
+  - name: funding_arrangement_id
+    description: Identifier of the related funding arrangement.
+  - name: state_id
+    description: Identifier of the related state.
+  - name: enrollment_channel_id
+    description: Identifier of the related enrollment channel.
+  - name: member_months_quantity
+    description: Member-months in member-months.
+  - name: end_of_period_member_quantity
+    description: Members at period end in members.
+  descriptor:
+    description: Insured member-months and end-of-period members for an insurance line. Stores members and member-months,
+      no premium and no services-client count.
+    display_name: Member Months
+    qualified_name: healthplan.membership.fact_member_months
+    synonyms: []
+    tags:
+    - fact
+    - membership_channel
+    - managed-care
+    - both
+    - membership
+    - lives
+    - member_months
+    - medicare
+    - medicaid
+    - commercial
+  entity_definitions:
+  - dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+    identity_id: dim_fiscal_quarter_identity
+  - dataset_columns:
+    - scenario_id
+    entity_universe: partial
+    identity_id: dim_scenario_identity
+  - dataset_columns:
+    - plan_type_id
+    entity_universe: partial
+    identity_id: dim_plan_type_identity
+  - dataset_columns:
+    - funding_arrangement_id
+    entity_universe: partial
+    identity_id: dim_funding_arrangement_identity
+  - dataset_columns:
+    - state_id
+    entity_universe: partial
+    identity_id: dim_state_identity
+  - dataset_columns:
+    - enrollment_channel_id
+    entity_universe: partial
+    identity_id: dim_enrollment_channel_identity
+  grain:
+    components:
+    - dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the related fiscal quarter.
+      identity_id: dim_fiscal_quarter_identity
+    - dataset_columns:
+      - scenario_id
+      description: Identifier of the related scenario.
+      identity_id: dim_scenario_identity
+    - dataset_columns:
+      - plan_type_id
+      description: Identifier of the related plan type.
+      identity_id: dim_plan_type_identity
+    - dataset_columns:
+      - funding_arrangement_id
+      description: Identifier of the related funding arrangement.
+      identity_id: dim_funding_arrangement_identity
+    - dataset_columns:
+      - state_id
+      description: Identifier of the related state.
+      identity_id: dim_state_identity
+    - dataset_columns:
+      - enrollment_channel_id
+      description: Identifier of the related enrollment channel.
+      identity_id: dim_enrollment_channel_identity
+    description: One row is one combination of fiscal quarter, scenario, plan type, funding arrangement, state, enrollment
+      channel.
+  node_id: sf:healthplan.membership.fact_member_months
+- accessor:
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      format: table
+      object: FACT_MEMBERSHIP_CHANGE
+      schema: MEMBERSHIP
+    schema_id: accessor.snowflake.v1
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: plan_type_id
+    description: Identifier of the related plan type.
+  - name: state_id
+    description: Identifier of the related state.
+  - name: membership_change_reason_id
+    description: Identifier of the related membership change reason.
+  - name: member_change_quantity
+    description: Change in members in members.
+  - name: changed_member_quantity
+    description: Members who changed status in members.
+  descriptor:
+    description: Change in insured members by reason. Stores members, no premium.
+    display_name: Membership Change
+    qualified_name: healthplan.membership.fact_membership_change
+    synonyms: []
+    tags:
+    - fact
+    - membership_channel
+    - managed-care
+    - both
+    - membership
+    - attrition
+    - exit
+    - decline
+    - growth
+  entity_definitions:
+  - dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+    identity_id: dim_fiscal_quarter_identity
+  - dataset_columns:
+    - scenario_id
+    entity_universe: partial
+    identity_id: dim_scenario_identity
+  - dataset_columns:
+    - plan_type_id
+    entity_universe: partial
+    identity_id: dim_plan_type_identity
+  - dataset_columns:
+    - state_id
+    entity_universe: partial
+    identity_id: dim_state_identity
+  - dataset_columns:
+    - membership_change_reason_id
+    entity_universe: partial
+    identity_id: dim_membership_change_reason_identity
+  grain:
+    components:
+    - dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the related fiscal quarter.
+      identity_id: dim_fiscal_quarter_identity
+    - dataset_columns:
+      - scenario_id
+      description: Identifier of the related scenario.
+      identity_id: dim_scenario_identity
+    - dataset_columns:
+      - plan_type_id
+      description: Identifier of the related plan type.
+      identity_id: dim_plan_type_identity
+    - dataset_columns:
+      - state_id
+      description: Identifier of the related state.
+      identity_id: dim_state_identity
+    - dataset_columns:
+      - membership_change_reason_id
+      description: Identifier of the related membership change reason.
+      identity_id: dim_membership_change_reason_identity
+    description: One row is one combination of fiscal quarter, scenario, plan type, state, membership change reason.
+  node_id: sf:healthplan.membership.fact_membership_change
+- accessor:
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      format: table
+      object: FACT_COHORT_MEMBER_MONTHS
+      schema: MEMBERSHIP
+    schema_id: accessor.snowflake.v1
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: plan_type_id
+    description: Identifier of the related plan type.
+  - name: member_cohort_id
+    description: Identifier of the related member cohort.
+  - name: dual_eligibility_status_id
+    description: Identifier of the related dual eligibility status.
+  - name: member_months_quantity
+    description: Member-months in member-months.
+  - name: member_quantity
+    description: Members in members.
+  descriptor:
+    description: Member-months by membership cohort. Stores member-months, no premium.
+    display_name: Cohort Member Months
+    qualified_name: healthplan.membership.fact_cohort_member_months
+    synonyms: []
+    tags:
+    - fact
+    - membership_channel
+    - managed-care
+    - both
+    - membership
+    - cohort
+    - same_store
+    - migration
+    - acuity
+  entity_definitions:
+  - dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+    identity_id: dim_fiscal_quarter_identity
+  - dataset_columns:
+    - scenario_id
+    entity_universe: partial
+    identity_id: dim_scenario_identity
+  - dataset_columns:
+    - plan_type_id
+    entity_universe: partial
+    identity_id: dim_plan_type_identity
+  - dataset_columns:
+    - member_cohort_id
+    entity_universe: partial
+    identity_id: dim_member_cohort_identity
+  - dataset_columns:
+    - dual_eligibility_status_id
+    entity_universe: partial
+    identity_id: dim_dual_eligibility_status_identity
+  grain:
+    components:
+    - dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the related fiscal quarter.
+      identity_id: dim_fiscal_quarter_identity
+    - dataset_columns:
+      - scenario_id
+      description: Identifier of the related scenario.
+      identity_id: dim_scenario_identity
+    - dataset_columns:
+      - plan_type_id
+      description: Identifier of the related plan type.
+      identity_id: dim_plan_type_identity
+    - dataset_columns:
+      - member_cohort_id
+      description: Identifier of the related member cohort.
+      identity_id: dim_member_cohort_identity
+    - dataset_columns:
+      - dual_eligibility_status_id
+      description: Identifier of the related dual eligibility status.
+      identity_id: dim_dual_eligibility_status_identity
+    description: One row is one combination of fiscal quarter, scenario, plan type, member cohort, dual eligibility status.
+  node_id: sf:healthplan.membership.fact_cohort_member_months
+- accessor:
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      format: table
+      object: FACT_EXCHANGE_ENROLLMENT
+      schema: MEMBERSHIP
+    schema_id: accessor.snowflake.v1
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: state_id
+    description: Identifier of the related state.
+  - name: metal_tier_id
+    description: Identifier of the related metal tier.
+  - name: plan_type_id
+    description: Identifier of the related plan type.
+  - name: enrolled_member_quantity
+    description: Enrolled members in members.
+  - name: member_months_quantity
+    description: Member-months in member-months.
+  descriptor:
+    description: Exchange enrolled members by metal tier. Stores members, no premium.
+    display_name: Exchange Enrollment
+    qualified_name: healthplan.membership.fact_exchange_enrollment
+    synonyms: []
+    tags:
+    - fact
+    - membership_channel
+    - managed-care
+    - both
+    - exchange
+    - aca
+    - enrollment
+    - open_enrollment
+    - metal
+  entity_definitions:
+  - dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+    identity_id: dim_fiscal_quarter_identity
+  - dataset_columns:
+    - scenario_id
+    entity_universe: partial
+    identity_id: dim_scenario_identity
+  - dataset_columns:
+    - state_id
+    entity_universe: partial
+    identity_id: dim_state_identity
+  - dataset_columns:
+    - metal_tier_id
+    entity_universe: partial
+    identity_id: dim_metal_tier_identity
+  - dataset_columns:
+    - plan_type_id
+    entity_universe: partial
+    identity_id: dim_plan_type_identity
+  grain:
+    components:
+    - dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the related fiscal quarter.
+      identity_id: dim_fiscal_quarter_identity
+    - dataset_columns:
+      - scenario_id
+      description: Identifier of the related scenario.
+      identity_id: dim_scenario_identity
+    - dataset_columns:
+      - state_id
+      description: Identifier of the related state.
+      identity_id: dim_state_identity
+    - dataset_columns:
+      - metal_tier_id
+      description: Identifier of the related metal tier.
+      identity_id: dim_metal_tier_identity
+    - dataset_columns:
+      - plan_type_id
+      description: Identifier of the related plan type.
+      identity_id: dim_plan_type_identity
+    description: One row is one combination of fiscal quarter, scenario, state, metal tier, plan type.
+  node_id: sf:healthplan.membership.fact_exchange_enrollment
+- accessor:
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      format: table
+      object: FACT_MEDICAID_REDETERMINATION
+      schema: MEMBERSHIP
+    schema_id: accessor.snowflake.v1
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: state_id
+    description: Identifier of the related state.
+  - name: plan_type_id
+    description: Identifier of the related plan type.
+  - name: redetermined_member_quantity
+    description: Redetermined members in members.
+  - name: disenrolled_member_quantity
+    description: Disenrolled members in members.
+  descriptor:
+    description: Members redetermined and disenrolled in Medicaid. Stores members, no premium.
+    display_name: Medicaid Redetermination
+    qualified_name: healthplan.membership.fact_medicaid_redetermination
+    synonyms: []
+    tags:
+    - fact
+    - membership_channel
+    - managed-care
+    - both
+    - medicaid
+    - redetermination
+    - eligibility
+    - membership
+  entity_definitions:
+  - dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+    identity_id: dim_fiscal_quarter_identity
+  - dataset_columns:
+    - scenario_id
+    entity_universe: partial
+    identity_id: dim_scenario_identity
+  - dataset_columns:
+    - state_id
+    entity_universe: partial
+    identity_id: dim_state_identity
+  - dataset_columns:
+    - plan_type_id
+    entity_universe: partial
+    identity_id: dim_plan_type_identity
+  grain:
+    components:
+    - dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the related fiscal quarter.
+      identity_id: dim_fiscal_quarter_identity
+    - dataset_columns:
+      - scenario_id
+      description: Identifier of the related scenario.
+      identity_id: dim_scenario_identity
+    - dataset_columns:
+      - state_id
+      description: Identifier of the related state.
+      identity_id: dim_state_identity
+    - dataset_columns:
+      - plan_type_id
+      description: Identifier of the related plan type.
+      identity_id: dim_plan_type_identity
+    description: One row is one combination of fiscal quarter, scenario, state, plan type.
+  node_id: sf:healthplan.membership.fact_medicaid_redetermination
+- accessor:
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      format: table
+      object: FACT_EMPLOYER_COVERED_LIVES
+      schema: MEMBERSHIP
+    schema_id: accessor.snowflake.v1
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: employer_account_size_id
+    description: Identifier of the related employer account size.
+  - name: employer_sector_id
+    description: Identifier of the related employer sector.
+  - name: funding_arrangement_id
+    description: Identifier of the related funding arrangement.
+  - name: covered_life_quantity
+    description: Covered lives in lives.
+  - name: member_months_quantity
+    description: Member-months in member-months.
+  descriptor:
+    description: Covered lives in employer accounts by size, sector, and funding. Stores lives, no premium.
+    display_name: Employer Covered Lives
+    qualified_name: healthplan.membership.fact_employer_covered_lives
+    synonyms: []
+    tags:
+    - fact
+    - membership_channel
+    - managed-care
+    - both
+    - employer
+    - commercial
+    - group
+    - selling_season
+    - account
+  entity_definitions:
+  - dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+    identity_id: dim_fiscal_quarter_identity
+  - dataset_columns:
+    - scenario_id
+    entity_universe: partial
+    identity_id: dim_scenario_identity
+  - dataset_columns:
+    - employer_account_size_id
+    entity_universe: partial
+    identity_id: dim_employer_account_size_identity
+  - dataset_columns:
+    - employer_sector_id
+    entity_universe: partial
+    identity_id: dim_employer_sector_identity
+  - dataset_columns:
+    - funding_arrangement_id
+    entity_universe: partial
+    identity_id: dim_funding_arrangement_identity
+  grain:
+    components:
+    - dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the related fiscal quarter.
+      identity_id: dim_fiscal_quarter_identity
+    - dataset_columns:
+      - scenario_id
+      description: Identifier of the related scenario.
+      identity_id: dim_scenario_identity
+    - dataset_columns:
+      - employer_account_size_id
+      description: Identifier of the related employer account size.
+      identity_id: dim_employer_account_size_identity
+    - dataset_columns:
+      - employer_sector_id
+      description: Identifier of the related employer sector.
+      identity_id: dim_employer_sector_identity
+    - dataset_columns:
+      - funding_arrangement_id
+      description: Identifier of the related funding arrangement.
+      identity_id: dim_funding_arrangement_identity
+    description: One row is one combination of fiscal quarter, scenario, employer account size, employer sector, funding arrangement.
+  node_id: sf:healthplan.membership.fact_employer_covered_lives
+- accessor:
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      format: table
+      object: FACT_BLUE_PLAN_BID_QUANTITY
+      schema: MEMBERSHIP
+    schema_id: accessor.snowflake.v1
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: blue_plan_client_type_id
+    description: Identifier of the related blue plan client type.
+  - name: carelon_business_id
+    description: Identifier of the related carelon business.
+  - name: bid_quantity
+    description: Bids submitted in bids.
+  - name: won_bid_quantity
+    description: Bids won in bids.
+  - name: pipeline_bid_quantity
+    description: Bids in the pipeline in bids.
+  descriptor:
+    description: Elevance Carelon bids to Blue and non-Blue plan clients. Stores bids, no insured membership.
+    display_name: Blue Plan Bid Quantity
+    qualified_name: healthplan.membership.fact_blue_plan_bid_quantity
+    synonyms: []
+    tags:
+    - fact
+    - membership_channel
+    - managed-care
+    - elevance
+    - blue
+    - bid
+    - carelon
+    - pipeline
+    - elev
+  entity_definitions:
+  - dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+    identity_id: dim_fiscal_quarter_identity
+  - dataset_columns:
+    - scenario_id
+    entity_universe: partial
+    identity_id: dim_scenario_identity
+  - dataset_columns:
+    - blue_plan_client_type_id
+    entity_universe: partial
+    identity_id: dim_blue_plan_client_type_identity
+  - dataset_columns:
+    - carelon_business_id
+    entity_universe: partial
+    identity_id: dim_carelon_business_identity
+  grain:
+    components:
+    - dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the related fiscal quarter.
+      identity_id: dim_fiscal_quarter_identity
+    - dataset_columns:
+      - scenario_id
+      description: Identifier of the related scenario.
+      identity_id: dim_scenario_identity
+    - dataset_columns:
+      - blue_plan_client_type_id
+      description: Identifier of the related blue plan client type.
+      identity_id: dim_blue_plan_client_type_identity
+    - dataset_columns:
+      - carelon_business_id
+      description: Identifier of the related carelon business.
+      identity_id: dim_carelon_business_identity
+    description: One row is one combination of fiscal quarter, scenario, blue plan client type, carelon business.
+  node_id: sf:healthplan.membership.fact_blue_plan_bid_quantity
+- accessor:
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      format: table
+      object: FACT_PHARMACY_BENEFIT_MEMBER_MONTHS
+      schema: MEMBERSHIP
+    schema_id: accessor.snowflake.v1
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: pharmacy_benefit_program_id
+    description: Identifier of the related pharmacy benefit program.
+  - name: state_id
+    description: Identifier of the related state.
+  - name: member_months_quantity
+    description: Member-months in member-months.
+  - name: member_quantity
+    description: Members in members.
+  descriptor:
+    description: Member-months by pharmacy benefit program and state. Stores member-months for the drug benefit, classified
+      separately from the insurance plan type.
+    display_name: Pharmacy Benefit Member Months
+    qualified_name: healthplan.membership.fact_pharmacy_benefit_member_months
+    synonyms: []
+    tags:
+    - fact
+    - membership_channel
+    - managed-care
+    - both
+    - pharmacy
+    - part_d
+    - member_months
+    - drug
+  entity_definitions:
+  - dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+    identity_id: dim_fiscal_quarter_identity
+  - dataset_columns:
+    - scenario_id
+    entity_universe: partial
+    identity_id: dim_scenario_identity
+  - dataset_columns:
+    - pharmacy_benefit_program_id
+    entity_universe: partial
+    identity_id: dim_pharmacy_benefit_program_identity
+  - dataset_columns:
+    - state_id
+    entity_universe: partial
+    identity_id: dim_state_identity
+  grain:
+    components:
+    - dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the related fiscal quarter.
+      identity_id: dim_fiscal_quarter_identity
+    - dataset_columns:
+      - scenario_id
+      description: Identifier of the related scenario.
+      identity_id: dim_scenario_identity
+    - dataset_columns:
+      - pharmacy_benefit_program_id
+      description: Identifier of the related pharmacy benefit program.
+      identity_id: dim_pharmacy_benefit_program_identity
+    - dataset_columns:
+      - state_id
+      description: Identifier of the related state.
+      identity_id: dim_state_identity
+    description: One row is one combination of fiscal quarter, scenario, pharmacy benefit program, state.
+  node_id: sf:healthplan.membership.fact_pharmacy_benefit_member_months
+- accessor:
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      format: table
+      object: FACT_ELIGIBILITY_RECHECK
+      schema: MEMBERSHIP
+    schema_id: accessor.snowflake.v1
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: state_id
+    description: Identifier of the related state.
+  - name: plan_type_id
+    description: Identifier of the related plan type.
+  - name: rechecked_member_quantity
+    description: Rechecked members in members.
+  - name: removed_member_quantity
+    description: Members removed in members.
+  descriptor:
+    description: Exchange eligibility rechecks and resulting attrition. Stores members, no premium.
+    display_name: Eligibility Recheck
+    qualified_name: healthplan.membership.fact_eligibility_recheck
+    synonyms: []
+    tags:
+    - fact
+    - membership_channel
+    - managed-care
+    - both
+    - eligibility
+    - recheck
+    - exchange
+    - attrition
+  entity_definitions:
+  - dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+    identity_id: dim_fiscal_quarter_identity
+  - dataset_columns:
+    - scenario_id
+    entity_universe: partial
+    identity_id: dim_scenario_identity
+  - dataset_columns:
+    - state_id
+    entity_universe: partial
+    identity_id: dim_state_identity
+  - dataset_columns:
+    - plan_type_id
+    entity_universe: partial
+    identity_id: dim_plan_type_identity
+  grain:
+    components:
+    - dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the related fiscal quarter.
+      identity_id: dim_fiscal_quarter_identity
+    - dataset_columns:
+      - scenario_id
+      description: Identifier of the related scenario.
+      identity_id: dim_scenario_identity
+    - dataset_columns:
+      - state_id
+      description: Identifier of the related state.
+      identity_id: dim_state_identity
+    - dataset_columns:
+      - plan_type_id
+      description: Identifier of the related plan type.
+      identity_id: dim_plan_type_identity
+    description: One row is one combination of fiscal quarter, scenario, state, plan type.
+  node_id: sf:healthplan.membership.fact_eligibility_recheck
+- accessor:
+    properties:
+      account: healthplan.us-east-1
+      database: HEALTH_PLAN
+      format: table
+      object: FACT_WORK_REQUIREMENT_ATTRITION
+      schema: MEMBERSHIP
+    schema_id: accessor.snowflake.v1
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: state_id
+    description: Identifier of the related state.
+  - name: legislation_id
+    description: Identifier of the related legislation.
+  - name: assumed_attrition_quantity
+    description: Assumed attrition in members.
+  - name: affected_member_quantity
+    description: Affected members in members.
+  descriptor:
+    description: Members assumed to leave under Medicaid work requirements. Stores members, no premium.
+    display_name: Work Requirement Attrition
+    qualified_name: healthplan.membership.fact_work_requirement_attrition
+    synonyms: []
+    tags:
+    - fact
+    - membership_channel
+    - managed-care
+    - both
+    - medicaid
+    - work_requirements
+    - attrition
+    - legislation
+  entity_definitions:
+  - dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+    identity_id: dim_fiscal_quarter_identity
+  - dataset_columns:
+    - scenario_id
+    entity_universe: partial
+    identity_id: dim_scenario_identity
+  - dataset_columns:
+    - state_id
+    entity_universe: partial
+    identity_id: dim_state_identity
+  - dataset_columns:
+    - legislation_id
+    entity_universe: partial
+    identity_id: dim_legislation_identity
+  grain:
+    components:
+    - dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the related fiscal quarter.
+      identity_id: dim_fiscal_quarter_identity
+    - dataset_columns:
+      - scenario_id
+      description: Identifier of the related scenario.
+      identity_id: dim_scenario_identity
+    - dataset_columns:
+      - state_id
+      description: Identifier of the related state.
+      identity_id: dim_state_identity
+    - dataset_columns:
+      - legislation_id
+      description: Identifier of the related legislation.
+      identity_id: dim_legislation_identity
+    description: One row is one combination of fiscal quarter, scenario, state, legislation.
+  node_id: sf:healthplan.membership.fact_work_requirement_attrition

@@ -1,0 +1,941 @@
+schema_version: '3'
+nodes:
+- node_id: sf:energy.demand.dim_fiscal_quarter
+  descriptor:
+    qualified_name: energy.demand.dim_fiscal_quarter
+    display_name: Fiscal Quarter
+    description: Fiscal quarter in which Energy Inc reports results.
+    synonyms: []
+    tags:
+    - dimension
+    - demand
+    - energy
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: energy.us-central-1
+      database: ENERGY
+      schema: DEMAND
+      object: DIM_FISCAL_QUARTER
+      format: table
+  grain:
+    description: One row is one fiscal quarter.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: fiscal_quarter_code
+    description: Fiscal Quarter code.
+    value_description: 2024Q4, 2025Q1, 2025Q2, 2025Q3, 2025Q4, 2026Q1, 2026Q2
+  - name: fiscal_quarter_name
+    description: Fiscal Quarter name.
+  - name: fiscal_year
+    description: Fiscal year number.
+  - name: quarter_number
+    description: Quarter number within the fiscal year.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: complete
+- node_id: sf:energy.demand.dim_scenario
+  descriptor:
+    qualified_name: energy.demand.dim_scenario
+    display_name: Scenario
+    description: Reporting scenario for a row. The same fiscal quarter can be a reported result and a later guide.
+    synonyms: []
+    tags:
+    - dimension
+    - demand
+    - energy
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: energy.us-central-1
+      database: ENERGY
+      schema: DEMAND
+      object: DIM_SCENARIO
+      format: table
+  grain:
+    description: One row is one scenario.
+    components:
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+  columns:
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: scenario_code
+    description: Scenario code.
+    value_description: reported, guide
+  - name: scenario_name
+    description: Scenario name.
+  entity_definitions:
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: complete
+- node_id: sf:energy.demand.dim_calendar_month
+  descriptor:
+    qualified_name: energy.demand.dim_calendar_month
+    display_name: Calendar Month
+    description: Calendar month inside a fiscal quarter, used to compare months inside a quarter.
+    synonyms: []
+    tags:
+    - dimension
+    - demand
+    - energy
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: energy.us-central-1
+      database: ENERGY
+      schema: DEMAND
+      object: DIM_CALENDAR_MONTH
+      format: table
+  grain:
+    description: One row is one calendar month.
+    components:
+    - identity_id: dim_calendar_month_identity
+      dataset_columns:
+      - calendar_month_id
+      description: Identifier of the calendar month.
+  columns:
+  - name: calendar_month_id
+    description: Identifier of the calendar month.
+  - name: calendar_month_name
+    description: Calendar Month name.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  entity_definitions:
+  - identity_id: dim_calendar_month_identity
+    dataset_columns:
+    - calendar_month_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+- node_id: sf:energy.demand.dim_region
+  descriptor:
+    qualified_name: energy.demand.dim_region
+    display_name: Region
+    description: Geographic region for Energy Inc operations and sales.
+    synonyms: []
+    tags:
+    - dimension
+    - demand
+    - energy
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: energy.us-central-1
+      database: ENERGY
+      schema: DEMAND
+      object: DIM_REGION
+      format: table
+  grain:
+    description: One row is one region.
+    components:
+    - identity_id: dim_region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+  columns:
+  - name: region_id
+    description: Identifier of the region.
+  - name: region_code
+    description: Region code.
+    value_description: north_america, south_america, europe, africa, asia_pacific, middle_east
+  - name: region_name
+    description: Region name.
+  entity_definitions:
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: complete
+- node_id: sf:energy.demand.dim_country
+  descriptor:
+    qualified_name: energy.demand.dim_country
+    display_name: Country
+    description: Country of operation or sale.
+    synonyms: []
+    tags:
+    - dimension
+    - demand
+    - energy
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: energy.us-central-1
+      database: ENERGY
+      schema: DEMAND
+      object: DIM_COUNTRY
+      format: table
+  grain:
+    description: One row is one country.
+    components:
+    - identity_id: dim_country_identity
+      dataset_columns:
+      - country_id
+      description: Identifier of the country.
+  columns:
+  - name: country_id
+    description: Identifier of the country.
+  - name: country_name
+    description: Country name.
+  - name: region_id
+    description: Identifier of the related region.
+  entity_definitions:
+  - identity_id: dim_country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: complete
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:energy.demand.dim_market
+  descriptor:
+    qualified_name: energy.demand.dim_market
+    display_name: Market
+    description: Market where hydrocarbons, refined products, or chemicals are sold.
+    synonyms: []
+    tags:
+    - dimension
+    - demand
+    - energy
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: energy.us-central-1
+      database: ENERGY
+      schema: DEMAND
+      object: DIM_MARKET
+      format: table
+  grain:
+    description: One row is one market.
+    components:
+    - identity_id: dim_market_identity
+      dataset_columns:
+      - market_id
+      description: Identifier of the market.
+  columns:
+  - name: market_id
+    description: Identifier of the market.
+  - name: market_name
+    description: Market name.
+  - name: region_id
+    description: Identifier of the related region.
+  entity_definitions:
+  - identity_id: dim_market_identity
+    dataset_columns:
+    - market_id
+    entity_universe: complete
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:energy.demand.dim_customer_segment
+  descriptor:
+    qualified_name: energy.demand.dim_customer_segment
+    display_name: Customer Segment
+    description: Customer segment buying refined or chemical products.
+    synonyms: []
+    tags:
+    - dimension
+    - demand
+    - energy
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: energy.us-central-1
+      database: ENERGY
+      schema: DEMAND
+      object: DIM_CUSTOMER_SEGMENT
+      format: table
+  grain:
+    description: One row is one customer segment.
+    components:
+    - identity_id: dim_customer_segment_identity
+      dataset_columns:
+      - customer_segment_id
+      description: Identifier of the customer segment.
+  columns:
+  - name: customer_segment_id
+    description: Identifier of the customer segment.
+  - name: customer_segment_code
+    description: Customer Segment code.
+    value_description: retail, wholesale, commercial, industrial, aviation, marine
+  - name: customer_segment_name
+    description: Customer Segment name.
+  entity_definitions:
+  - identity_id: dim_customer_segment_identity
+    dataset_columns:
+    - customer_segment_id
+    entity_universe: complete
+- node_id: sf:energy.demand.dim_hydrocarbon
+  descriptor:
+    qualified_name: energy.demand.dim_hydrocarbon
+    display_name: Hydrocarbon
+    description: Upstream hydrocarbon produced.
+    synonyms: []
+    tags:
+    - dimension
+    - demand
+    - energy
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: energy.us-central-1
+      database: ENERGY
+      schema: DEMAND
+      object: DIM_HYDROCARBON
+      format: table
+  grain:
+    description: One row is one hydrocarbon.
+    components:
+    - identity_id: dim_hydrocarbon_identity
+      dataset_columns:
+      - hydrocarbon_id
+      description: Identifier of the hydrocarbon.
+  columns:
+  - name: hydrocarbon_id
+    description: Identifier of the hydrocarbon.
+  - name: hydrocarbon_code
+    description: Hydrocarbon code.
+    value_description: crude, natural_gas, ngl
+  - name: hydrocarbon_name
+    description: Hydrocarbon name.
+  entity_definitions:
+  - identity_id: dim_hydrocarbon_identity
+    dataset_columns:
+    - hydrocarbon_id
+    entity_universe: complete
+- node_id: sf:energy.demand.dim_refined_product
+  descriptor:
+    qualified_name: energy.demand.dim_refined_product
+    display_name: Refined Product
+    description: Refined petroleum product.
+    synonyms: []
+    tags:
+    - dimension
+    - demand
+    - energy
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: energy.us-central-1
+      database: ENERGY
+      schema: DEMAND
+      object: DIM_REFINED_PRODUCT
+      format: table
+  grain:
+    description: One row is one refined product.
+    components:
+    - identity_id: dim_refined_product_identity
+      dataset_columns:
+      - refined_product_id
+      description: Identifier of the refined product.
+  columns:
+  - name: refined_product_id
+    description: Identifier of the refined product.
+  - name: refined_product_code
+    description: Refined Product code.
+    value_description: gasoline, diesel, jet_fuel, fuel_oil, lubricants, other_refined
+  - name: refined_product_name
+    description: Refined Product name.
+  entity_definitions:
+  - identity_id: dim_refined_product_identity
+    dataset_columns:
+    - refined_product_id
+    entity_universe: complete
+- node_id: sf:energy.demand.dim_chemical_product
+  descriptor:
+    qualified_name: energy.demand.dim_chemical_product
+    display_name: Chemical Product
+    description: Chemical or polymer product.
+    synonyms: []
+    tags:
+    - dimension
+    - demand
+    - energy
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: energy.us-central-1
+      database: ENERGY
+      schema: DEMAND
+      object: DIM_CHEMICAL_PRODUCT
+      format: table
+  grain:
+    description: One row is one chemical product.
+    components:
+    - identity_id: dim_chemical_product_identity
+      dataset_columns:
+      - chemical_product_id
+      description: Identifier of the chemical product.
+  columns:
+  - name: chemical_product_id
+    description: Identifier of the chemical product.
+  - name: chemical_product_code
+    description: Chemical Product code.
+    value_description: polyethylene, polypropylene, other_polymer, base_chemical
+  - name: chemical_product_name
+    description: Chemical Product name.
+  entity_definitions:
+  - identity_id: dim_chemical_product_identity
+    dataset_columns:
+    - chemical_product_id
+    entity_universe: complete
+- node_id: sf:energy.demand.dim_benchmark
+  descriptor:
+    qualified_name: energy.demand.dim_benchmark
+    display_name: Benchmark
+    description: Benchmark crude or gas price series.
+    synonyms: []
+    tags:
+    - dimension
+    - demand
+    - energy
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: energy.us-central-1
+      database: ENERGY
+      schema: DEMAND
+      object: DIM_BENCHMARK
+      format: table
+  grain:
+    description: One row is one benchmark.
+    components:
+    - identity_id: dim_benchmark_identity
+      dataset_columns:
+      - benchmark_id
+      description: Identifier of the benchmark.
+  columns:
+  - name: benchmark_id
+    description: Identifier of the benchmark.
+  - name: benchmark_code
+    description: Benchmark code.
+    value_description: brent, wti, henry_hub, other_benchmark
+  - name: benchmark_name
+    description: Benchmark name.
+  entity_definitions:
+  - identity_id: dim_benchmark_identity
+    dataset_columns:
+    - benchmark_id
+    entity_universe: complete
+- node_id: sf:energy.demand.dim_trade_route
+  descriptor:
+    qualified_name: energy.demand.dim_trade_route
+    display_name: Trade Route
+    description: Export or import trade route for hydrocarbons and products.
+    synonyms: []
+    tags:
+    - dimension
+    - demand
+    - energy
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: energy.us-central-1
+      database: ENERGY
+      schema: DEMAND
+      object: DIM_TRADE_ROUTE
+      format: table
+  grain:
+    description: One row is one trade route.
+    components:
+    - identity_id: dim_trade_route_identity
+      dataset_columns:
+      - trade_route_id
+      description: Identifier of the trade route.
+  columns:
+  - name: trade_route_id
+    description: Identifier of the trade route.
+  - name: trade_route_name
+    description: Trade Route name.
+  - name: market_id
+    description: Identifier of the related market.
+  entity_definitions:
+  - identity_id: dim_trade_route_identity
+    dataset_columns:
+    - trade_route_id
+    entity_universe: complete
+  - identity_id: dim_market_identity
+    dataset_columns:
+    - market_id
+    entity_universe: partial
+- node_id: sf:energy.demand.fact_refined_product_demand
+  descriptor:
+    qualified_name: energy.demand.fact_refined_product_demand
+    display_name: Refined Product Demand
+    description: Demand quantity for a refined product in a market. Stores quantity in barrels. Stores no price.
+    synonyms: []
+    tags:
+    - fact
+    - demand
+    - energy
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: energy.us-central-1
+      database: ENERGY
+      schema: DEMAND
+      object: FACT_REFINED_PRODUCT_DEMAND
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, refined product, market, customer segment.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_refined_product_identity
+      dataset_columns:
+      - refined_product_id
+      description: Identifier of the refined product.
+    - identity_id: dim_market_identity
+      dataset_columns:
+      - market_id
+      description: Identifier of the market.
+    - identity_id: dim_customer_segment_identity
+      dataset_columns:
+      - customer_segment_id
+      description: Identifier of the customer segment.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: refined_product_id
+    description: Identifier of the related refined product.
+  - name: market_id
+    description: Identifier of the related market.
+  - name: customer_segment_id
+    description: Identifier of the related customer segment.
+  - name: refined_product_demand_quantity
+    description: Refined product demand in barrels.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_refined_product_identity
+    dataset_columns:
+    - refined_product_id
+    entity_universe: partial
+  - identity_id: dim_market_identity
+    dataset_columns:
+    - market_id
+    entity_universe: partial
+  - identity_id: dim_customer_segment_identity
+    dataset_columns:
+    - customer_segment_id
+    entity_universe: partial
+- node_id: sf:energy.demand.fact_chemical_product_demand
+  descriptor:
+    qualified_name: energy.demand.fact_chemical_product_demand
+    display_name: Chemical Product Demand
+    description: Demand quantity for a chemical product in a market. Stores quantity in pounds.
+    synonyms: []
+    tags:
+    - fact
+    - demand
+    - energy
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: energy.us-central-1
+      database: ENERGY
+      schema: DEMAND
+      object: FACT_CHEMICAL_PRODUCT_DEMAND
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, chemical product, market.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_chemical_product_identity
+      dataset_columns:
+      - chemical_product_id
+      description: Identifier of the chemical product.
+    - identity_id: dim_market_identity
+      dataset_columns:
+      - market_id
+      description: Identifier of the market.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: chemical_product_id
+    description: Identifier of the related chemical product.
+  - name: market_id
+    description: Identifier of the related market.
+  - name: chemical_product_demand_quantity
+    description: Chemical product demand in pounds.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_chemical_product_identity
+    dataset_columns:
+    - chemical_product_id
+    entity_universe: partial
+  - identity_id: dim_market_identity
+    dataset_columns:
+    - market_id
+    entity_universe: partial
+- node_id: sf:energy.demand.fact_lng_demand
+  descriptor:
+    qualified_name: energy.demand.fact_lng_demand
+    display_name: LNG Demand
+    description: Demand quantity for liquefied natural gas in a market. Stores quantity in cargoes and million tonnes.
+    synonyms: []
+    tags:
+    - fact
+    - demand
+    - energy
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: energy.us-central-1
+      database: ENERGY
+      schema: DEMAND
+      object: FACT_LNG_DEMAND
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, market.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_market_identity
+      dataset_columns:
+      - market_id
+      description: Identifier of the market.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: market_id
+    description: Identifier of the related market.
+  - name: lng_cargo_quantity
+    description: LNG demand in cargoes.
+  - name: lng_demand_quantity
+    description: LNG demand in million tonnes.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_market_identity
+    dataset_columns:
+    - market_id
+    entity_universe: partial
+- node_id: sf:energy.demand.fact_crude_demand
+  descriptor:
+    qualified_name: energy.demand.fact_crude_demand
+    display_name: Crude Demand
+    description: Demand quantity for crude in a market. Stores quantity in barrels.
+    synonyms: []
+    tags:
+    - fact
+    - demand
+    - energy
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: energy.us-central-1
+      database: ENERGY
+      schema: DEMAND
+      object: FACT_CRUDE_DEMAND
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, market, hydrocarbon.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_market_identity
+      dataset_columns:
+      - market_id
+      description: Identifier of the market.
+    - identity_id: dim_hydrocarbon_identity
+      dataset_columns:
+      - hydrocarbon_id
+      description: Identifier of the hydrocarbon.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: market_id
+    description: Identifier of the related market.
+  - name: hydrocarbon_id
+    description: Identifier of the related hydrocarbon.
+  - name: crude_demand_quantity
+    description: Crude demand in barrels.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_market_identity
+    dataset_columns:
+    - market_id
+    entity_universe: partial
+  - identity_id: dim_hydrocarbon_identity
+    dataset_columns:
+    - hydrocarbon_id
+    entity_universe: partial
+- node_id: sf:energy.demand.fact_monthly_market_demand
+  descriptor:
+    qualified_name: energy.demand.fact_monthly_market_demand
+    display_name: Monthly Market Demand
+    description: Monthly demand quantity by calendar month inside a quarter. Stores quantity in barrels.
+    synonyms: []
+    tags:
+    - fact
+    - demand
+    - energy
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: energy.us-central-1
+      database: ENERGY
+      schema: DEMAND
+      object: FACT_MONTHLY_MARKET_DEMAND
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, calendar month, refined product, market.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_calendar_month_identity
+      dataset_columns:
+      - calendar_month_id
+      description: Identifier of the calendar month.
+    - identity_id: dim_refined_product_identity
+      dataset_columns:
+      - refined_product_id
+      description: Identifier of the refined product.
+    - identity_id: dim_market_identity
+      dataset_columns:
+      - market_id
+      description: Identifier of the market.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: calendar_month_id
+    description: Identifier of the related calendar month.
+  - name: refined_product_id
+    description: Identifier of the related refined product.
+  - name: market_id
+    description: Identifier of the related market.
+  - name: monthly_demand_quantity
+    description: Monthly demand in barrels.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_calendar_month_identity
+    dataset_columns:
+    - calendar_month_id
+    entity_universe: partial
+  - identity_id: dim_refined_product_identity
+    dataset_columns:
+    - refined_product_id
+    entity_universe: partial
+  - identity_id: dim_market_identity
+    dataset_columns:
+    - market_id
+    entity_universe: partial
+- node_id: sf:energy.demand.fact_power_demand
+  descriptor:
+    qualified_name: energy.demand.fact_power_demand
+    display_name: Power Demand
+    description: Demand quantity for electric power in a market. Stores energy in megawatt-hours.
+    synonyms: []
+    tags:
+    - fact
+    - demand
+    - energy
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: energy.us-central-1
+      database: ENERGY
+      schema: DEMAND
+      object: FACT_POWER_DEMAND
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, market.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_market_identity
+      dataset_columns:
+      - market_id
+      description: Identifier of the market.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: market_id
+    description: Identifier of the related market.
+  - name: power_demand_quantity
+    description: Power demand in megawatt-hours.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_market_identity
+    dataset_columns:
+    - market_id
+    entity_universe: partial
+- node_id: sf:energy.demand.fact_export_volume
+  descriptor:
+    qualified_name: energy.demand.fact_export_volume
+    display_name: Export Volume
+    description: Hydrocarbon and product export quantity by trade route. Stores quantity in barrels.
+    synonyms: []
+    tags:
+    - fact
+    - demand
+    - energy
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: energy.us-central-1
+      database: ENERGY
+      schema: DEMAND
+      object: FACT_EXPORT_VOLUME
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, trade route, hydrocarbon, market.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_trade_route_identity
+      dataset_columns:
+      - trade_route_id
+      description: Identifier of the trade route.
+    - identity_id: dim_hydrocarbon_identity
+      dataset_columns:
+      - hydrocarbon_id
+      description: Identifier of the hydrocarbon.
+    - identity_id: dim_market_identity
+      dataset_columns:
+      - market_id
+      description: Identifier of the market.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: trade_route_id
+    description: Identifier of the related trade route.
+  - name: hydrocarbon_id
+    description: Identifier of the related hydrocarbon.
+  - name: market_id
+    description: Identifier of the related market.
+  - name: export_quantity
+    description: Exports in barrels.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_trade_route_identity
+    dataset_columns:
+    - trade_route_id
+    entity_universe: partial
+  - identity_id: dim_hydrocarbon_identity
+    dataset_columns:
+    - hydrocarbon_id
+    entity_universe: partial
+  - identity_id: dim_market_identity
+    dataset_columns:
+    - market_id
+    entity_universe: partial

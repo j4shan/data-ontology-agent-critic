@@ -63,7 +63,7 @@ evaluation targets a configured service interface and records the API version th
 Critic maintains a curated package of metadata sources spanning five business domains:
 `healthcare-payer`, `telecom-mobile`, `manufacturing-discrete`, `retail-grocery`, and
 `commerce-marketplace`. Each domain keeps its catalog, question sheet, cases, and gold answers
-apart from the others under [`project_metadata/schema_candidates/`](../schema_candidates/).
+apart from the others under [`resources/data/schema_candidates/`](../../resources/data/schema_candidates/).
 
 The actor's DDL collector publishes each owner-reviewed catalog to
 `resources/data/generated_catalogs/<domain>/`. These committed actor outputs are benchmark inputs.

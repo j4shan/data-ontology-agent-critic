@@ -1,0 +1,1518 @@
+schema_version: '3'
+nodes:
+- node_id: sf:app.economics.dim_cost_bucket
+  descriptor:
+    qualified_name: app.economics.dim_cost_bucket
+    display_name: Cost Bucket
+    description: Cost bucket.
+    synonyms: []
+    tags:
+    - dimension
+    - economics
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ECONOMICS
+      object: DIM_COST_BUCKET
+      format: table
+  grain:
+    description: One row is one cost bucket.
+    components:
+    - identity_id: dim_cost_bucket_identity
+      dataset_columns:
+      - cost_bucket_id
+      description: Identifier of the cost bucket.
+  columns:
+  - name: cost_bucket_id
+    description: Identifier of the cost bucket.
+  - name: cost_bucket_code
+    description: Cost Bucket code.
+    value_description: cost_of_revenue, research_and_development, sales_and_marketing,
+      general_and_administrative, data_center_depreciation, component_cost
+  - name: cost_bucket_name
+    description: Cost Bucket name.
+  entity_definitions:
+  - identity_id: dim_cost_bucket_identity
+    dataset_columns:
+    - cost_bucket_id
+    entity_universe: complete
+- node_id: sf:app.economics.fact_subscription_revenue
+  descriptor:
+    qualified_name: app.economics.fact_subscription_revenue
+    display_name: Subscription Revenue
+    description: Salesforce subscription and support revenue dollars by cloud and
+      customer segment. Stores dollars, no seat quantity.
+    synonyms: []
+    tags:
+    - fact
+    - economics
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ECONOMICS
+      object: FACT_SUBSCRIPTION_REVENUE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, salesforce
+      cloud, customer segment.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_salesforce_cloud_identity
+      dataset_columns:
+      - salesforce_cloud_id
+      description: Identifier of the salesforce cloud.
+    - identity_id: dim_customer_segment_identity
+      dataset_columns:
+      - customer_segment_id
+      description: Identifier of the customer segment.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: salesforce_cloud_id
+    description: Identifier of the related salesforce cloud.
+  - name: customer_segment_id
+    description: Identifier of the related customer segment.
+  - name: subscription_revenue_amount
+    description: Subscription revenue in dollars.
+  - name: support_revenue_amount
+    description: Support revenue in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_salesforce_cloud_identity
+    dataset_columns:
+    - salesforce_cloud_id
+    entity_universe: partial
+  - identity_id: dim_customer_segment_identity
+    dataset_columns:
+    - customer_segment_id
+    entity_universe: partial
+- node_id: sf:app.economics.fact_agentforce_economics
+  descriptor:
+    qualified_name: app.economics.fact_agentforce_economics
+    display_name: Agentforce Economics
+    description: Agentforce ARR and revenue dollars by product, deployment stage and
+      pricing model. Stores dollars; token quantity is on agentforce_usage.
+    synonyms: []
+    tags:
+    - fact
+    - economics
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ECONOMICS
+      object: FACT_AGENTFORCE_ECONOMICS
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, agentforce
+      and data product, deployment stage, pricing model.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_agentforce_product_identity
+      dataset_columns:
+      - agentforce_product_id
+      description: Identifier of the agentforce and data product.
+    - identity_id: dim_deployment_stage_identity
+      dataset_columns:
+      - deployment_stage_id
+      description: Identifier of the deployment stage.
+    - identity_id: dim_pricing_model_identity
+      dataset_columns:
+      - pricing_model_id
+      description: Identifier of the pricing model.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: agentforce_product_id
+    description: Identifier of the related agentforce and data product.
+  - name: deployment_stage_id
+    description: Identifier of the related deployment stage.
+  - name: pricing_model_id
+    description: Identifier of the related pricing model.
+  - name: agentforce_arr_amount
+    description: Agentforce ARR in dollars.
+  - name: agentforce_revenue_amount
+    description: Agentforce revenue in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_agentforce_product_identity
+    dataset_columns:
+    - agentforce_product_id
+    entity_universe: partial
+  - identity_id: dim_deployment_stage_identity
+    dataset_columns:
+    - deployment_stage_id
+    entity_universe: partial
+  - identity_id: dim_pricing_model_identity
+    dataset_columns:
+    - pricing_model_id
+    entity_universe: partial
+- node_id: sf:app.economics.fact_agentforce_revenue_rate
+  descriptor:
+    qualified_name: app.economics.fact_agentforce_revenue_rate
+    display_name: Agentforce Revenue Rate
+    description: Revenue per agentic work unit rate. Denominator agentic_work_unit_count
+      is on agentforce_usage at the same grain (agentforce_product, deployment_stage,
+      customer_segment). Stores dollars per work unit.
+    synonyms: []
+    tags:
+    - fact
+    - economics
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ECONOMICS
+      object: FACT_AGENTFORCE_REVENUE_RATE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, agentforce
+      and data product, deployment stage, customer segment.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_agentforce_product_identity
+      dataset_columns:
+      - agentforce_product_id
+      description: Identifier of the agentforce and data product.
+    - identity_id: dim_deployment_stage_identity
+      dataset_columns:
+      - deployment_stage_id
+      description: Identifier of the deployment stage.
+    - identity_id: dim_customer_segment_identity
+      dataset_columns:
+      - customer_segment_id
+      description: Identifier of the customer segment.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: agentforce_product_id
+    description: Identifier of the related agentforce and data product.
+  - name: deployment_stage_id
+    description: Identifier of the related deployment stage.
+  - name: customer_segment_id
+    description: Identifier of the related customer segment.
+  - name: revenue_per_work_unit_amount
+    description: Revenue in dollars per work unit.
+  - name: revenue_per_token_amount
+    description: Revenue in dollars per token.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_agentforce_product_identity
+    dataset_columns:
+    - agentforce_product_id
+    entity_universe: partial
+  - identity_id: dim_deployment_stage_identity
+    dataset_columns:
+    - deployment_stage_id
+    entity_universe: partial
+  - identity_id: dim_customer_segment_identity
+    dataset_columns:
+    - customer_segment_id
+    entity_universe: partial
+- node_id: sf:app.economics.fact_oracle_cloud_revenue
+  descriptor:
+    qualified_name: app.economics.fact_oracle_cloud_revenue
+    display_name: Oracle Cloud Revenue
+    description: Oracle cloud revenue dollars by business and venue. Stores dollars.
+    synonyms: []
+    tags:
+    - fact
+    - economics
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ECONOMICS
+      object: FACT_ORACLE_CLOUD_REVENUE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, oracle business,
+      oracle cloud venue.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_oracle_business_identity
+      dataset_columns:
+      - oracle_business_id
+      description: Identifier of the oracle business.
+    - identity_id: dim_oracle_cloud_venue_identity
+      dataset_columns:
+      - oracle_cloud_venue_id
+      description: Identifier of the oracle cloud venue.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: oracle_business_id
+    description: Identifier of the related oracle business.
+  - name: oracle_cloud_venue_id
+    description: Identifier of the related oracle cloud venue.
+  - name: oracle_cloud_revenue_amount
+    description: Oracle cloud revenue in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_oracle_business_identity
+    dataset_columns:
+    - oracle_business_id
+    entity_universe: partial
+  - identity_id: dim_oracle_cloud_venue_identity
+    dataset_columns:
+    - oracle_cloud_venue_id
+    entity_universe: partial
+- node_id: sf:app.economics.fact_oracle_rpo
+  descriptor:
+    qualified_name: app.economics.fact_oracle_rpo
+    display_name: Oracle RPO
+    description: Oracle remaining performance obligation and pipeline dollars by business,
+      deal structure and customer segment. Stores dollars; opportunity quantity is
+      on oracle_pipeline at the same grain.
+    synonyms: []
+    tags:
+    - fact
+    - economics
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ECONOMICS
+      object: FACT_ORACLE_RPO
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, oracle business,
+      deal structure, customer segment.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_oracle_business_identity
+      dataset_columns:
+      - oracle_business_id
+      description: Identifier of the oracle business.
+    - identity_id: dim_deal_structure_identity
+      dataset_columns:
+      - deal_structure_id
+      description: Identifier of the deal structure.
+    - identity_id: dim_customer_segment_identity
+      dataset_columns:
+      - customer_segment_id
+      description: Identifier of the customer segment.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: oracle_business_id
+    description: Identifier of the related oracle business.
+  - name: deal_structure_id
+    description: Identifier of the related deal structure.
+  - name: customer_segment_id
+    description: Identifier of the related customer segment.
+  - name: remaining_performance_obligation_amount
+    description: Remaining performance obligation in dollars.
+  - name: oracle_pipeline_amount
+    description: Oracle pipeline in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_oracle_business_identity
+    dataset_columns:
+    - oracle_business_id
+    entity_universe: partial
+  - identity_id: dim_deal_structure_identity
+    dataset_columns:
+    - deal_structure_id
+    entity_universe: partial
+  - identity_id: dim_customer_segment_identity
+    dataset_columns:
+    - customer_segment_id
+    entity_universe: partial
+- node_id: sf:app.economics.fact_salesforce_crpo
+  descriptor:
+    qualified_name: app.economics.fact_salesforce_crpo
+    display_name: Salesforce CRPO
+    description: Salesforce current remaining performance obligation dollars by cloud
+      and customer segment. Stores dollars.
+    synonyms: []
+    tags:
+    - fact
+    - economics
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ECONOMICS
+      object: FACT_SALESFORCE_CRPO
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, salesforce
+      cloud, customer segment.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_salesforce_cloud_identity
+      dataset_columns:
+      - salesforce_cloud_id
+      description: Identifier of the salesforce cloud.
+    - identity_id: dim_customer_segment_identity
+      dataset_columns:
+      - customer_segment_id
+      description: Identifier of the customer segment.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: salesforce_cloud_id
+    description: Identifier of the related salesforce cloud.
+  - name: customer_segment_id
+    description: Identifier of the related customer segment.
+  - name: current_remaining_performance_obligation_amount
+    description: Current remaining performance obligation in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_salesforce_cloud_identity
+    dataset_columns:
+    - salesforce_cloud_id
+    entity_universe: partial
+  - identity_id: dim_customer_segment_identity
+    dataset_columns:
+    - customer_segment_id
+    entity_universe: partial
+- node_id: sf:app.economics.fact_enterprise_economics
+  descriptor:
+    qualified_name: app.economics.fact_enterprise_economics
+    display_name: Enterprise Economics
+    description: Enterprise revenue, operating income, net income and free cash flow
+      at enterprise grain only. Stores dollars.
+    synonyms: []
+    tags:
+    - fact
+    - economics
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ECONOMICS
+      object: FACT_ENTERPRISE_ECONOMICS
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: total_revenue_amount
+    description: Total revenue in dollars.
+  - name: operating_income_amount
+    description: Operating income in dollars.
+  - name: net_income_amount
+    description: Net income in dollars.
+  - name: free_cash_flow_amount
+    description: Free cash flow in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+- node_id: sf:app.economics.fact_salesforce_gross_margin_rate
+  descriptor:
+    qualified_name: app.economics.fact_salesforce_gross_margin_rate
+    display_name: Salesforce Gross Margin Rate
+    description: Salesforce gross margin percent by cloud. Denominator subscription
+      revenue is joinable from subscription_revenue by cloud. Stores percent.
+    synonyms: []
+    tags:
+    - fact
+    - economics
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ECONOMICS
+      object: FACT_SALESFORCE_GROSS_MARGIN_RATE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, salesforce
+      cloud.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_salesforce_cloud_identity
+      dataset_columns:
+      - salesforce_cloud_id
+      description: Identifier of the salesforce cloud.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: salesforce_cloud_id
+    description: Identifier of the related salesforce cloud.
+  - name: salesforce_gross_margin_percent
+    description: Gross margin in percent.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_salesforce_cloud_identity
+    dataset_columns:
+    - salesforce_cloud_id
+    entity_universe: partial
+- node_id: sf:app.economics.fact_oracle_gross_margin_rate
+  descriptor:
+    qualified_name: app.economics.fact_oracle_gross_margin_rate
+    display_name: Oracle Gross Margin Rate
+    description: Oracle gross margin percent by Oracle business. Denominator cloud
+      revenue is joinable from oracle_cloud_revenue by business. Stores percent.
+    synonyms: []
+    tags:
+    - fact
+    - economics
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ECONOMICS
+      object: FACT_ORACLE_GROSS_MARGIN_RATE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, oracle business.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_oracle_business_identity
+      dataset_columns:
+      - oracle_business_id
+      description: Identifier of the oracle business.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: oracle_business_id
+    description: Identifier of the related oracle business.
+  - name: oracle_gross_margin_percent
+    description: Gross margin in percent.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_oracle_business_identity
+    dataset_columns:
+    - oracle_business_id
+    entity_universe: partial
+- node_id: sf:app.economics.fact_capital_expenditure
+  descriptor:
+    qualified_name: app.economics.fact_capital_expenditure
+    display_name: Capital Expenditure
+    description: Capital expenditure dollars by capacity type and region, principally
+      for data centers. Stores dollars.
+    synonyms: []
+    tags:
+    - fact
+    - economics
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ECONOMICS
+      object: FACT_CAPITAL_EXPENDITURE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, capacity
+      type, region.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_capacity_type_identity
+      dataset_columns:
+      - capacity_type_id
+      description: Identifier of the capacity type.
+    - identity_id: dim_region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: capacity_type_id
+    description: Identifier of the related capacity type.
+  - name: region_id
+    description: Identifier of the related region.
+  - name: capital_expenditure_amount
+    description: Capital expenditure in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_capacity_type_identity
+    dataset_columns:
+    - capacity_type_id
+    entity_universe: partial
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:app.economics.fact_operating_expense
+  descriptor:
+    qualified_name: app.economics.fact_operating_expense
+    display_name: Operating Expense
+    description: Operating expense dollars by cost bucket. Stores dollars at cost-bucket
+      grain, not on customer rows.
+    synonyms: []
+    tags:
+    - fact
+    - economics
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ECONOMICS
+      object: FACT_OPERATING_EXPENSE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, cost bucket.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_cost_bucket_identity
+      dataset_columns:
+      - cost_bucket_id
+      description: Identifier of the cost bucket.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: cost_bucket_id
+    description: Identifier of the related cost bucket.
+  - name: operating_expense_amount
+    description: Operating expense in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_cost_bucket_identity
+    dataset_columns:
+    - cost_bucket_id
+    entity_universe: partial
+- node_id: sf:app.economics.fact_data_center_economics
+  descriptor:
+    qualified_name: app.economics.fact_data_center_economics
+    display_name: Data Center Economics
+    description: Data-center and component cost dollars by region and capacity type.
+      Stores dollars; capacity quantity is on data_center_capacity at the same grain.
+    synonyms: []
+    tags:
+    - fact
+    - economics
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ECONOMICS
+      object: FACT_DATA_CENTER_ECONOMICS
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, region, capacity
+      type.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+    - identity_id: dim_capacity_type_identity
+      dataset_columns:
+      - capacity_type_id
+      description: Identifier of the capacity type.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: region_id
+    description: Identifier of the related region.
+  - name: capacity_type_id
+    description: Identifier of the related capacity type.
+  - name: data_center_cost_amount
+    description: Data-center cost in dollars.
+  - name: component_cost_amount
+    description: Component cost in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+  - identity_id: dim_capacity_type_identity
+    dataset_columns:
+    - capacity_type_id
+    entity_universe: partial
+- node_id: sf:app.economics.fact_usage_pricing_rate
+  descriptor:
+    qualified_name: app.economics.fact_usage_pricing_rate
+    display_name: Usage Pricing Rate
+    description: Price per token and per work unit by pricing model and Agentforce
+      product. Denominator token quantity is joinable from agentforce_usage and data_cloud_usage.
+      Stores dollars per token and dollars per work unit.
+    synonyms: []
+    tags:
+    - fact
+    - economics
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ECONOMICS
+      object: FACT_USAGE_PRICING_RATE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, pricing model,
+      agentforce and data product.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_pricing_model_identity
+      dataset_columns:
+      - pricing_model_id
+      description: Identifier of the pricing model.
+    - identity_id: dim_agentforce_product_identity
+      dataset_columns:
+      - agentforce_product_id
+      description: Identifier of the agentforce and data product.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: pricing_model_id
+    description: Identifier of the related pricing model.
+  - name: agentforce_product_id
+    description: Identifier of the related agentforce and data product.
+  - name: price_per_token_amount
+    description: Price in dollars per token.
+  - name: price_per_work_unit_amount
+    description: Price in dollars per work unit.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_pricing_model_identity
+    dataset_columns:
+    - pricing_model_id
+    entity_universe: partial
+  - identity_id: dim_agentforce_product_identity
+    dataset_columns:
+    - agentforce_product_id
+    entity_universe: partial
+- node_id: sf:app.economics.fact_account_value_rate
+  descriptor:
+    qualified_name: app.economics.fact_account_value_rate
+    display_name: Account Value Rate
+    description: Annual order value per account rate by Salesforce cloud and buyer
+      industry. Denominator account_count is on installed_base at the same grain.
+      Stores dollars per account.
+    synonyms: []
+    tags:
+    - fact
+    - economics
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ECONOMICS
+      object: FACT_ACCOUNT_VALUE_RATE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, salesforce
+      cloud, buyer industry.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_salesforce_cloud_identity
+      dataset_columns:
+      - salesforce_cloud_id
+      description: Identifier of the salesforce cloud.
+    - identity_id: dim_buyer_industry_identity
+      dataset_columns:
+      - buyer_industry_id
+      description: Identifier of the buyer industry.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: salesforce_cloud_id
+    description: Identifier of the related salesforce cloud.
+  - name: buyer_industry_id
+    description: Identifier of the related buyer industry.
+  - name: annual_order_value_per_account_amount
+    description: Annual order value in dollars per account.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_salesforce_cloud_identity
+    dataset_columns:
+    - salesforce_cloud_id
+    entity_universe: partial
+  - identity_id: dim_buyer_industry_identity
+    dataset_columns:
+    - buyer_industry_id
+    entity_universe: partial
+- node_id: sf:app.economics.fact_contract_economics
+  descriptor:
+    qualified_name: app.economics.fact_contract_economics
+    display_name: Contract Economics
+    description: Contract and prepaid contract value dollars by contract and deal
+      structure. Stores dollars.
+    synonyms: []
+    tags:
+    - fact
+    - economics
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ECONOMICS
+      object: FACT_CONTRACT_ECONOMICS
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, contract
+      type, deal structure.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_contract_type_identity
+      dataset_columns:
+      - contract_type_id
+      description: Identifier of the contract type.
+    - identity_id: dim_deal_structure_identity
+      dataset_columns:
+      - deal_structure_id
+      description: Identifier of the deal structure.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: contract_type_id
+    description: Identifier of the related contract type.
+  - name: deal_structure_id
+    description: Identifier of the related deal structure.
+  - name: contract_value_amount
+    description: Contract value in dollars.
+  - name: prepaid_contract_amount
+    description: Prepaid contract value in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_contract_type_identity
+    dataset_columns:
+    - contract_type_id
+    entity_universe: partial
+  - identity_id: dim_deal_structure_identity
+    dataset_columns:
+    - deal_structure_id
+    entity_universe: partial
+- node_id: sf:app.economics.fact_database_revenue
+  descriptor:
+    qualified_name: app.economics.fact_database_revenue
+    display_name: Database Revenue
+    description: Oracle Database revenue dollars by product and venue. Stores dollars;
+      instance quantity is on oracle_database_usage at the same grain.
+    synonyms: []
+    tags:
+    - fact
+    - economics
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ECONOMICS
+      object: FACT_DATABASE_REVENUE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, oracle product,
+      oracle cloud venue.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_oracle_product_identity
+      dataset_columns:
+      - oracle_product_id
+      description: Identifier of the oracle product.
+    - identity_id: dim_oracle_cloud_venue_identity
+      dataset_columns:
+      - oracle_cloud_venue_id
+      description: Identifier of the oracle cloud venue.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: oracle_product_id
+    description: Identifier of the related oracle product.
+  - name: oracle_cloud_venue_id
+    description: Identifier of the related oracle cloud venue.
+  - name: database_revenue_amount
+    description: Database revenue in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_oracle_product_identity
+    dataset_columns:
+    - oracle_product_id
+    entity_universe: partial
+  - identity_id: dim_oracle_cloud_venue_identity
+    dataset_columns:
+    - oracle_cloud_venue_id
+    entity_universe: partial
+- node_id: sf:app.economics.fact_oracle_application_revenue
+  descriptor:
+    qualified_name: app.economics.fact_oracle_application_revenue
+    display_name: Oracle Application Revenue
+    description: Oracle application revenue dollars by product and customer segment.
+      Stores dollars; win quantity is on application_wins at the same grain.
+    synonyms: []
+    tags:
+    - fact
+    - economics
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ECONOMICS
+      object: FACT_ORACLE_APPLICATION_REVENUE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, oracle product,
+      customer segment.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_oracle_product_identity
+      dataset_columns:
+      - oracle_product_id
+      description: Identifier of the oracle product.
+    - identity_id: dim_customer_segment_identity
+      dataset_columns:
+      - customer_segment_id
+      description: Identifier of the customer segment.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: oracle_product_id
+    description: Identifier of the related oracle product.
+  - name: customer_segment_id
+    description: Identifier of the related customer segment.
+  - name: oracle_application_revenue_amount
+    description: Oracle application revenue in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_oracle_product_identity
+    dataset_columns:
+    - oracle_product_id
+    entity_universe: partial
+  - identity_id: dim_customer_segment_identity
+    dataset_columns:
+    - customer_segment_id
+    entity_universe: partial
+- node_id: sf:app.economics.fact_slack_revenue
+  descriptor:
+    qualified_name: app.economics.fact_slack_revenue
+    display_name: Slack Revenue
+    description: Slack revenue dollars by customer segment and buyer industry. Stores
+      dollars; Slack user quantity is on slack_adoption at the same grain.
+    synonyms: []
+    tags:
+    - fact
+    - economics
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ECONOMICS
+      object: FACT_SLACK_REVENUE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, customer
+      segment, buyer industry.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_customer_segment_identity
+      dataset_columns:
+      - customer_segment_id
+      description: Identifier of the customer segment.
+    - identity_id: dim_buyer_industry_identity
+      dataset_columns:
+      - buyer_industry_id
+      description: Identifier of the buyer industry.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: customer_segment_id
+    description: Identifier of the related customer segment.
+  - name: buyer_industry_id
+    description: Identifier of the related buyer industry.
+  - name: slack_revenue_amount
+    description: Slack revenue in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_customer_segment_identity
+    dataset_columns:
+    - customer_segment_id
+    entity_universe: partial
+  - identity_id: dim_buyer_industry_identity
+    dataset_columns:
+    - buyer_industry_id
+    entity_universe: partial
+- node_id: sf:app.economics.fact_professional_services_revenue
+  descriptor:
+    qualified_name: app.economics.fact_professional_services_revenue
+    display_name: Professional Services Revenue
+    description: Professional services revenue dollars by Salesforce cloud and region.
+      Stores dollars.
+    synonyms: []
+    tags:
+    - fact
+    - economics
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ECONOMICS
+      object: FACT_PROFESSIONAL_SERVICES_REVENUE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, salesforce
+      cloud, region.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_salesforce_cloud_identity
+      dataset_columns:
+      - salesforce_cloud_id
+      description: Identifier of the salesforce cloud.
+    - identity_id: dim_region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: salesforce_cloud_id
+    description: Identifier of the related salesforce cloud.
+  - name: region_id
+    description: Identifier of the related region.
+  - name: services_revenue_amount
+    description: Services revenue in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_salesforce_cloud_identity
+    dataset_columns:
+    - salesforce_cloud_id
+    entity_universe: partial
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:app.economics.fact_sovereign_economics
+  descriptor:
+    qualified_name: app.economics.fact_sovereign_economics
+    display_name: Sovereign Economics
+    description: Sovereign cloud revenue dollars by venue and customer segment. Stores
+      dollars; sovereign region quantity is on sovereign_capacity at the same grain.
+    synonyms: []
+    tags:
+    - fact
+    - economics
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ECONOMICS
+      object: FACT_SOVEREIGN_ECONOMICS
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, oracle cloud
+      venue, customer segment.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_oracle_cloud_venue_identity
+      dataset_columns:
+      - oracle_cloud_venue_id
+      description: Identifier of the oracle cloud venue.
+    - identity_id: dim_customer_segment_identity
+      dataset_columns:
+      - customer_segment_id
+      description: Identifier of the customer segment.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: oracle_cloud_venue_id
+    description: Identifier of the related oracle cloud venue.
+  - name: customer_segment_id
+    description: Identifier of the related customer segment.
+  - name: sovereign_revenue_amount
+    description: Sovereign revenue in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_oracle_cloud_venue_identity
+    dataset_columns:
+    - oracle_cloud_venue_id
+    entity_universe: partial
+  - identity_id: dim_customer_segment_identity
+    dataset_columns:
+    - customer_segment_id
+    entity_universe: partial
+- node_id: sf:app.economics.fact_partner_economics
+  descriptor:
+    qualified_name: app.economics.fact_partner_economics
+    display_name: Partner Economics
+    description: Partner-attached revenue dollars by partner type and Agentforce product.
+      Stores dollars.
+    synonyms: []
+    tags:
+    - fact
+    - economics
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ECONOMICS
+      object: FACT_PARTNER_ECONOMICS
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, partner type,
+      agentforce and data product.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_partner_type_identity
+      dataset_columns:
+      - partner_type_id
+      description: Identifier of the partner type.
+    - identity_id: dim_agentforce_product_identity
+      dataset_columns:
+      - agentforce_product_id
+      description: Identifier of the agentforce and data product.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: partner_type_id
+    description: Identifier of the related partner type.
+  - name: agentforce_product_id
+    description: Identifier of the related agentforce and data product.
+  - name: partner_attached_revenue_amount
+    description: Partner-attached revenue in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_partner_type_identity
+    dataset_columns:
+    - partner_type_id
+    entity_universe: partial
+  - identity_id: dim_agentforce_product_identity
+    dataset_columns:
+    - agentforce_product_id
+    entity_universe: partial
+- node_id: sf:app.economics.fact_capacity_pricing_rate
+  descriptor:
+    qualified_name: app.economics.fact_capacity_pricing_rate
+    display_name: Capacity Pricing Rate
+    description: Contracted and spot capacity price rate by contract and capacity
+      type. Denominator capacity is joinable from data_center_capacity by capacity_type.
+      Stores dollars per capacity unit.
+    synonyms: []
+    tags:
+    - fact
+    - economics
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ECONOMICS
+      object: FACT_CAPACITY_PRICING_RATE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, contract
+      type, capacity type.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_contract_type_identity
+      dataset_columns:
+      - contract_type_id
+      description: Identifier of the contract type.
+    - identity_id: dim_capacity_type_identity
+      dataset_columns:
+      - capacity_type_id
+      description: Identifier of the capacity type.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: contract_type_id
+    description: Identifier of the related contract type.
+  - name: capacity_type_id
+    description: Identifier of the related capacity type.
+  - name: contracted_price_per_capacity_unit_amount
+    description: Contracted price in dollars per capacity unit.
+  - name: spot_price_per_capacity_unit_amount
+    description: Spot price in dollars per capacity unit.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_contract_type_identity
+    dataset_columns:
+    - contract_type_id
+    entity_universe: partial
+  - identity_id: dim_capacity_type_identity
+    dataset_columns:
+    - capacity_type_id
+    entity_universe: partial

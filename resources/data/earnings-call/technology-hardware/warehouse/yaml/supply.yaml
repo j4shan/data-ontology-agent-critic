@@ -1,0 +1,716 @@
+schema_version: '3'
+nodes:
+- node_id: sf:device.component.dim_component_commodity
+  descriptor:
+    qualified_name: device.component.dim_component_commodity
+    display_name: Component Commodity
+    description: One purchased component commodity.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: COMPONENT
+      object: DIM_COMPONENT_COMMODITY
+      format: table
+  grain:
+    description: One row per Component Commodity identified by component_commodity_id.
+    components:
+    - identity_id: component_commodity_identity
+      dataset_columns:
+      - component_commodity_id
+      description: Identifier of the Component Commodity.
+  columns:
+  - name: component_commodity_id
+    description: Identifier of the Component Commodity. This dataset holds the complete population.
+  - name: component_commodity_name
+    description: Name of the Component Commodity.
+  - name: component_type_id
+    description: Identifier of the Component Type. The complete population is owned by its owner dataset.
+  - name: commodity_code
+    description: Code of the component commodity.
+    value_description: dram, nand, soc, printed_circuit_board, display_panel, other_commodity.
+  entity_definitions:
+  - identity_id: component_commodity_identity
+    dataset_columns:
+    - component_commodity_id
+    entity_universe: complete
+  - identity_id: component_type_identity
+    dataset_columns:
+    - component_type_id
+    entity_universe: partial
+- node_id: sf:device.component.dim_component_type
+  descriptor:
+    qualified_name: device.component.dim_component_type
+    display_name: Component Type
+    description: One component type.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: COMPONENT
+      object: DIM_COMPONENT_TYPE
+      format: table
+  grain:
+    description: One row per Component Type identified by component_type_id.
+    components:
+    - identity_id: component_type_identity
+      dataset_columns:
+      - component_type_id
+      description: Identifier of the Component Type.
+  columns:
+  - name: component_type_id
+    description: Identifier of the Component Type. This dataset holds the complete population.
+  - name: component_type_name
+    description: Name of the Component Type.
+  - name: component_type_code
+    description: Code of the Component Type.
+    value_description: memory, processor, board, display, battery, enclosure, other_component.
+  entity_definitions:
+  - identity_id: component_type_identity
+    dataset_columns:
+    - component_type_id
+    entity_universe: complete
+- node_id: sf:device.supplier.dim_sourcing_mode
+  descriptor:
+    qualified_name: device.supplier.dim_sourcing_mode
+    display_name: Sourcing Mode
+    description: How a component is sourced.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: SUPPLIER
+      object: DIM_SOURCING_MODE
+      format: table
+  grain:
+    description: One row per Sourcing Mode identified by sourcing_mode_id.
+    components:
+    - identity_id: sourcing_mode_identity
+      dataset_columns:
+      - sourcing_mode_id
+      description: Identifier of the Sourcing Mode.
+  columns:
+  - name: sourcing_mode_id
+    description: Identifier of the Sourcing Mode. This dataset holds the complete population.
+  - name: sourcing_mode_name
+    description: Name of the Sourcing Mode.
+  - name: sourcing_mode_code
+    description: Code of the Sourcing Mode.
+    value_description: multi_year_agreement, spot, dual_source, in_house_design.
+  entity_definitions:
+  - identity_id: sourcing_mode_identity
+    dataset_columns:
+    - sourcing_mode_id
+    entity_universe: complete
+- node_id: sf:device.supplier.dim_supplier
+  descriptor:
+    qualified_name: device.supplier.dim_supplier
+    display_name: Supplier
+    description: One component supplier.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: SUPPLIER
+      object: DIM_SUPPLIER
+      format: table
+  grain:
+    description: One row per Supplier identified by supplier_id.
+    components:
+    - identity_id: supplier_identity
+      dataset_columns:
+      - supplier_id
+      description: Identifier of the Supplier.
+  columns:
+  - name: supplier_id
+    description: Identifier of the Supplier. This dataset holds the complete population.
+  - name: supplier_name
+    description: Name of the Supplier.
+  entity_definitions:
+  - identity_id: supplier_identity
+    dataset_columns:
+    - supplier_id
+    entity_universe: complete
+- node_id: sf:device.supplier.dim_supplier_site
+  descriptor:
+    qualified_name: device.supplier.dim_supplier_site
+    display_name: Supplier Site
+    description: One supplier site.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: SUPPLIER
+      object: DIM_SUPPLIER_SITE
+      format: table
+  grain:
+    description: One row per Supplier Site identified by supplier_site_id.
+    components:
+    - identity_id: supplier_site_identity
+      dataset_columns:
+      - supplier_site_id
+      description: Identifier of the Supplier Site.
+  columns:
+  - name: supplier_site_id
+    description: Identifier of the Supplier Site. This dataset holds the complete population.
+  - name: supplier_site_name
+    description: Name of the Supplier Site.
+  - name: supplier_id
+    description: Identifier of the Supplier. The complete population is owned by its owner dataset.
+  entity_definitions:
+  - identity_id: supplier_site_identity
+    dataset_columns:
+    - supplier_site_id
+    entity_universe: complete
+  - identity_id: supplier_identity
+    dataset_columns:
+    - supplier_id
+    entity_universe: partial
+- node_id: sf:device.supply.fact_component_quantity
+  descriptor:
+    qualified_name: device.supply.fact_component_quantity
+    display_name: Component Quantity
+    description: Component units purchased and covered by commodity and supplier; denominator for component
+      unit cost.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: SUPPLY
+      object: FACT_COMPONENT_QUANTITY
+      format: table
+  grain:
+    description: One row per component quantity for the combination of fiscal_period_id, scenario_id,
+      component_commodity_id, supplier_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: component_commodity_identity
+      dataset_columns:
+      - component_commodity_id
+      description: Identifier of the Component Commodity.
+    - identity_id: supplier_identity
+      dataset_columns:
+      - supplier_id
+      description: Identifier of the Supplier.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: component_commodity_id
+    description: Identifier of the Component Commodity. The complete population is owned by its owner
+      dataset.
+  - name: supplier_id
+    description: Identifier of the Supplier. The complete population is owned by its owner dataset.
+  - name: purchased_unit_count
+    description: Purchased Unit Count measured in units.
+  - name: covered_unit_count
+    description: Covered Unit Count measured in units.
+  - name: required_unit_count
+    description: Required Unit Count measured in units.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: component_commodity_identity
+    dataset_columns:
+    - component_commodity_id
+    entity_universe: partial
+  - identity_id: supplier_identity
+    dataset_columns:
+    - supplier_id
+    entity_universe: partial
+- node_id: sf:device.supply.fact_component_unit_cost
+  descriptor:
+    qualified_name: device.supply.fact_component_unit_cost
+    display_name: Component Unit Cost
+    description: Component unit cost; component quantity shares commodity and supplier keys.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: SUPPLY
+      object: FACT_COMPONENT_UNIT_COST
+      format: table
+  grain:
+    description: One row per component unit cost for the combination of fiscal_period_id, scenario_id,
+      component_commodity_id, supplier_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: component_commodity_identity
+      dataset_columns:
+      - component_commodity_id
+      description: Identifier of the Component Commodity.
+    - identity_id: supplier_identity
+      dataset_columns:
+      - supplier_id
+      description: Identifier of the Supplier.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: component_commodity_id
+    description: Identifier of the Component Commodity. The complete population is owned by its owner
+      dataset.
+  - name: supplier_id
+    description: Identifier of the Supplier. The complete population is owned by its owner dataset.
+  - name: unit_cost_amount
+    description: Unit Cost Amount measured in currency units per unit.
+  - name: cost_change_amount
+    description: Cost Change Amount measured in currency units per unit.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: component_commodity_identity
+    dataset_columns:
+    - component_commodity_id
+    entity_universe: partial
+  - identity_id: supplier_identity
+    dataset_columns:
+    - supplier_id
+    entity_universe: partial
+- node_id: sf:device.supply.fact_constraint_quantity
+  descriptor:
+    qualified_name: device.supply.fact_constraint_quantity
+    display_name: Constraint Quantity
+    description: Constrained units and shortage duration by commodity and country.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: SUPPLY
+      object: FACT_CONSTRAINT_QUANTITY
+      format: table
+  grain:
+    description: One row per constraint quantity for the combination of fiscal_period_id, scenario_id,
+      component_commodity_id, country_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: component_commodity_identity
+      dataset_columns:
+      - component_commodity_id
+      description: Identifier of the Component Commodity.
+    - identity_id: country_identity
+      dataset_columns:
+      - country_id
+      description: Identifier of the Country.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: component_commodity_id
+    description: Identifier of the Component Commodity. The complete population is owned by its owner
+      dataset.
+  - name: country_id
+    description: Identifier of the Country. The complete population is owned by its owner dataset.
+  - name: constrained_unit_count
+    description: Constrained Unit Count measured in units.
+  - name: shortage_day_count
+    description: Shortage Day Count measured in days.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: component_commodity_identity
+    dataset_columns:
+    - component_commodity_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+- node_id: sf:device.supply.fact_custom_silicon_quantity
+  descriptor:
+    qualified_name: device.supply.fact_custom_silicon_quantity
+    display_name: Custom Silicon Quantity
+    description: Units containing custom silicon by product configuration.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: SUPPLY
+      object: FACT_CUSTOM_SILICON_QUANTITY
+      format: table
+  grain:
+    description: One row per custom silicon quantity for the combination of fiscal_period_id, scenario_id,
+      product_configuration_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: product_configuration_identity
+      dataset_columns:
+      - product_configuration_id
+      description: Identifier of the Product Configuration.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: product_configuration_id
+    description: Identifier of the Product Configuration. The complete population is owned by its owner
+      dataset.
+  - name: custom_silicon_unit_count
+    description: Custom Silicon Unit Count measured in units.
+  - name: total_unit_count
+    description: Total Unit Count measured in units.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: product_configuration_identity
+    dataset_columns:
+    - product_configuration_id
+    entity_universe: partial
+- node_id: sf:device.supply.fact_production_quantity
+  descriptor:
+    qualified_name: device.supply.fact_production_quantity
+    display_name: Production Quantity
+    description: Units produced by product configuration.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: SUPPLY
+      object: FACT_PRODUCTION_QUANTITY
+      format: table
+  grain:
+    description: One row per production quantity for the combination of fiscal_period_id, scenario_id,
+      product_configuration_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: product_configuration_identity
+      dataset_columns:
+      - product_configuration_id
+      description: Identifier of the Product Configuration.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: product_configuration_id
+    description: Identifier of the Product Configuration. The complete population is owned by its owner
+      dataset.
+  - name: produced_unit_count
+    description: Produced Unit Count measured in units.
+  - name: production_capacity_unit_count
+    description: Production Capacity Unit Count measured in units.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: product_configuration_identity
+    dataset_columns:
+    - product_configuration_id
+    entity_universe: partial
+- node_id: sf:device.supply.fact_supply_agreement_amount
+  descriptor:
+    qualified_name: device.supply.fact_supply_agreement_amount
+    display_name: Supply Agreement Amount
+    description: Committed supply agreement amount by commodity, supplier and sourcing mode.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: SUPPLY
+      object: FACT_SUPPLY_AGREEMENT_AMOUNT
+      format: table
+  grain:
+    description: One row per supply agreement amount for the combination of fiscal_period_id, scenario_id,
+      component_commodity_id, sourcing_mode_id, supplier_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: component_commodity_identity
+      dataset_columns:
+      - component_commodity_id
+      description: Identifier of the Component Commodity.
+    - identity_id: sourcing_mode_identity
+      dataset_columns:
+      - sourcing_mode_id
+      description: Identifier of the Sourcing Mode.
+    - identity_id: supplier_identity
+      dataset_columns:
+      - supplier_id
+      description: Identifier of the Supplier.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: component_commodity_id
+    description: Identifier of the Component Commodity. The complete population is owned by its owner
+      dataset.
+  - name: sourcing_mode_id
+    description: Identifier of the Sourcing Mode. The complete population is owned by its owner dataset.
+  - name: supplier_id
+    description: Identifier of the Supplier. The complete population is owned by its owner dataset.
+  - name: committed_amount
+    description: Committed Amount measured in currency units.
+  - name: spot_exposure_amount
+    description: Spot Exposure Amount measured in currency units.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: component_commodity_identity
+    dataset_columns:
+    - component_commodity_id
+    entity_universe: partial
+  - identity_id: sourcing_mode_identity
+    dataset_columns:
+    - sourcing_mode_id
+    entity_universe: partial
+  - identity_id: supplier_identity
+    dataset_columns:
+    - supplier_id
+    entity_universe: partial
+- node_id: sf:device.supply.fact_supply_coverage_rate
+  descriptor:
+    qualified_name: device.supply.fact_supply_coverage_rate
+    display_name: Supply Coverage Rate
+    description: Share of component need covered by agreement; component quantity shares commodity and
+      supplier keys.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: SUPPLY
+      object: FACT_SUPPLY_COVERAGE_RATE
+      format: table
+  grain:
+    description: One row per supply coverage rate for the combination of fiscal_period_id, scenario_id,
+      component_commodity_id, supplier_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: component_commodity_identity
+      dataset_columns:
+      - component_commodity_id
+      description: Identifier of the Component Commodity.
+    - identity_id: supplier_identity
+      dataset_columns:
+      - supplier_id
+      description: Identifier of the Supplier.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: component_commodity_id
+    description: Identifier of the Component Commodity. The complete population is owned by its owner
+      dataset.
+  - name: supplier_id
+    description: Identifier of the Supplier. The complete population is owned by its owner dataset.
+  - name: contract_coverage_rate
+    description: Contract Coverage Rate measured in a decimal ratio, where 1.0 equals 100 percent.
+  - name: spot_exposure_rate
+    description: Spot Exposure Rate measured in a decimal ratio, where 1.0 equals 100 percent.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: component_commodity_identity
+    dataset_columns:
+    - component_commodity_id
+    entity_universe: partial
+  - identity_id: supplier_identity
+    dataset_columns:
+    - supplier_id
+    entity_universe: partial
+- node_id: sf:device.supply.fact_tariff_amount
+  descriptor:
+    qualified_name: device.supply.fact_tariff_amount
+    display_name: Tariff Amount
+    description: Tariff cost by product configuration and country.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: device.us-west-1
+      database: DEVICE
+      schema: SUPPLY
+      object: FACT_TARIFF_AMOUNT
+      format: table
+  grain:
+    description: One row per tariff amount for the combination of fiscal_period_id, scenario_id, country_id,
+      product_configuration_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: country_identity
+      dataset_columns:
+      - country_id
+      description: Identifier of the Country.
+    - identity_id: product_configuration_identity
+      dataset_columns:
+      - product_configuration_id
+      description: Identifier of the Product Configuration.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: country_id
+    description: Identifier of the Country. The complete population is owned by its owner dataset.
+  - name: product_configuration_id
+    description: Identifier of the Product Configuration. The complete population is owned by its owner
+      dataset.
+  - name: tariff_cost_amount
+    description: Tariff Cost Amount measured in currency units.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: product_configuration_identity
+    dataset_columns:
+    - product_configuration_id
+    entity_universe: partial

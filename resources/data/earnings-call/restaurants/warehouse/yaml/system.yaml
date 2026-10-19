@@ -1,0 +1,1756 @@
+schema_version: '3'
+nodes:
+- node_id: sf:burger.development.fact_development_quantity
+  descriptor:
+    qualified_name: burger.development.fact_development_quantity
+    display_name: Development Quantity
+    description: Opening targets, openings and ending sites by country and operating model.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: burger.us-east-1
+      database: BURGER
+      schema: DEVELOPMENT
+      object: FACT_DEVELOPMENT_QUANTITY
+      format: table
+  grain:
+    description: One row per development quantity for the combination of fiscal_period_id, scenario_id,
+      country_id, operating_model_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: country_identity
+      dataset_columns:
+      - country_id
+      description: Identifier of the Country.
+    - identity_id: operating_model_identity
+      dataset_columns:
+      - operating_model_id
+      description: Identifier of the Operating Model.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: country_id
+    description: Identifier of the Country. The complete population is owned by its owner dataset.
+  - name: operating_model_id
+    description: Identifier of the Operating Model. The complete population is owned by its owner dataset.
+  - name: target_opening_count
+    description: Target Opening Count measured in restaurants.
+  - name: actual_opening_count
+    description: Actual Opening Count measured in restaurants.
+  - name: ending_restaurant_count
+    description: Ending Restaurant Count measured in restaurants.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: operating_model_identity
+    dataset_columns:
+    - operating_model_id
+    entity_universe: partial
+- node_id: sf:burger.organization.dim_country
+  descriptor:
+    qualified_name: burger.organization.dim_country
+    display_name: Country
+    description: One country of operation.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: burger.us-east-1
+      database: BURGER
+      schema: ORGANIZATION
+      object: DIM_COUNTRY
+      format: table
+  grain:
+    description: One row per Country identified by country_id.
+    components:
+    - identity_id: country_identity
+      dataset_columns:
+      - country_id
+      description: Identifier of the Country.
+  columns:
+  - name: country_id
+    description: Identifier of the Country. This dataset holds the complete population.
+  - name: country_name
+    description: Name of the Country.
+  - name: region_id
+    description: Identifier of the Region. The complete population is owned by its owner dataset.
+  entity_definitions:
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: complete
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:burger.organization.dim_legal_entity
+  descriptor:
+    qualified_name: burger.organization.dim_legal_entity
+    display_name: Legal Entity
+    description: One legal entity.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: burger.us-east-1
+      database: BURGER
+      schema: ORGANIZATION
+      object: DIM_LEGAL_ENTITY
+      format: table
+  grain:
+    description: One row per Legal Entity identified by legal_entity_id.
+    components:
+    - identity_id: legal_entity_identity
+      dataset_columns:
+      - legal_entity_id
+      description: Identifier of the Legal Entity.
+  columns:
+  - name: legal_entity_id
+    description: Identifier of the Legal Entity. This dataset holds the complete population.
+  - name: legal_entity_name
+    description: Name of the Legal Entity.
+  - name: country_id
+    description: Identifier of the Country. The complete population is owned by its owner dataset.
+  - name: currency_id
+    description: Identifier of the Currency. The complete population is owned by its owner dataset.
+  entity_definitions:
+  - identity_id: legal_entity_identity
+    dataset_columns:
+    - legal_entity_id
+    entity_universe: complete
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: partial
+- node_id: sf:burger.organization.dim_mcdonalds_segment
+  descriptor:
+    qualified_name: burger.organization.dim_mcdonalds_segment
+    display_name: McDonald's Reporting Segment
+    description: One McDonald's reporting segment.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: burger.us-east-1
+      database: BURGER
+      schema: ORGANIZATION
+      object: DIM_MCDONALDS_SEGMENT
+      format: table
+  grain:
+    description: One row per Mcdonalds Segment identified by mcdonalds_segment_id.
+    components:
+    - identity_id: mcdonalds_segment_identity
+      dataset_columns:
+      - mcdonalds_segment_id
+      description: Identifier of the Mcdonalds Segment.
+  columns:
+  - name: mcdonalds_segment_id
+    description: Identifier of the Mcdonalds Segment. This dataset holds the complete population.
+  - name: mcdonalds_segment_name
+    description: Name of the Mcdonalds Segment.
+  - name: mcdonalds_segment_code
+    description: Code of the Mcdonalds Segment.
+    value_description: united_states, international_operated_markets, international_developmental_licensed_markets.
+  entity_definitions:
+  - identity_id: mcdonalds_segment_identity
+    dataset_columns:
+    - mcdonalds_segment_id
+    entity_universe: complete
+- node_id: sf:burger.organization.dim_region
+  descriptor:
+    qualified_name: burger.organization.dim_region
+    display_name: Region
+    description: One geographic region.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: burger.us-east-1
+      database: BURGER
+      schema: ORGANIZATION
+      object: DIM_REGION
+      format: table
+  grain:
+    description: One row per Region identified by region_id.
+    components:
+    - identity_id: region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the Region.
+  columns:
+  - name: region_id
+    description: Identifier of the Region. This dataset holds the complete population.
+  - name: region_name
+    description: Name of the Region.
+  - name: region_code
+    description: Code of the Region.
+    value_description: north_america, europe, asia_pacific, latin_america, other.
+  entity_definitions:
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: complete
+- node_id: sf:burger.organization.dim_starbucks_segment
+  descriptor:
+    qualified_name: burger.organization.dim_starbucks_segment
+    display_name: Starbucks Reporting Segment
+    description: One Starbucks reporting segment.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: burger.us-east-1
+      database: BURGER
+      schema: ORGANIZATION
+      object: DIM_STARBUCKS_SEGMENT
+      format: table
+  grain:
+    description: One row per Starbucks Segment identified by starbucks_segment_id.
+    components:
+    - identity_id: starbucks_segment_identity
+      dataset_columns:
+      - starbucks_segment_id
+      description: Identifier of the Starbucks Segment.
+  columns:
+  - name: starbucks_segment_id
+    description: Identifier of the Starbucks Segment. This dataset holds the complete population.
+  - name: starbucks_segment_name
+    description: Name of the Starbucks Segment.
+  - name: starbucks_segment_code
+    description: Code of the Starbucks Segment.
+    value_description: north_america, international, channel_development.
+  entity_definitions:
+  - identity_id: starbucks_segment_identity
+    dataset_columns:
+    - starbucks_segment_id
+    entity_universe: complete
+- node_id: sf:burger.restaurant.dim_franchisee
+  descriptor:
+    qualified_name: burger.restaurant.dim_franchisee
+    display_name: Franchisee
+    description: One McDonald's franchisee.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: burger.us-east-1
+      database: BURGER
+      schema: RESTAURANT
+      object: DIM_FRANCHISEE
+      format: table
+  grain:
+    description: One row per Franchisee identified by franchisee_id.
+    components:
+    - identity_id: franchisee_identity
+      dataset_columns:
+      - franchisee_id
+      description: Identifier of the Franchisee.
+  columns:
+  - name: franchisee_id
+    description: Identifier of the Franchisee. This dataset holds the complete population.
+  - name: franchisee_name
+    description: Name of the Franchisee.
+  - name: country_id
+    description: Identifier of the Country. The complete population is owned by its owner dataset.
+  entity_definitions:
+  - identity_id: franchisee_identity
+    dataset_columns:
+    - franchisee_id
+    entity_universe: complete
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+- node_id: sf:burger.restaurant.dim_licensee
+  descriptor:
+    qualified_name: burger.restaurant.dim_licensee
+    display_name: Licensee
+    description: One Starbucks licensee.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: burger.us-east-1
+      database: BURGER
+      schema: RESTAURANT
+      object: DIM_LICENSEE
+      format: table
+  grain:
+    description: One row per Licensee identified by licensee_id.
+    components:
+    - identity_id: licensee_identity
+      dataset_columns:
+      - licensee_id
+      description: Identifier of the Licensee.
+  columns:
+  - name: licensee_id
+    description: Identifier of the Licensee. This dataset holds the complete population.
+  - name: licensee_name
+    description: Name of the Licensee.
+  - name: country_id
+    description: Identifier of the Country. The complete population is owned by its owner dataset.
+  entity_definitions:
+  - identity_id: licensee_identity
+    dataset_columns:
+    - licensee_id
+    entity_universe: complete
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+- node_id: sf:burger.restaurant.dim_operating_model
+  descriptor:
+    qualified_name: burger.restaurant.dim_operating_model
+    display_name: Operating Model
+    description: Process by which a site is operated.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: burger.us-east-1
+      database: BURGER
+      schema: RESTAURANT
+      object: DIM_OPERATING_MODEL
+      format: table
+  grain:
+    description: One row per Operating Model identified by operating_model_id.
+    components:
+    - identity_id: operating_model_identity
+      dataset_columns:
+      - operating_model_id
+      description: Identifier of the Operating Model.
+  columns:
+  - name: operating_model_id
+    description: Identifier of the Operating Model. This dataset holds the complete population.
+  - name: operating_model_name
+    description: Name of the Operating Model.
+  - name: operating_model_code
+    description: Code of the Operating Model.
+    value_description: mcdonalds_company_operated, mcdonalds_franchised, starbucks_company_operated, starbucks_licensed.
+  entity_definitions:
+  - identity_id: operating_model_identity
+    dataset_columns:
+    - operating_model_id
+    entity_universe: complete
+- node_id: sf:burger.restaurant.dim_operator
+  descriptor:
+    qualified_name: burger.restaurant.dim_operator
+    display_name: Operator
+    description: One restaurant operator.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: burger.us-east-1
+      database: BURGER
+      schema: RESTAURANT
+      object: DIM_OPERATOR
+      format: table
+  grain:
+    description: One row per Operator identified by operator_id.
+    components:
+    - identity_id: operator_identity
+      dataset_columns:
+      - operator_id
+      description: Identifier of the Operator.
+  columns:
+  - name: operator_id
+    description: Identifier of the Operator. This dataset holds the complete population.
+  - name: operator_name
+    description: Name of the Operator.
+  - name: franchisee_id
+    description: Identifier of the Franchisee. The complete population is owned by its owner dataset.
+  entity_definitions:
+  - identity_id: operator_identity
+    dataset_columns:
+    - operator_id
+    entity_universe: complete
+  - identity_id: franchisee_identity
+    dataset_columns:
+    - franchisee_id
+    entity_universe: partial
+- node_id: sf:burger.restaurant.dim_restaurant
+  descriptor:
+    qualified_name: burger.restaurant.dim_restaurant
+    display_name: Restaurant
+    description: One restaurant or coffeehouse site.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: burger.us-east-1
+      database: BURGER
+      schema: RESTAURANT
+      object: DIM_RESTAURANT
+      format: table
+  grain:
+    description: One row per Restaurant identified by restaurant_id.
+    components:
+    - identity_id: restaurant_identity
+      dataset_columns:
+      - restaurant_id
+      description: Identifier of the Restaurant.
+  columns:
+  - name: restaurant_id
+    description: Identifier of the Restaurant. This dataset holds the complete population.
+  - name: restaurant_name
+    description: Name of the Restaurant.
+  - name: country_id
+    description: Identifier of the Country. The complete population is owned by its owner dataset.
+  entity_definitions:
+  - identity_id: restaurant_identity
+    dataset_columns:
+    - restaurant_id
+    entity_universe: complete
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+- node_id: sf:burger.restaurant.dim_store_cohort
+  descriptor:
+    qualified_name: burger.restaurant.dim_store_cohort
+    display_name: Store Cohort
+    description: One store operating cohort, including service-model rollout waves.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: burger.us-east-1
+      database: BURGER
+      schema: RESTAURANT
+      object: DIM_STORE_COHORT
+      format: table
+  grain:
+    description: One row per Store Cohort identified by store_cohort_id.
+    components:
+    - identity_id: store_cohort_identity
+      dataset_columns:
+      - store_cohort_id
+      description: Identifier of the Store Cohort.
+  columns:
+  - name: store_cohort_id
+    description: Identifier of the Store Cohort. This dataset holds the complete population.
+  - name: store_cohort_name
+    description: Name of the Store Cohort.
+  - name: store_cohort_code
+    description: Code of the Store Cohort.
+    value_description: green_apron_wave_1, green_apron_wave_2, green_apron_later, uplift, standard.
+  entity_definitions:
+  - identity_id: store_cohort_identity
+    dataset_columns:
+    - store_cohort_id
+    entity_universe: complete
+- node_id: sf:burger.restaurant.fact_channel_development_quantity
+  descriptor:
+    qualified_name: burger.restaurant.fact_channel_development_quantity
+    display_name: Channel Development Quantity
+    description: Packaged units sold outside stores by sales channel, country and product.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: burger.us-east-1
+      database: BURGER
+      schema: RESTAURANT
+      object: FACT_CHANNEL_DEVELOPMENT_QUANTITY
+      format: table
+  grain:
+    description: One row per channel development quantity for the combination of fiscal_period_id, scenario_id,
+      country_id, product_id, sales_channel_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: country_identity
+      dataset_columns:
+      - country_id
+      description: Identifier of the Country.
+    - identity_id: product_identity
+      dataset_columns:
+      - product_id
+      description: Identifier of the Product.
+    - identity_id: sales_channel_identity
+      dataset_columns:
+      - sales_channel_id
+      description: Identifier of the Sales Channel.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: country_id
+    description: Identifier of the Country. The complete population is owned by its owner dataset.
+  - name: product_id
+    description: Identifier of the Product. The complete population is owned by its owner dataset.
+  - name: sales_channel_id
+    description: Identifier of the Sales Channel. The complete population is owned by its owner dataset.
+  - name: packaged_unit_count
+    description: Packaged Unit Count measured in units.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: product_identity
+    dataset_columns:
+    - product_id
+    entity_universe: partial
+  - identity_id: sales_channel_identity
+    dataset_columns:
+    - sales_channel_id
+    entity_universe: partial
+- node_id: sf:burger.restaurant.fact_channel_development_sales_amount
+  descriptor:
+    qualified_name: burger.restaurant.fact_channel_development_sales_amount
+    display_name: Channel Development Sales Amount
+    description: Packaged-goods sales amount outside stores.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: burger.us-east-1
+      database: BURGER
+      schema: RESTAURANT
+      object: FACT_CHANNEL_DEVELOPMENT_SALES_AMOUNT
+      format: table
+  grain:
+    description: One row per channel development sales amount for the combination of fiscal_period_id,
+      scenario_id, country_id, product_id, sales_channel_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: country_identity
+      dataset_columns:
+      - country_id
+      description: Identifier of the Country.
+    - identity_id: product_identity
+      dataset_columns:
+      - product_id
+      description: Identifier of the Product.
+    - identity_id: sales_channel_identity
+      dataset_columns:
+      - sales_channel_id
+      description: Identifier of the Sales Channel.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: country_id
+    description: Identifier of the Country. The complete population is owned by its owner dataset.
+  - name: product_id
+    description: Identifier of the Product. The complete population is owned by its owner dataset.
+  - name: sales_channel_id
+    description: Identifier of the Sales Channel. The complete population is owned by its owner dataset.
+  - name: packaged_sales_amount
+    description: Packaged Sales Amount measured in currency units.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: product_identity
+    dataset_columns:
+    - product_id
+    entity_universe: partial
+  - identity_id: sales_channel_identity
+    dataset_columns:
+    - sales_channel_id
+    entity_universe: partial
+- node_id: sf:burger.restaurant.fact_closure_sales_transfer_amount
+  descriptor:
+    qualified_name: burger.restaurant.fact_closure_sales_transfer_amount
+    display_name: Closure Sales Transfer Amount
+    description: Sales of closed sites and sales transferred to remaining sites.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: burger.us-east-1
+      database: BURGER
+      schema: RESTAURANT
+      object: FACT_CLOSURE_SALES_TRANSFER_AMOUNT
+      format: table
+  grain:
+    description: One row per closure sales transfer amount for the combination of fiscal_period_id, scenario_id,
+      country_id, operating_model_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: country_identity
+      dataset_columns:
+      - country_id
+      description: Identifier of the Country.
+    - identity_id: operating_model_identity
+      dataset_columns:
+      - operating_model_id
+      description: Identifier of the Operating Model.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: country_id
+    description: Identifier of the Country. The complete population is owned by its owner dataset.
+  - name: operating_model_id
+    description: Identifier of the Operating Model. The complete population is owned by its owner dataset.
+  - name: closed_store_sales_amount
+    description: Closed Store Sales Amount measured in currency units.
+  - name: transferred_sales_amount
+    description: Transferred Sales Amount measured in currency units.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: operating_model_identity
+    dataset_columns:
+    - operating_model_id
+    entity_universe: partial
+- node_id: sf:burger.restaurant.fact_franchise_restaurant_sales_amount
+  descriptor:
+    qualified_name: burger.restaurant.fact_franchise_restaurant_sales_amount
+    display_name: Franchise Restaurant Sales Amount
+    description: Franchised restaurant sales that form the royalty base.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: burger.us-east-1
+      database: BURGER
+      schema: RESTAURANT
+      object: FACT_FRANCHISE_RESTAURANT_SALES_AMOUNT
+      format: table
+  grain:
+    description: One row per franchise restaurant sales amount for the combination of fiscal_period_id,
+      scenario_id, country_id, franchisee_id, mcdonalds_segment_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: country_identity
+      dataset_columns:
+      - country_id
+      description: Identifier of the Country.
+    - identity_id: franchisee_identity
+      dataset_columns:
+      - franchisee_id
+      description: Identifier of the Franchisee.
+    - identity_id: mcdonalds_segment_identity
+      dataset_columns:
+      - mcdonalds_segment_id
+      description: Identifier of the Mcdonalds Segment.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: country_id
+    description: Identifier of the Country. The complete population is owned by its owner dataset.
+  - name: franchisee_id
+    description: Identifier of the Franchisee. The complete population is owned by its owner dataset.
+  - name: mcdonalds_segment_id
+    description: Identifier of the Mcdonalds Segment. The complete population is owned by its owner dataset.
+  - name: franchised_restaurant_sales_amount
+    description: Franchised Restaurant Sales Amount measured in currency units.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: franchisee_identity
+    dataset_columns:
+    - franchisee_id
+    entity_universe: partial
+  - identity_id: mcdonalds_segment_identity
+    dataset_columns:
+    - mcdonalds_segment_id
+    entity_universe: partial
+- node_id: sf:burger.restaurant.fact_labour_quantity
+  descriptor:
+    qualified_name: burger.restaurant.fact_labour_quantity
+    display_name: Labour Quantity
+    description: Labour hours and transactions by restaurant and store cohort; denominator for service
+      productivity.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: burger.us-east-1
+      database: BURGER
+      schema: RESTAURANT
+      object: FACT_LABOUR_QUANTITY
+      format: table
+  grain:
+    description: One row per labour quantity for the combination of fiscal_period_id, scenario_id, restaurant_id,
+      store_cohort_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: restaurant_identity
+      dataset_columns:
+      - restaurant_id
+      description: Identifier of the Restaurant.
+    - identity_id: store_cohort_identity
+      dataset_columns:
+      - store_cohort_id
+      description: Identifier of the Store Cohort.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: restaurant_id
+    description: Identifier of the Restaurant. The complete population is owned by its owner dataset.
+  - name: store_cohort_id
+    description: Identifier of the Store Cohort. The complete population is owned by its owner dataset.
+  - name: labour_hour_count
+    description: Labour Hour Count measured in hours.
+  - name: transaction_count
+    description: Transaction Count measured in transactions.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: restaurant_identity
+    dataset_columns:
+    - restaurant_id
+    entity_universe: partial
+  - identity_id: store_cohort_identity
+    dataset_columns:
+    - store_cohort_id
+    entity_universe: partial
+- node_id: sf:burger.restaurant.fact_license_fee_amount
+  descriptor:
+    qualified_name: burger.restaurant.fact_license_fee_amount
+    display_name: License Fee Amount
+    description: License fees separate from royalty and rent.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: burger.us-east-1
+      database: BURGER
+      schema: RESTAURANT
+      object: FACT_LICENSE_FEE_AMOUNT
+      format: table
+  grain:
+    description: One row per license fee amount for the combination of fiscal_period_id, scenario_id,
+      country_id, licensee_id, starbucks_segment_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: country_identity
+      dataset_columns:
+      - country_id
+      description: Identifier of the Country.
+    - identity_id: licensee_identity
+      dataset_columns:
+      - licensee_id
+      description: Identifier of the Licensee.
+    - identity_id: starbucks_segment_identity
+      dataset_columns:
+      - starbucks_segment_id
+      description: Identifier of the Starbucks Segment.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: country_id
+    description: Identifier of the Country. The complete population is owned by its owner dataset.
+  - name: licensee_id
+    description: Identifier of the Licensee. The complete population is owned by its owner dataset.
+  - name: starbucks_segment_id
+    description: Identifier of the Starbucks Segment. The complete population is owned by its owner dataset.
+  - name: license_fee_amount
+    description: License Fee Amount measured in currency units.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: licensee_identity
+    dataset_columns:
+    - licensee_id
+    entity_universe: partial
+  - identity_id: starbucks_segment_identity
+    dataset_columns:
+    - starbucks_segment_id
+    entity_universe: partial
+- node_id: sf:burger.restaurant.fact_license_store_sales_amount
+  descriptor:
+    qualified_name: burger.restaurant.fact_license_store_sales_amount
+    display_name: License Store Sales Amount
+    description: Licensed store sales by licensee, country and Starbucks segment.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: burger.us-east-1
+      database: BURGER
+      schema: RESTAURANT
+      object: FACT_LICENSE_STORE_SALES_AMOUNT
+      format: table
+  grain:
+    description: One row per license store sales amount for the combination of fiscal_period_id, scenario_id,
+      country_id, licensee_id, starbucks_segment_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: country_identity
+      dataset_columns:
+      - country_id
+      description: Identifier of the Country.
+    - identity_id: licensee_identity
+      dataset_columns:
+      - licensee_id
+      description: Identifier of the Licensee.
+    - identity_id: starbucks_segment_identity
+      dataset_columns:
+      - starbucks_segment_id
+      description: Identifier of the Starbucks Segment.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: country_id
+    description: Identifier of the Country. The complete population is owned by its owner dataset.
+  - name: licensee_id
+    description: Identifier of the Licensee. The complete population is owned by its owner dataset.
+  - name: starbucks_segment_id
+    description: Identifier of the Starbucks Segment. The complete population is owned by its owner dataset.
+  - name: licensed_store_sales_amount
+    description: Licensed Store Sales Amount measured in currency units.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: licensee_identity
+    dataset_columns:
+    - licensee_id
+    entity_universe: partial
+  - identity_id: starbucks_segment_identity
+    dataset_columns:
+    - starbucks_segment_id
+    entity_universe: partial
+- node_id: sf:burger.restaurant.fact_operating_time_quantity
+  descriptor:
+    qualified_name: burger.restaurant.fact_operating_time_quantity
+    display_name: Operating Time Quantity
+    description: Operating days and hours by restaurant and operating model.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: burger.us-east-1
+      database: BURGER
+      schema: RESTAURANT
+      object: FACT_OPERATING_TIME_QUANTITY
+      format: table
+  grain:
+    description: One row per operating time quantity for the combination of fiscal_period_id, scenario_id,
+      operating_model_id, restaurant_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: operating_model_identity
+      dataset_columns:
+      - operating_model_id
+      description: Identifier of the Operating Model.
+    - identity_id: restaurant_identity
+      dataset_columns:
+      - restaurant_id
+      description: Identifier of the Restaurant.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: operating_model_id
+    description: Identifier of the Operating Model. The complete population is owned by its owner dataset.
+  - name: restaurant_id
+    description: Identifier of the Restaurant. The complete population is owned by its owner dataset.
+  - name: operating_day_count
+    description: Operating Day Count measured in days.
+  - name: operating_hour_count
+    description: Operating Hour Count measured in hours.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: operating_model_identity
+    dataset_columns:
+    - operating_model_id
+    entity_universe: partial
+  - identity_id: restaurant_identity
+    dataset_columns:
+    - restaurant_id
+    entity_universe: partial
+- node_id: sf:burger.restaurant.fact_rent_amount
+  descriptor:
+    qualified_name: burger.restaurant.fact_rent_amount
+    display_name: Rent Amount
+    description: Rent charged to franchisees as a separate franchise charge.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: burger.us-east-1
+      database: BURGER
+      schema: RESTAURANT
+      object: FACT_RENT_AMOUNT
+      format: table
+  grain:
+    description: One row per rent amount for the combination of fiscal_period_id, scenario_id, country_id,
+      franchisee_id, mcdonalds_segment_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: country_identity
+      dataset_columns:
+      - country_id
+      description: Identifier of the Country.
+    - identity_id: franchisee_identity
+      dataset_columns:
+      - franchisee_id
+      description: Identifier of the Franchisee.
+    - identity_id: mcdonalds_segment_identity
+      dataset_columns:
+      - mcdonalds_segment_id
+      description: Identifier of the Mcdonalds Segment.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: country_id
+    description: Identifier of the Country. The complete population is owned by its owner dataset.
+  - name: franchisee_id
+    description: Identifier of the Franchisee. The complete population is owned by its owner dataset.
+  - name: mcdonalds_segment_id
+    description: Identifier of the Mcdonalds Segment. The complete population is owned by its owner dataset.
+  - name: rent_amount
+    description: Rent Amount measured in currency units.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: franchisee_identity
+    dataset_columns:
+    - franchisee_id
+    entity_universe: partial
+  - identity_id: mcdonalds_segment_identity
+    dataset_columns:
+    - mcdonalds_segment_id
+    entity_universe: partial
+- node_id: sf:burger.restaurant.fact_restaurant_closure_quantity
+  descriptor:
+    qualified_name: burger.restaurant.fact_restaurant_closure_quantity
+    display_name: Restaurant Closure Quantity
+    description: Closed sites by country and operating model.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: burger.us-east-1
+      database: BURGER
+      schema: RESTAURANT
+      object: FACT_RESTAURANT_CLOSURE_QUANTITY
+      format: table
+  grain:
+    description: One row per restaurant closure quantity for the combination of fiscal_period_id, scenario_id,
+      country_id, operating_model_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: country_identity
+      dataset_columns:
+      - country_id
+      description: Identifier of the Country.
+    - identity_id: operating_model_identity
+      dataset_columns:
+      - operating_model_id
+      description: Identifier of the Operating Model.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: country_id
+    description: Identifier of the Country. The complete population is owned by its owner dataset.
+  - name: operating_model_id
+    description: Identifier of the Operating Model. The complete population is owned by its owner dataset.
+  - name: closed_restaurant_count
+    description: Closed Restaurant Count measured in restaurants.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: operating_model_identity
+    dataset_columns:
+    - operating_model_id
+    entity_universe: partial
+- node_id: sf:burger.restaurant.fact_restaurant_count
+  descriptor:
+    qualified_name: burger.restaurant.fact_restaurant_count
+    display_name: Restaurant Count
+    description: Open and planned sites by country and operating model.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: burger.us-east-1
+      database: BURGER
+      schema: RESTAURANT
+      object: FACT_RESTAURANT_COUNT
+      format: table
+  grain:
+    description: One row per restaurant count for the combination of fiscal_period_id, scenario_id, country_id,
+      operating_model_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: country_identity
+      dataset_columns:
+      - country_id
+      description: Identifier of the Country.
+    - identity_id: operating_model_identity
+      dataset_columns:
+      - operating_model_id
+      description: Identifier of the Operating Model.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: country_id
+    description: Identifier of the Country. The complete population is owned by its owner dataset.
+  - name: operating_model_id
+    description: Identifier of the Operating Model. The complete population is owned by its owner dataset.
+  - name: open_restaurant_count
+    description: Open Restaurant Count measured in restaurants.
+  - name: planned_restaurant_count
+    description: Planned Restaurant Count measured in restaurants.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: operating_model_identity
+    dataset_columns:
+    - operating_model_id
+    entity_universe: partial
+- node_id: sf:burger.restaurant.fact_restaurant_opening_quantity
+  descriptor:
+    qualified_name: burger.restaurant.fact_restaurant_opening_quantity
+    display_name: Restaurant Opening Quantity
+    description: Opened sites by country and operating model.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: burger.us-east-1
+      database: BURGER
+      schema: RESTAURANT
+      object: FACT_RESTAURANT_OPENING_QUANTITY
+      format: table
+  grain:
+    description: One row per restaurant opening quantity for the combination of fiscal_period_id, scenario_id,
+      country_id, operating_model_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: country_identity
+      dataset_columns:
+      - country_id
+      description: Identifier of the Country.
+    - identity_id: operating_model_identity
+      dataset_columns:
+      - operating_model_id
+      description: Identifier of the Operating Model.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: country_id
+    description: Identifier of the Country. The complete population is owned by its owner dataset.
+  - name: operating_model_id
+    description: Identifier of the Operating Model. The complete population is owned by its owner dataset.
+  - name: opened_restaurant_count
+    description: Opened Restaurant Count measured in restaurants.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: operating_model_identity
+    dataset_columns:
+    - operating_model_id
+    entity_universe: partial
+- node_id: sf:burger.restaurant.fact_royalty_amount
+  descriptor:
+    qualified_name: burger.restaurant.fact_royalty_amount
+    display_name: Royalty Amount
+    description: Royalty charged to franchisees; franchise restaurant sales share these keys.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: burger.us-east-1
+      database: BURGER
+      schema: RESTAURANT
+      object: FACT_ROYALTY_AMOUNT
+      format: table
+  grain:
+    description: One row per royalty amount for the combination of fiscal_period_id, scenario_id, country_id,
+      franchisee_id, mcdonalds_segment_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: country_identity
+      dataset_columns:
+      - country_id
+      description: Identifier of the Country.
+    - identity_id: franchisee_identity
+      dataset_columns:
+      - franchisee_id
+      description: Identifier of the Franchisee.
+    - identity_id: mcdonalds_segment_identity
+      dataset_columns:
+      - mcdonalds_segment_id
+      description: Identifier of the Mcdonalds Segment.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: country_id
+    description: Identifier of the Country. The complete population is owned by its owner dataset.
+  - name: franchisee_id
+    description: Identifier of the Franchisee. The complete population is owned by its owner dataset.
+  - name: mcdonalds_segment_id
+    description: Identifier of the Mcdonalds Segment. The complete population is owned by its owner dataset.
+  - name: royalty_amount
+    description: Royalty Amount measured in currency units.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: franchisee_identity
+    dataset_columns:
+    - franchisee_id
+    entity_universe: partial
+  - identity_id: mcdonalds_segment_identity
+    dataset_columns:
+    - mcdonalds_segment_id
+    entity_universe: partial
+- node_id: sf:burger.restaurant.fact_royalty_rate
+  descriptor:
+    qualified_name: burger.restaurant.fact_royalty_rate
+    display_name: Royalty Rate
+    description: Royalty as a rate of franchised restaurant sales; the sales amount shares these keys.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: burger.us-east-1
+      database: BURGER
+      schema: RESTAURANT
+      object: FACT_ROYALTY_RATE
+      format: table
+  grain:
+    description: One row per royalty rate for the combination of fiscal_period_id, scenario_id, country_id,
+      franchisee_id, mcdonalds_segment_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: country_identity
+      dataset_columns:
+      - country_id
+      description: Identifier of the Country.
+    - identity_id: franchisee_identity
+      dataset_columns:
+      - franchisee_id
+      description: Identifier of the Franchisee.
+    - identity_id: mcdonalds_segment_identity
+      dataset_columns:
+      - mcdonalds_segment_id
+      description: Identifier of the Mcdonalds Segment.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: country_id
+    description: Identifier of the Country. The complete population is owned by its owner dataset.
+  - name: franchisee_id
+    description: Identifier of the Franchisee. The complete population is owned by its owner dataset.
+  - name: mcdonalds_segment_id
+    description: Identifier of the Mcdonalds Segment. The complete population is owned by its owner dataset.
+  - name: royalty_rate
+    description: Royalty Rate measured in a decimal ratio, where 1.0 equals 100 percent.
+  - name: rent_rate
+    description: Rent Rate measured in a decimal ratio, where 1.0 equals 100 percent.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: franchisee_identity
+    dataset_columns:
+    - franchisee_id
+    entity_universe: partial
+  - identity_id: mcdonalds_segment_identity
+    dataset_columns:
+    - mcdonalds_segment_id
+    entity_universe: partial
+- node_id: sf:burger.restaurant.fact_service_duration
+  descriptor:
+    qualified_name: burger.restaurant.fact_service_duration
+    display_name: Service Duration
+    description: Average service time by restaurant and store cohort.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: burger.us-east-1
+      database: BURGER
+      schema: RESTAURANT
+      object: FACT_SERVICE_DURATION
+      format: table
+  grain:
+    description: One row per service duration for the combination of fiscal_period_id, scenario_id, restaurant_id,
+      store_cohort_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: restaurant_identity
+      dataset_columns:
+      - restaurant_id
+      description: Identifier of the Restaurant.
+    - identity_id: store_cohort_identity
+      dataset_columns:
+      - store_cohort_id
+      description: Identifier of the Store Cohort.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: restaurant_id
+    description: Identifier of the Restaurant. The complete population is owned by its owner dataset.
+  - name: store_cohort_id
+    description: Identifier of the Store Cohort. The complete population is owned by its owner dataset.
+  - name: average_service_time_seconds
+    description: Average Service Time Seconds measured in seconds.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: restaurant_identity
+    dataset_columns:
+    - restaurant_id
+    entity_universe: partial
+  - identity_id: store_cohort_identity
+    dataset_columns:
+    - store_cohort_id
+    entity_universe: partial
+- node_id: sf:burger.restaurant.fact_service_productivity_rate
+  descriptor:
+    qualified_name: burger.restaurant.fact_service_productivity_rate
+    display_name: Service Productivity Rate
+    description: Transactions per labour hour; labour quantity shares these keys.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: burger.us-east-1
+      database: BURGER
+      schema: RESTAURANT
+      object: FACT_SERVICE_PRODUCTIVITY_RATE
+      format: table
+  grain:
+    description: One row per service productivity rate for the combination of fiscal_period_id, scenario_id,
+      restaurant_id, store_cohort_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: restaurant_identity
+      dataset_columns:
+      - restaurant_id
+      description: Identifier of the Restaurant.
+    - identity_id: store_cohort_identity
+      dataset_columns:
+      - store_cohort_id
+      description: Identifier of the Store Cohort.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: restaurant_id
+    description: Identifier of the Restaurant. The complete population is owned by its owner dataset.
+  - name: store_cohort_id
+    description: Identifier of the Store Cohort. The complete population is owned by its owner dataset.
+  - name: transactions_per_labour_hour
+    description: Transactions Per Labour Hour measured in a decimal ratio, where 1.0 equals 100 percent.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: restaurant_identity
+    dataset_columns:
+    - restaurant_id
+    entity_universe: partial
+  - identity_id: store_cohort_identity
+    dataset_columns:
+    - store_cohort_id
+    entity_universe: partial
+- node_id: sf:burger.supply.dim_commodity
+  descriptor:
+    qualified_name: burger.supply.dim_commodity
+    display_name: Commodity
+    description: One purchased commodity.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: burger.us-east-1
+      database: BURGER
+      schema: SUPPLY
+      object: DIM_COMMODITY
+      format: table
+  grain:
+    description: One row per Commodity identified by commodity_id.
+    components:
+    - identity_id: commodity_identity
+      dataset_columns:
+      - commodity_id
+      description: Identifier of the Commodity.
+  columns:
+  - name: commodity_id
+    description: Identifier of the Commodity. This dataset holds the complete population.
+  - name: commodity_name
+    description: Name of the Commodity.
+  - name: commodity_code
+    description: Code of the Commodity.
+    value_description: beef, chicken, coffee, dairy, energy, packaging, other_commodity.
+  entity_definitions:
+  - identity_id: commodity_identity
+    dataset_columns:
+    - commodity_id
+    entity_universe: complete
+- node_id: sf:burger.supply.dim_supplier
+  descriptor:
+    qualified_name: burger.supply.dim_supplier
+    display_name: Supplier
+    description: One supplier.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: burger.us-east-1
+      database: BURGER
+      schema: SUPPLY
+      object: DIM_SUPPLIER
+      format: table
+  grain:
+    description: One row per Supplier identified by supplier_id.
+    components:
+    - identity_id: supplier_identity
+      dataset_columns:
+      - supplier_id
+      description: Identifier of the Supplier.
+  columns:
+  - name: supplier_id
+    description: Identifier of the Supplier. This dataset holds the complete population.
+  - name: supplier_name
+    description: Name of the Supplier.
+  - name: country_id
+    description: Identifier of the Country. The complete population is owned by its owner dataset.
+  entity_definitions:
+  - identity_id: supplier_identity
+    dataset_columns:
+    - supplier_id
+    entity_universe: complete
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+- node_id: sf:burger.supply.fact_supplier_shipment_quantity
+  descriptor:
+    qualified_name: burger.supply.fact_supplier_shipment_quantity
+    display_name: Supplier Shipment Quantity
+    description: Commodity quantities shipped by supplier and country.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: burger.us-east-1
+      database: BURGER
+      schema: SUPPLY
+      object: FACT_SUPPLIER_SHIPMENT_QUANTITY
+      format: table
+  grain:
+    description: One row per supplier shipment quantity for the combination of fiscal_period_id, scenario_id,
+      commodity_id, country_id, supplier_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: commodity_identity
+      dataset_columns:
+      - commodity_id
+      description: Identifier of the Commodity.
+    - identity_id: country_identity
+      dataset_columns:
+      - country_id
+      description: Identifier of the Country.
+    - identity_id: supplier_identity
+      dataset_columns:
+      - supplier_id
+      description: Identifier of the Supplier.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: commodity_id
+    description: Identifier of the Commodity. The complete population is owned by its owner dataset.
+  - name: country_id
+    description: Identifier of the Country. The complete population is owned by its owner dataset.
+  - name: supplier_id
+    description: Identifier of the Supplier. The complete population is owned by its owner dataset.
+  - name: shipped_quantity
+    description: Shipped Quantity measured in units.
+  - name: received_quantity
+    description: Received Quantity measured in units.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: commodity_identity
+    dataset_columns:
+    - commodity_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: supplier_identity
+    dataset_columns:
+    - supplier_id
+    entity_universe: partial
