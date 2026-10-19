@@ -11,7 +11,7 @@ The actor location, artifact location, and socket path are always configurable i
 
 Authored assets that belong to one business domain must not share a file with another domain.
 
-- Schema-candidate catalogs live under `project_metadata/schema_candidates/<domain>/`.
+- Schema-candidate catalogs live under `resources/data/schema_candidates/<domain>/`.
 - Each domain's question sheet is `questions.md` in that directory.
 - Reference YAML lives under `resources/data/reference_catalogs/<domain>/`. Each directory contains
   only that domain's `.yaml` files and is gold for scoring generated catalogs.

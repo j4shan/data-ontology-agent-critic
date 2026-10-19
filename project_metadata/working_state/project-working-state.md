@@ -12,7 +12,7 @@ exists yet.
 
 | Area | Current baseline | Gap against the PRD |
 | --- | --- | --- |
-| Catalog candidates | The five schema-candidate catalogs under [`schema_candidates/`](../schema_candidates/) are the assessment corpora. | The catalogs are schema version 2 and have no `directory-manifest.yaml`, so the current actor builder will not load them. |
+| Catalog candidates | The five schema-candidate catalogs under [`schema_candidates/`](../../resources/data/schema_candidates/) are the assessment corpora. | The catalogs are schema version 2 and have no `directory-manifest.yaml`, so the current actor builder will not load them. |
 | Question sheets | Each domain has a role-based analytical question sheet: `healthcare-payer` (125), `telecom-mobile` (141), `manufacturing-discrete` (115), `retail-grocery` (138), and `commerce-marketplace` (127). Each sheet stays at or under 150 questions. | The sheets are not yet cases. They have no gold AKG. |
 | Reference catalogs | None have been published under `resources/data/reference_catalogs/`. | A schema version 3 reference catalog still has to be published for each domain. |
 | Generated catalogs | The actor's DDL collector can publish reviewed output to `resources/data/generated_catalogs/<domain>/`, with a directory manifest, collection YAML, decision log, and provenance. | No generated catalog has been published. |
