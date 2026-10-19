@@ -170,7 +170,7 @@ share an entity chain rather than a single KPI.
 
 Each industry directory keeps one schema version 3 warehouse, owned by a naive industry name. These seventeen warehouses are the current test suite. Question paraphrases stay in `{ticker}/questions.md`. `references.md` in the industry directory names the companies and earnings calls, without links.
 
-Size is the dataset, relationship, and logical-identity counts in each `warehouse/MODEL.md`. The eleven models built before the four-checkpoint plan were first written by Grok 4.7. Muse Wonder has rebuilt those eleven and Checkpoint A. Checkpoints B, C, and D do not have a model yet.
+Size is the dataset, relationship, and logical-identity counts in each `warehouse/MODEL.md`. The eleven models built before the four-checkpoint plan were first written by Grok 4.7. Muse Wonder has rebuilt those eleven and Checkpoint A. The joined design rules are in `model-learnings.md`. Checkpoints B, C, and D do not have a model yet.
 
 | Owner | Industry | Catalog | Datasets | Relationships | Identities | Agent |
 | --- | --- | --- | ---: | ---: | ---: | --- |

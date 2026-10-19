@@ -45,6 +45,7 @@ directory has `references.md`, which names the companies and earnings calls with
 Each company sheet is `{industry}/{ticker}/questions.md`. A warehouse is one schema version 3
 catalog for that industry, owned by the naive name in the table. `coverage.md` is the GICS
 membership list. `summary-report.md` is the question-count and warehouse summary.
+`model-learnings.md` is the joined design feedback from the warehouse reviews.
 `_batches/` holds the extraction tallies.
 
 ## Transcript sources
