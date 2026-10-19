@@ -11,9 +11,11 @@ Status values: `selected` (pair locked, transcripts not read), `extracting`, `qu
 `partial` (fewer than four calls or a thin Q&A), `blocked`.
 
 Every pair below is `questions-ready`: four recent calls were read and analyst questions were
-paraphrased into `{slug}/{ticker}/questions.md`. Each industry directory has `references.md`
-naming those companies and calls. All thirty industries have one schema version 3 warehouse at
-`{slug}/warehouse/`. Design rules for those warehouses are in `model-learnings.md`.
+paraphrased into `earnings-call/{slug}/{ticker}/questions.md`. Each industry directory has
+`references.md` naming those companies and calls. All thirty industries have one schema version 3
+warehouse at `earnings-call/{slug}/warehouse/`. A pre-earnings-call schema for the same slug, when
+written, lives at `pre-earnings-call/{slug}/warehouse/` and is not derived from these question
+sheets. Design rules for both are in `model-learnings.md`.
 
 | # | GICS sector | GICS sub-industry | Ticker | Company | Status |
 | --- | --- | --- | --- | --- | --- |
@@ -78,21 +80,21 @@ naming those companies and calls. All thirty industries have one schema version 
 | 30 | Utilities | Electric Utilities | SO | Southern Company | questions-ready |
 | 30 | Utilities | Electric Utilities | DUK | Duke Energy | questions-ready |
 
-Question files live at `{sub-industry-slug}/{ticker}/questions.md`. `references.md` in the
+Question files live at `earnings-call/{sub-industry-slug}/{ticker}/questions.md`. `references.md` in the
 industry directory names the companies and earnings calls, without links. A warehouse, when
-present, is the single model for that industry: `restaurants/warehouse/` (Burger Inc),
-`data-center-reits/warehouse/` (Colocation Inc), `technology-hardware/warehouse/` (Device Inc),
-`health-care-equipment/warehouse/` (Surgical Supply Inc),
-`construction-machinery/warehouse/` (Machinery Inc), `specialty-chemicals/warehouse/` (Chemical Inc),
-`passenger-airlines/warehouse/` (Airline Inc), `packaged-foods/warehouse/` (Food Inc),
-`managed-care/warehouse/` (Health Plan Inc), `soft-drinks/warehouse/` (Beverage Inc),
-`automobile-manufacturers/warehouse/` (Automaker Inc), `rail-transportation/warehouse/` (Railroad Inc),
-`integrated-oil-gas/warehouse/` (Energy Inc), `electric-utilities/warehouse/` (Utility Inc),
-`diversified-banks/warehouse/` (Bank Inc), `merchandise-retail/warehouse/` (Merchandise Inc),
-`interactive-media/warehouse/` (Social Inc), `aerospace-defense/warehouse/` (Defense Inc),
-`systems-software/warehouse/` (Platform Inc), `movies-entertainment/warehouse/` (Studio Inc),
-`payments/warehouse/` (Payments Inc), `investment-banking/warehouse/` (Broker Inc),
-`semiconductor-materials-equipment/warehouse/` (Wafer Tool Inc), `semiconductors/warehouse/` (Chip Inc),
-`pharmaceuticals/warehouse/` (Pharma Inc), `integrated-telecom/warehouse/` (Carrier Inc),
-`home-improvement-retail/warehouse/` (Hardware Store Inc), `broadline-retail/warehouse/` (Broadline Inc),
-`pc-insurance/warehouse/` (Insurance Inc), and `application-software/warehouse/` (App Inc).
+present, is the single earnings-call model for that industry: `earnings-call/restaurants/warehouse/` (Burger Inc),
+`earnings-call/data-center-reits/warehouse/` (Colocation Inc), `earnings-call/technology-hardware/warehouse/` (Device Inc),
+`earnings-call/health-care-equipment/warehouse/` (Surgical Supply Inc),
+`earnings-call/construction-machinery/warehouse/` (Machinery Inc), `earnings-call/specialty-chemicals/warehouse/` (Chemical Inc),
+`earnings-call/passenger-airlines/warehouse/` (Airline Inc), `earnings-call/packaged-foods/warehouse/` (Food Inc),
+`earnings-call/managed-care/warehouse/` (Health Plan Inc), `earnings-call/soft-drinks/warehouse/` (Beverage Inc),
+`earnings-call/automobile-manufacturers/warehouse/` (Automaker Inc), `earnings-call/rail-transportation/warehouse/` (Railroad Inc),
+`earnings-call/integrated-oil-gas/warehouse/` (Energy Inc), `earnings-call/electric-utilities/warehouse/` (Utility Inc),
+`earnings-call/diversified-banks/warehouse/` (Bank Inc), `earnings-call/merchandise-retail/warehouse/` (Merchandise Inc),
+`earnings-call/interactive-media/warehouse/` (Social Inc), `earnings-call/aerospace-defense/warehouse/` (Defense Inc),
+`earnings-call/systems-software/warehouse/` (Platform Inc), `earnings-call/movies-entertainment/warehouse/` (Studio Inc),
+`earnings-call/payments/warehouse/` (Payments Inc), `earnings-call/investment-banking/warehouse/` (Broker Inc),
+`earnings-call/semiconductor-materials-equipment/warehouse/` (Wafer Tool Inc), `earnings-call/semiconductors/warehouse/` (Chip Inc),
+`earnings-call/pharmaceuticals/warehouse/` (Pharma Inc), `earnings-call/integrated-telecom/warehouse/` (Carrier Inc),
+`earnings-call/home-improvement-retail/warehouse/` (Hardware Store Inc), `earnings-call/broadline-retail/warehouse/` (Broadline Inc),
+`earnings-call/pc-insurance/warehouse/` (Insurance Inc), and `earnings-call/application-software/warehouse/` (App Inc).

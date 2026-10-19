@@ -22,9 +22,10 @@ current state and TODOs are in the
 project_metadata/        PRD, specs, agent instructions, working state
 resources/data/
   coverage.md            earnings-call candidate membership
-  model-learnings.md     warehouse design rules from the reviews
-  schema_candidates/     five domain catalogs and role-based question sheets
-  <industry>/            earnings-call question sheets, references.md, and at most one warehouse
+  model-learnings.md     design rules for both schema kinds
+  earnings-call/         one GICS industry: question sheets, references.md, one warehouse
+  pre-earnings-call/     same warehouse shape, written before a transcript is read
+  schema_candidates/     five assessment-domain catalogs and role-based question sheets
   reference_catalogs/    human-reviewed catalog gold for scoring generated catalogs
   generated_catalogs/    committed actor-generated catalogs, decision logs, and provenance (none yet)
 resources/schema/        AKG submission schema (planned)
