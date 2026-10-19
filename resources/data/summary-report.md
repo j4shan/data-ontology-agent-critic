@@ -170,7 +170,7 @@ share an entity chain rather than a single KPI.
 
 Each industry directory keeps one schema version 3 warehouse, owned by a naive industry name. These seventeen warehouses are the current test suite. Question paraphrases stay in `{ticker}/questions.md`. `references.md` in the industry directory names the companies and earnings calls, without links.
 
-Size is the dataset, relationship, and logical-identity counts in each `warehouse/MODEL.md`. The eleven models built before the four-checkpoint plan were written by Grok 4.7. Checkpoint A, the first of those four, is the Muse Wonder rebuild now on disk. Checkpoints B, C, and D do not have a model yet.
+Size is the dataset, relationship, and logical-identity counts in each `warehouse/MODEL.md`. The models built before the four-checkpoint plan were written by Grok 4.7. Muse Wonder has rebuilt Checkpoint A and, from that same review, Health Plan Inc, Beverage Inc, and Automaker Inc. The other eight pre-checkpoint models are still the Grok 4.7 files until their rebuild lands. Checkpoints B, C, and D do not have a model yet.
 
 | Owner | Industry | Catalog | Datasets | Relationships | Identities | Agent |
 | --- | --- | --- | ---: | ---: | ---: | --- |
@@ -182,9 +182,9 @@ Size is the dataset, relationship, and logical-identity counts in each `warehous
 | Chemical Inc | Specialty chemicals | `specialty-chemicals/warehouse/` | 103 | 247 | 103 | Grok 4.7 |
 | Airline Inc | Passenger airlines | `passenger-airlines/warehouse/` | 97 | 213 | 97 | Grok 4.7 |
 | Food Inc | Packaged foods | `packaged-foods/warehouse/` | 94 | 235 | 94 | Grok 4.7 |
-| Health Plan Inc | Managed care | `managed-care/warehouse/` | 116 | 297 | 116 | Grok 4.7 |
-| Beverage Inc | Soft drinks | `soft-drinks/warehouse/` | 105 | 312 | 105 | Grok 4.7 |
-| Automaker Inc | Automobile manufacturers | `automobile-manufacturers/warehouse/` | 113 | 303 | 113 | Grok 4.7 |
+| Health Plan Inc | Managed care | `managed-care/warehouse/` | 89 | 202 | 41 | Muse Wonder |
+| Beverage Inc | Soft drinks | `soft-drinks/warehouse/` | 82 | 226 | 33 | Muse Wonder |
+| Automaker Inc | Automobile manufacturers | `automobile-manufacturers/warehouse/` | 93 | 234 | 36 | Muse Wonder |
 | Railroad Inc | Rail transportation | `rail-transportation/warehouse/` | 78 | 197 | 39 | Muse Wonder |
 | Energy Inc | Integrated oil and gas | `integrated-oil-gas/warehouse/` | 78 | 206 | 33 | Muse Wonder |
 | Utility Inc | Electric utilities | `electric-utilities/warehouse/` | 71 | 201 | 26 | Muse Wonder |

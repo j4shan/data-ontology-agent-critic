@@ -1,459 +1,356 @@
-# Beverage Inc demand and channel
+# Beverage Inc demand and channel slice
 
-This slice owns brands, packs, channels, countries, and unit-case demand for Beverage Inc. A demand row stores quantity or a demand index. It does not store a price and it does not store plant capacity.
-
-Identifiers owned by another slice are partial here. Their complete populations are not re-authored in this slice.
-
-| Identity | Column on this slice | Complete population |
-| --- | --- | --- |
-| `bottler_identity` | `bottler_id` | `sf:beverage.supply.dim_bottler` `bottler_id` |
-| `bottler_identity` | `bottler_id` | `sf:beverage.supply.dim_bottler` `bottler_id` |
-| `bottler_identity` | `bottler_id` | `sf:beverage.supply.dim_bottler` `bottler_id` |
-| `bottler_identity` | `bottler_id` | `sf:beverage.supply.dim_bottler` `bottler_id` |
-| `bottler_identity` | `bottler_id` | `sf:beverage.supply.dim_bottler` `bottler_id` |
-| `bottler_identity` | `bottler_id` | `sf:beverage.supply.dim_bottler` `bottler_id` |
-| `bottler_identity` | `bottler_id` | `sf:beverage.supply.dim_bottler` `bottler_id` |
+This slice is part of the Beverage Inc warehouse. Quantity, capacity, and price or margin stay on separate facts. A quantity fact does not store a price. A price fact does not store the unit quantity; the denominator the price needs is a quantity or supply measure on its own fact, joined by the shared grain keys of fiscal quarter, scenario, and the business keys.
 
 ## Numbered questions
 
 ## Coca-Cola
 
-### Q1 2026 (1)
-
-How should volume and price/mix split for the rest of 2026 in North America and Asia after a strong unit-case quarter and two softer price/mix quarters?
-
-- `beverage.demand.fact_unit_case`: `fiscal_quarter_id`, `region_id`, `country_id`, `brand_id`, `channel_id`, `volume_growth_rate`
-- `beverage.geography.dim_region`: `region_code`, `region_name`
-- `beverage.price.fact_price_mix`: `fiscal_quarter_id`, `region_id`, `country_id`, `brand_id`, `affordability_share`, `price_mix_rate`
-- `beverage.price.fact_price_bridge`: `fiscal_quarter_id`, `region_id`, `brand_id`, `channel_id`, `contribution_rate`, `distribution_remaining_flag`
-
 ### Q1 2026 (4)
 
 How will the European Coke Zero relaunch sit alongside Diet Coke so the system does not starve one no-sugar trademark of attention?
 
-- `beverage.demand.fact_trademark_attention`: `fiscal_quarter_id`, `trademark_id`, `country_id`, `bottler_id`, `attention_share`, `starved_flag`
-- `beverage.product.dim_trademark`: `brand_id`, `trademark_code`, `trademark_name`
-- `beverage.supply.fact_bottler_capacity`: `fiscal_quarter_id`, `bottler_id`, `country_id`, `brand_id`, `execution_slot_count`, `higher_cost_ready_flag`
-- `beverage.supply.dim_bottler`: `country_id`, `bottler_code`, `bottler_name`
-
-### Q1 2026 (7)
-
-What is driving the strong China and India results, and how sustainable is that APAC performance through the year?
-
-- `beverage.demand.fact_country_volume`: `fiscal_quarter_id`, `country_id`, `region_id`, `brand_id`, `sustainable_flag`, `rebound_timing_code`
-- `beverage.geography.dim_country`: `region_id`, `country_code`, `country_name`
-- `beverage.demand.fact_consumer_group`: `fiscal_quarter_id`, `consumer_segment_id`, `country_id`, `brand_id`, `comparison_help_flag`, `prior_disruption_flag`
-
-### Q1 2026 (9)
-
-Is the U.S. foodservice approach changing to participate in newer away-from-home formats such as drive-thru beverage chains?
-
-- `beverage.channel.dim_channel`: `channel_code`, `channel_name`
-- `beverage.demand.fact_channel_volume`: `fiscal_quarter_id`, `channel_id`, `country_id`, `brand_id`, `customer_id`, `newer_format_flag`
-- `beverage.customer.dim_customer`: `channel_id`, `customer_code`, `customer_name`
+- `beverage.demand.dim_coca_cola_trademark`: `coca_cola_trademark_id`, `coca_cola_trademark_code`, `coca_cola_trademark_name`
+- `beverage.demand.dim_country`: `country_id`, `country_name`, `region_id`
+- `beverage.demand.dim_customer_type`: `customer_type_id`, `customer_type_code`, `customer_type_name`
+- `beverage.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `beverage.demand.dim_glp1_exposure`: `glp1_exposure_id`, `glp1_exposure_code`, `glp1_exposure_name`
+- `beverage.demand.dim_sales_channel`: `sales_channel_id`, `sales_channel_code`, `sales_channel_name`
+- `beverage.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+- `beverage.demand.fact_coca_cola_unit_case_volume`: `fiscal_quarter_id`, `scenario_id`, `country_id`, `coca_cola_trademark_id`, `sales_channel_id`, `unit_case_quantity`, `unit_case_growth_quantity`
+- `beverage.demand.fact_concentrate_shipments`: `fiscal_quarter_id`, `scenario_id`, `country_id`, `coca_cola_trademark_id`, `bottler_id`, `concentrate_shipment_quantity`
+- `beverage.price.fact_coca_cola_net_revenue`: `fiscal_quarter_id`, `scenario_id`, `country_id`, `coca_cola_trademark_id`, `sales_channel_id`, `net_revenue_amount`
+- `beverage.price.fact_coca_cola_price_realization`: `fiscal_quarter_id`, `scenario_id`, `country_id`, `coca_cola_trademark_id`, `sales_channel_id`, `revenue_per_unit_case_amount`, `price_mix_change_percent`, `price_change_percent`
+- `beverage.supply.dim_bottler`: `bottler_id`, `bottler_name`, `country_id`, `bottler_ownership_id`
 
 ### Q4 2025 (2)
 
 How are worsening consumer conditions assumed to trend through 2026 relative to the milder backdrop described a few months earlier?
 
-- `beverage.demand.fact_consumer_demand`: `fiscal_quarter_id`, `region_id`, `country_id`, `calendar_day_id`, `demand_index`, `improved_flag`
-- `beverage.price.fact_organic_outlook`: `fiscal_quarter_id`, `region_id`, `country_id`, `organic_growth_rate`, `conservative_flag`, `volume_contribution_rate`
-- `beverage.demand.fact_country_volume`: `fiscal_quarter_id`, `country_id`, `region_id`, `brand_id`, `unit_case_quantity`, `rebound_timing_code`
-- `beverage.demand.fact_division_volume`: `fiscal_quarter_id`, `category_id`, `region_id`, `brand_id`, `consumer_backdrop_flag`, `unit_case_quantity`
-
-### Q4 2025 (5)
-
-How will incremental fairlife capacity early in the year flow through brand growth over 2026?
-
-- `beverage.demand.fact_brand_volume`: `fiscal_quarter_id`, `brand_id`, `country_id`, `product_line_id`, `unit_case_quantity`, `line_managed_separately_flag`
-- `beverage.supply.fact_plant_capacity`: `fiscal_quarter_id`, `plant_id`, `brand_id`, `country_id`, `capacity_quantity`, `replicable_abroad_flag`
-- `beverage.geography.dim_region`: `region_code`, `region_name`
-- `beverage.supply.dim_plant`: `country_id`, `bottler_id`, `plant_code`, `plant_name`
+- `beverage.demand.dim_coca_cola_trademark`: `coca_cola_trademark_id`, `coca_cola_trademark_code`, `coca_cola_trademark_name`
+- `beverage.demand.dim_consumption_occasion`: `consumption_occasion_id`, `consumption_occasion_code`, `consumption_occasion_name`
+- `beverage.demand.dim_country`: `country_id`, `country_name`, `region_id`
+- `beverage.demand.dim_customer`: `customer_id`, `customer_name`, `customer_type_id`
+- `beverage.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `beverage.demand.dim_marketing_event`: `marketing_event_id`, `marketing_event_code`, `marketing_event_name`
+- `beverage.demand.dim_product_category`: `product_category_id`, `product_category_code`, `product_category_name`
+- `beverage.demand.dim_sales_channel`: `sales_channel_id`, `sales_channel_code`, `sales_channel_name`
+- `beverage.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+- `beverage.demand.fact_concentrate_shipments`: `fiscal_quarter_id`, `scenario_id`, `country_id`, `coca_cola_trademark_id`, `bottler_id`, `concentrate_shipment_quantity`
+- `beverage.demand.fact_event_incremental_volume`: `fiscal_quarter_id`, `scenario_id`, `marketing_event_id`, `country_id`, `product_category_id`, `incremental_unit_case_quantity`
+- `beverage.price.fact_concentrate_revenue`: `fiscal_quarter_id`, `scenario_id`, `country_id`, `coca_cola_trademark_id`, `concentrate_revenue_amount`, `incidence_revenue_per_gallon_amount`
+- `beverage.supply.dim_bottler`: `bottler_id`, `bottler_name`, `country_id`, `bottler_ownership_id`
+- `beverage.supply.fact_case_fill_rate`: `fiscal_quarter_id`, `scenario_id`, `country_id`, `customer_id`, `product_category_id`, `case_fill_percent`
 
 ### Q4 2025 (6)
 
 What sales uplift is expected from World Cup activation in the summer?
 
-- `beverage.demand.fact_event_volume`: `fiscal_quarter_id`, `event_id`, `region_id`, `brand_id`, `category_id`, `versus_past_event_code`
-- `beverage.demand.dim_event`: `event_code`, `event_name`
-- `beverage.geography.dim_region`: `region_code`, `region_name`
-- `beverage.demand.fact_country_volume`: `fiscal_quarter_id`, `country_id`, `region_id`, `brand_id`, `rebound_timing_code`, `sustainable_flag`
+- `beverage.demand.dim_beverage_pack`: `beverage_pack_id`, `beverage_pack_code`, `beverage_pack_name`
+- `beverage.demand.dim_country`: `country_id`, `country_name`, `region_id`
+- `beverage.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `beverage.demand.dim_marketing_event`: `marketing_event_id`, `marketing_event_code`, `marketing_event_name`
+- `beverage.demand.dim_product_category`: `product_category_id`, `product_category_code`, `product_category_name`
+- `beverage.demand.dim_region`: `region_id`, `region_code`, `region_name`
+- `beverage.demand.dim_sales_channel`: `sales_channel_id`, `sales_channel_code`, `sales_channel_name`
+- `beverage.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+- `beverage.demand.fact_event_incremental_volume`: `fiscal_quarter_id`, `scenario_id`, `marketing_event_id`, `country_id`, `product_category_id`, `incremental_unit_case_quantity`
+- `beverage.price.fact_beverage_pack_price`: `fiscal_quarter_id`, `scenario_id`, `beverage_pack_id`, `product_category_id`, `country_id`, `pack_price_change_percent`
+- `beverage.price.fact_input_cost`: `fiscal_quarter_id`, `scenario_id`, `commodity_id`, `country_id`, `input_cost_amount`
+- `beverage.price.fact_packaging_cost`: `fiscal_quarter_id`, `scenario_id`, `packaging_material_id`, `product_category_id`, `packaging_cost_amount`, `cost_change_percent`
+- `beverage.supply.dim_commodity`: `commodity_id`, `commodity_code`, `commodity_name`
+- `beverage.supply.dim_packaging_material`: `packaging_material_id`, `packaging_material_code`, `packaging_material_name`
 
 ### Q4 2025 (7)
 
 Could the comparison with last year's temporary Hispanic-consumer disruption in North America help the first part of 2026?
 
-- `beverage.demand.fact_consumer_group`: `fiscal_quarter_id`, `consumer_segment_id`, `country_id`, `brand_id`, `comparison_help_flag`, `prior_disruption_flag`
-- `beverage.geography.dim_region`: `region_code`, `region_name`
-- `beverage.product.dim_consumer_segment`: `consumer_segment_code`, `consumer_segment_name`
-
-### Q4 2025 (9)
-
-How do U.S. SNAP changes affect demand, and did the first read on the Mexican tax make the 2026 organic-sales outlook more conservative?
-
-- `beverage.demand.fact_program_volume`: `fiscal_quarter_id`, `country_id`, `consumer_segment_id`, `brand_id`, `demand_effect_code`, `exposed_quantity`
-- `beverage.price.fact_organic_outlook`: `fiscal_quarter_id`, `region_id`, `country_id`, `conservative_flag`, `organic_growth_rate`, `volume_contribution_rate`
-- `beverage.price.fact_excise`: `fiscal_quarter_id`, `country_id`, `outlook_more_conservative_flag`, `first_read_code`, `tax_rate`
-- `beverage.geography.dim_country`: `region_id`, `country_code`, `country_name`
-
-### Q4 2025 (12)
-
-Where does the new chief executive see the largest innovation opportunities, and how are those executed against a weaker global consumer?
-
-- `beverage.demand.fact_innovation`: `fiscal_quarter_id`, `brand_id`, `category_id`, `country_id`, `weaker_consumer_fit_flag`, `opportunity_code`
-- `beverage.demand.fact_consumer_demand`: `fiscal_quarter_id`, `region_id`, `country_id`, `calendar_day_id`, `demand_index`, `tougher_flag`
-- `beverage.demand.fact_innovation_volume`: `fiscal_quarter_id`, `brand_id`, `category_id`, `country_id`, `innovation_quantity`, `pipeline_ready_flag`
-- `beverage.demand.fact_glp1_demand`: `fiscal_quarter_id`, `consumer_segment_id`, `category_id`, `brand_id`, `explains_slowdown_flag`, `strategy_changed_flag`
-
-### Q4 2025 (13)
-
-Should marketing and innovation step up in India as refranchising proceeds, and how far have B2B digital and analytics gone for store-level execution before the bottler takes demand fulfillment?
-
-- `beverage.demand.fact_refranchising`: `fiscal_quarter_id`, `country_id`, `bottler_id`, `marketing_steps_up_flag`, `remaining_share`
-- `beverage.demand.fact_digital_execution`: `fiscal_quarter_id`, `country_id`, `bottler_id`, `customer_id`, `in_place_flag`, `coverage_share`
-- `beverage.price.fact_price_action`: `fiscal_quarter_id`, `brand_id`, `customer_id`, `region_id`, `pack_id`, `in_place_share`
-- `beverage.supply.dim_bottler`: `country_id`, `bottler_code`, `bottler_name`
-
-### Q2 2025 (1)
-
-What specifically is being pivoted in second-half plans even though organic sales and profit were strong, and does the environment feel tougher?
-
-- `beverage.demand.fact_plan_pivot`: `fiscal_quarter_id`, `region_id`, `category_id`, `tougher_flag`, `emphasis_code`, `pivot_flag`
-- `beverage.price.fact_organic_outlook`: `fiscal_quarter_id`, `region_id`, `country_id`, `organic_growth_rate`, `conservative_flag`, `price_contribution_rate`
-- `beverage.demand.fact_country_volume`: `fiscal_quarter_id`, `country_id`, `region_id`, `brand_id`, `rebound_timing_code`, `sustainable_flag`
-- `beverage.demand.fact_consumer_demand`: `fiscal_quarter_id`, `region_id`, `country_id`, `calendar_day_id`, `tougher_flag`, `demand_index`
-
-### Q2 2025 (4)
-
-How quickly should Mexico and India rebound after the plan changes made for the second half?
-
-- `beverage.demand.fact_country_volume`: `fiscal_quarter_id`, `country_id`, `region_id`, `brand_id`, `rebound_timing_code`, `sustainable_flag`
-- `beverage.geography.dim_country`: `region_id`, `country_code`, `country_name`
-- `beverage.price.fact_deal_timing`: `fiscal_quarter_id`, `region_id`, `second_half_flag`, `margin_effect_rate`
-
-### Q2 2025 (6)
-
-Where is consumer strength or weakness showing up globally beyond weather and geopolitics, and did June softness continue into July?
-
-- `beverage.demand.fact_consumer_demand`: `fiscal_quarter_id`, `region_id`, `country_id`, `calendar_day_id`, `demand_index`, `improved_flag`
-- `beverage.time.dim_calendar_day`: `fiscal_quarter_id`, `month_code`, `calendar_date`, `calendar_day_code`, `calendar_day_name`
-
-### Q2 2025 (7)
-
-How do consumer preferences for cane and fiber shape innovation, and how is Simply Pop performing against competitors launching prebiotic drinks under a core trademark?
-
-- `beverage.demand.fact_competitor_set`: `fiscal_quarter_id`, `brand_id`, `category_id`, `country_id`, `same_occasion_flag`, `ahead_flag`
-- `beverage.demand.fact_innovation`: `fiscal_quarter_id`, `brand_id`, `category_id`, `country_id`, `opportunity_code`, `weaker_consumer_fit_flag`
-- `beverage.product.dim_brand`: `category_id`, `brand_code`, `brand_name`
-- `beverage.product.dim_category`: `category_code`, `category_name`
+- `beverage.demand.dim_beverage_pack`: `beverage_pack_id`, `beverage_pack_code`, `beverage_pack_name`
+- `beverage.demand.dim_coca_cola_trademark`: `coca_cola_trademark_id`, `coca_cola_trademark_code`, `coca_cola_trademark_name`
+- `beverage.demand.dim_consumer_cohort`: `consumer_cohort_id`, `consumer_cohort_code`, `consumer_cohort_name`
+- `beverage.demand.dim_country`: `country_id`, `country_name`, `region_id`
+- `beverage.demand.dim_customer`: `customer_id`, `customer_name`, `customer_type_id`
+- `beverage.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `beverage.demand.dim_glp1_exposure`: `glp1_exposure_id`, `glp1_exposure_code`, `glp1_exposure_name`
+- `beverage.demand.dim_product_category`: `product_category_id`, `product_category_code`, `product_category_name`
+- `beverage.demand.dim_sales_channel`: `sales_channel_id`, `sales_channel_code`, `sales_channel_name`
+- `beverage.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+- `beverage.demand.fact_concentrate_shipments`: `fiscal_quarter_id`, `scenario_id`, `country_id`, `coca_cola_trademark_id`, `bottler_id`, `concentrate_shipment_quantity`
+- `beverage.demand.fact_glp1_exposed_beverage_volume`: `fiscal_quarter_id`, `scenario_id`, `glp1_exposure_id`, `product_category_id`, `country_id`, `beverage_unit_case_quantity`
+- `beverage.price.fact_beverage_pack_price`: `fiscal_quarter_id`, `scenario_id`, `beverage_pack_id`, `product_category_id`, `country_id`, `pack_price_change_percent`
+- `beverage.supply.dim_bottler`: `bottler_id`, `bottler_name`, `country_id`, `bottler_ownership_id`
+- `beverage.supply.fact_case_fill_rate`: `fiscal_quarter_id`, `scenario_id`, `country_id`, `customer_id`, `product_category_id`, `case_fill_percent`
 
 ### Q2 2025 (8)
 
 How is the European consumer holding up versus other developed markets, given EMEA is expected to drive unit cases in the second half?
 
-- `beverage.demand.fact_country_volume`: `fiscal_quarter_id`, `country_id`, `region_id`, `brand_id`, `rebound_timing_code`, `unit_case_quantity`
-- `beverage.demand.fact_unit_case`: `fiscal_quarter_id`, `region_id`, `country_id`, `brand_id`, `channel_id`, `unit_case_quantity`
-- `beverage.geography.dim_region`: `region_code`, `region_name`
-- `beverage.demand.fact_consumer_group`: `fiscal_quarter_id`, `consumer_segment_id`, `country_id`, `brand_id`, `unit_case_quantity`, `comparison_help_flag`
+- `beverage.demand.dim_beverage_pack`: `beverage_pack_id`, `beverage_pack_code`, `beverage_pack_name`
+- `beverage.demand.dim_coca_cola_trademark`: `coca_cola_trademark_id`, `coca_cola_trademark_code`, `coca_cola_trademark_name`
+- `beverage.demand.dim_consumer_cohort`: `consumer_cohort_id`, `consumer_cohort_code`, `consumer_cohort_name`
+- `beverage.demand.dim_country`: `country_id`, `country_name`, `region_id`
+- `beverage.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `beverage.demand.dim_glp1_exposure`: `glp1_exposure_id`, `glp1_exposure_code`, `glp1_exposure_name`
+- `beverage.demand.dim_marketing_event`: `marketing_event_id`, `marketing_event_code`, `marketing_event_name`
+- `beverage.demand.dim_product_category`: `product_category_id`, `product_category_code`, `product_category_name`
+- `beverage.demand.dim_sales_channel`: `sales_channel_id`, `sales_channel_code`, `sales_channel_name`
+- `beverage.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+- `beverage.demand.fact_beverage_pack_volume`: `fiscal_quarter_id`, `scenario_id`, `beverage_pack_id`, `product_category_id`, `country_id`, `unit_case_quantity`, `package_quantity`
+- `beverage.demand.fact_concentrate_shipments`: `fiscal_quarter_id`, `scenario_id`, `country_id`, `coca_cola_trademark_id`, `bottler_id`, `concentrate_shipment_quantity`
+- `beverage.demand.fact_event_incremental_volume`: `fiscal_quarter_id`, `scenario_id`, `marketing_event_id`, `country_id`, `product_category_id`, `incremental_unit_case_quantity`
+- `beverage.demand.fact_glp1_exposed_beverage_volume`: `fiscal_quarter_id`, `scenario_id`, `glp1_exposure_id`, `product_category_id`, `country_id`, `beverage_unit_case_quantity`
+- `beverage.supply.dim_bottler`: `bottler_id`, `bottler_name`, `country_id`, `bottler_ownership_id`
 
 ### Q2 2025 (9)
 
 With most refranchising done, how is the capability to create demand and recruit consumers actually intensifying?
 
-- `beverage.demand.fact_demand_creation`: `fiscal_quarter_id`, `bottler_id`, `country_id`, `brand_id`, `retained_flag`, `recruiting_flag`
-- `beverage.demand.fact_refranchising`: `fiscal_quarter_id`, `country_id`, `bottler_id`, `marketing_steps_up_flag`, `remaining_share`
-- `beverage.supply.dim_bottler`: `country_id`, `bottler_code`, `bottler_name`
-- `beverage.price.fact_bottler_incentive`: `fiscal_quarter_id`, `bottler_id`, `incentive_amount`, `insight_loop_flag`
-
-### Q2 2025 (10)
-
-How confident is management that concentrate volume turns positive in the second half after transitory hits and a tough comparison, and is the fourth-quarter concentrate comparison especially difficult?
-
-- `beverage.demand.fact_concentrate_shipment`: `fiscal_quarter_id`, `country_id`, `bottler_id`, `brand_id`, `tough_comparison_flag`, `turns_positive_flag`
-- `beverage.demand.fact_country_volume`: `fiscal_quarter_id`, `country_id`, `region_id`, `brand_id`, `rebound_timing_code`, `sustainable_flag`
-
-### Q4 2024 (3)
-
-How does 5% to 6% organic sales growth compare with industry growth and the industry exit rate?
-
-- `beverage.demand.fact_industry_volume`: `fiscal_quarter_id`, `category_id`, `region_id`, `company_gap_rate`, `exit_rate`, `industry_growth_rate`
-- `beverage.price.fact_organic_outlook`: `fiscal_quarter_id`, `region_id`, `country_id`, `organic_growth_rate`, `volume_contribution_rate`, `conservative_flag`
-- `beverage.demand.fact_category_health`: `fiscal_quarter_id`, `category_id`, `region_id`, `category_growth_rate`, `better_footing_flag`, `extrapolate_flag`
-- `beverage.demand.fact_country_volume`: `fiscal_quarter_id`, `country_id`, `region_id`, `brand_id`, `rebound_timing_code`, `sustainable_flag`
-
-### Q4 2024 (6)
-
-What share of the U.S. portfolio could be touched by potential regulatory change, and how fast can the portfolio be adapted?
-
-- `beverage.demand.fact_regulatory_exposure`: `fiscal_quarter_id`, `brand_id`, `country_id`, `adapt_months`, `exposed_share`
-- `beverage.demand.fact_pack_mix`: `fiscal_quarter_id`, `pack_id`, `brand_id`, `region_id`, `category_id`, `pack_share`
+- `beverage.demand.dim_beverage_pack`: `beverage_pack_id`, `beverage_pack_code`, `beverage_pack_name`
+- `beverage.demand.dim_coca_cola_trademark`: `coca_cola_trademark_id`, `coca_cola_trademark_code`, `coca_cola_trademark_name`
+- `beverage.demand.dim_consumer_cohort`: `consumer_cohort_id`, `consumer_cohort_code`, `consumer_cohort_name`
+- `beverage.demand.dim_country`: `country_id`, `country_name`, `region_id`
+- `beverage.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `beverage.demand.dim_product_category`: `product_category_id`, `product_category_code`, `product_category_name`
+- `beverage.demand.dim_sales_channel`: `sales_channel_id`, `sales_channel_code`, `sales_channel_name`
+- `beverage.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+- `beverage.demand.fact_concentrate_shipments`: `fiscal_quarter_id`, `scenario_id`, `country_id`, `coca_cola_trademark_id`, `bottler_id`, `concentrate_shipment_quantity`
+- `beverage.price.fact_beverage_pack_price`: `fiscal_quarter_id`, `scenario_id`, `beverage_pack_id`, `product_category_id`, `country_id`, `pack_price_change_percent`
+- `beverage.price.fact_input_cost`: `fiscal_quarter_id`, `scenario_id`, `commodity_id`, `country_id`, `input_cost_amount`
+- `beverage.price.fact_packaging_cost`: `fiscal_quarter_id`, `scenario_id`, `packaging_material_id`, `product_category_id`, `packaging_cost_amount`, `cost_change_percent`
+- `beverage.supply.dim_bottler`: `bottler_id`, `bottler_name`, `country_id`, `bottler_ownership_id`
+- `beverage.supply.dim_commodity`: `commodity_id`, `commodity_code`, `commodity_name`
+- `beverage.supply.dim_packaging_material`: `packaging_material_id`, `packaging_material_code`, `packaging_material_name`
 
 ### Q4 2024 (7)
 
 Has GLP-1 use changed consumption, and has that changed innovation strategy?
 
-- `beverage.demand.fact_glp1_demand`: `fiscal_quarter_id`, `consumer_segment_id`, `category_id`, `brand_id`, `exposed_quantity`, `strategy_changed_flag`
-- `beverage.demand.fact_innovation`: `fiscal_quarter_id`, `brand_id`, `category_id`, `country_id`, `in_market_flag`, `opportunity_code`
+- `beverage.demand.dim_coca_cola_trademark`: `coca_cola_trademark_id`, `coca_cola_trademark_code`, `coca_cola_trademark_name`
+- `beverage.demand.dim_consumer_cohort`: `consumer_cohort_id`, `consumer_cohort_code`, `consumer_cohort_name`
+- `beverage.demand.dim_consumption_occasion`: `consumption_occasion_id`, `consumption_occasion_code`, `consumption_occasion_name`
+- `beverage.demand.dim_country`: `country_id`, `country_name`, `region_id`
+- `beverage.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `beverage.demand.dim_glp1_exposure`: `glp1_exposure_id`, `glp1_exposure_code`, `glp1_exposure_name`
+- `beverage.demand.dim_product_category`: `product_category_id`, `product_category_code`, `product_category_name`
+- `beverage.demand.dim_sales_channel`: `sales_channel_id`, `sales_channel_code`, `sales_channel_name`
+- `beverage.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+- `beverage.demand.fact_coca_cola_unit_case_volume`: `fiscal_quarter_id`, `scenario_id`, `country_id`, `coca_cola_trademark_id`, `sales_channel_id`, `unit_case_quantity`, `unit_case_growth_quantity`
+- `beverage.demand.fact_concentrate_shipments`: `fiscal_quarter_id`, `scenario_id`, `country_id`, `coca_cola_trademark_id`, `bottler_id`, `concentrate_shipment_quantity`
+- `beverage.demand.fact_consumption_occasions`: `fiscal_quarter_id`, `scenario_id`, `consumption_occasion_id`, `product_category_id`, `country_id`, `consumer_cohort_id`, `occasion_quantity`
+- `beverage.demand.fact_glp1_exposed_beverage_volume`: `fiscal_quarter_id`, `scenario_id`, `glp1_exposure_id`, `product_category_id`, `country_id`, `beverage_unit_case_quantity`
+- `beverage.price.dim_price_bridge_component`: `price_bridge_component_id`, `price_bridge_component_code`, `price_bridge_component_name`
+- `beverage.supply.dim_bottler`: `bottler_id`, `bottler_name`, `country_id`, `bottler_ownership_id`
+- `beverage.supply.dim_plant`: `plant_id`, `plant_name`, `country_id`, `plant_function_id`
 
 ### Q4 2024 (8)
 
 Is Walmart's modern-soda shelf a fad or a lasting consumer shift, and how does Coca-Cola plan to compete there relative to something like fairlife?
 
-- `beverage.demand.fact_shelf_set`: `fiscal_quarter_id`, `customer_id`, `brand_id`, `category_id`, `repeat_flag`, `fad_flag`
-- `beverage.product.dim_brand`: `category_id`, `brand_code`, `brand_name`
-- `beverage.demand.fact_repeat`: `fiscal_quarter_id`, `brand_id`, `customer_id`, `consumer_repeat_flag`, `repeat_rate`
-- `beverage.customer.dim_customer`: `channel_id`, `customer_code`, `customer_name`
-
-### Q4 2024 (13)
-
-How does Asia Pacific price/mix, down despite some pricing, reconcile with share gains in South Korea and Japan and share losses in Indonesia and Bangladesh?
-
-- `beverage.demand.fact_country_share`: `fiscal_quarter_id`, `country_id`, `brand_id`, `gaining_flag`, `share_change_rate`
-- `beverage.geography.dim_country`: `region_id`, `country_code`, `country_name`
-- `beverage.geography.dim_region`: `region_code`, `region_name`
-- `beverage.demand.fact_value_share`: `fiscal_quarter_id`, `brand_id`, `region_id`, `category_id`, `declining_flag`, `value_share_rate`
+- `beverage.demand.dim_coca_cola_trademark`: `coca_cola_trademark_id`, `coca_cola_trademark_code`, `coca_cola_trademark_name`
+- `beverage.demand.dim_consumer_cohort`: `consumer_cohort_id`, `consumer_cohort_code`, `consumer_cohort_name`
+- `beverage.demand.dim_country`: `country_id`, `country_name`, `region_id`
+- `beverage.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `beverage.demand.dim_sales_channel`: `sales_channel_id`, `sales_channel_code`, `sales_channel_name`
+- `beverage.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+- `beverage.demand.fact_coca_cola_unit_case_volume`: `fiscal_quarter_id`, `scenario_id`, `country_id`, `coca_cola_trademark_id`, `sales_channel_id`, `unit_case_quantity`, `unit_case_growth_quantity`
+- `beverage.demand.fact_concentrate_shipments`: `fiscal_quarter_id`, `scenario_id`, `country_id`, `coca_cola_trademark_id`, `bottler_id`, `concentrate_shipment_quantity`
+- `beverage.price.dim_tax_type`: `tax_type_id`, `tax_type_code`, `tax_type_name`
+- `beverage.supply.dim_bottler`: `bottler_id`, `bottler_name`, `country_id`, `bottler_ownership_id`
+- `beverage.supply.dim_commodity`: `commodity_id`, `commodity_code`, `commodity_name`
+- `beverage.supply.dim_plant`: `plant_id`, `plant_name`, `country_id`, `plant_function_id`
+- `beverage.supply.fact_commodity_cover_duration`: `fiscal_quarter_id`, `scenario_id`, `commodity_id`, `coverage_duration_months`
+- `beverage.supply.fact_dairy_plant_capacity`: `fiscal_quarter_id`, `scenario_id`, `plant_id`, `coca_cola_trademark_id`, `dairy_capacity_quantity`, `dairy_production_quantity`
 
 ## PepsiCo
-
-### Q2 2026 (1)
-
-Has U.S. consumer behavior improved as fuel and other inflation eased, and does that still support the high end of the organic-sales range in the back half?
-
-- `beverage.demand.fact_consumer_demand`: `fiscal_quarter_id`, `region_id`, `country_id`, `calendar_day_id`, `improved_flag`, `demand_index`
-- `beverage.price.fact_organic_outlook`: `fiscal_quarter_id`, `region_id`, `country_id`, `organic_growth_rate`, `conservative_flag`, `price_contribution_rate`
-- `beverage.demand.fact_country_volume`: `fiscal_quarter_id`, `country_id`, `region_id`, `brand_id`, `rebound_timing_code`, `unit_case_quantity`
 
 ### Q2 2026 (2)
 
 Were weaker-than-hoped Frito-Lay North America and PepsiCo Beverages North America volumes a shortfall in the new initiatives or the consumer backdrop?
 
-- `beverage.demand.fact_division_volume`: `fiscal_quarter_id`, `category_id`, `region_id`, `brand_id`, `consumer_backdrop_flag`, `initiative_shortfall_flag`
-- `beverage.geography.dim_region`: `region_code`, `region_name`
-- `beverage.product.dim_brand`: `category_id`, `brand_code`, `brand_name`
-
-### Q2 2026 (4)
-
-Will price rollbacks spread beyond the largest U.S. customer, and have those reinvestments already shown up as better volume in convenience and away-from-home?
-
-- `beverage.demand.fact_channel_volume`: `fiscal_quarter_id`, `channel_id`, `country_id`, `brand_id`, `customer_id`, `newer_format_flag`
-- `beverage.customer.dim_customer`: `channel_id`, `customer_code`, `customer_name`
-- `beverage.price.fact_price_action`: `fiscal_quarter_id`, `brand_id`, `customer_id`, `region_id`, `pack_id`, `rollback_spread_flag`
-- `beverage.channel.dim_channel`: `channel_code`, `channel_name`
+- `beverage.demand.dim_consumption_occasion`: `consumption_occasion_id`, `consumption_occasion_code`, `consumption_occasion_name`
+- `beverage.demand.dim_country`: `country_id`, `country_name`, `region_id`
+- `beverage.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `beverage.demand.dim_glp1_exposure`: `glp1_exposure_id`, `glp1_exposure_code`, `glp1_exposure_name`
+- `beverage.demand.dim_pepsico_beverage_brand`: `pepsico_beverage_brand_id`, `pepsico_beverage_brand_code`, `pepsico_beverage_brand_name`
+- `beverage.demand.dim_pepsico_snack_brand`: `pepsico_snack_brand_id`, `pepsico_snack_brand_code`, `pepsico_snack_brand_name`
+- `beverage.demand.dim_sales_channel`: `sales_channel_id`, `sales_channel_code`, `sales_channel_name`
+- `beverage.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+- `beverage.demand.fact_pepsico_beverage_unit_case_volume`: `fiscal_quarter_id`, `scenario_id`, `country_id`, `pepsico_beverage_brand_id`, `sales_channel_id`, `unit_case_quantity`
+- `beverage.demand.fact_pepsico_snack_volume`: `fiscal_quarter_id`, `scenario_id`, `country_id`, `pepsico_snack_brand_id`, `sales_channel_id`, `snack_weight_quantity`, `snack_serving_quantity`
+- `beverage.price.dim_pepsico_reporting_division`: `pepsico_reporting_division_id`, `pepsico_reporting_division_code`, `pepsico_reporting_division_name`
+- `beverage.price.fact_pepsico_division_result`: `fiscal_quarter_id`, `scenario_id`, `pepsico_reporting_division_id`, `division_revenue_amount`, `division_operating_income_amount`
+- `beverage.price.fact_pepsico_snack_net_revenue`: `fiscal_quarter_id`, `scenario_id`, `country_id`, `pepsico_snack_brand_id`, `sales_channel_id`, `net_revenue_amount`
 
 ### Q2 2026 (6)
 
 How do category growth and consumer health differ across international regions, and should second-quarter international growth be extrapolated for the rest of the year?
 
-- `beverage.demand.fact_category_health`: `fiscal_quarter_id`, `category_id`, `region_id`, `category_growth_rate`, `better_footing_flag`, `extrapolate_flag`
-- `beverage.demand.fact_industry_volume`: `fiscal_quarter_id`, `category_id`, `region_id`, `exit_rate`, `industry_growth_rate`, `company_gap_rate`
-- `beverage.price.fact_cost_structure`: `fiscal_quarter_id`, `region_id`, `offset_by_international_flag`, `cost_amount`
-- `beverage.demand.fact_country_volume`: `fiscal_quarter_id`, `country_id`, `region_id`, `brand_id`, `sustainable_flag`, `rebound_timing_code`
-
-### Q2 2026 (7)
-
-Are affordability, package, and innovation actions already in market and now a matter of scaling, or are further catalysts still ahead?
-
-- `beverage.demand.fact_initiative_stage`: `fiscal_quarter_id`, `brand_id`, `region_id`, `pack_id`, `catalyst_still_ahead_flag`, `in_market_flag`
-- `beverage.demand.fact_innovation`: `fiscal_quarter_id`, `brand_id`, `category_id`, `country_id`, `in_market_flag`, `opportunity_code`
+- `beverage.demand.dim_beverage_pack`: `beverage_pack_id`, `beverage_pack_code`, `beverage_pack_name`
+- `beverage.demand.dim_consumer_cohort`: `consumer_cohort_id`, `consumer_cohort_code`, `consumer_cohort_name`
+- `beverage.demand.dim_consumption_occasion`: `consumption_occasion_id`, `consumption_occasion_code`, `consumption_occasion_name`
+- `beverage.demand.dim_country`: `country_id`, `country_name`, `region_id`
+- `beverage.demand.dim_customer`: `customer_id`, `customer_name`, `customer_type_id`
+- `beverage.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `beverage.demand.dim_glp1_exposure`: `glp1_exposure_id`, `glp1_exposure_code`, `glp1_exposure_name`
+- `beverage.demand.dim_product_category`: `product_category_id`, `product_category_code`, `product_category_name`
+- `beverage.demand.dim_sales_channel`: `sales_channel_id`, `sales_channel_code`, `sales_channel_name`
+- `beverage.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+- `beverage.demand.fact_consumption_occasions`: `fiscal_quarter_id`, `scenario_id`, `consumption_occasion_id`, `product_category_id`, `country_id`, `consumer_cohort_id`, `occasion_quantity`
+- `beverage.price.fact_beverage_pack_price`: `fiscal_quarter_id`, `scenario_id`, `beverage_pack_id`, `product_category_id`, `country_id`, `pack_price_change_percent`
+- `beverage.price.fact_packaging_cost`: `fiscal_quarter_id`, `scenario_id`, `packaging_material_id`, `product_category_id`, `packaging_cost_amount`, `cost_change_percent`
+- `beverage.supply.dim_packaging_material`: `packaging_material_id`, `packaging_material_code`, `packaging_material_name`
+- `beverage.supply.fact_case_fill_rate`: `fiscal_quarter_id`, `scenario_id`, `country_id`, `customer_id`, `product_category_id`, `case_fill_percent`
 
 ### Q1 2026 (2)
 
 Is international demand still solid, or is there macro risk after the conflict?
 
-- `beverage.demand.fact_country_volume`: `fiscal_quarter_id`, `country_id`, `region_id`, `brand_id`, `rebound_timing_code`, `sustainable_flag`
-- `beverage.price.fact_spend_mix`: `fiscal_quarter_id`, `region_id`, `above_growth_flag`, `spend_amount`
-
-### Q1 2026 (3)
-
-How sustainable is the Frito-Lay North America volume inflection after possible ship-ahead of shelf resets and winter storms, and what are repeat rates on the refill orders?
-
-- `beverage.demand.fact_shipment_timing`: `fiscal_quarter_id`, `brand_id`, `region_id`, `customer_id`, `inflection_durable_flag`, `storm_quantity`
-- `beverage.demand.fact_repeat`: `fiscal_quarter_id`, `brand_id`, `customer_id`, `consumer_repeat_flag`, `repeat_rate`
-- `beverage.geography.dim_region`: `region_code`, `region_name`
-- `beverage.product.dim_brand`: `category_id`, `brand_code`, `brand_name`
-
-### Q1 2026 (5)
-
-How much of PepsiCo Beverages North America volume pressure is smaller packs and price-pack architecture, and should volume declines moderate through the year?
-
-- `beverage.product.dim_pack`: `brand_id`, `pack_code`, `pack_name`
-- `beverage.demand.fact_pack_mix`: `fiscal_quarter_id`, `pack_id`, `brand_id`, `region_id`, `category_id`, `pack_share`
-- `beverage.demand.fact_volume_bridge`: `fiscal_quarter_id`, `category_id`, `pack_id`, `region_id`, `pack_contribution_share`, `category_contribution_share`
-- `beverage.geography.dim_region`: `region_code`, `region_name`
-
-### Q1 2026 (6)
-
-How should innovation versus distribution gains in Frito-Lay North America compare in the second quarter versus the first, as protein and better-for-you items ship?
-
-- `beverage.demand.fact_innovation_volume`: `fiscal_quarter_id`, `brand_id`, `category_id`, `country_id`, `innovation_quantity`, `pipeline_ready_flag`
-- `beverage.demand.fact_distribution`: `fiscal_quarter_id`, `brand_id`, `customer_id`, `country_id`, `versus_innovation_code`, `placement_count`
-- `beverage.geography.dim_region`: `region_code`, `region_name`
-- `beverage.product.dim_category`: `category_code`, `category_name`
+- `beverage.demand.dim_beverage_pack`: `beverage_pack_id`, `beverage_pack_code`, `beverage_pack_name`
+- `beverage.demand.dim_consumer_cohort`: `consumer_cohort_id`, `consumer_cohort_code`, `consumer_cohort_name`
+- `beverage.demand.dim_country`: `country_id`, `country_name`, `region_id`
+- `beverage.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `beverage.demand.dim_pepsico_snack_brand`: `pepsico_snack_brand_id`, `pepsico_snack_brand_code`, `pepsico_snack_brand_name`
+- `beverage.demand.dim_product_category`: `product_category_id`, `product_category_code`, `product_category_name`
+- `beverage.demand.dim_sales_channel`: `sales_channel_id`, `sales_channel_code`, `sales_channel_name`
+- `beverage.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+- `beverage.demand.dim_snack_pack`: `snack_pack_id`, `snack_pack_code`, `snack_pack_name`
+- `beverage.demand.fact_beverage_pack_volume`: `fiscal_quarter_id`, `scenario_id`, `beverage_pack_id`, `product_category_id`, `country_id`, `unit_case_quantity`, `package_quantity`
+- `beverage.demand.fact_snack_pack_volume`: `fiscal_quarter_id`, `scenario_id`, `snack_pack_id`, `pepsico_snack_brand_id`, `country_id`, `snack_weight_quantity`
+- `beverage.price.fact_beverage_pack_price`: `fiscal_quarter_id`, `scenario_id`, `beverage_pack_id`, `product_category_id`, `country_id`, `pack_price_change_percent`
+- `beverage.price.fact_input_cost`: `fiscal_quarter_id`, `scenario_id`, `commodity_id`, `country_id`, `input_cost_amount`
+- `beverage.supply.dim_commodity`: `commodity_id`, `commodity_code`, `commodity_name`
 
 ### Q1 2026 (9)
 
 Is the expected sequential improvement in Frito-Lay North America broad-based, or should organic sales keep rising from the 1% just reported, and what guardrails apply for the rest of the year?
 
-- `beverage.demand.fact_division_path`: `fiscal_quarter_id`, `category_id`, `region_id`, `broad_based_flag`, `guardrail_code`
-- `beverage.geography.dim_region`: `region_code`, `region_name`
-- `beverage.price.fact_organic_outlook`: `fiscal_quarter_id`, `region_id`, `country_id`, `organic_growth_rate`, `conservative_flag`, `price_contribution_rate`
-- `beverage.product.dim_brand`: `category_id`, `brand_code`, `brand_name`
-
-### Q1 2026 (12)
-
-Who is driving the increase in consumption occasions, and are those occasions different from the core user?
-
-- `beverage.demand.fact_occasion`: `fiscal_quarter_id`, `consumer_segment_id`, `category_id`, `brand_id`, `new_user_flag`, `lost_to_cheaper_food_flag`
-- `beverage.product.dim_consumer_segment`: `consumer_segment_code`, `consumer_segment_name`
+- `beverage.demand.dim_beverage_pack`: `beverage_pack_id`, `beverage_pack_code`, `beverage_pack_name`
+- `beverage.demand.dim_country`: `country_id`, `country_name`, `region_id`
+- `beverage.demand.dim_customer_type`: `customer_type_id`, `customer_type_code`, `customer_type_name`
+- `beverage.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `beverage.demand.dim_glp1_exposure`: `glp1_exposure_id`, `glp1_exposure_code`, `glp1_exposure_name`
+- `beverage.demand.dim_pepsico_snack_brand`: `pepsico_snack_brand_id`, `pepsico_snack_brand_code`, `pepsico_snack_brand_name`
+- `beverage.demand.dim_product_category`: `product_category_id`, `product_category_code`, `product_category_name`
+- `beverage.demand.dim_sales_channel`: `sales_channel_id`, `sales_channel_code`, `sales_channel_name`
+- `beverage.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+- `beverage.demand.dim_snack_pack`: `snack_pack_id`, `snack_pack_code`, `snack_pack_name`
+- `beverage.demand.fact_pepsico_snack_volume`: `fiscal_quarter_id`, `scenario_id`, `country_id`, `pepsico_snack_brand_id`, `sales_channel_id`, `snack_weight_quantity`, `snack_serving_quantity`
+- `beverage.price.fact_beverage_pack_price`: `fiscal_quarter_id`, `scenario_id`, `beverage_pack_id`, `product_category_id`, `country_id`, `pack_price_change_percent`
+- `beverage.price.fact_pepsico_snack_net_revenue`: `fiscal_quarter_id`, `scenario_id`, `country_id`, `pepsico_snack_brand_id`, `sales_channel_id`, `net_revenue_amount`
+- `beverage.price.fact_snack_pack_price`: `fiscal_quarter_id`, `scenario_id`, `snack_pack_id`, `pepsico_snack_brand_id`, `country_id`, `pack_price_change_percent`
 
 ### Q1 2026 (14)
 
 What does World Cup activation look like for Frito-Lay versus past events, and is any uplift in the outlook?
 
-- `beverage.demand.fact_event_volume`: `fiscal_quarter_id`, `event_id`, `region_id`, `brand_id`, `category_id`, `in_outlook_flag`
-- `beverage.demand.dim_event`: `event_code`, `event_name`
-- `beverage.product.dim_brand`: `category_id`, `brand_code`, `brand_name`
-
-### Q3 2025 (1)
-
-How much of the food and beverage volume pressure is the shift to smaller packs versus soft category trends or share loss, and can the innovation pipeline turn volume?
-
-- `beverage.demand.fact_volume_bridge`: `fiscal_quarter_id`, `category_id`, `pack_id`, `region_id`, `pack_contribution_share`, `category_contribution_share`
-- `beverage.product.dim_pack`: `brand_id`, `pack_code`, `pack_name`
-- `beverage.demand.fact_pack_mix`: `fiscal_quarter_id`, `pack_id`, `brand_id`, `region_id`, `category_id`, `pack_share`
-- `beverage.demand.fact_innovation`: `fiscal_quarter_id`, `brand_id`, `category_id`, `country_id`, `in_market_flag`, `opportunity_code`
-
-### Q3 2025 (2)
-
-Which of innovation, functional products, portfolio reshaping, and price-pack architecture matter most for accelerating 2026 revenue, and is the long-term growth algorithm visible inside 2026?
-
-- `beverage.demand.fact_growth_lever`: `fiscal_quarter_id`, `category_id`, `brand_id`, `leading_lever_code`, `visible_in_year_flag`
-- `beverage.demand.fact_pack_mix`: `fiscal_quarter_id`, `pack_id`, `brand_id`, `region_id`, `category_id`, `decline_moderates_flag`
-- `beverage.product.dim_pack`: `brand_id`, `pack_code`, `pack_name`
-
-### Q3 2025 (4)
-
-How healthy is the consumer in Latin America, Asia Pacific, and India after a weather-hit quarter and a better September, and what supports the expected acceleration?
-
-- `beverage.geography.dim_region`: `region_code`, `region_name`
-- `beverage.geography.dim_country`: `region_id`, `country_code`, `country_name`
-- `beverage.demand.fact_consumer_demand`: `fiscal_quarter_id`, `region_id`, `country_id`, `calendar_day_id`, `demand_index`, `improved_flag`
-- `beverage.demand.fact_country_volume`: `fiscal_quarter_id`, `country_id`, `region_id`, `brand_id`, `rebound_timing_code`, `sustainable_flag`
-
-### Q3 2025 (5)
-
-What is driving better U.S. Pepsi brand momentum and share, messaging or more marketing, and does optimizing marketing ROI mean lower spend?
-
-- `beverage.demand.fact_brand_trend`: `fiscal_quarter_id`, `brand_id`, `country_id`, `message_driven_flag`, `volume_growth_rate`
-- `beverage.price.fact_marketing_spend`: `fiscal_quarter_id`, `region_id`, `brand_id`, `lower_spend_flag`, `spend_amount`, `timing_code`
-- `beverage.demand.fact_value_share`: `fiscal_quarter_id`, `brand_id`, `region_id`, `category_id`, `declining_flag`, `value_share_rate`
-- `beverage.product.dim_brand`: `category_id`, `brand_code`, `brand_name`
-
-### Q3 2025 (6)
-
-Was Frito-Lay North America's return to growth in the last month mostly an easier comparison, or innovation and everyday execution, on the way to flat fourth-quarter organic sales?
-
-- `beverage.demand.fact_comparison_base`: `fiscal_quarter_id`, `category_id`, `region_id`, `easier_comparison_flag`, `execution_flag`
-- `beverage.price.fact_organic_outlook`: `fiscal_quarter_id`, `region_id`, `country_id`, `organic_growth_rate`, `conservative_flag`, `price_contribution_rate`
-- `beverage.geography.dim_region`: `region_code`, `region_name`
-- `beverage.product.dim_brand`: `category_id`, `brand_code`, `brand_name`
+- `beverage.demand.dim_beverage_pack`: `beverage_pack_id`, `beverage_pack_code`, `beverage_pack_name`
+- `beverage.demand.dim_country`: `country_id`, `country_name`, `region_id`
+- `beverage.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `beverage.demand.dim_marketing_event`: `marketing_event_id`, `marketing_event_code`, `marketing_event_name`
+- `beverage.demand.dim_pepsico_snack_brand`: `pepsico_snack_brand_id`, `pepsico_snack_brand_code`, `pepsico_snack_brand_name`
+- `beverage.demand.dim_product_category`: `product_category_id`, `product_category_code`, `product_category_name`
+- `beverage.demand.dim_region`: `region_id`, `region_code`, `region_name`
+- `beverage.demand.dim_sales_channel`: `sales_channel_id`, `sales_channel_code`, `sales_channel_name`
+- `beverage.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+- `beverage.demand.dim_snack_pack`: `snack_pack_id`, `snack_pack_code`, `snack_pack_name`
+- `beverage.demand.fact_pepsico_snack_volume`: `fiscal_quarter_id`, `scenario_id`, `country_id`, `pepsico_snack_brand_id`, `sales_channel_id`, `snack_weight_quantity`, `snack_serving_quantity`
+- `beverage.price.fact_beverage_pack_price`: `fiscal_quarter_id`, `scenario_id`, `beverage_pack_id`, `product_category_id`, `country_id`, `pack_price_change_percent`
+- `beverage.price.fact_pepsico_snack_net_revenue`: `fiscal_quarter_id`, `scenario_id`, `country_id`, `pepsico_snack_brand_id`, `sales_channel_id`, `net_revenue_amount`
+- `beverage.price.fact_snack_pack_price`: `fiscal_quarter_id`, `scenario_id`, `snack_pack_id`, `pepsico_snack_brand_id`, `country_id`, `pack_price_change_percent`
 
 ### Q3 2025 (7)
 
 How large a headwind is SKU rationalization on organic growth?
 
-- `beverage.demand.fact_sku_count`: `fiscal_quarter_id`, `brand_id`, `category_id`, `region_id`, `discontinued_sku_count`, `remaining_sku_count`
-- `beverage.price.fact_organic_outlook`: `fiscal_quarter_id`, `region_id`, `country_id`, `organic_growth_rate`, `conservative_flag`, `price_contribution_rate`
-- `beverage.demand.fact_division_path`: `fiscal_quarter_id`, `category_id`, `region_id`, `broad_based_flag`, `guardrail_code`
-
-### Q3 2025 (9)
-
-Where has volume turned positive in the last four weeks, and is that company-wide or only where service levels recovered?
-
-- `beverage.demand.fact_recent_volume`: `fiscal_quarter_id`, `region_id`, `country_id`, `calendar_day_id`, `four_week_quantity`, `positive_flag`
-- `beverage.supply.fact_service_level`: `fiscal_quarter_id`, `country_id`, `brand_id`, `customer_id`, `recovered_flag`, `fill_rate`
+- `beverage.demand.dim_beverage_pack`: `beverage_pack_id`, `beverage_pack_code`, `beverage_pack_name`
+- `beverage.demand.dim_calendar_month`: `calendar_month_id`, `calendar_month_code`, `calendar_month_name`, `fiscal_quarter_id`
+- `beverage.demand.dim_consumer_cohort`: `consumer_cohort_id`, `consumer_cohort_code`, `consumer_cohort_name`
+- `beverage.demand.dim_country`: `country_id`, `country_name`, `region_id`
+- `beverage.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `beverage.demand.dim_pepsico_snack_brand`: `pepsico_snack_brand_id`, `pepsico_snack_brand_code`, `pepsico_snack_brand_name`
+- `beverage.demand.dim_product_category`: `product_category_id`, `product_category_code`, `product_category_name`
+- `beverage.demand.dim_region`: `region_id`, `region_code`, `region_name`
+- `beverage.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+- `beverage.demand.dim_snack_pack`: `snack_pack_id`, `snack_pack_code`, `snack_pack_name`
+- `beverage.demand.fact_beverage_pack_volume`: `fiscal_quarter_id`, `scenario_id`, `beverage_pack_id`, `product_category_id`, `country_id`, `unit_case_quantity`, `package_quantity`
+- `beverage.demand.fact_snack_pack_volume`: `fiscal_quarter_id`, `scenario_id`, `snack_pack_id`, `pepsico_snack_brand_id`, `country_id`, `snack_weight_quantity`
+- `beverage.price.fact_organic_revenue_growth`: `fiscal_quarter_id`, `scenario_id`, `region_id`, `country_id`, `organic_growth_percent`, `volume_contribution_percent`, `price_contribution_percent`
+- `beverage.supply.dim_commodity`: `commodity_id`, `commodity_code`, `commodity_name`
+- `beverage.supply.fact_commodity_cover_duration`: `fiscal_quarter_id`, `scenario_id`, `commodity_id`, `coverage_duration_months`
 
 ### Q3 2025 (10)
 
 Why address beverage protein with in-house brands such as Muscle Milk and Propel rather than buying or partnering, as in energy and prebiotic?
 
-- `beverage.demand.fact_make_or_partner`: `fiscal_quarter_id`, `brand_id`, `category_id`, `different_from_adjacent_flag`, `route_code`
-- `beverage.product.dim_brand`: `category_id`, `brand_code`, `brand_name`
-- `beverage.product.dim_category`: `category_code`, `category_name`
-
-### Q3 2025 (12)
-
-In the U.S., how much of the slowdown is structural healthier eating versus cyclical value-seeking, and how does that compare with international markets?
-
-- `beverage.demand.fact_preference_shift`: `fiscal_quarter_id`, `region_id`, `category_id`, `consumer_segment_id`, `driver_code`, `international_same_flag`
-- `beverage.demand.fact_consumer_demand`: `fiscal_quarter_id`, `region_id`, `country_id`, `calendar_day_id`, `demand_index`, `improved_flag`
-- `beverage.product.dim_consumer_segment`: `consumer_segment_code`, `consumer_segment_name`
+- `beverage.demand.dim_beverage_pack`: `beverage_pack_id`, `beverage_pack_code`, `beverage_pack_name`
+- `beverage.demand.dim_country`: `country_id`, `country_name`, `region_id`
+- `beverage.demand.dim_customer`: `customer_id`, `customer_name`, `customer_type_id`
+- `beverage.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `beverage.demand.dim_pepsico_beverage_brand`: `pepsico_beverage_brand_id`, `pepsico_beverage_brand_code`, `pepsico_beverage_brand_name`
+- `beverage.demand.dim_pepsico_food_brand`: `pepsico_food_brand_id`, `pepsico_food_brand_code`, `pepsico_food_brand_name`
+- `beverage.demand.dim_pepsico_snack_brand`: `pepsico_snack_brand_id`, `pepsico_snack_brand_code`, `pepsico_snack_brand_name`
+- `beverage.demand.dim_product_category`: `product_category_id`, `product_category_code`, `product_category_name`
+- `beverage.demand.dim_sales_channel`: `sales_channel_id`, `sales_channel_code`, `sales_channel_name`
+- `beverage.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+- `beverage.demand.fact_pepsico_beverage_unit_case_volume`: `fiscal_quarter_id`, `scenario_id`, `country_id`, `pepsico_beverage_brand_id`, `sales_channel_id`, `unit_case_quantity`
+- `beverage.demand.fact_pepsico_food_volume`: `fiscal_quarter_id`, `scenario_id`, `country_id`, `pepsico_food_brand_id`, `sales_channel_id`, `food_weight_quantity`
+- `beverage.demand.fact_pepsico_snack_volume`: `fiscal_quarter_id`, `scenario_id`, `country_id`, `pepsico_snack_brand_id`, `sales_channel_id`, `snack_weight_quantity`, `snack_serving_quantity`
+- `beverage.price.fact_beverage_pack_price`: `fiscal_quarter_id`, `scenario_id`, `beverage_pack_id`, `product_category_id`, `country_id`, `pack_price_change_percent`
+- `beverage.supply.dim_currency`: `currency_id`, `currency_code`, `currency_name`
 
 ### Q4 2024 (2)
 
 How is Frito-Lay and the beverage business being managed differently in 2025 than in the second half of last year, given a muted North America top line?
 
-- `beverage.demand.fact_plan_pivot`: `fiscal_quarter_id`, `region_id`, `category_id`, `emphasis_code`, `pivot_flag`, `tougher_flag`
-- `beverage.geography.dim_region`: `region_code`, `region_name`
-- `beverage.product.dim_brand`: `category_id`, `brand_code`, `brand_name`
-- `beverage.demand.fact_division_volume`: `fiscal_quarter_id`, `category_id`, `region_id`, `brand_id`, `consumer_backdrop_flag`, `initiative_shortfall_flag`
+- `beverage.demand.dim_beverage_pack`: `beverage_pack_id`, `beverage_pack_code`, `beverage_pack_name`
+- `beverage.demand.dim_country`: `country_id`, `country_name`, `region_id`
+- `beverage.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `beverage.demand.dim_glp1_exposure`: `glp1_exposure_id`, `glp1_exposure_code`, `glp1_exposure_name`
+- `beverage.demand.dim_pepsico_snack_brand`: `pepsico_snack_brand_id`, `pepsico_snack_brand_code`, `pepsico_snack_brand_name`
+- `beverage.demand.dim_product_category`: `product_category_id`, `product_category_code`, `product_category_name`
+- `beverage.demand.dim_sales_channel`: `sales_channel_id`, `sales_channel_code`, `sales_channel_name`
+- `beverage.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+- `beverage.demand.dim_snack_pack`: `snack_pack_id`, `snack_pack_code`, `snack_pack_name`
+- `beverage.demand.fact_pepsico_snack_volume`: `fiscal_quarter_id`, `scenario_id`, `country_id`, `pepsico_snack_brand_id`, `sales_channel_id`, `snack_weight_quantity`, `snack_serving_quantity`
+- `beverage.price.dim_price_bridge_component`: `price_bridge_component_id`, `price_bridge_component_code`, `price_bridge_component_name`
+- `beverage.price.fact_beverage_pack_price`: `fiscal_quarter_id`, `scenario_id`, `beverage_pack_id`, `product_category_id`, `country_id`, `pack_price_change_percent`
+- `beverage.price.fact_pepsico_snack_net_revenue`: `fiscal_quarter_id`, `scenario_id`, `country_id`, `pepsico_snack_brand_id`, `sales_channel_id`, `net_revenue_amount`
+- `beverage.price.fact_snack_pack_price`: `fiscal_quarter_id`, `scenario_id`, `snack_pack_id`, `pepsico_snack_brand_id`, `country_id`, `pack_price_change_percent`
 
 ### Q4 2024 (3)
 
 How did Mexico perform in the fourth quarter in the same subdued consumer environment?
 
-- `beverage.demand.fact_country_volume`: `fiscal_quarter_id`, `country_id`, `region_id`, `brand_id`, `rebound_timing_code`, `sustainable_flag`
-- `beverage.geography.dim_region`: `region_code`, `region_name`
-- `beverage.geography.dim_country`: `region_id`, `country_code`, `country_name`
-- `beverage.demand.fact_division_volume`: `fiscal_quarter_id`, `category_id`, `region_id`, `brand_id`, `consumer_backdrop_flag`, `initiative_shortfall_flag`
-
-### Q4 2024 (4)
-
-For Frito-Lay, which matters more: price running ahead of the wallet, a shift toward healthier choices, or snacks losing meal occasions to cheaper food?
-
-- `beverage.demand.fact_snack_driver`: `fiscal_quarter_id`, `category_id`, `consumer_segment_id`, `leading_driver_code`, `confidence_code`
-- `beverage.demand.fact_occasion`: `fiscal_quarter_id`, `consumer_segment_id`, `category_id`, `brand_id`, `lost_to_cheaper_food_flag`, `new_user_flag`
-- `beverage.product.dim_consumer_segment`: `consumer_segment_code`, `consumer_segment_name`
-- `beverage.product.dim_brand`: `category_id`, `brand_code`, `brand_name`
-
-### Q4 2024 (6)
-
-What is different in recent salty-snack trends that supports confidence the category is on better footing after earlier upturns reversed?
-
-- `beverage.demand.fact_category_health`: `fiscal_quarter_id`, `category_id`, `region_id`, `better_footing_flag`, `category_growth_rate`, `extrapolate_flag`
-- `beverage.demand.fact_comparison_base`: `fiscal_quarter_id`, `category_id`, `region_id`, `easier_comparison_flag`, `execution_flag`
-- `beverage.demand.fact_industry_volume`: `fiscal_quarter_id`, `category_id`, `region_id`, `exit_rate`, `industry_growth_rate`, `company_gap_rate`
-
-### Q4 2024 (8)
-
-Has the view of the energy-drink category or PepsiCo's platform changed, and what execution or partner actions are planned to grow that part of the portfolio?
-
-- `beverage.demand.fact_energy_platform`: `fiscal_quarter_id`, `category_id`, `brand_id`, `bottler_id`, `view_changed_flag`, `partner_action_flag`
-- `beverage.supply.fact_service_level`: `fiscal_quarter_id`, `country_id`, `brand_id`, `customer_id`, `recovered_flag`, `fill_rate`
-- `beverage.product.dim_category`: `category_code`, `category_name`
-- `beverage.demand.fact_distribution`: `fiscal_quarter_id`, `brand_id`, `customer_id`, `country_id`, `versus_innovation_code`, `placement_count`
-
-### Q4 2024 (10)
-
-How incremental is the latest beverage partnership, and how is the Mountain Dew franchise expected to perform?
-
-- `beverage.demand.fact_partnership_volume`: `fiscal_quarter_id`, `brand_id`, `country_id`, `bottler_id`, `incremental_flag`, `incremental_quantity`
-- `beverage.demand.fact_brand_volume`: `fiscal_quarter_id`, `brand_id`, `country_id`, `product_line_id`, `line_managed_separately_flag`, `unit_case_quantity`
-- `beverage.demand.fact_brand_trend`: `fiscal_quarter_id`, `brand_id`, `country_id`, `volume_growth_rate`, `message_driven_flag`
-- `beverage.product.dim_brand`: `category_id`, `brand_code`, `brand_name`
-
-### Q4 2024 (11)
-
-Does rising GLP-1 use explain the salty-snack slowdown as outside studies suggest, or does that overstate the impact?
-
-- `beverage.demand.fact_glp1_demand`: `fiscal_quarter_id`, `consumer_segment_id`, `category_id`, `brand_id`, `explains_slowdown_flag`, `exposed_quantity`
-- `beverage.demand.fact_category_health`: `fiscal_quarter_id`, `category_id`, `region_id`, `better_footing_flag`, `category_growth_rate`, `extrapolate_flag`
+- `beverage.demand.dim_beverage_pack`: `beverage_pack_id`, `beverage_pack_code`, `beverage_pack_name`
+- `beverage.demand.dim_calendar_month`: `calendar_month_id`, `calendar_month_code`, `calendar_month_name`, `fiscal_quarter_id`
+- `beverage.demand.dim_consumer_cohort`: `consumer_cohort_id`, `consumer_cohort_code`, `consumer_cohort_name`
+- `beverage.demand.dim_country`: `country_id`, `country_name`, `region_id`
+- `beverage.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `beverage.demand.dim_glp1_exposure`: `glp1_exposure_id`, `glp1_exposure_code`, `glp1_exposure_name`
+- `beverage.demand.dim_pepsico_beverage_brand`: `pepsico_beverage_brand_id`, `pepsico_beverage_brand_code`, `pepsico_beverage_brand_name`
+- `beverage.demand.dim_product_category`: `product_category_id`, `product_category_code`, `product_category_name`
+- `beverage.demand.dim_sales_channel`: `sales_channel_id`, `sales_channel_code`, `sales_channel_name`
+- `beverage.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+- `beverage.demand.fact_glp1_exposed_beverage_volume`: `fiscal_quarter_id`, `scenario_id`, `glp1_exposure_id`, `product_category_id`, `country_id`, `beverage_unit_case_quantity`
+- `beverage.price.fact_beverage_pack_price`: `fiscal_quarter_id`, `scenario_id`, `beverage_pack_id`, `product_category_id`, `country_id`, `pack_price_change_percent`
+- `beverage.price.fact_pepsico_beverage_net_revenue`: `fiscal_quarter_id`, `scenario_id`, `country_id`, `pepsico_beverage_brand_id`, `sales_channel_id`, `net_revenue_amount`
+- `beverage.price.fact_pepsico_beverage_price_realization`: `fiscal_quarter_id`, `scenario_id`, `country_id`, `pepsico_beverage_brand_id`, `sales_channel_id`, `revenue_per_unit_case_amount`, `effective_price_change_percent`
 
 ### Q4 2024 (12)
 
 How aggressive does PepsiCo want to be in protein drinks given that segment's growth?
 
-- `beverage.demand.fact_protein_push`: `fiscal_quarter_id`, `category_id`, `brand_id`, `push_code`, `participation_share`
-- `beverage.demand.fact_industry_volume`: `fiscal_quarter_id`, `category_id`, `region_id`, `exit_rate`, `industry_growth_rate`, `company_gap_rate`
-- `beverage.demand.fact_category_health`: `fiscal_quarter_id`, `category_id`, `region_id`, `category_growth_rate`, `better_footing_flag`, `extrapolate_flag`
-- `beverage.product.dim_category`: `category_code`, `category_name`
+- `beverage.demand.dim_consumer_cohort`: `consumer_cohort_id`, `consumer_cohort_code`, `consumer_cohort_name`
+- `beverage.demand.dim_country`: `country_id`, `country_name`, `region_id`
+- `beverage.demand.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `beverage.demand.dim_pepsico_beverage_brand`: `pepsico_beverage_brand_id`, `pepsico_beverage_brand_code`, `pepsico_beverage_brand_name`
+- `beverage.demand.dim_pepsico_food_brand`: `pepsico_food_brand_id`, `pepsico_food_brand_code`, `pepsico_food_brand_name`
+- `beverage.demand.dim_pepsico_snack_brand`: `pepsico_snack_brand_id`, `pepsico_snack_brand_code`, `pepsico_snack_brand_name`
+- `beverage.demand.dim_region`: `region_id`, `region_code`, `region_name`
+- `beverage.demand.dim_sales_channel`: `sales_channel_id`, `sales_channel_code`, `sales_channel_name`
+- `beverage.demand.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+- `beverage.demand.fact_pepsico_beverage_unit_case_volume`: `fiscal_quarter_id`, `scenario_id`, `country_id`, `pepsico_beverage_brand_id`, `sales_channel_id`, `unit_case_quantity`
+- `beverage.demand.fact_pepsico_food_volume`: `fiscal_quarter_id`, `scenario_id`, `country_id`, `pepsico_food_brand_id`, `sales_channel_id`, `food_weight_quantity`
+- `beverage.demand.fact_pepsico_snack_volume`: `fiscal_quarter_id`, `scenario_id`, `country_id`, `pepsico_snack_brand_id`, `sales_channel_id`, `snack_weight_quantity`, `snack_serving_quantity`
+- `beverage.price.dim_pepsico_reporting_division`: `pepsico_reporting_division_id`, `pepsico_reporting_division_code`, `pepsico_reporting_division_name`
+- `beverage.price.fact_organic_revenue_growth`: `fiscal_quarter_id`, `scenario_id`, `region_id`, `country_id`, `organic_growth_percent`, `volume_contribution_percent`, `price_contribution_percent`

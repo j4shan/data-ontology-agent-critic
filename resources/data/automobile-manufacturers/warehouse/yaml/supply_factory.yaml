@@ -1,1409 +1,1294 @@
 schema_version: '3'
 nodes:
-- node_id: sf:automaker.supply.dim_component
-  descriptor:
-    qualified_name: automaker.supply.dim_component
-    display_name: Component
-    description: 'Component Automaker Inc buys or designs: memory, battery, sensors, actuators, aluminum,
-      rare earths, silicon carbide.'
-    synonyms: []
-    tags:
-    - dimension
-    - supply_factory
-    - automobile-manufacturers
-  accessor:
-    schema_id: accessor.snowflake.v1
+- accessor:
     properties:
       account: automaker.us-central-1
       database: AUTOMAKER
-      schema: SUPPLY
-      object: DIM_COMPONENT
       format: table
-  grain:
-    description: One row is one component.
-    components:
-    - identity_id: component_identity
-      dataset_columns:
-      - component_id
-      description: Identifier of the component.
+      object: DIM_PLANT_FUNCTION
+      schema: SUPPLY
+    schema_id: accessor.snowflake.v1
   columns:
-  - name: component_id
-    description: Identifier of the component.
-  - name: component_name
-    description: Name of the component.
-  - name: component_code
-    description: Code of the component.
-    value_description: memory, battery, sensor, camera, processor, controller, actuator, aluminum, rare_earth,
-      silicon_carbide, semiconductor
-  entity_definitions:
-  - identity_id: component_identity
-    dataset_columns:
-    - component_id
-    entity_universe: complete
-- node_id: sf:automaker.supply.dim_supplier
+  - name: plant_function_id
+    description: Identifier of the plant function.
+  - name: plant_function_code
+    description: Plant Function code.
+    value_description: vehicle_assembly, battery_cell_production, battery_pack_production, component_manufacturing, energy_product_manufacturing
+  - name: plant_function_name
+    description: Name of the plant function.
   descriptor:
-    qualified_name: automaker.supply.dim_supplier
-    display_name: Supplier
-    description: Outside supplier. A supplier is a commercial source, not a factory Automaker Inc runs.
+    description: Primary function of a plant.
+    display_name: Plant Function
+    qualified_name: automaker.supply.dim_plant_function
     synonyms: []
     tags:
     - dimension
     - supply_factory
     - automobile-manufacturers
-  accessor:
-    schema_id: accessor.snowflake.v1
+    - both
+    - plant
+    - assembly
+    - battery
+    - factory
+  entity_definitions:
+  - dataset_columns:
+    - plant_function_id
+    entity_universe: complete
+    identity_id: dim_plant_function_identity
+  grain:
+    components:
+    - dataset_columns:
+      - plant_function_id
+      description: Identifier of the plant function.
+      identity_id: dim_plant_function_identity
+    description: One row is one plant function.
+  node_id: sf:automaker.supply.dim_plant_function
+- accessor:
     properties:
       account: automaker.us-central-1
       database: AUTOMAKER
-      schema: SUPPLY
-      object: DIM_SUPPLIER
       format: table
-  grain:
-    description: One row is one supplier.
-    components:
-    - identity_id: supplier_identity
-      dataset_columns:
-      - supplier_id
-      description: Identifier of the supplier.
-  columns:
-  - name: supplier_id
-    description: Identifier of the supplier.
-  - name: supplier_name
-    description: Name of the supplier.
-  - name: supplier_code
-    description: Code of the supplier.
-    value_description: us_manufacturing, cell, memory, semiconductor, other
-  - name: country_id
-    description: Identifier of the country.
-  entity_definitions:
-  - identity_id: supplier_identity
-    dataset_columns:
-    - supplier_id
-    entity_universe: complete
-  - identity_id: country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
-- node_id: sf:automaker.supply.dim_plant
-  descriptor:
-    qualified_name: automaker.supply.dim_plant
-    display_name: Plant
-    description: Plant Automaker Inc operates, including Orion, Mexico, and Korea.
-    synonyms: []
-    tags:
-    - dimension
-    - supply_factory
-    - automobile-manufacturers
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: automaker.us-central-1
-      database: AUTOMAKER
-      schema: SUPPLY
       object: DIM_PLANT
-      format: table
-  grain:
-    description: One row is one plant.
-    components:
-    - identity_id: plant_identity
-      dataset_columns:
-      - plant_id
-      description: Identifier of the plant.
+      schema: SUPPLY
+    schema_id: accessor.snowflake.v1
   columns:
   - name: plant_id
     description: Identifier of the plant.
   - name: plant_name
     description: Name of the plant.
-  - name: plant_code
-    description: Code of the plant.
-    value_description: orion, mexico, korea, us_assembly, battery
   - name: country_id
-    description: Identifier of the country.
-  entity_definitions:
-  - identity_id: plant_identity
-    dataset_columns:
-    - plant_id
-    entity_universe: complete
-  - identity_id: country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
-- node_id: sf:automaker.supply.dim_regulation
+    description: Identifier of the related country.
+  - name: plant_function_id
+    description: Identifier of the related plant function.
   descriptor:
-    qualified_name: automaker.supply.dim_regulation
-    display_name: Regulation
-    description: 'Rule that gates a launch: state sensor rules, federal vehicle rules, or emissions rules.'
+    description: Plant operated for vehicle, battery, component, or energy production.
+    display_name: Plant
+    qualified_name: automaker.supply.dim_plant
     synonyms: []
     tags:
     - dimension
     - supply_factory
     - automobile-manufacturers
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: automaker.us-central-1
-      database: AUTOMAKER
-      schema: SUPPLY
-      object: DIM_REGULATION
-      format: table
-  grain:
-    description: One row is one regulation.
-    components:
-    - identity_id: regulation_identity
-      dataset_columns:
-      - regulation_id
-      description: Identifier of the regulation.
-  columns:
-  - name: regulation_id
-    description: Identifier of the regulation.
-  - name: regulation_name
-    description: Name of the regulation.
-  - name: regulation_code
-    description: Code of the regulation.
-    value_description: state_sensor, federal_vehicle, emissions, tariff, usmca
-  - name: country_id
-    description: Identifier of the country.
+    - both
+    - plant
+    - factory
+    - orion
+    - mexico
+    - korea
   entity_definitions:
-  - identity_id: regulation_identity
-    dataset_columns:
-    - regulation_id
+  - dataset_columns:
+    - plant_id
     entity_universe: complete
-  - identity_id: country_identity
-    dataset_columns:
+    identity_id: dim_plant_identity
+  - dataset_columns:
     - country_id
     entity_universe: partial
-- node_id: sf:automaker.supply.fact_plant_capacity
-  descriptor:
-    qualified_name: automaker.supply.fact_plant_capacity
-    display_name: Plant Capacity
-    description: Installed production capacity. It is not deliveries and not a margin.
-    synonyms: []
-    tags:
-    - capacity
-    - supply_factory
-    - automobile-manufacturers
-  accessor:
-    schema_id: accessor.snowflake.v1
+    identity_id: dim_country_identity
+  - dataset_columns:
+    - plant_function_id
+    entity_universe: partial
+    identity_id: dim_plant_function_identity
+  grain:
+    components:
+    - dataset_columns:
+      - plant_id
+      description: Identifier of the plant.
+      identity_id: dim_plant_identity
+    description: One row is one plant.
+  node_id: sf:automaker.supply.dim_plant
+- accessor:
     properties:
       account: automaker.us-central-1
       database: AUTOMAKER
-      schema: SUPPLY
-      object: FACT_PLANT_CAPACITY
       format: table
-  grain:
-    description: One row is one plant capacity.
-    components:
-    - identity_id: plant_capacity_identity
-      dataset_columns:
-      - plant_capacity_id
-      description: Identifier of the plant capacity.
+      object: DIM_COMPONENT_LEVEL
+      schema: SUPPLY
+    schema_id: accessor.snowflake.v1
   columns:
-  - name: plant_capacity_id
-    description: Identifier of the plant capacity.
-  - name: fiscal_quarter_id
-    description: Identifier of the fiscal quarter.
-  - name: plant_id
-    description: Identifier of the plant.
-  - name: vehicle_family_id
-    description: Identifier of the vehicle family.
-  - name: capacity_quantity
-    description: Annual unit capacity.
-  - name: fill_timeline_code
-    description: When the capacity could be filled.
-    value_description: this_year, next_year, later
+  - name: component_level_id
+    description: Identifier of the component level.
+  - name: component_level_code
+    description: Component Level code.
+    value_description: raw_material, processed_material, component, subassembly, system
+  - name: component_level_name
+    description: Name of the component level.
+  descriptor:
+    description: Level of a component in a bill of materials.
+    display_name: Component Level
+    qualified_name: automaker.supply.dim_component_level
+    synonyms: []
+    tags:
+    - dimension
+    - supply_factory
+    - automobile-manufacturers
+    - both
+    - component
+    - bom
+    - material
   entity_definitions:
-  - identity_id: plant_capacity_identity
-    dataset_columns:
-    - plant_capacity_id
+  - dataset_columns:
+    - component_level_id
     entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: plant_identity
-    dataset_columns:
-    - plant_id
-    entity_universe: partial
-  - identity_id: vehicle_family_identity
-    dataset_columns:
-    - vehicle_family_id
-    entity_universe: partial
-- node_id: sf:automaker.supply.fact_generation_capacity
-  descriptor:
-    qualified_name: automaker.supply.fact_generation_capacity
-    display_name: Generation Capacity
-    description: Planned units for a generation such as Optimus 4 versus Optimus 3.
-    synonyms: []
-    tags:
-    - capacity
-    - supply_factory
-    - automobile-manufacturers
-  accessor:
-    schema_id: accessor.snowflake.v1
+    identity_id: dim_component_level_identity
+  grain:
+    components:
+    - dataset_columns:
+      - component_level_id
+      description: Identifier of the component level.
+      identity_id: dim_component_level_identity
+    description: One row is one component level.
+  node_id: sf:automaker.supply.dim_component_level
+- accessor:
     properties:
       account: automaker.us-central-1
       database: AUTOMAKER
-      schema: SUPPLY
-      object: FACT_GENERATION_CAPACITY
       format: table
-  grain:
-    description: One row is one generation capacity.
-    components:
-    - identity_id: generation_capacity_identity
-      dataset_columns:
-      - generation_capacity_id
-      description: Identifier of the generation capacity.
-  columns:
-  - name: generation_capacity_id
-    description: Identifier of the generation capacity.
-  - name: fiscal_quarter_id
-    description: Identifier of the fiscal quarter.
-  - name: vehicle_program_id
-    description: Identifier of the vehicle program.
-  - name: plant_id
-    description: Identifier of the plant.
-  - name: capacity_quantity
-    description: Planned annual units.
-  - name: start_quarter_code
-    description: When production starts.
-    value_description: before_2027, 2027, later
-  - name: step_up_flag
-    description: Whether the generation is a step-up in units.
-  entity_definitions:
-  - identity_id: generation_capacity_identity
-    dataset_columns:
-    - generation_capacity_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: vehicle_program_identity
-    dataset_columns:
-    - vehicle_program_id
-    entity_universe: partial
-  - identity_id: plant_identity
-    dataset_columns:
-    - plant_id
-    entity_universe: partial
-- node_id: sf:automaker.supply.fact_production
-  descriptor:
-    qualified_name: automaker.supply.fact_production
-    display_name: Production
-    description: Units produced. Capacity and price are other facts.
-    synonyms: []
-    tags:
-    - quantity
-    - supply_factory
-    - automobile-manufacturers
-  accessor:
+      object: DIM_COMPONENT
+      schema: SUPPLY
     schema_id: accessor.snowflake.v1
-    properties:
-      account: automaker.us-central-1
-      database: AUTOMAKER
-      schema: SUPPLY
-      object: FACT_PRODUCTION
-      format: table
-  grain:
-    description: One row is one production.
-    components:
-    - identity_id: production_identity
-      dataset_columns:
-      - production_id
-      description: Identifier of the production.
   columns:
-  - name: production_id
-    description: Identifier of the production.
-  - name: fiscal_quarter_id
-    description: Identifier of the fiscal quarter.
-  - name: plant_id
-    description: Identifier of the plant.
-  - name: vehicle_program_id
-    description: Identifier of the vehicle program.
   - name: component_id
     description: Identifier of the component.
-  - name: production_quantity
-    description: Units produced.
-  - name: constrained_flag
-    description: Whether production is constrained.
+  - name: component_code
+    description: Component code.
+    value_description: aluminum, rare_earth_magnets, silicon_carbide, memory_chip, battery_cell, camera, lidar_sensor, processor,
+      controller, actuator, steel
+  - name: component_name
+    description: Name of the component.
+  - name: component_level_id
+    description: Identifier of the related component level.
+  descriptor:
+    description: Component, material, or system used in a vehicle or robot.
+    display_name: Component
+    qualified_name: automaker.supply.dim_component
+    synonyms: []
+    tags:
+    - dimension
+    - supply_factory
+    - automobile-manufacturers
+    - both
+    - component
+    - battery
+    - memory
+    - sensor
+    - aluminum
+    - semiconductor
   entity_definitions:
-  - identity_id: production_identity
-    dataset_columns:
-    - production_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: plant_identity
-    dataset_columns:
-    - plant_id
-    entity_universe: partial
-  - identity_id: vehicle_program_identity
-    dataset_columns:
-    - vehicle_program_id
-    entity_universe: partial
-  - identity_id: component_identity
-    dataset_columns:
+  - dataset_columns:
     - component_id
-    entity_universe: partial
-- node_id: sf:automaker.supply.fact_downtime
-  descriptor:
-    qualified_name: automaker.supply.fact_downtime
-    display_name: Downtime
-    description: Factory downtime for a launch. The volume effect is not stored here.
-    synonyms: []
-    tags:
-    - capacity
-    - supply_factory
-    - automobile-manufacturers
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: automaker.us-central-1
-      database: AUTOMAKER
-      schema: SUPPLY
-      object: FACT_DOWNTIME
-      format: table
-  grain:
-    description: One row is one downtime.
-    components:
-    - identity_id: downtime_identity
-      dataset_columns:
-      - downtime_id
-      description: Identifier of the downtime.
-  columns:
-  - name: downtime_id
-    description: Identifier of the downtime.
-  - name: fiscal_quarter_id
-    description: Identifier of the fiscal quarter.
-  - name: plant_id
-    description: Identifier of the plant.
-  - name: vehicle_program_id
-    description: Identifier of the vehicle program.
-  - name: downtime_days
-    description: Days of downtime in the guide.
-  - name: more_downtime_flag
-    description: Whether more downtime should be expected.
-  entity_definitions:
-  - identity_id: downtime_identity
-    dataset_columns:
-    - downtime_id
     entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
+    identity_id: dim_component_identity
+  - dataset_columns:
+    - component_level_id
     entity_universe: partial
-  - identity_id: plant_identity
-    dataset_columns:
-    - plant_id
-    entity_universe: partial
-  - identity_id: vehicle_program_identity
-    dataset_columns:
-    - vehicle_program_id
-    entity_universe: partial
-- node_id: sf:automaker.supply.fact_changeover
-  descriptor:
-    qualified_name: automaker.supply.fact_changeover
-    display_name: Changeover
-    description: Whether a truck changeover hits a quarter's volume, and whether that effect is already
-      behind.
-    synonyms: []
-    tags:
-    - quantity
-    - supply_factory
-    - automobile-manufacturers
-  accessor:
-    schema_id: accessor.snowflake.v1
+    identity_id: dim_component_level_identity
+  grain:
+    components:
+    - dataset_columns:
+      - component_id
+      description: Identifier of the component.
+      identity_id: dim_component_identity
+    description: One row is one component.
+  node_id: sf:automaker.supply.dim_component
+- accessor:
     properties:
       account: automaker.us-central-1
       database: AUTOMAKER
-      schema: SUPPLY
-      object: FACT_CHANGEOVER
       format: table
-  grain:
-    description: One row is one changeover.
-    components:
-    - identity_id: changeover_identity
-      dataset_columns:
-      - changeover_id
-      description: Identifier of the changeover.
-  columns:
-  - name: changeover_id
-    description: Identifier of the changeover.
-  - name: fiscal_quarter_id
-    description: Identifier of the fiscal quarter.
-  - name: vehicle_program_id
-    description: Identifier of the vehicle program.
-  - name: plant_id
-    description: Identifier of the plant.
-  - name: delivery_quantity
-    description: Volume in the changeover quarter.
-  - name: effect_behind_flag
-    description: Whether the volume effect is already behind.
-  - name: lands_next_year_flag
-    description: Whether volume and mix effects land next year.
-  entity_definitions:
-  - identity_id: changeover_identity
-    dataset_columns:
-    - changeover_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: vehicle_program_identity
-    dataset_columns:
-    - vehicle_program_id
-    entity_universe: partial
-  - identity_id: plant_identity
-    dataset_columns:
-    - plant_id
-    entity_universe: partial
-- node_id: sf:automaker.supply.fact_inventory
-  descriptor:
-    qualified_name: automaker.supply.fact_inventory
-    display_name: Inventory
-    description: Dealer and company inventory. Weeks on hand are supply, not a price.
-    synonyms: []
-    tags:
-    - capacity
-    - supply_factory
-    - automobile-manufacturers
-  accessor:
+      object: DIM_SUPPLIER
+      schema: SUPPLY
     schema_id: accessor.snowflake.v1
-    properties:
-      account: automaker.us-central-1
-      database: AUTOMAKER
-      schema: SUPPLY
-      object: FACT_INVENTORY
-      format: table
-  grain:
-    description: One row is one inventory.
-    components:
-    - identity_id: inventory_identity
-      dataset_columns:
-      - inventory_id
-      description: Identifier of the inventory.
   columns:
-  - name: inventory_id
-    description: Identifier of the inventory.
-  - name: fiscal_quarter_id
-    description: Identifier of the fiscal quarter.
-  - name: vehicle_family_id
-    description: Identifier of the vehicle family.
+  - name: supplier_id
+    description: Identifier of the supplier.
+  - name: supplier_name
+    description: Name of the supplier.
   - name: country_id
-    description: Identifier of the country.
-  - name: weeks_on_hand
-    description: Weeks of inventory.
-  - name: rebuild_flag
-    description: Whether depleted inventory can be rebuilt.
-  - name: tight_discipline_flag
-    description: Whether tight discipline continues.
+    description: Identifier of the related country.
+  descriptor:
+    description: Outside supplier of components or materials.
+    display_name: Supplier
+    qualified_name: automaker.supply.dim_supplier
+    synonyms: []
+    tags:
+    - dimension
+    - supply_factory
+    - automobile-manufacturers
+    - both
+    - supplier
+    - sourcing
+    - manufacturing
   entity_definitions:
-  - identity_id: inventory_identity
-    dataset_columns:
-    - inventory_id
+  - dataset_columns:
+    - supplier_id
     entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: vehicle_family_identity
-    dataset_columns:
-    - vehicle_family_id
-    entity_universe: partial
-  - identity_id: country_identity
-    dataset_columns:
+    identity_id: dim_supplier_identity
+  - dataset_columns:
     - country_id
     entity_universe: partial
-- node_id: sf:automaker.supply.fact_weeks_cover
-  descriptor:
-    qualified_name: automaker.supply.fact_weeks_cover
-    display_name: Weeks of Cover
-    description: Weeks of aluminum, semiconductors, and rare earths on hand.
-    synonyms: []
-    tags:
-    - capacity
-    - supply_factory
-    - automobile-manufacturers
-  accessor:
-    schema_id: accessor.snowflake.v1
+    identity_id: dim_country_identity
+  grain:
+    components:
+    - dataset_columns:
+      - supplier_id
+      description: Identifier of the supplier.
+      identity_id: dim_supplier_identity
+    description: One row is one supplier.
+  node_id: sf:automaker.supply.dim_supplier
+- accessor:
     properties:
       account: automaker.us-central-1
       database: AUTOMAKER
-      schema: SUPPLY
-      object: FACT_WEEKS_COVER
       format: table
-  grain:
-    description: One row is one weeks of cover.
-    components:
-    - identity_id: weeks_cover_identity
-      dataset_columns:
-      - weeks_cover_id
-      description: Identifier of the weeks of cover.
-  columns:
-  - name: weeks_cover_id
-    description: Identifier of the weeks of cover.
-  - name: fiscal_quarter_id
-    description: Identifier of the fiscal quarter.
-  - name: component_id
-    description: Identifier of the component.
-  - name: supplier_id
-    description: Identifier of the supplier.
-  - name: weeks_on_hand
-    description: Weeks of the material on hand.
-  - name: alternate_weeks
-    description: Weeks to bring up an alternate source.
-  entity_definitions:
-  - identity_id: weeks_cover_identity
-    dataset_columns:
-    - weeks_cover_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: component_identity
-    dataset_columns:
-    - component_id
-    entity_universe: partial
-  - identity_id: supplier_identity
-    dataset_columns:
-    - supplier_id
-    entity_universe: partial
-- node_id: sf:automaker.supply.fact_memory_cover
-  descriptor:
-    qualified_name: automaker.supply.fact_memory_cover
-    display_name: Memory Cover
-    description: How much memory supply is already locked. The price sits on the price slice.
-    synonyms: []
-    tags:
-    - capacity
-    - supply_factory
-    - automobile-manufacturers
-  accessor:
+      object: DIM_SOURCING_MODE
+      schema: SUPPLY
     schema_id: accessor.snowflake.v1
-    properties:
-      account: automaker.us-central-1
-      database: AUTOMAKER
-      schema: SUPPLY
-      object: FACT_MEMORY_COVER
-      format: table
-  grain:
-    description: One row is one memory cover.
-    components:
-    - identity_id: memory_cover_identity
-      dataset_columns:
-      - memory_cover_id
-      description: Identifier of the memory cover.
-  columns:
-  - name: memory_cover_id
-    description: Identifier of the memory cover.
-  - name: fiscal_quarter_id
-    description: Identifier of the fiscal quarter.
-  - name: component_id
-    description: Identifier of the component.
-  - name: supplier_id
-    description: Identifier of the supplier.
-  - name: coverage_months
-    description: Months of memory already locked.
-  - name: shortage_flag
-    description: Whether memory is short.
-  entity_definitions:
-  - identity_id: memory_cover_identity
-    dataset_columns:
-    - memory_cover_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: component_identity
-    dataset_columns:
-    - component_id
-    entity_universe: partial
-  - identity_id: supplier_identity
-    dataset_columns:
-    - supplier_id
-    entity_universe: partial
-- node_id: sf:automaker.supply.fact_shortage
-  descriptor:
-    qualified_name: automaker.supply.fact_shortage
-    display_name: Shortage
-    description: Whether a raw material is already short or at risk.
-    synonyms: []
-    tags:
-    - capacity
-    - supply_factory
-    - automobile-manufacturers
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: automaker.us-central-1
-      database: AUTOMAKER
-      schema: SUPPLY
-      object: FACT_SHORTAGE
-      format: table
-  grain:
-    description: One row is one shortage.
-    components:
-    - identity_id: shortage_identity
-      dataset_columns:
-      - shortage_id
-      description: Identifier of the shortage.
-  columns:
-  - name: shortage_id
-    description: Identifier of the shortage.
-  - name: fiscal_quarter_id
-    description: Identifier of the fiscal quarter.
-  - name: component_id
-    description: Identifier of the component.
-  - name: supplier_id
-    description: Identifier of the supplier.
-  - name: short_flag
-    description: Whether the material is short.
-  - name: conflict_risk_flag
-    description: Whether conflict puts it at risk.
-  entity_definitions:
-  - identity_id: shortage_identity
-    dataset_columns:
-    - shortage_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: component_identity
-    dataset_columns:
-    - component_id
-    entity_universe: partial
-  - identity_id: supplier_identity
-    dataset_columns:
-    - supplier_id
-    entity_universe: partial
-- node_id: sf:automaker.supply.fact_hedge_cover
-  descriptor:
-    qualified_name: automaker.supply.fact_hedge_cover
-    display_name: Hedge Cover
-    description: Which commodities are hedged. The commodity price is not stored here.
-    synonyms: []
-    tags:
-    - capacity
-    - supply_factory
-    - automobile-manufacturers
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: automaker.us-central-1
-      database: AUTOMAKER
-      schema: SUPPLY
-      object: FACT_HEDGE_COVER
-      format: table
-  grain:
-    description: One row is one hedge cover.
-    components:
-    - identity_id: hedge_cover_identity
-      dataset_columns:
-      - hedge_cover_id
-      description: Identifier of the hedge cover.
-  columns:
-  - name: hedge_cover_id
-    description: Identifier of the hedge cover.
-  - name: fiscal_quarter_id
-    description: Identifier of the fiscal quarter.
-  - name: component_id
-    description: Identifier of the component.
-  - name: hedged_flag
-    description: Whether the commodity is hedged.
-  - name: coverage_months
-    description: Months of hedge cover.
-  entity_definitions:
-  - identity_id: hedge_cover_identity
-    dataset_columns:
-    - hedge_cover_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: component_identity
-    dataset_columns:
-    - component_id
-    entity_universe: partial
-- node_id: sf:automaker.supply.fact_constraint
-  descriptor:
-    qualified_name: automaker.supply.fact_constraint
-    display_name: Supply Constraint
-    description: How long a constraint lasts, including energy storage and the bottlenecks capex is meant
-      to relieve.
-    synonyms: []
-    tags:
-    - capacity
-    - supply_factory
-    - automobile-manufacturers
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: automaker.us-central-1
-      database: AUTOMAKER
-      schema: SUPPLY
-      object: FACT_CONSTRAINT
-      format: table
-  grain:
-    description: One row is one supply constraint.
-    components:
-    - identity_id: constraint_identity
-      dataset_columns:
-      - constraint_id
-      description: Identifier of the supply constraint.
-  columns:
-  - name: constraint_id
-    description: Identifier of the supply constraint.
-  - name: fiscal_quarter_id
-    description: Identifier of the fiscal quarter.
-  - name: component_id
-    description: Identifier of the component.
-  - name: vehicle_family_id
-    description: Identifier of the vehicle family.
-  - name: plant_id
-    description: Identifier of the plant.
-  - name: constrained_flag
-    description: Whether supply is constrained.
-  - name: duration_code
-    description: How long the constraint lasts.
-    value_description: this_quarter, this_year, multi_year
-  entity_definitions:
-  - identity_id: constraint_identity
-    dataset_columns:
-    - constraint_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: component_identity
-    dataset_columns:
-    - component_id
-    entity_universe: partial
-  - identity_id: vehicle_family_identity
-    dataset_columns:
-    - vehicle_family_id
-    entity_universe: partial
-  - identity_id: plant_identity
-    dataset_columns:
-    - plant_id
-    entity_universe: partial
-- node_id: sf:automaker.supply.fact_inhouse_capacity
-  descriptor:
-    qualified_name: automaker.supply.fact_inhouse_capacity
-    display_name: In-House Capacity
-    description: Capacity Automaker Inc must build itself because suppliers are not putting capital in.
-    synonyms: []
-    tags:
-    - capacity
-    - supply_factory
-    - automobile-manufacturers
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: automaker.us-central-1
-      database: AUTOMAKER
-      schema: SUPPLY
-      object: FACT_INHOUSE_CAPACITY
-      format: table
-  grain:
-    description: One row is one in-house capacity.
-    components:
-    - identity_id: inhouse_capacity_identity
-      dataset_columns:
-      - inhouse_capacity_id
-      description: Identifier of the in-house capacity.
-  columns:
-  - name: inhouse_capacity_id
-    description: Identifier of the in-house capacity.
-  - name: fiscal_quarter_id
-    description: Identifier of the fiscal quarter.
-  - name: vehicle_program_id
-    description: Identifier of the vehicle program.
-  - name: plant_id
-    description: Identifier of the plant.
-  - name: country_id
-    description: Identifier of the country.
-  - name: inhouse_capacity_quantity
-    description: Units of in-house capacity.
-  - name: self_build_flag
-    description: Whether most of the chain must be built in house.
-  entity_definitions:
-  - identity_id: inhouse_capacity_identity
-    dataset_columns:
-    - inhouse_capacity_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: vehicle_program_identity
-    dataset_columns:
-    - vehicle_program_id
-    entity_universe: partial
-  - identity_id: plant_identity
-    dataset_columns:
-    - plant_id
-    entity_universe: partial
-  - identity_id: country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
-- node_id: sf:automaker.supply.fact_sourcing_mode
-  descriptor:
-    qualified_name: automaker.supply.fact_sourcing_mode
-    display_name: Sourcing Mode
-    description: Whether a robot component is bought, designed for an outside fab, or made in house.
-    synonyms: []
-    tags:
-    - status
-    - supply_factory
-    - automobile-manufacturers
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: automaker.us-central-1
-      database: AUTOMAKER
-      schema: SUPPLY
-      object: FACT_SOURCING_MODE
-      format: table
-  grain:
-    description: One row is one sourcing mode.
-    components:
-    - identity_id: sourcing_mode_identity
-      dataset_columns:
-      - sourcing_mode_id
-      description: Identifier of the sourcing mode.
   columns:
   - name: sourcing_mode_id
     description: Identifier of the sourcing mode.
-  - name: fiscal_quarter_id
-    description: Identifier of the fiscal quarter.
-  - name: component_id
-    description: Identifier of the component.
-  - name: vehicle_program_id
-    description: Identifier of the vehicle program.
-  - name: supplier_id
-    description: Identifier of the supplier.
-  - name: mode_code
-    description: Sourcing mode.
-    value_description: buy, design_outside, make
-  - name: generation_code
-    description: Generation the mode applies to.
-    value_description: optimus_3, optimus_4
+  - name: sourcing_mode_code
+    description: Sourcing Mode code.
+    value_description: purchased_from_supplier, designed_for_external_fabrication, manufactured_in_house
+  - name: sourcing_mode_name
+    description: Name of the sourcing mode.
+  descriptor:
+    description: Mode used to source a component.
+    display_name: Sourcing Mode
+    qualified_name: automaker.supply.dim_sourcing_mode
+    synonyms: []
+    tags:
+    - dimension
+    - supply_factory
+    - automobile-manufacturers
+    - both
+    - sourcing
+    - buy
+    - make
+    - fab
+    - optimus
   entity_definitions:
-  - identity_id: sourcing_mode_identity
-    dataset_columns:
+  - dataset_columns:
     - sourcing_mode_id
     entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: component_identity
-    dataset_columns:
-    - component_id
-    entity_universe: partial
-  - identity_id: vehicle_program_identity
-    dataset_columns:
-    - vehicle_program_id
-    entity_universe: partial
-  - identity_id: supplier_identity
-    dataset_columns:
-    - supplier_id
-    entity_universe: partial
-- node_id: sf:automaker.supply.fact_supplier_commitment
-  descriptor:
-    qualified_name: automaker.supply.fact_supplier_commitment
-    display_name: Supplier Commitment
-    description: Whether outside suppliers commit capital. The dollar sits on the price slice.
-    synonyms: []
-    tags:
-    - status
-    - supply_factory
-    - automobile-manufacturers
-  accessor:
-    schema_id: accessor.snowflake.v1
+    identity_id: dim_sourcing_mode_identity
+  grain:
+    components:
+    - dataset_columns:
+      - sourcing_mode_id
+      description: Identifier of the sourcing mode.
+      identity_id: dim_sourcing_mode_identity
+    description: One row is one sourcing mode.
+  node_id: sf:automaker.supply.dim_sourcing_mode
+- accessor:
     properties:
       account: automaker.us-central-1
       database: AUTOMAKER
-      schema: SUPPLY
-      object: FACT_SUPPLIER_COMMITMENT
       format: table
-  grain:
-    description: One row is one supplier commitment.
-    components:
-    - identity_id: supplier_commitment_identity
-      dataset_columns:
-      - supplier_commitment_id
-      description: Identifier of the supplier commitment.
+      object: DIM_REGULATION_TYPE
+      schema: SUPPLY
+    schema_id: accessor.snowflake.v1
   columns:
-  - name: supplier_commitment_id
-    description: Identifier of the supplier commitment.
-  - name: fiscal_quarter_id
-    description: Identifier of the fiscal quarter.
-  - name: supplier_id
-    description: Identifier of the supplier.
-  - name: vehicle_program_id
-    description: Identifier of the vehicle program.
-  - name: country_id
-    description: Identifier of the country.
-  - name: committed_flag
-    description: Whether the supplier has committed.
-  - name: us_manufacturing_flag
-    description: Whether the commitment is U.S. manufacturing.
+  - name: regulation_type_id
+    description: Identifier of the regulation type.
+  - name: regulation_type_code
+    description: Regulation Type code.
+    value_description: federal_vehicle_safety, state_sensor_rule, emissions_standard, fuel_economy_standard, trade_tariff_rule
+  - name: regulation_type_name
+    description: Name of the regulation type.
+  descriptor:
+    description: Type of regulation affecting production, sale, or autonomy.
+    display_name: Regulation Type
+    qualified_name: automaker.supply.dim_regulation_type
+    synonyms: []
+    tags:
+    - dimension
+    - supply_factory
+    - automobile-manufacturers
+    - both
+    - regulation
+    - approval
+    - emissions
+    - tariff
+    - sensor
   entity_definitions:
-  - identity_id: supplier_commitment_identity
-    dataset_columns:
-    - supplier_commitment_id
+  - dataset_columns:
+    - regulation_type_id
     entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: supplier_identity
-    dataset_columns:
-    - supplier_id
-    entity_universe: partial
-  - identity_id: vehicle_program_identity
-    dataset_columns:
-    - vehicle_program_id
-    entity_universe: partial
-  - identity_id: country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
-- node_id: sf:automaker.supply.fact_approval_gate
-  descriptor:
-    qualified_name: automaker.supply.fact_approval_gate
-    display_name: Approval Gate
-    description: Federal or state approval that still gates a ramp.
-    synonyms: []
-    tags:
-    - status
-    - supply_factory
-    - automobile-manufacturers
-  accessor:
-    schema_id: accessor.snowflake.v1
+    identity_id: dim_regulation_type_identity
+  grain:
+    components:
+    - dataset_columns:
+      - regulation_type_id
+      description: Identifier of the regulation type.
+      identity_id: dim_regulation_type_identity
+    description: One row is one regulation type.
+  node_id: sf:automaker.supply.dim_regulation_type
+- accessor:
     properties:
       account: automaker.us-central-1
       database: AUTOMAKER
-      schema: SUPPLY
-      object: FACT_APPROVAL_GATE
       format: table
-  grain:
-    description: One row is one approval gate.
-    components:
-    - identity_id: approval_gate_identity
-      dataset_columns:
-      - approval_gate_id
-      description: Identifier of the approval gate.
+      object: DIM_BATTERY_CHEMISTRY
+      schema: SUPPLY
+    schema_id: accessor.snowflake.v1
   columns:
-  - name: approval_gate_id
-    description: Identifier of the approval gate.
-  - name: fiscal_quarter_id
-    description: Identifier of the fiscal quarter.
-  - name: regulation_id
-    description: Identifier of the regulation.
-  - name: vehicle_program_id
-    description: Identifier of the vehicle program.
-  - name: state_id
-    description: Identifier of the state.
-  - name: approval_required_flag
-    description: Whether the approval is still required.
-  - name: blocks_ramp_flag
-    description: Whether it gates the production ramp.
-  - name: avoid_flag
-    description: Whether the rule is one to avoid.
+  - name: battery_chemistry_id
+    description: Identifier of the battery chemistry.
+  - name: battery_chemistry_code
+    description: Battery Chemistry code.
+    value_description: lithium_iron_phosphate, nickel_manganese_cobalt, nickel_cobalt_aluminum
+  - name: battery_chemistry_name
+    description: Name of the battery chemistry.
+  descriptor:
+    description: Battery cell chemistry.
+    display_name: Battery Chemistry
+    qualified_name: automaker.supply.dim_battery_chemistry
+    synonyms: []
+    tags:
+    - dimension
+    - supply_factory
+    - automobile-manufacturers
+    - both
+    - battery
+    - chemistry
+    - cell
   entity_definitions:
-  - identity_id: approval_gate_identity
-    dataset_columns:
-    - approval_gate_id
+  - dataset_columns:
+    - battery_chemistry_id
     entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: regulation_identity
-    dataset_columns:
-    - regulation_id
-    entity_universe: partial
-  - identity_id: vehicle_program_identity
-    dataset_columns:
-    - vehicle_program_id
-    entity_universe: partial
-  - identity_id: state_identity
-    dataset_columns:
-    - state_id
-    entity_universe: partial
-- node_id: sf:automaker.supply.fact_feature_approval
-  descriptor:
-    qualified_name: automaker.supply.fact_feature_approval
-    display_name: Feature Approval
-    description: Approvals required to take a driver-assistance feature abroad, and the next function
-      customers see.
-    synonyms: []
-    tags:
-    - status
-    - supply_factory
-    - automobile-manufacturers
-  accessor:
-    schema_id: accessor.snowflake.v1
+    identity_id: dim_battery_chemistry_identity
+  grain:
+    components:
+    - dataset_columns:
+      - battery_chemistry_id
+      description: Identifier of the battery chemistry.
+      identity_id: dim_battery_chemistry_identity
+    description: One row is one battery chemistry.
+  node_id: sf:automaker.supply.dim_battery_chemistry
+- accessor:
     properties:
       account: automaker.us-central-1
       database: AUTOMAKER
-      schema: SUPPLY
-      object: FACT_FEATURE_APPROVAL
       format: table
-  grain:
-    description: One row is one feature approval.
-    components:
-    - identity_id: feature_approval_identity
-      dataset_columns:
-      - feature_approval_id
-      description: Identifier of the feature approval.
+      object: DIM_ROBOT_PRODUCT
+      schema: SUPPLY
+    schema_id: accessor.snowflake.v1
   columns:
-  - name: feature_approval_id
-    description: Identifier of the feature approval.
-  - name: fiscal_quarter_id
-    description: Identifier of the fiscal quarter.
-  - name: service_id
-    description: Identifier of the digital service.
-  - name: regulation_id
-    description: Identifier of the regulation.
-  - name: country_id
-    description: Identifier of the country.
-  - name: software_release_id
-    description: Identifier of the software release.
-  - name: approval_required_flag
-    description: Whether an approval is required.
-  - name: next_function_code
-    description: Next function.
-    value_description: point_to_point, broader_roads
+  - name: robot_product_id
+    description: Identifier of the robot product.
+  - name: robot_product_code
+    description: Robot Product code.
+    value_description: optimus_generation_3, optimus_generation_4
+  - name: robot_product_name
+    description: Name of the robot product.
+  descriptor:
+    description: Humanoid robot product, separate from vehicle nameplates and energy products.
+    display_name: Robot Product
+    qualified_name: automaker.supply.dim_robot_product
+    synonyms: []
+    tags:
+    - dimension
+    - supply_factory
+    - automobile-manufacturers
+    - tesla
+    - optimus
+    - robot
+    - humanoid
   entity_definitions:
-  - identity_id: feature_approval_identity
-    dataset_columns:
-    - feature_approval_id
+  - dataset_columns:
+    - robot_product_id
     entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: service_identity
-    dataset_columns:
-    - service_id
-    entity_universe: partial
-  - identity_id: regulation_identity
-    dataset_columns:
-    - regulation_id
-    entity_universe: partial
-  - identity_id: country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
-  - identity_id: software_release_identity
-    dataset_columns:
-    - software_release_id
-    entity_universe: partial
-- node_id: sf:automaker.supply.fact_trade_capacity
-  descriptor:
-    qualified_name: automaker.supply.fact_trade_capacity
-    display_name: Trade Capacity
-    description: How much Mexico or Korea capacity stays, given USMCA and local economics.
-    synonyms: []
-    tags:
-    - capacity
-    - supply_factory
-    - automobile-manufacturers
-  accessor:
-    schema_id: accessor.snowflake.v1
+    identity_id: dim_robot_product_identity
+  grain:
+    components:
+    - dataset_columns:
+      - robot_product_id
+      description: Identifier of the robot product.
+      identity_id: dim_robot_product_identity
+    description: One row is one robot product.
+  node_id: sf:automaker.supply.dim_robot_product
+- accessor:
     properties:
       account: automaker.us-central-1
       database: AUTOMAKER
-      schema: SUPPLY
-      object: FACT_TRADE_CAPACITY
       format: table
-  grain:
-    description: One row is one trade capacity.
-    components:
-    - identity_id: trade_capacity_identity
-      dataset_columns:
-      - trade_capacity_id
-      description: Identifier of the trade capacity.
+      object: FACT_VEHICLE_PRODUCTION
+      schema: SUPPLY
+    schema_id: accessor.snowflake.v1
   columns:
-  - name: trade_capacity_id
-    description: Identifier of the trade capacity.
   - name: fiscal_quarter_id
-    description: Identifier of the fiscal quarter.
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
   - name: plant_id
-    description: Identifier of the plant.
-  - name: country_id
-    description: Identifier of the country.
-  - name: regulation_id
-    description: Identifier of the regulation.
-  - name: capacity_quantity
-    description: Capacity that stays.
-  - name: keep_flag
-    description: Whether current production is kept.
-  - name: depends_on_talks_flag
-    description: Whether the amount depends on trade talks.
-  entity_definitions:
-  - identity_id: trade_capacity_identity
-    dataset_columns:
-    - trade_capacity_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: plant_identity
-    dataset_columns:
-    - plant_id
-    entity_universe: partial
-  - identity_id: country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
-  - identity_id: regulation_identity
-    dataset_columns:
-    - regulation_id
-    entity_universe: partial
-- node_id: sf:automaker.supply.fact_capacity_outlet
-  descriptor:
-    qualified_name: automaker.supply.fact_capacity_outlet
-    display_name: Capacity Outlet
-    description: Where added truck and SUV capacity can be sold.
-    synonyms: []
-    tags:
-    - capacity
-    - supply_factory
-    - automobile-manufacturers
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: automaker.us-central-1
-      database: AUTOMAKER
-      schema: SUPPLY
-      object: FACT_CAPACITY_OUTLET
-      format: table
-  grain:
-    description: One row is one capacity outlet.
-    components:
-    - identity_id: capacity_outlet_identity
-      dataset_columns:
-      - capacity_outlet_id
-      description: Identifier of the capacity outlet.
-  columns:
-  - name: capacity_outlet_id
-    description: Identifier of the capacity outlet.
-  - name: fiscal_quarter_id
-    description: Identifier of the fiscal quarter.
-  - name: plant_id
-    description: Identifier of the plant.
-  - name: trim_id
-    description: Identifier of the trim.
-  - name: region_id
-    description: Identifier of the region.
-  - name: vehicle_family_id
-    description: Identifier of the vehicle family.
-  - name: capacity_quantity
-    description: Capacity available to place.
-  - name: outlet_code
-    description: Where it can be sold.
-    value_description: upper_trim, lower_trim, outside_north_america
-  entity_definitions:
-  - identity_id: capacity_outlet_identity
-    dataset_columns:
-    - capacity_outlet_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: plant_identity
-    dataset_columns:
-    - plant_id
-    entity_universe: partial
-  - identity_id: trim_identity
-    dataset_columns:
-    - trim_id
-    entity_universe: partial
-  - identity_id: region_identity
-    dataset_columns:
-    - region_id
-    entity_universe: partial
-  - identity_id: vehicle_family_identity
-    dataset_columns:
-    - vehicle_family_id
-    entity_universe: partial
-- node_id: sf:automaker.supply.fact_battery_capacity
-  descriptor:
-    qualified_name: automaker.supply.fact_battery_capacity
-    display_name: Battery Capacity
-    description: Battery capacity sized for a higher volume outlook than the nearer-term mix.
-    synonyms: []
-    tags:
-    - capacity
-    - supply_factory
-    - automobile-manufacturers
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: automaker.us-central-1
-      database: AUTOMAKER
-      schema: SUPPLY
-      object: FACT_BATTERY_CAPACITY
-      format: table
-  grain:
-    description: One row is one battery capacity.
-    components:
-    - identity_id: battery_capacity_identity
-      dataset_columns:
-      - battery_capacity_id
-      description: Identifier of the battery capacity.
-  columns:
-  - name: battery_capacity_id
-    description: Identifier of the battery capacity.
-  - name: fiscal_quarter_id
-    description: Identifier of the fiscal quarter.
-  - name: plant_id
-    description: Identifier of the plant.
+    description: Identifier of the related plant.
+  - name: vehicle_nameplate_id
+    description: Identifier of the related vehicle nameplate.
   - name: powertrain_id
-    description: Identifier of the powertrain.
-  - name: capacity_quantity
-    description: Battery capacity.
-  - name: oversized_flag
-    description: Whether it is sized above the nearer-term mix.
+    description: Identifier of the related powertrain.
+  - name: produced_vehicle_quantity
+    description: Vehicles produced in vehicles.
+  descriptor:
+    description: Vehicles produced by plant, nameplate, and powertrain. Stores vehicles, no price and no capacity.
+    display_name: Vehicle Production
+    qualified_name: automaker.supply.fact_vehicle_production
+    synonyms: []
+    tags:
+    - fact
+    - supply_factory
+    - automobile-manufacturers
+    - both
+    - production
+    - plant
+    - vehicle
+    - output
   entity_definitions:
-  - identity_id: battery_capacity_identity
-    dataset_columns:
-    - battery_capacity_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
+  - dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: plant_identity
-    dataset_columns:
+    identity_id: dim_fiscal_quarter_identity
+  - dataset_columns:
+    - scenario_id
+    entity_universe: partial
+    identity_id: dim_scenario_identity
+  - dataset_columns:
     - plant_id
     entity_universe: partial
-  - identity_id: powertrain_identity
-    dataset_columns:
+    identity_id: dim_plant_identity
+  - dataset_columns:
+    - vehicle_nameplate_id
+    entity_universe: partial
+    identity_id: dim_vehicle_nameplate_identity
+  - dataset_columns:
     - powertrain_id
     entity_universe: partial
-- node_id: sf:automaker.supply.fact_bom
-  descriptor:
-    qualified_name: automaker.supply.fact_bom
-    display_name: Bill of Materials
-    description: Which promised content changes are actually in the vehicle that ramps later.
-    synonyms: []
-    tags:
-    - status
-    - supply_factory
-    - automobile-manufacturers
-  accessor:
-    schema_id: accessor.snowflake.v1
+    identity_id: dim_powertrain_identity
+  grain:
+    components:
+    - dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the related fiscal quarter.
+      identity_id: dim_fiscal_quarter_identity
+    - dataset_columns:
+      - scenario_id
+      description: Identifier of the related scenario.
+      identity_id: dim_scenario_identity
+    - dataset_columns:
+      - plant_id
+      description: Identifier of the related plant.
+      identity_id: dim_plant_identity
+    - dataset_columns:
+      - vehicle_nameplate_id
+      description: Identifier of the related vehicle nameplate.
+      identity_id: dim_vehicle_nameplate_identity
+    - dataset_columns:
+      - powertrain_id
+      description: Identifier of the related powertrain.
+      identity_id: dim_powertrain_identity
+    description: One row is one combination of fiscal quarter, scenario, plant, vehicle nameplate, powertrain.
+  node_id: sf:automaker.supply.fact_vehicle_production
+- accessor:
     properties:
       account: automaker.us-central-1
       database: AUTOMAKER
-      schema: SUPPLY
-      object: FACT_BOM
       format: table
-  grain:
-    description: One row is one bill of materials.
-    components:
-    - identity_id: bom_identity
-      dataset_columns:
-      - bom_id
-      description: Identifier of the bill of materials.
+      object: FACT_VEHICLE_ASSEMBLY_CAPACITY
+      schema: SUPPLY
+    schema_id: accessor.snowflake.v1
   columns:
-  - name: bom_id
-    description: Identifier of the bill of materials.
   - name: fiscal_quarter_id
-    description: Identifier of the fiscal quarter.
-  - name: component_id
-    description: Identifier of the component.
-  - name: vehicle_program_id
-    description: Identifier of the vehicle program.
-  - name: in_vehicle_flag
-    description: Whether the content change is in the ramping vehicle.
-  - name: removed_flag
-    description: Whether the material was removed.
-  entity_definitions:
-  - identity_id: bom_identity
-    dataset_columns:
-    - bom_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: component_identity
-    dataset_columns:
-    - component_id
-    entity_universe: partial
-  - identity_id: vehicle_program_identity
-    dataset_columns:
-    - vehicle_program_id
-    entity_universe: partial
-- node_id: sf:automaker.supply.fact_shared_hardware
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: plant_id
+    description: Identifier of the related plant.
+  - name: annual_vehicle_capacity_quantity
+    description: Annual vehicle capacity in vehicles.
   descriptor:
-    qualified_name: automaker.supply.fact_shared_hardware
-    display_name: Shared Hardware
-    description: Hardware programs that share R&D across end markets. The dollar sits on the price slice.
+    description: Vehicle assembly plant capacity. Stores vehicles of annual capacity, no production and no price.
+    display_name: Vehicle Assembly Capacity
+    qualified_name: automaker.supply.fact_vehicle_assembly_capacity
     synonyms: []
     tags:
-    - status
+    - fact
     - supply_factory
     - automobile-manufacturers
-  accessor:
-    schema_id: accessor.snowflake.v1
+    - both
+    - plant
+    - capacity
+    - assembly
+    - vehicle
+  entity_definitions:
+  - dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+    identity_id: dim_fiscal_quarter_identity
+  - dataset_columns:
+    - scenario_id
+    entity_universe: partial
+    identity_id: dim_scenario_identity
+  - dataset_columns:
+    - plant_id
+    entity_universe: partial
+    identity_id: dim_plant_identity
+  grain:
+    components:
+    - dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the related fiscal quarter.
+      identity_id: dim_fiscal_quarter_identity
+    - dataset_columns:
+      - scenario_id
+      description: Identifier of the related scenario.
+      identity_id: dim_scenario_identity
+    - dataset_columns:
+      - plant_id
+      description: Identifier of the related plant.
+      identity_id: dim_plant_identity
+    description: One row is one combination of fiscal quarter, scenario, plant.
+  node_id: sf:automaker.supply.fact_vehicle_assembly_capacity
+- accessor:
     properties:
       account: automaker.us-central-1
       database: AUTOMAKER
-      schema: SUPPLY
-      object: FACT_SHARED_HARDWARE
       format: table
-  grain:
-    description: One row is one shared hardware.
-    components:
-    - identity_id: shared_hardware_identity
-      dataset_columns:
-      - shared_hardware_id
-      description: Identifier of the shared hardware.
+      object: FACT_BATTERY_CELL_CAPACITY
+      schema: SUPPLY
+    schema_id: accessor.snowflake.v1
   columns:
-  - name: shared_hardware_id
-    description: Identifier of the shared hardware.
   - name: fiscal_quarter_id
-    description: Identifier of the fiscal quarter.
-  - name: component_id
-    description: Identifier of the component.
-  - name: vehicle_family_id
-    description: Identifier of the vehicle family.
-  - name: shared_flag
-    description: Whether the program shares R&D.
-  - name: reused_flag
-    description: Whether another product reuses the hardware.
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: plant_id
+    description: Identifier of the related plant.
+  - name: battery_chemistry_id
+    description: Identifier of the related battery chemistry.
+  - name: annual_cell_capacity_quantity
+    description: Annual cell capacity in gigawatt-hours.
+  descriptor:
+    description: Battery cell plant capacity in gigawatt-hours. Stores gigawatt-hours, no vehicle production and no price.
+    display_name: Battery Cell Capacity
+    qualified_name: automaker.supply.fact_battery_cell_capacity
+    synonyms: []
+    tags:
+    - fact
+    - supply_factory
+    - automobile-manufacturers
+    - both
+    - battery
+    - cell
+    - capacity
+    - plant
   entity_definitions:
-  - identity_id: shared_hardware_identity
-    dataset_columns:
-    - shared_hardware_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
+  - dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: component_identity
-    dataset_columns:
+    identity_id: dim_fiscal_quarter_identity
+  - dataset_columns:
+    - scenario_id
+    entity_universe: partial
+    identity_id: dim_scenario_identity
+  - dataset_columns:
+    - plant_id
+    entity_universe: partial
+    identity_id: dim_plant_identity
+  - dataset_columns:
+    - battery_chemistry_id
+    entity_universe: partial
+    identity_id: dim_battery_chemistry_identity
+  grain:
+    components:
+    - dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the related fiscal quarter.
+      identity_id: dim_fiscal_quarter_identity
+    - dataset_columns:
+      - scenario_id
+      description: Identifier of the related scenario.
+      identity_id: dim_scenario_identity
+    - dataset_columns:
+      - plant_id
+      description: Identifier of the related plant.
+      identity_id: dim_plant_identity
+    - dataset_columns:
+      - battery_chemistry_id
+      description: Identifier of the related battery chemistry.
+      identity_id: dim_battery_chemistry_identity
+    description: One row is one combination of fiscal quarter, scenario, plant, battery chemistry.
+  node_id: sf:automaker.supply.fact_battery_cell_capacity
+- accessor:
+    properties:
+      account: automaker.us-central-1
+      database: AUTOMAKER
+      format: table
+      object: FACT_BATTERY_PRODUCTION
+      schema: SUPPLY
+    schema_id: accessor.snowflake.v1
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: plant_id
+    description: Identifier of the related plant.
+  - name: battery_chemistry_id
+    description: Identifier of the related battery chemistry.
+  - name: produced_energy_quantity
+    description: Battery energy produced in gigawatt-hours.
+  descriptor:
+    description: Battery energy produced by plant and chemistry in gigawatt-hours. Stores gigawatt-hours, no price.
+    display_name: Battery Production
+    qualified_name: automaker.supply.fact_battery_production
+    synonyms: []
+    tags:
+    - fact
+    - supply_factory
+    - automobile-manufacturers
+    - both
+    - battery
+    - production
+    - cell
+    - energy
+  entity_definitions:
+  - dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+    identity_id: dim_fiscal_quarter_identity
+  - dataset_columns:
+    - scenario_id
+    entity_universe: partial
+    identity_id: dim_scenario_identity
+  - dataset_columns:
+    - plant_id
+    entity_universe: partial
+    identity_id: dim_plant_identity
+  - dataset_columns:
+    - battery_chemistry_id
+    entity_universe: partial
+    identity_id: dim_battery_chemistry_identity
+  grain:
+    components:
+    - dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the related fiscal quarter.
+      identity_id: dim_fiscal_quarter_identity
+    - dataset_columns:
+      - scenario_id
+      description: Identifier of the related scenario.
+      identity_id: dim_scenario_identity
+    - dataset_columns:
+      - plant_id
+      description: Identifier of the related plant.
+      identity_id: dim_plant_identity
+    - dataset_columns:
+      - battery_chemistry_id
+      description: Identifier of the related battery chemistry.
+      identity_id: dim_battery_chemistry_identity
+    description: One row is one combination of fiscal quarter, scenario, plant, battery chemistry.
+  node_id: sf:automaker.supply.fact_battery_production
+- accessor:
+    properties:
+      account: automaker.us-central-1
+      database: AUTOMAKER
+      format: table
+      object: FACT_ENERGY_PRODUCT_PRODUCTION
+      schema: SUPPLY
+    schema_id: accessor.snowflake.v1
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: plant_id
+    description: Identifier of the related plant.
+  - name: energy_product_id
+    description: Identifier of the related energy product.
+  - name: produced_storage_energy_quantity
+    description: Storage energy produced in megawatt-hours.
+  - name: produced_unit_quantity
+    description: Energy products produced in units.
+  descriptor:
+    description: Energy products produced by plant and product in megawatt-hours of storage capacity. Stores megawatt-hours,
+      no price.
+    display_name: Energy Product Production
+    qualified_name: automaker.supply.fact_energy_product_production
+    synonyms: []
+    tags:
+    - fact
+    - supply_factory
+    - automobile-manufacturers
+    - tesla
+    - tesla
+    - energy
+    - storage
+    - production
+    - megapack
+  entity_definitions:
+  - dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+    identity_id: dim_fiscal_quarter_identity
+  - dataset_columns:
+    - scenario_id
+    entity_universe: partial
+    identity_id: dim_scenario_identity
+  - dataset_columns:
+    - plant_id
+    entity_universe: partial
+    identity_id: dim_plant_identity
+  - dataset_columns:
+    - energy_product_id
+    entity_universe: partial
+    identity_id: dim_energy_product_identity
+  grain:
+    components:
+    - dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the related fiscal quarter.
+      identity_id: dim_fiscal_quarter_identity
+    - dataset_columns:
+      - scenario_id
+      description: Identifier of the related scenario.
+      identity_id: dim_scenario_identity
+    - dataset_columns:
+      - plant_id
+      description: Identifier of the related plant.
+      identity_id: dim_plant_identity
+    - dataset_columns:
+      - energy_product_id
+      description: Identifier of the related energy product.
+      identity_id: dim_energy_product_identity
+    description: One row is one combination of fiscal quarter, scenario, plant, energy product.
+  node_id: sf:automaker.supply.fact_energy_product_production
+- accessor:
+    properties:
+      account: automaker.us-central-1
+      database: AUTOMAKER
+      format: table
+      object: FACT_PLANT_DOWNTIME
+      schema: SUPPLY
+    schema_id: accessor.snowflake.v1
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: plant_id
+    description: Identifier of the related plant.
+  - name: vehicle_nameplate_id
+    description: Identifier of the related vehicle nameplate.
+  - name: downtime_day_quantity
+    description: Downtime in days.
+  - name: planned_downtime_day_quantity
+    description: Planned downtime in days.
+  descriptor:
+    description: Plant downtime days by plant and nameplate for launches and changeovers. Stores days, no volume effect amount.
+    display_name: Plant Downtime
+    qualified_name: automaker.supply.fact_plant_downtime
+    synonyms: []
+    tags:
+    - fact
+    - supply_factory
+    - automobile-manufacturers
+    - both
+    - downtime
+    - plant
+    - launch
+    - pickup
+    - changeover
+  entity_definitions:
+  - dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+    identity_id: dim_fiscal_quarter_identity
+  - dataset_columns:
+    - scenario_id
+    entity_universe: partial
+    identity_id: dim_scenario_identity
+  - dataset_columns:
+    - plant_id
+    entity_universe: partial
+    identity_id: dim_plant_identity
+  - dataset_columns:
+    - vehicle_nameplate_id
+    entity_universe: partial
+    identity_id: dim_vehicle_nameplate_identity
+  grain:
+    components:
+    - dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the related fiscal quarter.
+      identity_id: dim_fiscal_quarter_identity
+    - dataset_columns:
+      - scenario_id
+      description: Identifier of the related scenario.
+      identity_id: dim_scenario_identity
+    - dataset_columns:
+      - plant_id
+      description: Identifier of the related plant.
+      identity_id: dim_plant_identity
+    - dataset_columns:
+      - vehicle_nameplate_id
+      description: Identifier of the related vehicle nameplate.
+      identity_id: dim_vehicle_nameplate_identity
+    description: One row is one combination of fiscal quarter, scenario, plant, vehicle nameplate.
+  node_id: sf:automaker.supply.fact_plant_downtime
+- accessor:
+    properties:
+      account: automaker.us-central-1
+      database: AUTOMAKER
+      format: table
+      object: FACT_COMPONENT_COVER
+      schema: SUPPLY
+    schema_id: accessor.snowflake.v1
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: component_id
+    description: Identifier of the related component.
+  - name: supplier_id
+    description: Identifier of the related supplier.
+  - name: cover_week_quantity
+    description: Component cover in weeks.
+  - name: alternate_source_week_quantity
+    description: Time to bring up an alternate source in weeks.
+  descriptor:
+    description: Weeks of component cover and alternate-source lead time by component and supplier. Stores weeks, no commodity
+      price.
+    display_name: Component Cover
+    qualified_name: automaker.supply.fact_component_cover
+    synonyms: []
+    tags:
+    - fact
+    - supply_factory
+    - automobile-manufacturers
+    - both
+    - component
+    - cover
+    - weeks
+    - aluminum
+    - semiconductor
+    - rare_earth
+    - shortage
+  entity_definitions:
+  - dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+    identity_id: dim_fiscal_quarter_identity
+  - dataset_columns:
+    - scenario_id
+    entity_universe: partial
+    identity_id: dim_scenario_identity
+  - dataset_columns:
     - component_id
     entity_universe: partial
-  - identity_id: vehicle_family_identity
-    dataset_columns:
-    - vehicle_family_id
+    identity_id: dim_component_identity
+  - dataset_columns:
+    - supplier_id
     entity_universe: partial
+    identity_id: dim_supplier_identity
+  grain:
+    components:
+    - dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the related fiscal quarter.
+      identity_id: dim_fiscal_quarter_identity
+    - dataset_columns:
+      - scenario_id
+      description: Identifier of the related scenario.
+      identity_id: dim_scenario_identity
+    - dataset_columns:
+      - component_id
+      description: Identifier of the related component.
+      identity_id: dim_component_identity
+    - dataset_columns:
+      - supplier_id
+      description: Identifier of the related supplier.
+      identity_id: dim_supplier_identity
+    description: One row is one combination of fiscal quarter, scenario, component, supplier.
+  node_id: sf:automaker.supply.fact_component_cover
+- accessor:
+    properties:
+      account: automaker.us-central-1
+      database: AUTOMAKER
+      format: table
+      object: FACT_COMPONENT_SOURCING_QUANTITY
+      schema: SUPPLY
+    schema_id: accessor.snowflake.v1
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: component_id
+    description: Identifier of the related component.
+  - name: sourcing_mode_id
+    description: Identifier of the related sourcing mode.
+  - name: vehicle_nameplate_id
+    description: Identifier of the related vehicle nameplate.
+  - name: component_quantity
+    description: Components in components.
+  descriptor:
+    description: Component quantities by sourcing mode, component, and nameplate. Stores components, no cost.
+    display_name: Component Sourcing Quantity
+    qualified_name: automaker.supply.fact_component_sourcing_quantity
+    synonyms: []
+    tags:
+    - fact
+    - supply_factory
+    - automobile-manufacturers
+    - both
+    - sourcing
+    - component
+    - optimus
+    - buy
+    - make
+    - supplier
+  entity_definitions:
+  - dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+    identity_id: dim_fiscal_quarter_identity
+  - dataset_columns:
+    - scenario_id
+    entity_universe: partial
+    identity_id: dim_scenario_identity
+  - dataset_columns:
+    - component_id
+    entity_universe: partial
+    identity_id: dim_component_identity
+  - dataset_columns:
+    - sourcing_mode_id
+    entity_universe: partial
+    identity_id: dim_sourcing_mode_identity
+  - dataset_columns:
+    - vehicle_nameplate_id
+    entity_universe: partial
+    identity_id: dim_vehicle_nameplate_identity
+  grain:
+    components:
+    - dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the related fiscal quarter.
+      identity_id: dim_fiscal_quarter_identity
+    - dataset_columns:
+      - scenario_id
+      description: Identifier of the related scenario.
+      identity_id: dim_scenario_identity
+    - dataset_columns:
+      - component_id
+      description: Identifier of the related component.
+      identity_id: dim_component_identity
+    - dataset_columns:
+      - sourcing_mode_id
+      description: Identifier of the related sourcing mode.
+      identity_id: dim_sourcing_mode_identity
+    - dataset_columns:
+      - vehicle_nameplate_id
+      description: Identifier of the related vehicle nameplate.
+      identity_id: dim_vehicle_nameplate_identity
+    description: One row is one combination of fiscal quarter, scenario, component, sourcing mode, vehicle nameplate.
+  node_id: sf:automaker.supply.fact_component_sourcing_quantity
+- accessor:
+    properties:
+      account: automaker.us-central-1
+      database: AUTOMAKER
+      format: table
+      object: FACT_ROBOT_PRODUCTION_CAPACITY
+      schema: SUPPLY
+    schema_id: accessor.snowflake.v1
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: robot_product_id
+    description: Identifier of the related robot product.
+  - name: plant_id
+    description: Identifier of the related plant.
+  - name: annual_robot_capacity_quantity
+    description: Annual robot capacity in robots.
+  - name: produced_robot_quantity
+    description: Robots produced in robots.
+  descriptor:
+    description: Tesla humanoid robot production capacity by product and plant. Stores robots of capacity, no vehicle quantity
+      and no price.
+    display_name: Robot Production Capacity
+    qualified_name: automaker.supply.fact_robot_production_capacity
+    synonyms: []
+    tags:
+    - fact
+    - supply_factory
+    - automobile-manufacturers
+    - tesla
+    - tesla
+    - optimus
+    - robot
+    - production
+    - capacity
+  entity_definitions:
+  - dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+    identity_id: dim_fiscal_quarter_identity
+  - dataset_columns:
+    - scenario_id
+    entity_universe: partial
+    identity_id: dim_scenario_identity
+  - dataset_columns:
+    - robot_product_id
+    entity_universe: partial
+    identity_id: dim_robot_product_identity
+  - dataset_columns:
+    - plant_id
+    entity_universe: partial
+    identity_id: dim_plant_identity
+  grain:
+    components:
+    - dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the related fiscal quarter.
+      identity_id: dim_fiscal_quarter_identity
+    - dataset_columns:
+      - scenario_id
+      description: Identifier of the related scenario.
+      identity_id: dim_scenario_identity
+    - dataset_columns:
+      - robot_product_id
+      description: Identifier of the related robot product.
+      identity_id: dim_robot_product_identity
+    - dataset_columns:
+      - plant_id
+      description: Identifier of the related plant.
+      identity_id: dim_plant_identity
+    description: One row is one combination of fiscal quarter, scenario, robot product, plant.
+  node_id: sf:automaker.supply.fact_robot_production_capacity
+- accessor:
+    properties:
+      account: automaker.us-central-1
+      database: AUTOMAKER
+      format: table
+      object: FACT_REGULATORY_APPROVALS
+      schema: SUPPLY
+    schema_id: accessor.snowflake.v1
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: regulation_type_id
+    description: Identifier of the related regulation type.
+  - name: country_id
+    description: Identifier of the related country.
+  - name: required_approval_quantity
+    description: Approvals required in approvals.
+  - name: obtained_approval_quantity
+    description: Approvals obtained in approvals.
+  descriptor:
+    description: Approvals required and obtained by regulation type and country. Stores approvals, no production volume.
+    display_name: Regulatory Approvals
+    qualified_name: automaker.supply.fact_regulatory_approvals
+    synonyms: []
+    tags:
+    - fact
+    - supply_factory
+    - automobile-manufacturers
+    - both
+    - regulation
+    - approval
+    - federal
+    - state
+    - super_cruise
+    - cybercab
+  entity_definitions:
+  - dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+    identity_id: dim_fiscal_quarter_identity
+  - dataset_columns:
+    - scenario_id
+    entity_universe: partial
+    identity_id: dim_scenario_identity
+  - dataset_columns:
+    - regulation_type_id
+    entity_universe: partial
+    identity_id: dim_regulation_type_identity
+  - dataset_columns:
+    - country_id
+    entity_universe: partial
+    identity_id: dim_country_identity
+  grain:
+    components:
+    - dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the related fiscal quarter.
+      identity_id: dim_fiscal_quarter_identity
+    - dataset_columns:
+      - scenario_id
+      description: Identifier of the related scenario.
+      identity_id: dim_scenario_identity
+    - dataset_columns:
+      - regulation_type_id
+      description: Identifier of the related regulation type.
+      identity_id: dim_regulation_type_identity
+    - dataset_columns:
+      - country_id
+      description: Identifier of the related country.
+      identity_id: dim_country_identity
+    description: One row is one combination of fiscal quarter, scenario, regulation type, country.
+  node_id: sf:automaker.supply.fact_regulatory_approvals
+- accessor:
+    properties:
+      account: automaker.us-central-1
+      database: AUTOMAKER
+      format: table
+      object: FACT_SUPPLIER_CAPACITY_COMMITMENTS
+      schema: SUPPLY
+    schema_id: accessor.snowflake.v1
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: supplier_id
+    description: Identifier of the related supplier.
+  - name: component_id
+    description: Identifier of the related component.
+  - name: country_id
+    description: Identifier of the related country.
+  - name: committed_component_quantity
+    description: Committed components in components.
+  descriptor:
+    description: Supplier capacity commitments by supplier, component, and country in component units. Stores components,
+      no dollar amount.
+    display_name: Supplier Capacity Commitments
+    qualified_name: automaker.supply.fact_supplier_capacity_commitments
+    synonyms: []
+    tags:
+    - fact
+    - supply_factory
+    - automobile-manufacturers
+    - both
+    - supplier
+    - commitment
+    - capacity
+    - manufacturing
+  entity_definitions:
+  - dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+    identity_id: dim_fiscal_quarter_identity
+  - dataset_columns:
+    - scenario_id
+    entity_universe: partial
+    identity_id: dim_scenario_identity
+  - dataset_columns:
+    - supplier_id
+    entity_universe: partial
+    identity_id: dim_supplier_identity
+  - dataset_columns:
+    - component_id
+    entity_universe: partial
+    identity_id: dim_component_identity
+  - dataset_columns:
+    - country_id
+    entity_universe: partial
+    identity_id: dim_country_identity
+  grain:
+    components:
+    - dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the related fiscal quarter.
+      identity_id: dim_fiscal_quarter_identity
+    - dataset_columns:
+      - scenario_id
+      description: Identifier of the related scenario.
+      identity_id: dim_scenario_identity
+    - dataset_columns:
+      - supplier_id
+      description: Identifier of the related supplier.
+      identity_id: dim_supplier_identity
+    - dataset_columns:
+      - component_id
+      description: Identifier of the related component.
+      identity_id: dim_component_identity
+    - dataset_columns:
+      - country_id
+      description: Identifier of the related country.
+      identity_id: dim_country_identity
+    description: One row is one combination of fiscal quarter, scenario, supplier, component, country.
+  node_id: sf:automaker.supply.fact_supplier_capacity_commitments
+- accessor:
+    properties:
+      account: automaker.us-central-1
+      database: AUTOMAKER
+      format: table
+      object: FACT_WARRANTY_CLAIMS
+      schema: SUPPLY
+    schema_id: accessor.snowflake.v1
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: vehicle_nameplate_id
+    description: Identifier of the related vehicle nameplate.
+  - name: component_id
+    description: Identifier of the related component.
+  - name: warranty_claim_quantity
+    description: Warranty claims in claims.
+  descriptor:
+    description: Warranty claims by nameplate and component. Stores claims; warranty dollars are on a separate price fact
+      at shared nameplate and component keys.
+    display_name: Warranty Claims
+    qualified_name: automaker.supply.fact_warranty_claims
+    synonyms: []
+    tags:
+    - fact
+    - supply_factory
+    - automobile-manufacturers
+    - both
+    - warranty
+    - claim
+    - engine
+    - quality
+  entity_definitions:
+  - dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+    identity_id: dim_fiscal_quarter_identity
+  - dataset_columns:
+    - scenario_id
+    entity_universe: partial
+    identity_id: dim_scenario_identity
+  - dataset_columns:
+    - vehicle_nameplate_id
+    entity_universe: partial
+    identity_id: dim_vehicle_nameplate_identity
+  - dataset_columns:
+    - component_id
+    entity_universe: partial
+    identity_id: dim_component_identity
+  grain:
+    components:
+    - dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the related fiscal quarter.
+      identity_id: dim_fiscal_quarter_identity
+    - dataset_columns:
+      - scenario_id
+      description: Identifier of the related scenario.
+      identity_id: dim_scenario_identity
+    - dataset_columns:
+      - vehicle_nameplate_id
+      description: Identifier of the related vehicle nameplate.
+      identity_id: dim_vehicle_nameplate_identity
+    - dataset_columns:
+      - component_id
+      description: Identifier of the related component.
+      identity_id: dim_component_identity
+    description: One row is one combination of fiscal quarter, scenario, vehicle nameplate, component.
+  node_id: sf:automaker.supply.fact_warranty_claims

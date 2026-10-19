@@ -1,270 +1,586 @@
-# Health Plan Inc membership and channel
+# Health Plan Inc membership and channel slice
 
-This slice owns line of business, geography, channel, employer, and membership counts for Health Plan Inc. Membership quantity lives here. Medical utilization and provider capacity are owned in medical_provider. Premiums, medical-cost trend rates, and margins are owned in price_benefit. A membership row names those populations only as a partial identity.
-
-Identifiers owned by another slice are partial here. Their complete populations are not re-authored in this slice.
-
-| Identity | Column on this slice | Complete population |
-| --- | --- | --- |
-| `provider_group_identity` | `provider_group_id` | `sf:healthplan.provider.dim_provider_group` `provider_group_id` |
-| `care_service_identity` | `care_service_id` | `sf:healthplan.medical.dim_care_service` `care_service_id` |
-| `clinical_program_identity` | `clinical_program_id` | `sf:healthplan.medical.dim_clinical_program` `clinical_program_id` |
+This slice is part of the Health Plan Inc warehouse. Quantity, capacity, and price or margin stay on separate facts. A quantity fact does not store a price. A price fact does not store the unit quantity; the denominator the price needs is a quantity or supply measure on its own fact, joined by the shared grain keys of fiscal quarter, scenario, and the business keys.
 
 ## Numbered questions
 
 ## UnitedHealth Group
 
-### Q2 2026 (3)
+### Q1 2026 (6)
 
-Which parts of the operating turnaround are largely finished, and where do the remaining gaps sit?
+Will the company join the GLP-1 Balance Program, and is industry participation expected to meet the required thresholds?
 
-- `healthplan.membership.fact_turnaround_status`: `fiscal_quarter_id`, `business_unit_id`, `finished_flag`, `open_gap_flag`
-- `healthplan.product.dim_business_unit`: `business_unit_code`, `business_unit_name`
-
-### Q1 2026 (9)
-
-Where do the value-based life tranches under negotiation stand, and are new provider groups being added?
-
-- `healthplan.membership.fact_value_based_lives`: `fiscal_quarter_id`, `business_unit_id`, `provider_group_id`, `line_of_business_id`, `negotiation_lives_count`, `new_group_flag`
-- `healthplan.provider.dim_provider`: `provider_group_id`, `provider_code`, `provider_name`
-- `healthplan.provider.dim_provider_group`: `provider_group_code`, `provider_group_name`
-
-### Q1 2026 (12)
-
-How should prior-period development in the quarter be split between UnitedHealthcare and Optum Health?
-
-- `healthplan.product.dim_business_unit`: `business_unit_code`, `business_unit_name`
-- `healthplan.price.fact_earnings_bridge`: `fiscal_quarter_id`, `business_unit_id`, `earnings_scenario_id`, `line_of_business_id`, `development_amount`, `contract_design_amount`
-- `healthplan.price.dim_earnings_scenario`: `business_unit_id`, `earnings_scenario_code`, `earnings_scenario_name`
-- `healthplan.price.fact_segment_result`: `fiscal_quarter_id`, `business_unit_id`, `beat_flag`, `revenue_amount`, `outlook_raised_flag`
-
-### Q4 2025 (1)
-
-With 2026 Medicare Advantage membership guided down sharply, are margins at a bottom, and should 2027 margins improve as benefits are refined?
-
-- `healthplan.membership.fact_membership`: `fiscal_quarter_id`, `line_of_business_id`, `state_id`, `business_unit_id`, `customer_segment_id`, `decline_rate`
-- `healthplan.price.fact_book_margin`: `fiscal_quarter_id`, `line_of_business_id`, `business_unit_id`, `margin_target_id`, `full_year_margin_rate`, `margin_rate`
-- `healthplan.product.dim_benefit_design`: `line_of_business_id`, `benefit_design_code`, `benefit_design_name`
-- `healthplan.price.dim_rate_notice`: `line_of_business_id`, `rate_notice_code`, `rate_notice_name`
+- `healthplan.medical.dim_care_program`: `care_program_id`, `care_program_code`, `care_program_name`
+- `healthplan.medical.dim_clinical_service`: `clinical_service_id`, `clinical_service_code`, `clinical_service_name`
+- `healthplan.medical.dim_dispute_type`: `dispute_type_id`, `dispute_type_code`, `dispute_type_name`
+- `healthplan.medical.dim_payment_arrangement`: `payment_arrangement_id`, `payment_arrangement_code`, `payment_arrangement_name`
+- `healthplan.medical.dim_site_of_care`: `site_of_care_id`, `site_of_care_code`, `site_of_care_name`
+- `healthplan.medical.fact_service_member_months`: `fiscal_quarter_id`, `scenario_id`, `plan_type_id`, `clinical_service_id`, `member_months_quantity`
+- `healthplan.medical.fact_site_of_care_cases`: `fiscal_quarter_id`, `scenario_id`, `clinical_service_id`, `site_of_care_id`, `case_quantity`, `shifted_case_quantity`
+- `healthplan.membership.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `healthplan.membership.dim_pharmacy_benefit_program`: `pharmacy_benefit_program_id`, `pharmacy_benefit_program_code`, `pharmacy_benefit_program_name`
+- `healthplan.membership.dim_plan_type`: `plan_type_id`, `plan_type_code`, `plan_type_name`
+- `healthplan.membership.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+- `healthplan.membership.dim_state`: `state_id`, `state_name`, `region_id`
+- `healthplan.membership.fact_pharmacy_benefit_member_months`: `fiscal_quarter_id`, `scenario_id`, `pharmacy_benefit_program_id`, `state_id`, `member_months_quantity`, `member_quantity`
+- `healthplan.price.fact_dispute_cost`: `fiscal_quarter_id`, `scenario_id`, `dispute_type_id`, `plan_type_id`, `dispute_cost_amount`, `dispute_fee_amount`
 
 ### Q4 2025 (4)
 
 How do 2026 Medicaid rates compare with 2025, and would an earlier start to work requirements change the margin view?
 
-- `healthplan.membership.fact_work_requirement`: `fiscal_quarter_id`, `state_id`, `line_of_business_id`, `early_start_flag`, `attrition_count`, `stay_or_leave_code`
-- `healthplan.price.fact_book_margin`: `fiscal_quarter_id`, `line_of_business_id`, `business_unit_id`, `margin_target_id`, `outlook_held_flat_flag`, `full_year_margin_rate`
-- `healthplan.price.fact_rate_update`: `fiscal_quarter_id`, `line_of_business_id`, `state_id`, `rate_notice_id`, `embedded_outlook_rate`, `rate_change_rate`
-- `healthplan.product.dim_line_of_business`: `line_of_business_code`, `line_of_business_name`
+- `healthplan.medical.dim_clinical_service`: `clinical_service_id`, `clinical_service_code`, `clinical_service_name`
+- `healthplan.medical.dim_payment_arrangement`: `payment_arrangement_id`, `payment_arrangement_code`, `payment_arrangement_name`
+- `healthplan.medical.dim_site_of_care`: `site_of_care_id`, `site_of_care_code`, `site_of_care_name`
+- `healthplan.medical.fact_service_member_months`: `fiscal_quarter_id`, `scenario_id`, `plan_type_id`, `clinical_service_id`, `member_months_quantity`
+- `healthplan.medical.fact_site_of_care_cases`: `fiscal_quarter_id`, `scenario_id`, `clinical_service_id`, `site_of_care_id`, `case_quantity`, `shifted_case_quantity`
+- `healthplan.membership.dim_dual_eligibility_status`: `dual_eligibility_status_id`, `dual_eligibility_status_code`, `dual_eligibility_status_name`
+- `healthplan.membership.dim_enrollment_channel`: `enrollment_channel_id`, `enrollment_channel_code`, `enrollment_channel_name`
+- `healthplan.membership.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `healthplan.membership.dim_funding_arrangement`: `funding_arrangement_id`, `funding_arrangement_code`, `funding_arrangement_name`
+- `healthplan.membership.dim_plan_type`: `plan_type_id`, `plan_type_code`, `plan_type_name`
+- `healthplan.membership.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+- `healthplan.membership.dim_state`: `state_id`, `state_name`, `region_id`
+- `healthplan.membership.fact_member_months`: `fiscal_quarter_id`, `scenario_id`, `plan_type_id`, `funding_arrangement_id`, `state_id`, `enrollment_channel_id`, `member_months_quantity`, `end_of_period_member_quantity`
+- `healthplan.membership.fact_work_requirement_attrition`: `fiscal_quarter_id`, `scenario_id`, `state_id`, `legislation_id`, `assumed_attrition_quantity`, `affected_member_quantity`
+- `healthplan.price.dim_legislation`: `legislation_id`, `legislation_code`, `legislation_name`
 
-### Q4 2025 (6)
+### Q4 2025 (5)
 
-How should member losses tied to UnitedHealthcare be weighed against the new Optum Rx clients?
+How do Part D subsidy changes shift Optum Rx earnings toward the first half?
 
-- `healthplan.membership.fact_external_lives`: `fiscal_quarter_id`, `business_unit_id`, `line_of_business_id`, `client_source_code`, `external_lives_count`, `health_plan_lives_lost_count`
-- `healthplan.product.dim_business_unit`: `business_unit_code`, `business_unit_name`
-- `healthplan.price.fact_contract_revenue`: `fiscal_quarter_id`, `state_program_id`, `business_unit_id`, `line_of_business_id`, `source_code`, `revenue_amount`
-- `healthplan.membership.fact_membership`: `fiscal_quarter_id`, `line_of_business_id`, `state_id`, `business_unit_id`, `customer_segment_id`, `member_change_count`
-
-### Q4 2025 (8)
-
-Have any Optum Care turnaround initiatives produced surprises versus the plan?
-
-- `healthplan.membership.fact_initiative_result`: `fiscal_quarter_id`, `business_unit_id`, `clinical_program_id`, `on_plan_flag`, `surprise_flag`
-- `healthplan.product.dim_business_unit`: `business_unit_code`, `business_unit_name`
-
-### Q3 2025 (1)
-
-Where does Optum Insight stand competitively, and when should investment translate into faster growth?
-
-- `healthplan.membership.fact_competitive_position`: `fiscal_quarter_id`, `line_of_business_id`, `business_unit_id`, `state_id`, `reacceleration_timing_code`, `competitor_loss_flag`
-- `healthplan.product.dim_business_unit`: `business_unit_code`, `business_unit_name`
-- `healthplan.price.fact_segment_result`: `fiscal_quarter_id`, `business_unit_id`, `beat_flag`, `outlook_raised_flag`, `revenue_amount`
+- `healthplan.medical.dim_care_program`: `care_program_id`, `care_program_code`, `care_program_name`
+- `healthplan.medical.dim_dispensing_category`: `dispensing_category_id`, `dispensing_category_code`, `dispensing_category_name`
+- `healthplan.medical.dim_drug_therapy_class`: `drug_therapy_class_id`, `drug_therapy_class_code`, `drug_therapy_class_name`
+- `healthplan.medical.dim_provider_employment_model`: `provider_employment_model_id`, `provider_employment_model_code`, `provider_employment_model_name`
+- `healthplan.medical.dim_risk_model_version`: `risk_model_version_id`, `risk_model_version_code`, `risk_model_version_name`
+- `healthplan.medical.dim_site_of_care`: `site_of_care_id`, `site_of_care_code`, `site_of_care_name`
+- `healthplan.medical.fact_optum_employed_clinician_capacity`: `fiscal_quarter_id`, `scenario_id`, `care_program_id`, `site_of_care_id`, `employed_clinician_quantity`, `patient_panel_quantity`
+- `healthplan.medical.fact_pharmacy_claims`: `fiscal_quarter_id`, `scenario_id`, `plan_type_id`, `drug_therapy_class_id`, `dispensing_category_id`, `prescription_claim_quantity`, `day_supply_quantity`, `unique_member_quantity`
+- `healthplan.membership.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `healthplan.membership.dim_pharmacy_benefit_program`: `pharmacy_benefit_program_id`, `pharmacy_benefit_program_code`, `pharmacy_benefit_program_name`
+- `healthplan.membership.dim_plan_type`: `plan_type_id`, `plan_type_code`, `plan_type_name`
+- `healthplan.membership.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+- `healthplan.membership.dim_state`: `state_id`, `state_name`, `region_id`
+- `healthplan.membership.fact_pharmacy_benefit_member_months`: `fiscal_quarter_id`, `scenario_id`, `pharmacy_benefit_program_id`, `state_id`, `member_months_quantity`, `member_quantity`
+- `healthplan.price.dim_optum_business`: `optum_business_id`, `optum_business_code`, `optum_business_name`
+- `healthplan.price.fact_optum_business_result`: `fiscal_quarter_id`, `scenario_id`, `optum_business_id`, `business_revenue_amount`, `business_operating_income_amount`
 
 ### Q3 2025 (3)
 
 How does the expected 2026 Medicare Advantage membership decline split among individual, dual-eligible, and group lives?
 
-- `healthplan.membership.fact_ma_split`: `fiscal_quarter_id`, `product_id`, `line_of_business_id`, `customer_segment_id`, `individual_lives_count`, `dual_lives_count`
-- `healthplan.membership.fact_membership`: `fiscal_quarter_id`, `line_of_business_id`, `state_id`, `business_unit_id`, `customer_segment_id`, `decline_rate`
-- `healthplan.product.dim_line_of_business`: `line_of_business_code`, `line_of_business_name`
-- `healthplan.price.fact_book_margin`: `fiscal_quarter_id`, `line_of_business_id`, `business_unit_id`, `margin_target_id`, `full_year_margin_rate`, `outlook_held_flat_flag`
+- `healthplan.medical.dim_clinical_service`: `clinical_service_id`, `clinical_service_code`, `clinical_service_name`
+- `healthplan.medical.dim_risk_model_version`: `risk_model_version_id`, `risk_model_version_code`, `risk_model_version_name`
+- `healthplan.medical.fact_service_member_months`: `fiscal_quarter_id`, `scenario_id`, `plan_type_id`, `clinical_service_id`, `member_months_quantity`
+- `healthplan.membership.dim_dual_eligibility_status`: `dual_eligibility_status_id`, `dual_eligibility_status_code`, `dual_eligibility_status_name`
+- `healthplan.membership.dim_employer_account_size`: `employer_account_size_id`, `employer_account_size_code`, `employer_account_size_name`
+- `healthplan.membership.dim_employer_sector`: `employer_sector_id`, `employer_sector_code`, `employer_sector_name`
+- `healthplan.membership.dim_enrollment_channel`: `enrollment_channel_id`, `enrollment_channel_code`, `enrollment_channel_name`
+- `healthplan.membership.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `healthplan.membership.dim_funding_arrangement`: `funding_arrangement_id`, `funding_arrangement_code`, `funding_arrangement_name`
+- `healthplan.membership.dim_pharmacy_benefit_program`: `pharmacy_benefit_program_id`, `pharmacy_benefit_program_code`, `pharmacy_benefit_program_name`
+- `healthplan.membership.dim_plan_type`: `plan_type_id`, `plan_type_code`, `plan_type_name`
+- `healthplan.membership.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+- `healthplan.membership.dim_state`: `state_id`, `state_name`, `region_id`
+- `healthplan.membership.fact_employer_covered_lives`: `fiscal_quarter_id`, `scenario_id`, `employer_account_size_id`, `employer_sector_id`, `funding_arrangement_id`, `covered_life_quantity`, `member_months_quantity`
+- `healthplan.membership.fact_member_months`: `fiscal_quarter_id`, `scenario_id`, `plan_type_id`, `funding_arrangement_id`, `state_id`, `enrollment_channel_id`, `member_months_quantity`, `end_of_period_member_quantity`
+- `healthplan.membership.fact_pharmacy_benefit_member_months`: `fiscal_quarter_id`, `scenario_id`, `pharmacy_benefit_program_id`, `state_id`, `member_months_quantity`, `member_quantity`
 
 ### Q3 2025 (4)
 
 Does the company agree that industry Medicare Advantage enrollment is roughly flat, and what share of lives is a realistic value-based-care market?
 
-- `healthplan.membership.fact_industry_enrollment`: `fiscal_quarter_id`, `line_of_business_id`, `addressable_share`, `flat_enrollment_flag`, `industry_lives_count`
-- `healthplan.product.dim_business_unit`: `business_unit_code`, `business_unit_name`
-- `healthplan.product.dim_line_of_business`: `line_of_business_code`, `line_of_business_name`
+- `healthplan.medical.dim_care_program`: `care_program_id`, `care_program_code`, `care_program_name`
+- `healthplan.medical.dim_clinical_service`: `clinical_service_id`, `clinical_service_code`, `clinical_service_name`
+- `healthplan.medical.dim_payment_arrangement`: `payment_arrangement_id`, `payment_arrangement_code`, `payment_arrangement_name`
+- `healthplan.medical.dim_provider_group`: `provider_group_id`, `provider_group_name`, `provider_employment_model_id`
+- `healthplan.medical.dim_site_of_care`: `site_of_care_id`, `site_of_care_code`, `site_of_care_name`
+- `healthplan.medical.fact_optum_employed_clinician_capacity`: `fiscal_quarter_id`, `scenario_id`, `care_program_id`, `site_of_care_id`, `employed_clinician_quantity`, `patient_panel_quantity`
+- `healthplan.medical.fact_provider_panel_capacity`: `fiscal_quarter_id`, `scenario_id`, `provider_group_id`, `clinical_service_id`, `panel_slot_quantity`, `attributed_member_quantity`
+- `healthplan.medical.fact_site_of_care_cases`: `fiscal_quarter_id`, `scenario_id`, `clinical_service_id`, `site_of_care_id`, `case_quantity`, `shifted_case_quantity`
+- `healthplan.membership.dim_dual_eligibility_status`: `dual_eligibility_status_id`, `dual_eligibility_status_code`, `dual_eligibility_status_name`
+- `healthplan.membership.dim_enrollment_channel`: `enrollment_channel_id`, `enrollment_channel_code`, `enrollment_channel_name`
+- `healthplan.membership.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `healthplan.membership.dim_funding_arrangement`: `funding_arrangement_id`, `funding_arrangement_code`, `funding_arrangement_name`
+- `healthplan.membership.dim_plan_type`: `plan_type_id`, `plan_type_code`, `plan_type_name`
+- `healthplan.membership.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+- `healthplan.membership.dim_state`: `state_id`, `state_name`, `region_id`
+- `healthplan.membership.fact_member_months`: `fiscal_quarter_id`, `scenario_id`, `plan_type_id`, `funding_arrangement_id`, `state_id`, `enrollment_channel_id`, `member_months_quantity`, `end_of_period_member_quantity`
 
-### Q3 2025 (10)
+### Q3 2025 (6)
 
-How wide is the Optum Health portfolio rationalization under the new approach?
+What utilization is expected in the fourth quarter, including any step-up in Part D?
 
-- `healthplan.membership.fact_portfolio_scope`: `fiscal_quarter_id`, `business_unit_id`, `line_of_business_id`, `exited_contract_count`, `retained_contract_count`, `risk_exit_flag`
-- `healthplan.product.dim_business_unit`: `business_unit_code`, `business_unit_name`
-- `healthplan.price.fact_value_based_margin`: `fiscal_quarter_id`, `business_unit_id`, `provider_group_id`, `margin_rate`, `trough_flag`, `versus_last_year_rate`
+- `healthplan.medical.dim_claim_status`: `claim_status_id`, `claim_status_code`, `claim_status_name`
+- `healthplan.medical.dim_clinical_service`: `clinical_service_id`, `clinical_service_code`, `clinical_service_name`
+- `healthplan.medical.dim_dispensing_category`: `dispensing_category_id`, `dispensing_category_code`, `dispensing_category_name`
+- `healthplan.medical.dim_drug_therapy_class`: `drug_therapy_class_id`, `drug_therapy_class_code`, `drug_therapy_class_name`
+- `healthplan.medical.dim_facility`: `facility_id`, `facility_name`, `site_of_care_id`
+- `healthplan.medical.fact_pharmacy_claims`: `fiscal_quarter_id`, `scenario_id`, `plan_type_id`, `drug_therapy_class_id`, `dispensing_category_id`, `prescription_claim_quantity`, `day_supply_quantity`, `unique_member_quantity`
+- `healthplan.medical.fact_service_member_months`: `fiscal_quarter_id`, `scenario_id`, `plan_type_id`, `clinical_service_id`, `member_months_quantity`
+- `healthplan.membership.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `healthplan.membership.dim_pharmacy_benefit_program`: `pharmacy_benefit_program_id`, `pharmacy_benefit_program_code`, `pharmacy_benefit_program_name`
+- `healthplan.membership.dim_plan_type`: `plan_type_id`, `plan_type_code`, `plan_type_name`
+- `healthplan.membership.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+- `healthplan.membership.dim_state`: `state_id`, `state_name`, `region_id`
+- `healthplan.membership.fact_pharmacy_benefit_member_months`: `fiscal_quarter_id`, `scenario_id`, `pharmacy_benefit_program_id`, `state_id`, `member_months_quantity`, `member_quantity`
+- `healthplan.price.fact_medical_cost_trend`: `fiscal_quarter_id`, `scenario_id`, `plan_type_id`, `clinical_service_id`, `medical_cost_trend_percent`, `assumed_trend_percent`
+
+### Q3 2025 (7)
+
+Why did Tier 3 branded drugs on Medicare Advantage and stand-alone Part D plans move from copay to coinsurance?
+
+- `healthplan.medical.dim_clinical_service`: `clinical_service_id`, `clinical_service_code`, `clinical_service_name`
+- `healthplan.medical.dim_dispensing_category`: `dispensing_category_id`, `dispensing_category_code`, `dispensing_category_name`
+- `healthplan.medical.dim_drug_therapy_class`: `drug_therapy_class_id`, `drug_therapy_class_code`, `drug_therapy_class_name`
+- `healthplan.medical.dim_payment_arrangement`: `payment_arrangement_id`, `payment_arrangement_code`, `payment_arrangement_name`
+- `healthplan.medical.dim_site_of_care`: `site_of_care_id`, `site_of_care_code`, `site_of_care_name`
+- `healthplan.medical.fact_pharmacy_claims`: `fiscal_quarter_id`, `scenario_id`, `plan_type_id`, `drug_therapy_class_id`, `dispensing_category_id`, `prescription_claim_quantity`, `day_supply_quantity`, `unique_member_quantity`
+- `healthplan.medical.fact_site_of_care_cases`: `fiscal_quarter_id`, `scenario_id`, `clinical_service_id`, `site_of_care_id`, `case_quantity`, `shifted_case_quantity`
+- `healthplan.membership.dim_dual_eligibility_status`: `dual_eligibility_status_id`, `dual_eligibility_status_code`, `dual_eligibility_status_name`
+- `healthplan.membership.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `healthplan.membership.dim_pharmacy_benefit_program`: `pharmacy_benefit_program_id`, `pharmacy_benefit_program_code`, `pharmacy_benefit_program_name`
+- `healthplan.membership.dim_plan_type`: `plan_type_id`, `plan_type_code`, `plan_type_name`
+- `healthplan.membership.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+- `healthplan.membership.dim_state`: `state_id`, `state_name`, `region_id`
+- `healthplan.membership.fact_pharmacy_benefit_member_months`: `fiscal_quarter_id`, `scenario_id`, `pharmacy_benefit_program_id`, `state_id`, `member_months_quantity`, `member_quantity`
+- `healthplan.price.dim_member_cost_sharing`: `member_cost_sharing_id`, `member_cost_sharing_code`, `member_cost_sharing_name`
+- `healthplan.price.fact_member_cost_sharing`: `fiscal_quarter_id`, `scenario_id`, `member_cost_sharing_id`, `drug_therapy_class_id`, `average_copayment_amount`, `coinsurance_percent`
 
 ### Q3 2025 (11)
 
 How much of the Optum Health turnaround is walking away from risk versus repairing the remaining book?
 
-- `healthplan.membership.fact_portfolio_scope`: `fiscal_quarter_id`, `business_unit_id`, `line_of_business_id`, `risk_exit_flag`, `exited_contract_count`, `retained_contract_count`
-- `healthplan.product.dim_business_unit`: `business_unit_code`, `business_unit_name`
+- `healthplan.medical.dim_facility`: `facility_id`, `facility_name`, `site_of_care_id`
+- `healthplan.medical.dim_provider_employment_model`: `provider_employment_model_id`, `provider_employment_model_code`, `provider_employment_model_name`
+- `healthplan.medical.dim_provider_group`: `provider_group_id`, `provider_group_name`, `provider_employment_model_id`
+- `healthplan.medical.dim_risk_model_version`: `risk_model_version_id`, `risk_model_version_code`, `risk_model_version_name`
+- `healthplan.medical.dim_site_of_care`: `site_of_care_id`, `site_of_care_code`, `site_of_care_name`
+- `healthplan.medical.fact_coding_submissions`: `fiscal_quarter_id`, `scenario_id`, `risk_model_version_id`, `provider_group_id`, `plan_type_id`, `submitted_code_quantity`, `chronic_condition_code_quantity`, `encounter_quantity`
+- `healthplan.medical.fact_facility_capacity`: `fiscal_quarter_id`, `scenario_id`, `facility_id`, `bed_quantity`, `operating_room_quantity`, `available_slot_quantity`
+- `healthplan.membership.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `healthplan.membership.dim_pharmacy_benefit_program`: `pharmacy_benefit_program_id`, `pharmacy_benefit_program_code`, `pharmacy_benefit_program_name`
+- `healthplan.membership.dim_plan_type`: `plan_type_id`, `plan_type_code`, `plan_type_name`
+- `healthplan.membership.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+- `healthplan.membership.dim_state`: `state_id`, `state_name`, `region_id`
+- `healthplan.membership.fact_pharmacy_benefit_member_months`: `fiscal_quarter_id`, `scenario_id`, `pharmacy_benefit_program_id`, `state_id`, `member_months_quantity`, `member_quantity`
+- `healthplan.price.dim_optum_business`: `optum_business_id`, `optum_business_code`, `optum_business_name`
+- `healthplan.price.fact_optum_business_result`: `fiscal_quarter_id`, `scenario_id`, `optum_business_id`, `business_revenue_amount`, `business_operating_income_amount`
 
 ## Elevance Health
 
-### Q2 2026 (5)
+### Q2 2026 (1)
 
-Why did seasonal favorability increase from the first quarter to the second, and does any of that reverse later in the year?
+Is the back half of the year more favorable than the front half for the negative Medicaid margin, and where does the year exit?
 
-- `healthplan.membership.fact_seasonality`: `fiscal_quarter_id`, `line_of_business_id`, `benefit_design_id`, `favorability_index`, `reverses_later_flag`
-- `healthplan.product.dim_benefit_design`: `line_of_business_id`, `benefit_design_code`, `benefit_design_name`
+- `healthplan.medical.dim_clinical_service`: `clinical_service_id`, `clinical_service_code`, `clinical_service_name`
+- `healthplan.medical.dim_facility`: `facility_id`, `facility_name`, `site_of_care_id`
+- `healthplan.medical.dim_site_of_care`: `site_of_care_id`, `site_of_care_code`, `site_of_care_name`
+- `healthplan.medical.fact_facility_capacity`: `fiscal_quarter_id`, `scenario_id`, `facility_id`, `bed_quantity`, `operating_room_quantity`, `available_slot_quantity`
+- `healthplan.medical.fact_service_member_months`: `fiscal_quarter_id`, `scenario_id`, `plan_type_id`, `clinical_service_id`, `member_months_quantity`
+- `healthplan.membership.dim_dual_eligibility_status`: `dual_eligibility_status_id`, `dual_eligibility_status_code`, `dual_eligibility_status_name`
+- `healthplan.membership.dim_enrollment_channel`: `enrollment_channel_id`, `enrollment_channel_code`, `enrollment_channel_name`
+- `healthplan.membership.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `healthplan.membership.dim_funding_arrangement`: `funding_arrangement_id`, `funding_arrangement_code`, `funding_arrangement_name`
+- `healthplan.membership.dim_pharmacy_benefit_program`: `pharmacy_benefit_program_id`, `pharmacy_benefit_program_code`, `pharmacy_benefit_program_name`
+- `healthplan.membership.dim_plan_type`: `plan_type_id`, `plan_type_code`, `plan_type_name`
+- `healthplan.membership.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+- `healthplan.membership.dim_state`: `state_id`, `state_name`, `region_id`
+- `healthplan.membership.fact_member_months`: `fiscal_quarter_id`, `scenario_id`, `plan_type_id`, `funding_arrangement_id`, `state_id`, `enrollment_channel_id`, `member_months_quantity`, `end_of_period_member_quantity`
+- `healthplan.membership.fact_pharmacy_benefit_member_months`: `fiscal_quarter_id`, `scenario_id`, `pharmacy_benefit_program_id`, `state_id`, `member_months_quantity`, `member_quantity`
+
+### Q2 2026 (2)
+
+How large are the planned Medicaid exits relative to the Medicaid revenue base?
+
+- `healthplan.medical.dim_clinical_service`: `clinical_service_id`, `clinical_service_code`, `clinical_service_name`
+- `healthplan.medical.dim_dispute_type`: `dispute_type_id`, `dispute_type_code`, `dispute_type_name`
+- `healthplan.medical.dim_drug_therapy_class`: `drug_therapy_class_id`, `drug_therapy_class_code`, `drug_therapy_class_name`
+- `healthplan.medical.dim_provider_employment_model`: `provider_employment_model_id`, `provider_employment_model_code`, `provider_employment_model_name`
+- `healthplan.membership.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `healthplan.membership.dim_pharmacy_benefit_program`: `pharmacy_benefit_program_id`, `pharmacy_benefit_program_code`, `pharmacy_benefit_program_name`
+- `healthplan.membership.dim_plan_type`: `plan_type_id`, `plan_type_code`, `plan_type_name`
+- `healthplan.membership.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+- `healthplan.membership.dim_state`: `state_id`, `state_name`, `region_id`
+- `healthplan.membership.fact_work_requirement_attrition`: `fiscal_quarter_id`, `scenario_id`, `state_id`, `legislation_id`, `assumed_attrition_quantity`, `affected_member_quantity`
+- `healthplan.price.dim_legislation`: `legislation_id`, `legislation_code`, `legislation_name`
+- `healthplan.price.dim_member_cost_sharing`: `member_cost_sharing_id`, `member_cost_sharing_code`, `member_cost_sharing_name`
+- `healthplan.price.fact_dispute_cost`: `fiscal_quarter_id`, `scenario_id`, `dispute_type_id`, `plan_type_id`, `dispute_cost_amount`, `dispute_fee_amount`
+- `healthplan.price.fact_medical_cost_amount`: `fiscal_quarter_id`, `scenario_id`, `plan_type_id`, `clinical_service_id`, `incurred_medical_cost_amount`, `paid_medical_cost_amount`
+- `healthplan.price.fact_member_cost_sharing`: `fiscal_quarter_id`, `scenario_id`, `member_cost_sharing_id`, `drug_therapy_class_id`, `average_copayment_amount`, `coinsurance_percent`
 
 ### Q2 2026 (7)
 
 What criteria decide which Medicaid programs are exited, such as program type, state, or share position?
 
-- `healthplan.membership.fact_contract_exit`: `fiscal_quarter_id`, `state_id`, `state_program_id`, `line_of_business_id`, `exit_criteria_code`, `share_position_rate`
-- `healthplan.geography.dim_state_program`: `state_id`, `line_of_business_id`, `state_program_code`, `state_program_name`
-- `healthplan.product.dim_line_of_business`: `line_of_business_code`, `line_of_business_name`
-- `healthplan.membership.fact_competitive_position`: `fiscal_quarter_id`, `line_of_business_id`, `business_unit_id`, `state_id`, `competitor_loss_flag`, `planned_exit_flag`
+- `healthplan.medical.dim_care_program`: `care_program_id`, `care_program_code`, `care_program_name`
+- `healthplan.medical.dim_dispute_type`: `dispute_type_id`, `dispute_type_code`, `dispute_type_name`
+- `healthplan.membership.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `healthplan.membership.dim_pharmacy_benefit_program`: `pharmacy_benefit_program_id`, `pharmacy_benefit_program_code`, `pharmacy_benefit_program_name`
+- `healthplan.membership.dim_plan_type`: `plan_type_id`, `plan_type_code`, `plan_type_name`
+- `healthplan.membership.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+- `healthplan.membership.dim_state`: `state_id`, `state_name`, `region_id`
+- `healthplan.membership.fact_pharmacy_benefit_member_months`: `fiscal_quarter_id`, `scenario_id`, `pharmacy_benefit_program_id`, `state_id`, `member_months_quantity`, `member_quantity`
+- `healthplan.price.dim_bid_process`: `bid_process_id`, `bid_process_code`, `bid_process_name`
+- `healthplan.price.dim_investment_program_type`: `investment_program_type_id`, `investment_program_type_code`, `investment_program_type_name`
+- `healthplan.price.dim_rate_notice_type`: `rate_notice_type_id`, `rate_notice_type_code`, `rate_notice_type_name`
+- `healthplan.price.fact_dispute_cost`: `fiscal_quarter_id`, `scenario_id`, `dispute_type_id`, `plan_type_id`, `dispute_cost_amount`, `dispute_fee_amount`
+- `healthplan.price.fact_investment_spending`: `fiscal_quarter_id`, `scenario_id`, `investment_program_type_id`, `investment_spending_amount`, `measured_savings_amount`
+- `healthplan.price.fact_rate_update`: `fiscal_quarter_id`, `scenario_id`, `plan_type_id`, `state_id`, `rate_notice_type_id`, `announced_rate_change_percent`, `final_rate_change_percent`
+
+### Q2 2026 (10)
+
+Over two to three years, what Medicaid pressures remain if this year is the trough?
+
+- `healthplan.medical.dim_clinical_service`: `clinical_service_id`, `clinical_service_code`, `clinical_service_name`
+- `healthplan.medical.dim_payment_arrangement`: `payment_arrangement_id`, `payment_arrangement_code`, `payment_arrangement_name`
+- `healthplan.medical.dim_provider_group`: `provider_group_id`, `provider_group_name`, `provider_employment_model_id`
+- `healthplan.medical.dim_risk_model_version`: `risk_model_version_id`, `risk_model_version_code`, `risk_model_version_name`
+- `healthplan.medical.dim_site_of_care`: `site_of_care_id`, `site_of_care_code`, `site_of_care_name`
+- `healthplan.medical.fact_service_member_months`: `fiscal_quarter_id`, `scenario_id`, `plan_type_id`, `clinical_service_id`, `member_months_quantity`
+- `healthplan.medical.fact_site_of_care_cases`: `fiscal_quarter_id`, `scenario_id`, `clinical_service_id`, `site_of_care_id`, `case_quantity`, `shifted_case_quantity`
+- `healthplan.medical.fact_value_based_attributed_lives`: `fiscal_quarter_id`, `scenario_id`, `provider_group_id`, `payment_arrangement_id`, `plan_type_id`, `attributed_life_quantity`, `negotiation_life_quantity`
+- `healthplan.membership.dim_dual_eligibility_status`: `dual_eligibility_status_id`, `dual_eligibility_status_code`, `dual_eligibility_status_name`
+- `healthplan.membership.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `healthplan.membership.dim_plan_type`: `plan_type_id`, `plan_type_code`, `plan_type_name`
+- `healthplan.membership.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+- `healthplan.membership.dim_state`: `state_id`, `state_name`, `region_id`
+- `healthplan.membership.fact_work_requirement_attrition`: `fiscal_quarter_id`, `scenario_id`, `state_id`, `legislation_id`, `assumed_attrition_quantity`, `affected_member_quantity`
+- `healthplan.price.dim_legislation`: `legislation_id`, `legislation_code`, `legislation_name`
+
+### Q2 2026 (15)
+
+Is there anything unusual in commercial enrollment between fee-based and employer-group risk, and how is pricing being balanced against elevated trend?
+
+- `healthplan.medical.dim_clinical_service`: `clinical_service_id`, `clinical_service_code`, `clinical_service_name`
+- `healthplan.medical.dim_payment_arrangement`: `payment_arrangement_id`, `payment_arrangement_code`, `payment_arrangement_name`
+- `healthplan.medical.dim_provider_group`: `provider_group_id`, `provider_group_name`, `provider_employment_model_id`
+- `healthplan.medical.dim_risk_model_version`: `risk_model_version_id`, `risk_model_version_code`, `risk_model_version_name`
+- `healthplan.medical.fact_coding_submissions`: `fiscal_quarter_id`, `scenario_id`, `risk_model_version_id`, `provider_group_id`, `plan_type_id`, `submitted_code_quantity`, `chronic_condition_code_quantity`, `encounter_quantity`
+- `healthplan.membership.dim_employer_account_size`: `employer_account_size_id`, `employer_account_size_code`, `employer_account_size_name`
+- `healthplan.membership.dim_employer_sector`: `employer_sector_id`, `employer_sector_code`, `employer_sector_name`
+- `healthplan.membership.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `healthplan.membership.dim_funding_arrangement`: `funding_arrangement_id`, `funding_arrangement_code`, `funding_arrangement_name`
+- `healthplan.membership.dim_plan_type`: `plan_type_id`, `plan_type_code`, `plan_type_name`
+- `healthplan.membership.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+- `healthplan.membership.dim_state`: `state_id`, `state_name`, `region_id`
+- `healthplan.membership.fact_employer_covered_lives`: `fiscal_quarter_id`, `scenario_id`, `employer_account_size_id`, `employer_sector_id`, `funding_arrangement_id`, `covered_life_quantity`, `member_months_quantity`
+- `healthplan.price.dim_bid_process`: `bid_process_id`, `bid_process_code`, `bid_process_name`
+- `healthplan.price.fact_bid_assumptions`: `fiscal_quarter_id`, `scenario_id`, `plan_type_id`, `bid_process_id`, `assumed_medical_cost_trend_percent`, `filed_premium_change_percent`
+- `healthplan.price.fact_medical_cost_trend`: `fiscal_quarter_id`, `scenario_id`, `plan_type_id`, `clinical_service_id`, `medical_cost_trend_percent`, `assumed_trend_percent`
+
+### Q2 2026 (16)
+
+What are the early puts and takes for 2027 by business versus the long-term growth path?
+
+- `healthplan.medical.dim_clinical_service`: `clinical_service_id`, `clinical_service_code`, `clinical_service_name`
+- `healthplan.medical.dim_dispute_type`: `dispute_type_id`, `dispute_type_code`, `dispute_type_name`
+- `healthplan.medical.dim_drug_therapy_class`: `drug_therapy_class_id`, `drug_therapy_class_code`, `drug_therapy_class_name`
+- `healthplan.membership.dim_dual_eligibility_status`: `dual_eligibility_status_id`, `dual_eligibility_status_code`, `dual_eligibility_status_name`
+- `healthplan.membership.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `healthplan.membership.dim_pharmacy_benefit_program`: `pharmacy_benefit_program_id`, `pharmacy_benefit_program_code`, `pharmacy_benefit_program_name`
+- `healthplan.membership.dim_plan_type`: `plan_type_id`, `plan_type_code`, `plan_type_name`
+- `healthplan.membership.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+- `healthplan.membership.dim_state`: `state_id`, `state_name`, `region_id`
+- `healthplan.membership.fact_pharmacy_benefit_member_months`: `fiscal_quarter_id`, `scenario_id`, `pharmacy_benefit_program_id`, `state_id`, `member_months_quantity`, `member_quantity`
+- `healthplan.price.dim_member_cost_sharing`: `member_cost_sharing_id`, `member_cost_sharing_code`, `member_cost_sharing_name`
+- `healthplan.price.dim_revenue_type`: `revenue_type_id`, `revenue_type_code`, `revenue_type_name`
+- `healthplan.price.fact_dispute_cost`: `fiscal_quarter_id`, `scenario_id`, `dispute_type_id`, `plan_type_id`, `dispute_cost_amount`, `dispute_fee_amount`
+- `healthplan.price.fact_medical_cost_amount`: `fiscal_quarter_id`, `scenario_id`, `plan_type_id`, `clinical_service_id`, `incurred_medical_cost_amount`, `paid_medical_cost_amount`
+- `healthplan.price.fact_member_cost_sharing`: `fiscal_quarter_id`, `scenario_id`, `member_cost_sharing_id`, `drug_therapy_class_id`, `average_copayment_amount`, `coinsurance_percent`
 
 ### Q1 2026 (1)
 
 Are employers emphasizing different priorities in the pharmacy and commercial selling seasons, including AI or a softer economy?
 
-- `healthplan.membership.fact_selling_season`: `fiscal_quarter_id`, `employer_account_id`, `business_unit_id`, `channel_id`, `priority_code`, `changed_versus_prior_flag`
-- `healthplan.product.dim_line_of_business`: `line_of_business_code`, `line_of_business_name`
-- `healthplan.channel.dim_employer_account`: `customer_segment_id`, `employer_account_code`, `employer_account_name`
-- `healthplan.price.dim_ai_program`: `business_unit_id`, `ai_program_code`, `ai_program_name`
+- `healthplan.medical.dim_clinical_service`: `clinical_service_id`, `clinical_service_code`, `clinical_service_name`
+- `healthplan.medical.dim_dispensing_category`: `dispensing_category_id`, `dispensing_category_code`, `dispensing_category_name`
+- `healthplan.medical.dim_drug_therapy_class`: `drug_therapy_class_id`, `drug_therapy_class_code`, `drug_therapy_class_name`
+- `healthplan.medical.dim_provider_group`: `provider_group_id`, `provider_group_name`, `provider_employment_model_id`
+- `healthplan.medical.dim_site_of_care`: `site_of_care_id`, `site_of_care_code`, `site_of_care_name`
+- `healthplan.medical.fact_site_of_care_cases`: `fiscal_quarter_id`, `scenario_id`, `clinical_service_id`, `site_of_care_id`, `case_quantity`, `shifted_case_quantity`
+- `healthplan.membership.dim_employer_account_size`: `employer_account_size_id`, `employer_account_size_code`, `employer_account_size_name`
+- `healthplan.membership.dim_employer_sector`: `employer_sector_id`, `employer_sector_code`, `employer_sector_name`
+- `healthplan.membership.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `healthplan.membership.dim_funding_arrangement`: `funding_arrangement_id`, `funding_arrangement_code`, `funding_arrangement_name`
+- `healthplan.membership.dim_pharmacy_benefit_program`: `pharmacy_benefit_program_id`, `pharmacy_benefit_program_code`, `pharmacy_benefit_program_name`
+- `healthplan.membership.dim_plan_type`: `plan_type_id`, `plan_type_code`, `plan_type_name`
+- `healthplan.membership.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+- `healthplan.membership.fact_employer_covered_lives`: `fiscal_quarter_id`, `scenario_id`, `employer_account_size_id`, `employer_sector_id`, `funding_arrangement_id`, `covered_life_quantity`, `member_months_quantity`
+- `healthplan.price.dim_member_cost_sharing`: `member_cost_sharing_id`, `member_cost_sharing_code`, `member_cost_sharing_name`
+- `healthplan.price.fact_member_cost_sharing`: `fiscal_quarter_id`, `scenario_id`, `member_cost_sharing_id`, `drug_therapy_class_id`, `average_copayment_amount`, `coinsurance_percent`
+- `healthplan.price.fact_pharmacy_cost`: `fiscal_quarter_id`, `scenario_id`, `plan_type_id`, `drug_therapy_class_id`, `dispensing_category_id`, `pharmacy_claim_cost_amount`, `manufacturer_rebate_amount`
 
 ### Q1 2026 (2)
 
 Are Medicaid membership declines concentrated in lower-utilizing members, and how does that sit against the high-single-digit decline outlook excluding Indiana growth?
 
-- `healthplan.membership.fact_membership_mix`: `fiscal_quarter_id`, `line_of_business_id`, `state_id`, `customer_segment_id`, `indiana_excluded_decline_rate`, `acuity_index`
-- `healthplan.membership.fact_membership`: `fiscal_quarter_id`, `line_of_business_id`, `state_id`, `business_unit_id`, `customer_segment_id`, `decline_rate`
-- `healthplan.geography.dim_state`: `region_id`, `state_code`, `state_name`
-- `healthplan.product.dim_line_of_business`: `line_of_business_code`, `line_of_business_name`
-
-### Q1 2026 (3)
-
-How are members behaving after deductibles reset, and are higher fuel prices or the broader economy changing utilization?
-
-- `healthplan.membership.fact_deductible_behavior`: `fiscal_quarter_id`, `line_of_business_id`, `customer_segment_id`, `macro_pressure_flag`, `utilization_index`
-- `healthplan.product.dim_line_of_business`: `line_of_business_code`, `line_of_business_name`
-- `healthplan.channel.dim_employer_account`: `customer_segment_id`, `employer_account_code`, `employer_account_name`
-- `healthplan.medical.fact_utilization`: `fiscal_quarter_id`, `line_of_business_id`, `clinical_category_id`, `utilization_driver_id`, `utilization_index`, `versus_assumption_index`
+- `healthplan.membership.dim_dual_eligibility_status`: `dual_eligibility_status_id`, `dual_eligibility_status_code`, `dual_eligibility_status_name`
+- `healthplan.membership.dim_enrollment_channel`: `enrollment_channel_id`, `enrollment_channel_code`, `enrollment_channel_name`
+- `healthplan.membership.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `healthplan.membership.dim_funding_arrangement`: `funding_arrangement_id`, `funding_arrangement_code`, `funding_arrangement_name`
+- `healthplan.membership.dim_membership_change_reason`: `membership_change_reason_id`, `membership_change_reason_code`, `membership_change_reason_name`
+- `healthplan.membership.dim_pharmacy_benefit_program`: `pharmacy_benefit_program_id`, `pharmacy_benefit_program_code`, `pharmacy_benefit_program_name`
+- `healthplan.membership.dim_plan_type`: `plan_type_id`, `plan_type_code`, `plan_type_name`
+- `healthplan.membership.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+- `healthplan.membership.dim_state`: `state_id`, `state_name`, `region_id`
+- `healthplan.membership.fact_medicaid_redetermination`: `fiscal_quarter_id`, `scenario_id`, `state_id`, `plan_type_id`, `redetermined_member_quantity`, `disenrolled_member_quantity`
+- `healthplan.membership.fact_member_months`: `fiscal_quarter_id`, `scenario_id`, `plan_type_id`, `funding_arrangement_id`, `state_id`, `enrollment_channel_id`, `member_months_quantity`, `end_of_period_member_quantity`
+- `healthplan.membership.fact_membership_change`: `fiscal_quarter_id`, `scenario_id`, `plan_type_id`, `state_id`, `membership_change_reason_id`, `member_change_quantity`, `changed_member_quantity`
+- `healthplan.price.fact_premium_rate`: `fiscal_quarter_id`, `scenario_id`, `plan_type_id`, `funding_arrangement_id`, `state_id`, `premium_per_member_per_month_amount`
 
 ### Q1 2026 (5)
 
 What did the second Blue Bid sell in 2026, what does the 2027 pipeline look like, and which Carelon services attach?
 
-- `healthplan.membership.fact_service_attach`: `fiscal_quarter_id`, `care_service_id`, `blue_bid_id`, `business_unit_id`, `attached_service_count`, `risk_bearing_flag`
-- `healthplan.membership.fact_blue_bid`: `fiscal_quarter_id`, `employer_account_id`, `business_unit_id`, `pipeline_count`, `won_bid_count`
-- `healthplan.medical.dim_care_service`: `business_unit_id`, `care_service_code`, `care_service_name`
-- `healthplan.product.dim_business_unit`: `business_unit_code`, `business_unit_name`
-
-### Q1 2026 (9)
-
-Did higher-than-expected exchange enrollment come with a worse risk pool, including people moving from Medicaid?
-
-- `healthplan.membership.fact_migration`: `fiscal_quarter_id`, `line_of_business_id`, `state_id`, `migrated_lives_count`, `attrition_count`, `historical_attrition_rate`
-- `healthplan.membership.fact_exchange_enrollment`: `fiscal_quarter_id`, `line_of_business_id`, `state_id`, `metal_tier_id`, `member_count`, `open_enrollment_lives_count`
-- `healthplan.medical.fact_risk_pool`: `fiscal_quarter_id`, `line_of_business_id`, `state_id`, `worse_than_plan_flag`, `morbidity_index`
-- `healthplan.product.dim_line_of_business`: `line_of_business_code`, `line_of_business_name`
+- `healthplan.medical.dim_care_program`: `care_program_id`, `care_program_code`, `care_program_name`
+- `healthplan.medical.dim_claim_status`: `claim_status_id`, `claim_status_code`, `claim_status_name`
+- `healthplan.medical.fact_carelon_home_care_quantity`: `fiscal_quarter_id`, `scenario_id`, `care_program_id`, `state_id`, `home_visit_quantity`, `served_member_quantity`
+- `healthplan.membership.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `healthplan.membership.dim_pharmacy_benefit_program`: `pharmacy_benefit_program_id`, `pharmacy_benefit_program_code`, `pharmacy_benefit_program_name`
+- `healthplan.membership.dim_plan_type`: `plan_type_id`, `plan_type_code`, `plan_type_name`
+- `healthplan.membership.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+- `healthplan.membership.dim_state`: `state_id`, `state_name`, `region_id`
+- `healthplan.membership.fact_blue_plan_bid_quantity`: `fiscal_quarter_id`, `scenario_id`, `blue_plan_client_type_id`, `carelon_business_id`, `bid_quantity`, `won_bid_quantity`, `pipeline_bid_quantity`
+- `healthplan.price.dim_bid_process`: `bid_process_id`, `bid_process_code`, `bid_process_name`
+- `healthplan.price.dim_blue_plan_client_type`: `blue_plan_client_type_id`, `blue_plan_client_type_code`, `blue_plan_client_type_name`
+- `healthplan.price.dim_carelon_business`: `carelon_business_id`, `carelon_business_code`, `carelon_business_name`
+- `healthplan.price.fact_bid_assumptions`: `fiscal_quarter_id`, `scenario_id`, `plan_type_id`, `bid_process_id`, `assumed_medical_cost_trend_percent`, `filed_premium_change_percent`
+- `healthplan.price.fact_blue_plan_service_revenue`: `fiscal_quarter_id`, `scenario_id`, `blue_plan_client_type_id`, `carelon_business_id`, `service_contract_revenue_amount`
 
 ### Q1 2026 (10)
 
 What member attrition from work requirements is assumed for 2027, and which states are stay-or-leave decisions?
 
-- `healthplan.membership.fact_work_requirement`: `fiscal_quarter_id`, `state_id`, `line_of_business_id`, `attrition_count`, `stay_or_leave_code`, `early_start_flag`
-- `healthplan.membership.fact_membership`: `fiscal_quarter_id`, `line_of_business_id`, `state_id`, `business_unit_id`, `customer_segment_id`, `decline_rate`
-- `healthplan.product.dim_line_of_business`: `line_of_business_code`, `line_of_business_name`
-- `healthplan.price.fact_recovery_block`: `fiscal_quarter_id`, `legislation_id`, `line_of_business_id`, `block_code`, `trough_year_flag`
+- `healthplan.medical.dim_clinical_service`: `clinical_service_id`, `clinical_service_code`, `clinical_service_name`
+- `healthplan.medical.fact_service_member_months`: `fiscal_quarter_id`, `scenario_id`, `plan_type_id`, `clinical_service_id`, `member_months_quantity`
+- `healthplan.membership.dim_dual_eligibility_status`: `dual_eligibility_status_id`, `dual_eligibility_status_code`, `dual_eligibility_status_name`
+- `healthplan.membership.dim_enrollment_channel`: `enrollment_channel_id`, `enrollment_channel_code`, `enrollment_channel_name`
+- `healthplan.membership.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `healthplan.membership.dim_funding_arrangement`: `funding_arrangement_id`, `funding_arrangement_code`, `funding_arrangement_name`
+- `healthplan.membership.dim_membership_change_reason`: `membership_change_reason_id`, `membership_change_reason_code`, `membership_change_reason_name`
+- `healthplan.membership.dim_pharmacy_benefit_program`: `pharmacy_benefit_program_id`, `pharmacy_benefit_program_code`, `pharmacy_benefit_program_name`
+- `healthplan.membership.dim_plan_type`: `plan_type_id`, `plan_type_code`, `plan_type_name`
+- `healthplan.membership.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+- `healthplan.membership.dim_state`: `state_id`, `state_name`, `region_id`
+- `healthplan.membership.fact_member_months`: `fiscal_quarter_id`, `scenario_id`, `plan_type_id`, `funding_arrangement_id`, `state_id`, `enrollment_channel_id`, `member_months_quantity`, `end_of_period_member_quantity`
+- `healthplan.membership.fact_pharmacy_benefit_member_months`: `fiscal_quarter_id`, `scenario_id`, `pharmacy_benefit_program_id`, `state_id`, `member_months_quantity`, `member_quantity`
+- `healthplan.membership.fact_work_requirement_attrition`: `fiscal_quarter_id`, `scenario_id`, `state_id`, `legislation_id`, `assumed_attrition_quantity`, `affected_member_quantity`
+- `healthplan.price.dim_legislation`: `legislation_id`, `legislation_code`, `legislation_name`
 
 ### Q1 2026 (13)
 
 How far did the bronze-plan mix shift, and how does that compare with industry metal-tier data?
 
-- `healthplan.membership.fact_metal_mix`: `fiscal_quarter_id`, `metal_tier_id`, `line_of_business_id`, `industry_mix_share`, `mix_share`
-- `healthplan.product.dim_metal_tier`: `metal_tier_code`, `metal_tier_name`
+- `healthplan.medical.dim_clinical_service`: `clinical_service_id`, `clinical_service_code`, `clinical_service_name`
+- `healthplan.medical.dim_dispute_type`: `dispute_type_id`, `dispute_type_code`, `dispute_type_name`
+- `healthplan.medical.dim_payment_arrangement`: `payment_arrangement_id`, `payment_arrangement_code`, `payment_arrangement_name`
+- `healthplan.medical.dim_site_of_care`: `site_of_care_id`, `site_of_care_code`, `site_of_care_name`
+- `healthplan.medical.fact_medical_utilization`: `fiscal_quarter_id`, `scenario_id`, `plan_type_id`, `clinical_service_id`, `site_of_care_id`, `encounter_quantity`, `admission_quantity`, `procedure_quantity`
+- `healthplan.medical.fact_service_member_months`: `fiscal_quarter_id`, `scenario_id`, `plan_type_id`, `clinical_service_id`, `member_months_quantity`
+- `healthplan.membership.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `healthplan.membership.dim_metal_tier`: `metal_tier_id`, `metal_tier_code`, `metal_tier_name`
+- `healthplan.membership.dim_pharmacy_benefit_program`: `pharmacy_benefit_program_id`, `pharmacy_benefit_program_code`, `pharmacy_benefit_program_name`
+- `healthplan.membership.dim_plan_type`: `plan_type_id`, `plan_type_code`, `plan_type_name`
+- `healthplan.membership.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+- `healthplan.membership.dim_state`: `state_id`, `state_name`, `region_id`
+- `healthplan.membership.fact_pharmacy_benefit_member_months`: `fiscal_quarter_id`, `scenario_id`, `pharmacy_benefit_program_id`, `state_id`, `member_months_quantity`, `member_quantity`
+- `healthplan.price.fact_dispute_cost`: `fiscal_quarter_id`, `scenario_id`, `dispute_type_id`, `plan_type_id`, `dispute_cost_amount`, `dispute_fee_amount`
+
+### Q4 2025 (1)
+
+How does the 2026 cost-trend assumption compare with 2025 across commercial, Medicaid, Medicare, and the exchanges?
+
+- `healthplan.medical.dim_clinical_service`: `clinical_service_id`, `clinical_service_code`, `clinical_service_name`
+- `healthplan.medical.dim_risk_model_version`: `risk_model_version_id`, `risk_model_version_code`, `risk_model_version_name`
+- `healthplan.membership.dim_dual_eligibility_status`: `dual_eligibility_status_id`, `dual_eligibility_status_code`, `dual_eligibility_status_name`
+- `healthplan.membership.dim_enrollment_channel`: `enrollment_channel_id`, `enrollment_channel_code`, `enrollment_channel_name`
+- `healthplan.membership.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `healthplan.membership.dim_funding_arrangement`: `funding_arrangement_id`, `funding_arrangement_code`, `funding_arrangement_name`
+- `healthplan.membership.dim_plan_type`: `plan_type_id`, `plan_type_code`, `plan_type_name`
+- `healthplan.membership.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+- `healthplan.membership.dim_state`: `state_id`, `state_name`, `region_id`
+- `healthplan.membership.fact_member_months`: `fiscal_quarter_id`, `scenario_id`, `plan_type_id`, `funding_arrangement_id`, `state_id`, `enrollment_channel_id`, `member_months_quantity`, `end_of_period_member_quantity`
+- `healthplan.price.dim_bid_process`: `bid_process_id`, `bid_process_code`, `bid_process_name`
+- `healthplan.price.fact_bid_assumptions`: `fiscal_quarter_id`, `scenario_id`, `plan_type_id`, `bid_process_id`, `assumed_medical_cost_trend_percent`, `filed_premium_change_percent`
+- `healthplan.price.fact_medical_cost_amount`: `fiscal_quarter_id`, `scenario_id`, `plan_type_id`, `clinical_service_id`, `incurred_medical_cost_amount`, `paid_medical_cost_amount`
+- `healthplan.price.fact_medical_cost_trend`: `fiscal_quarter_id`, `scenario_id`, `plan_type_id`, `clinical_service_id`, `medical_cost_trend_percent`, `assumed_trend_percent`
 
 ### Q4 2025 (2)
 
 What happened in Medicare annual enrollment to drive the membership revision, and how does the commercial-risk decline split between the exchanges and employer group?
 
-- `healthplan.membership.fact_enrollment_event`: `fiscal_quarter_id`, `line_of_business_id`, `product_id`, `channel_id`, `revision_lives_count`, `post_enrollment_lives_count`
-- `healthplan.product.dim_line_of_business`: `line_of_business_code`, `line_of_business_name`
-- `healthplan.membership.fact_funding_mix`: `fiscal_quarter_id`, `line_of_business_id`, `channel_id`, `employer_account_id`, `risk_lives_count`, `moved_to_fee_based_flag`
-- `healthplan.membership.fact_exchange_enrollment`: `fiscal_quarter_id`, `line_of_business_id`, `state_id`, `metal_tier_id`, `open_enrollment_lives_count`, `member_count`
+- `healthplan.medical.dim_clinical_service`: `clinical_service_id`, `clinical_service_code`, `clinical_service_name`
+- `healthplan.medical.dim_payment_arrangement`: `payment_arrangement_id`, `payment_arrangement_code`, `payment_arrangement_name`
+- `healthplan.medical.dim_provider_group`: `provider_group_id`, `provider_group_name`, `provider_employment_model_id`
+- `healthplan.medical.dim_risk_model_version`: `risk_model_version_id`, `risk_model_version_code`, `risk_model_version_name`
+- `healthplan.medical.fact_coding_submissions`: `fiscal_quarter_id`, `scenario_id`, `risk_model_version_id`, `provider_group_id`, `plan_type_id`, `submitted_code_quantity`, `chronic_condition_code_quantity`, `encounter_quantity`
+- `healthplan.medical.fact_service_member_months`: `fiscal_quarter_id`, `scenario_id`, `plan_type_id`, `clinical_service_id`, `member_months_quantity`
+- `healthplan.membership.dim_dual_eligibility_status`: `dual_eligibility_status_id`, `dual_eligibility_status_code`, `dual_eligibility_status_name`
+- `healthplan.membership.dim_employer_account_size`: `employer_account_size_id`, `employer_account_size_code`, `employer_account_size_name`
+- `healthplan.membership.dim_employer_sector`: `employer_sector_id`, `employer_sector_code`, `employer_sector_name`
+- `healthplan.membership.dim_enrollment_channel`: `enrollment_channel_id`, `enrollment_channel_code`, `enrollment_channel_name`
+- `healthplan.membership.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `healthplan.membership.dim_funding_arrangement`: `funding_arrangement_id`, `funding_arrangement_code`, `funding_arrangement_name`
+- `healthplan.membership.dim_plan_type`: `plan_type_id`, `plan_type_code`, `plan_type_name`
+- `healthplan.membership.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+- `healthplan.membership.dim_state`: `state_id`, `state_name`, `region_id`
+- `healthplan.membership.fact_employer_covered_lives`: `fiscal_quarter_id`, `scenario_id`, `employer_account_size_id`, `employer_sector_id`, `funding_arrangement_id`, `covered_life_quantity`, `member_months_quantity`
+- `healthplan.membership.fact_member_months`: `fiscal_quarter_id`, `scenario_id`, `plan_type_id`, `funding_arrangement_id`, `state_id`, `enrollment_channel_id`, `member_months_quantity`, `end_of_period_member_quantity`
+
+### Q4 2025 (7)
+
+What changed in the long-term margin targets for Medicaid, Medicare, and commercial, and is the lower CarelonRx target only membership loss?
+
+- `healthplan.medical.dim_clinical_service`: `clinical_service_id`, `clinical_service_code`, `clinical_service_name`
+- `healthplan.medical.fact_service_member_months`: `fiscal_quarter_id`, `scenario_id`, `plan_type_id`, `clinical_service_id`, `member_months_quantity`
+- `healthplan.membership.dim_dual_eligibility_status`: `dual_eligibility_status_id`, `dual_eligibility_status_code`, `dual_eligibility_status_name`
+- `healthplan.membership.dim_employer_account_size`: `employer_account_size_id`, `employer_account_size_code`, `employer_account_size_name`
+- `healthplan.membership.dim_employer_sector`: `employer_sector_id`, `employer_sector_code`, `employer_sector_name`
+- `healthplan.membership.dim_enrollment_channel`: `enrollment_channel_id`, `enrollment_channel_code`, `enrollment_channel_name`
+- `healthplan.membership.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `healthplan.membership.dim_funding_arrangement`: `funding_arrangement_id`, `funding_arrangement_code`, `funding_arrangement_name`
+- `healthplan.membership.dim_plan_type`: `plan_type_id`, `plan_type_code`, `plan_type_name`
+- `healthplan.membership.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+- `healthplan.membership.dim_state`: `state_id`, `state_name`, `region_id`
+- `healthplan.membership.fact_employer_covered_lives`: `fiscal_quarter_id`, `scenario_id`, `employer_account_size_id`, `employer_sector_id`, `funding_arrangement_id`, `covered_life_quantity`, `member_months_quantity`
+- `healthplan.membership.fact_medicaid_redetermination`: `fiscal_quarter_id`, `scenario_id`, `state_id`, `plan_type_id`, `redetermined_member_quantity`, `disenrolled_member_quantity`
+- `healthplan.membership.fact_member_months`: `fiscal_quarter_id`, `scenario_id`, `plan_type_id`, `funding_arrangement_id`, `state_id`, `enrollment_channel_id`, `member_months_quantity`, `end_of_period_member_quantity`
+- `healthplan.price.dim_bid_process`: `bid_process_id`, `bid_process_code`, `bid_process_name`
 
 ### Q4 2025 (8)
 
 Where did ACA membership start after open enrollment, and has January utilization changed?
 
-- `healthplan.membership.fact_enrollment_event`: `fiscal_quarter_id`, `line_of_business_id`, `product_id`, `channel_id`, `early_utilization_index`, `post_enrollment_lives_count`
-- `healthplan.membership.fact_exchange_enrollment`: `fiscal_quarter_id`, `line_of_business_id`, `state_id`, `metal_tier_id`, `open_enrollment_lives_count`, `member_count`
-- `healthplan.medical.fact_utilization`: `fiscal_quarter_id`, `line_of_business_id`, `clinical_category_id`, `utilization_driver_id`, `utilization_index`, `versus_assumption_index`
-- `healthplan.product.dim_line_of_business`: `line_of_business_code`, `line_of_business_name`
-
-### Q4 2025 (9)
-
-Do larger-than-expected membership declines say anything about competitive position, even if exiting weak markets is intentional?
-
-- `healthplan.membership.fact_competitive_position`: `fiscal_quarter_id`, `line_of_business_id`, `business_unit_id`, `state_id`, `competitor_loss_flag`, `planned_exit_flag`
-- `healthplan.membership.fact_contract_exit`: `fiscal_quarter_id`, `state_id`, `state_program_id`, `line_of_business_id`, `exit_criteria_code`, `share_position_rate`
+- `healthplan.medical.dim_care_program`: `care_program_id`, `care_program_code`, `care_program_name`
+- `healthplan.medical.dim_clinical_service`: `clinical_service_id`, `clinical_service_code`, `clinical_service_name`
+- `healthplan.medical.dim_site_of_care`: `site_of_care_id`, `site_of_care_code`, `site_of_care_name`
+- `healthplan.medical.fact_carelon_home_care_quantity`: `fiscal_quarter_id`, `scenario_id`, `care_program_id`, `state_id`, `home_visit_quantity`, `served_member_quantity`
+- `healthplan.medical.fact_medical_utilization`: `fiscal_quarter_id`, `scenario_id`, `plan_type_id`, `clinical_service_id`, `site_of_care_id`, `encounter_quantity`, `admission_quantity`, `procedure_quantity`
+- `healthplan.medical.fact_service_member_months`: `fiscal_quarter_id`, `scenario_id`, `plan_type_id`, `clinical_service_id`, `member_months_quantity`
+- `healthplan.membership.dim_dual_eligibility_status`: `dual_eligibility_status_id`, `dual_eligibility_status_code`, `dual_eligibility_status_name`
+- `healthplan.membership.dim_enrollment_channel`: `enrollment_channel_id`, `enrollment_channel_code`, `enrollment_channel_name`
+- `healthplan.membership.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `healthplan.membership.dim_metal_tier`: `metal_tier_id`, `metal_tier_code`, `metal_tier_name`
+- `healthplan.membership.dim_plan_type`: `plan_type_id`, `plan_type_code`, `plan_type_name`
+- `healthplan.membership.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+- `healthplan.membership.dim_state`: `state_id`, `state_name`, `region_id`
+- `healthplan.membership.fact_exchange_enrollment`: `fiscal_quarter_id`, `scenario_id`, `state_id`, `metal_tier_id`, `plan_type_id`, `enrolled_member_quantity`, `member_months_quantity`
 
 ### Q4 2025 (12)
 
 Is the expected Medicaid membership decline same-store or a state or contract exit, and why does a larger decline not add more margin pressure?
 
-- `healthplan.membership.fact_membership_bridge`: `fiscal_quarter_id`, `line_of_business_id`, `state_id`, `membership_cohort_id`, `attrition_count`, `exit_lives_count`
-- `healthplan.membership.fact_membership`: `fiscal_quarter_id`, `line_of_business_id`, `state_id`, `business_unit_id`, `customer_segment_id`, `decline_rate`
-- `healthplan.price.fact_book_margin`: `fiscal_quarter_id`, `line_of_business_id`, `business_unit_id`, `margin_target_id`, `full_year_margin_rate`, `margin_rate`
-- `healthplan.product.dim_membership_cohort`: `line_of_business_id`, `membership_cohort_code`, `membership_cohort_name`
-
-### Q4 2025 (13)
-
-How much of the commercial-risk membership decline is pricing on government accounts versus employers moving to fee-based coverage, and does the long-term margin assume more attrition?
-
-- `healthplan.membership.fact_funding_mix`: `fiscal_quarter_id`, `line_of_business_id`, `channel_id`, `employer_account_id`, `moved_to_fee_based_flag`, `risk_lives_count`
-- `healthplan.membership.fact_membership_bridge`: `fiscal_quarter_id`, `line_of_business_id`, `state_id`, `membership_cohort_id`, `attrition_count`, `pressure_flag`
-- `healthplan.price.dim_margin_target`: `line_of_business_id`, `business_unit_id`, `margin_target_code`, `margin_target_name`
-- `healthplan.price.fact_book_margin`: `fiscal_quarter_id`, `line_of_business_id`, `business_unit_id`, `margin_target_id`, `full_year_margin_rate`, `margin_rate`
+- `healthplan.medical.dim_clinical_service`: `clinical_service_id`, `clinical_service_code`, `clinical_service_name`
+- `healthplan.medical.dim_payment_arrangement`: `payment_arrangement_id`, `payment_arrangement_code`, `payment_arrangement_name`
+- `healthplan.medical.fact_service_member_months`: `fiscal_quarter_id`, `scenario_id`, `plan_type_id`, `clinical_service_id`, `member_months_quantity`
+- `healthplan.membership.dim_dual_eligibility_status`: `dual_eligibility_status_id`, `dual_eligibility_status_code`, `dual_eligibility_status_name`
+- `healthplan.membership.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `healthplan.membership.dim_funding_arrangement`: `funding_arrangement_id`, `funding_arrangement_code`, `funding_arrangement_name`
+- `healthplan.membership.dim_member_cohort`: `member_cohort_id`, `member_cohort_code`, `member_cohort_name`
+- `healthplan.membership.dim_membership_change_reason`: `membership_change_reason_id`, `membership_change_reason_code`, `membership_change_reason_name`
+- `healthplan.membership.dim_pharmacy_benefit_program`: `pharmacy_benefit_program_id`, `pharmacy_benefit_program_code`, `pharmacy_benefit_program_name`
+- `healthplan.membership.dim_plan_type`: `plan_type_id`, `plan_type_code`, `plan_type_name`
+- `healthplan.membership.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+- `healthplan.membership.dim_state`: `state_id`, `state_name`, `region_id`
+- `healthplan.membership.fact_cohort_member_months`: `fiscal_quarter_id`, `scenario_id`, `plan_type_id`, `member_cohort_id`, `dual_eligibility_status_id`, `member_months_quantity`, `member_quantity`
+- `healthplan.membership.fact_pharmacy_benefit_member_months`: `fiscal_quarter_id`, `scenario_id`, `pharmacy_benefit_program_id`, `state_id`, `member_months_quantity`, `member_quantity`
+- `healthplan.price.fact_premium_rate`: `fiscal_quarter_id`, `scenario_id`, `plan_type_id`, `funding_arrangement_id`, `state_id`, `premium_per_member_per_month_amount`
 
 ### Q2 2025 (6)
 
 What further ACA membership attrition and risk-pool shift is assumed, including people moving from Medicaid?
 
-- `healthplan.membership.fact_migration`: `fiscal_quarter_id`, `line_of_business_id`, `state_id`, `historical_attrition_rate`, `attrition_count`, `migrated_lives_count`
-- `healthplan.membership.fact_exchange_enrollment`: `fiscal_quarter_id`, `line_of_business_id`, `state_id`, `metal_tier_id`, `member_count`, `open_enrollment_lives_count`
-- `healthplan.medical.fact_risk_pool`: `fiscal_quarter_id`, `line_of_business_id`, `state_id`, `worse_than_plan_flag`, `morbidity_index`
-- `healthplan.product.dim_line_of_business`: `line_of_business_code`, `line_of_business_name`
+- `healthplan.membership.dim_dual_eligibility_status`: `dual_eligibility_status_id`, `dual_eligibility_status_code`, `dual_eligibility_status_name`
+- `healthplan.membership.dim_enrollment_channel`: `enrollment_channel_id`, `enrollment_channel_code`, `enrollment_channel_name`
+- `healthplan.membership.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `healthplan.membership.dim_funding_arrangement`: `funding_arrangement_id`, `funding_arrangement_code`, `funding_arrangement_name`
+- `healthplan.membership.dim_membership_change_reason`: `membership_change_reason_id`, `membership_change_reason_code`, `membership_change_reason_name`
+- `healthplan.membership.dim_plan_type`: `plan_type_id`, `plan_type_code`, `plan_type_name`
+- `healthplan.membership.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+- `healthplan.membership.dim_state`: `state_id`, `state_name`, `region_id`
+- `healthplan.membership.fact_eligibility_recheck`: `fiscal_quarter_id`, `scenario_id`, `state_id`, `plan_type_id`, `rechecked_member_quantity`, `removed_member_quantity`
+- `healthplan.membership.fact_medicaid_redetermination`: `fiscal_quarter_id`, `scenario_id`, `state_id`, `plan_type_id`, `redetermined_member_quantity`, `disenrolled_member_quantity`
+- `healthplan.membership.fact_member_months`: `fiscal_quarter_id`, `scenario_id`, `plan_type_id`, `funding_arrangement_id`, `state_id`, `enrollment_channel_id`, `member_months_quantity`, `end_of_period_member_quantity`
+- `healthplan.membership.fact_work_requirement_attrition`: `fiscal_quarter_id`, `scenario_id`, `state_id`, `legislation_id`, `assumed_attrition_quantity`, `affected_member_quantity`
+- `healthplan.price.dim_legislation`: `legislation_id`, `legislation_code`, `legislation_name`
 
 ### Q2 2025 (8)
 
 Why did proactive risk-pool work during Medicaid redeterminations still fail to keep up with the shifts?
 
-- `healthplan.membership.fact_redetermination`: `fiscal_quarter_id`, `state_id`, `line_of_business_id`, `membership_cohort_id`, `kept_up_flag`, `managed_shift_index`
-- `healthplan.medical.fact_risk_pool`: `fiscal_quarter_id`, `line_of_business_id`, `state_id`, `worse_than_plan_flag`, `morbidity_index`
-- `healthplan.product.dim_line_of_business`: `line_of_business_code`, `line_of_business_name`
+- `healthplan.medical.dim_clinical_service`: `clinical_service_id`, `clinical_service_code`, `clinical_service_name`
+- `healthplan.medical.dim_payment_arrangement`: `payment_arrangement_id`, `payment_arrangement_code`, `payment_arrangement_name`
+- `healthplan.medical.dim_provider_group`: `provider_group_id`, `provider_group_name`, `provider_employment_model_id`
+- `healthplan.medical.dim_risk_model_version`: `risk_model_version_id`, `risk_model_version_code`, `risk_model_version_name`
+- `healthplan.medical.fact_coding_submissions`: `fiscal_quarter_id`, `scenario_id`, `risk_model_version_id`, `provider_group_id`, `plan_type_id`, `submitted_code_quantity`, `chronic_condition_code_quantity`, `encounter_quantity`
+- `healthplan.medical.fact_service_member_months`: `fiscal_quarter_id`, `scenario_id`, `plan_type_id`, `clinical_service_id`, `member_months_quantity`
+- `healthplan.medical.fact_value_based_attributed_lives`: `fiscal_quarter_id`, `scenario_id`, `provider_group_id`, `payment_arrangement_id`, `plan_type_id`, `attributed_life_quantity`, `negotiation_life_quantity`
+- `healthplan.membership.dim_dual_eligibility_status`: `dual_eligibility_status_id`, `dual_eligibility_status_code`, `dual_eligibility_status_name`
+- `healthplan.membership.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `healthplan.membership.dim_pharmacy_benefit_program`: `pharmacy_benefit_program_id`, `pharmacy_benefit_program_code`, `pharmacy_benefit_program_name`
+- `healthplan.membership.dim_plan_type`: `plan_type_id`, `plan_type_code`, `plan_type_name`
+- `healthplan.membership.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+- `healthplan.membership.dim_state`: `state_id`, `state_name`, `region_id`
+- `healthplan.membership.fact_work_requirement_attrition`: `fiscal_quarter_id`, `scenario_id`, `state_id`, `legislation_id`, `assumed_attrition_quantity`, `affected_member_quantity`
+- `healthplan.price.dim_legislation`: `legislation_id`, `legislation_code`, `legislation_name`
+
+### Q2 2025 (10)
+
+How are Carelon margins tracking versus the initial plan, and when does pressure from large-employer pharmacy growth, specialty drugs, and CareBridge normalize?
+
+- `healthplan.medical.dim_dispensing_category`: `dispensing_category_id`, `dispensing_category_code`, `dispensing_category_name`
+- `healthplan.medical.dim_dispute_type`: `dispute_type_id`, `dispute_type_code`, `dispute_type_name`
+- `healthplan.medical.dim_drug_therapy_class`: `drug_therapy_class_id`, `drug_therapy_class_code`, `drug_therapy_class_name`
+- `healthplan.medical.dim_payment_arrangement`: `payment_arrangement_id`, `payment_arrangement_code`, `payment_arrangement_name`
+- `healthplan.membership.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `healthplan.membership.dim_funding_arrangement`: `funding_arrangement_id`, `funding_arrangement_code`, `funding_arrangement_name`
+- `healthplan.membership.dim_pharmacy_benefit_program`: `pharmacy_benefit_program_id`, `pharmacy_benefit_program_code`, `pharmacy_benefit_program_name`
+- `healthplan.membership.dim_plan_type`: `plan_type_id`, `plan_type_code`, `plan_type_name`
+- `healthplan.membership.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+- `healthplan.membership.dim_state`: `state_id`, `state_name`, `region_id`
+- `healthplan.membership.fact_pharmacy_benefit_member_months`: `fiscal_quarter_id`, `scenario_id`, `pharmacy_benefit_program_id`, `state_id`, `member_months_quantity`, `member_quantity`
+- `healthplan.price.dim_blue_plan_client_type`: `blue_plan_client_type_id`, `blue_plan_client_type_code`, `blue_plan_client_type_name`
+- `healthplan.price.dim_carelon_business`: `carelon_business_id`, `carelon_business_code`, `carelon_business_name`
+- `healthplan.price.fact_blue_plan_service_revenue`: `fiscal_quarter_id`, `scenario_id`, `blue_plan_client_type_id`, `carelon_business_id`, `service_contract_revenue_amount`
+- `healthplan.price.fact_dispute_cost`: `fiscal_quarter_id`, `scenario_id`, `dispute_type_id`, `plan_type_id`, `dispute_cost_amount`, `dispute_fee_amount`
+- `healthplan.price.fact_pharmacy_cost`: `fiscal_quarter_id`, `scenario_id`, `plan_type_id`, `drug_therapy_class_id`, `dispensing_category_id`, `pharmacy_claim_cost_amount`, `manufacturer_rebate_amount`
 
 ### Q2 2025 (12)
 
 Is it time to exit states or shrink Medicaid populations where the rate disconnect persists?
 
-- `healthplan.membership.fact_contract_exit`: `fiscal_quarter_id`, `state_id`, `state_program_id`, `line_of_business_id`, `exit_criteria_code`, `share_position_rate`
-- `healthplan.price.fact_state_rate_gap`: `fiscal_quarter_id`, `state_id`, `rate_notice_id`, `line_of_business_id`, `later_cycle_rate`, `base_rate_gap`
-- `healthplan.product.dim_line_of_business`: `line_of_business_code`, `line_of_business_name`
-- `healthplan.price.fact_book_margin`: `fiscal_quarter_id`, `line_of_business_id`, `business_unit_id`, `margin_target_id`, `outlook_held_flat_flag`, `full_year_margin_rate`
+- `healthplan.medical.dim_site_of_care`: `site_of_care_id`, `site_of_care_code`, `site_of_care_name`
+- `healthplan.membership.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `healthplan.membership.dim_funding_arrangement`: `funding_arrangement_id`, `funding_arrangement_code`, `funding_arrangement_name`
+- `healthplan.membership.dim_plan_type`: `plan_type_id`, `plan_type_code`, `plan_type_name`
+- `healthplan.membership.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+- `healthplan.membership.dim_state`: `state_id`, `state_name`, `region_id`
+- `healthplan.membership.fact_work_requirement_attrition`: `fiscal_quarter_id`, `scenario_id`, `state_id`, `legislation_id`, `assumed_attrition_quantity`, `affected_member_quantity`
+- `healthplan.price.dim_bid_process`: `bid_process_id`, `bid_process_code`, `bid_process_name`
+- `healthplan.price.dim_earnings_bridge_component`: `earnings_bridge_component_id`, `earnings_bridge_component_code`, `earnings_bridge_component_name`
+- `healthplan.price.dim_legislation`: `legislation_id`, `legislation_code`, `legislation_name`
+- `healthplan.price.dim_rate_notice_type`: `rate_notice_type_id`, `rate_notice_type_code`, `rate_notice_type_name`
+- `healthplan.price.fact_earnings_bridge`: `fiscal_quarter_id`, `scenario_id`, `earnings_bridge_component_id`, `bridge_amount`
+- `healthplan.price.fact_premium_rate`: `fiscal_quarter_id`, `scenario_id`, `plan_type_id`, `funding_arrangement_id`, `state_id`, `premium_per_member_per_month_amount`
+- `healthplan.price.fact_rate_update`: `fiscal_quarter_id`, `scenario_id`, `plan_type_id`, `state_id`, `rate_notice_type_id`, `announced_rate_change_percent`, `final_rate_change_percent`
 
 ### Q2 2025 (14)
 
 Are delayed exchange eligibility rechecks finished, and is the resulting member attrition already in the updated outlook?
 
-- `healthplan.membership.fact_eligibility_recheck`: `fiscal_quarter_id`, `line_of_business_id`, `state_id`, `in_outlook_flag`, `recheck_finished_flag`, `attrition_count`
-- `healthplan.membership.fact_exchange_enrollment`: `fiscal_quarter_id`, `line_of_business_id`, `state_id`, `metal_tier_id`, `member_count`, `open_enrollment_lives_count`
-- `healthplan.membership.fact_work_requirement`: `fiscal_quarter_id`, `state_id`, `line_of_business_id`, `attrition_count`, `early_start_flag`, `stay_or_leave_code`
-- `healthplan.product.dim_line_of_business`: `line_of_business_code`, `line_of_business_name`
+- `healthplan.medical.dim_clinical_service`: `clinical_service_id`, `clinical_service_code`, `clinical_service_name`
+- `healthplan.medical.dim_drug_therapy_class`: `drug_therapy_class_id`, `drug_therapy_class_code`, `drug_therapy_class_name`
+- `healthplan.membership.dim_dual_eligibility_status`: `dual_eligibility_status_id`, `dual_eligibility_status_code`, `dual_eligibility_status_name`
+- `healthplan.membership.dim_enrollment_channel`: `enrollment_channel_id`, `enrollment_channel_code`, `enrollment_channel_name`
+- `healthplan.membership.dim_fiscal_quarter`: `fiscal_quarter_id`, `fiscal_quarter_code`, `fiscal_quarter_name`, `fiscal_year`, `quarter_number`
+- `healthplan.membership.dim_funding_arrangement`: `funding_arrangement_id`, `funding_arrangement_code`, `funding_arrangement_name`
+- `healthplan.membership.dim_plan_type`: `plan_type_id`, `plan_type_code`, `plan_type_name`
+- `healthplan.membership.dim_scenario`: `scenario_id`, `scenario_code`, `scenario_name`
+- `healthplan.membership.dim_state`: `state_id`, `state_name`, `region_id`
+- `healthplan.membership.fact_eligibility_recheck`: `fiscal_quarter_id`, `scenario_id`, `state_id`, `plan_type_id`, `rechecked_member_quantity`, `removed_member_quantity`
+- `healthplan.price.dim_member_cost_sharing`: `member_cost_sharing_id`, `member_cost_sharing_code`, `member_cost_sharing_name`
+- `healthplan.price.fact_medical_cost_amount`: `fiscal_quarter_id`, `scenario_id`, `plan_type_id`, `clinical_service_id`, `incurred_medical_cost_amount`, `paid_medical_cost_amount`
+- `healthplan.price.fact_member_cost_sharing`: `fiscal_quarter_id`, `scenario_id`, `member_cost_sharing_id`, `drug_therapy_class_id`, `average_copayment_amount`, `coinsurance_percent`
+- `healthplan.price.fact_premium_rate`: `fiscal_quarter_id`, `scenario_id`, `plan_type_id`, `funding_arrangement_id`, `state_id`, `premium_per_member_per_month_amount`
