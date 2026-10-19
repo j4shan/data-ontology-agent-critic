@@ -1,371 +1,362 @@
-# Airline Inc price and yield
+# Airline Inc price, yield, loyalty, cargo, and maintenance revenue
 
-Price and yield owns fares, bag fees, unit revenue, cabin and geographic margin, fuel recapture, and loyalty economics for Airline Inc. A price row does not store passenger quantity or seat quantity. Fuel gallons and unit cost stay on the supply facts.
-
-Identifiers owned by another slice are partial here. Their complete populations are not re-authored in this slice.
-
-| Identity | Column on this slice | Complete population |
-| --- | --- | --- |
-| `cabin_identity` | `cabin_id` | `sf:airline.customer.dim_cabin` `cabin_id` |
-| `loyalty_program_identity` | `loyalty_program_id` | `sf:airline.customer.dim_loyalty_program` `loyalty_program_id` |
-| `fiscal_quarter_identity` | `fiscal_quarter_id` | `sf:airline.time.dim_fiscal_quarter` `fiscal_quarter_id` |
-| `geographic_entity_identity` | `geographic_entity_id` | `sf:airline.geography.dim_geographic_entity` `geographic_entity_id` |
-| `route_identity` | `route_id` | `sf:airline.geography.dim_route` `route_id` |
-| `customer_segment_identity` | `customer_segment_id` | `sf:airline.customer.dim_customer_segment` `customer_segment_id` |
-| `hub_identity` | `hub_id` | `sf:airline.geography.dim_hub` `hub_id` |
-| `competitor_identity` | `competitor_id` | `sf:airline.customer.dim_competitor` `competitor_id` |
-| `partner_identity` | `partner_id` | `sf:airline.customer.dim_partner` `partner_id` |
-| `booking_window_identity` | `booking_window_id` | `sf:airline.customer.dim_booking_window` `booking_window_id` |
+Capacity is available seat-miles, traffic is revenue passenger-miles, and yield and unit cost use those denominators through shared geographic, cabin, and traveler keys. A route carries an origin airport and a destination airport. Cargo and maintenance are revenue and traffic measures, SkyMiles and MileagePlus stay in separate facts, and enterprise earnings are grained at enterprise level, not at a hub. Coverage maps each numbered question to datasets and columns that exist in the YAML and can express the distinction the question asks.
 
 ## Numbered questions
 
 ## Delta Air Lines
 
-### Q1 2026 (1)
+### Q1 2026 (1) Delta Air Lines
 
-For Delta Air Lines, does the mid-teens revenue outlook reflect bookings already on the books, or an assumption that higher fares and bag fees accelerate later in the quarter?
+Does the mid-teens revenue outlook reflect bookings already on the books, or an assumption that higher fares and bag fees accelerate later in the quarter?
 
-- `airline.price.fact_unit_revenue`: `fiscal_quarter_id`, `unit_revenue_amount`, `unit_revenue_change_rate`, `intra_quarter_change_rate`, `path_to_flat_rate`, `sequential_step_rate`, `geographic_entity_id`
-- `airline.price.fact_non_ticket_revenue`: `fiscal_quarter_id`, `revenue_amount`, `growth_rate`, `sustainable_flag`, `maintenance_flag`, `cargo_flag`
-- `airline.price.fact_fare`: `fiscal_quarter_id`, `fare_product_id`, `fare_amount`, `fare_change_rate`, `higher_flag`, `domestic_international_gap_rate`, `geographic_entity_id`
-- `airline.demand.fact_elasticity_response`: `fiscal_quarter_id`, `response_rate`, `geographic_entity_id`, `cabin_id`, `customer_segment_id`, `elastic_flag`, `different_from_last_shock_flag`
-- `airline.price.fact_ancillary_fee`: `fiscal_quarter_id`, `fee_change_rate`, `in_outlook_flag`, `fee_type_id`, `geographic_entity_id`, `fee_amount`
-- `airline.price.dim_fee_type`: `fee_name`, `fee_code`
+- `airline.price.fact_ancillary_revenue`: `fiscal_quarter_id`, `scenario_id`, `fee_type_id`, `geographic_entity_id`, `ancillary_revenue_amount`
+- `airline.price.fact_fare_price`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `cabin_id`, `fare_product_id`, `average_fare_dollars_per_passenger`
+- `airline.price.fact_baggage_quantity`: `fiscal_quarter_id`, `scenario_id`, `fee_type_id`, `geographic_entity_id`, `checked_bag_count`
 
-### Q1 2026 (2)
+### Q1 2026 (2) Delta Air Lines
 
-For Delta Air Lines, how does second-quarter unit revenue differ across the four geographic entities in demand and in the ability to pass through higher costs?
+How does second-quarter unit revenue differ across the four geographic entities in demand and in the ability to pass through higher costs?
 
-- `airline.price.fact_unit_revenue`: `fiscal_quarter_id`, `geographic_entity_id`, `unit_revenue_amount`, `unit_revenue_change_rate`, `pass_through_flag`, `intra_quarter_change_rate`, `cabin_id`
-- `airline.price.fact_non_ticket_revenue`: `fiscal_quarter_id`, `revenue_amount`, `growth_rate`, `sustainable_flag`, `maintenance_flag`, `cargo_flag`
-- `airline.demand.fact_domestic_demand`: `fiscal_quarter_id`, `geographic_entity_id`, `hub_id`, `passenger_count`, `sequential_improvement_flag`, `best_geography_flag`
-- `airline.supply.fact_capacity`: `fiscal_quarter_id`, `geographic_entity_id`, `hub_id`, `route_id`, `aircraft_type_id`, `seat_quantity`, `capacity_change_rate`
-- `airline.price.fact_yield_result`: `fiscal_quarter_id`, `geographic_entity_id`, `cabin_id`, `customer_segment_id`, `yield_amount`, `yield_change_rate`, `excluding_china_flag`
-- `airline.demand.fact_passenger_flow`: `fiscal_quarter_id`, `geographic_entity_id`, `anti_tourism_effect_flag`, `route_id`, `partner_id`, `event_id`, `flow_passenger_count`
+- `airline.price.fact_unit_revenue`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `revenue_cents_per_seat_mile`, `unit_revenue_change_percent`
+- `airline.price.fact_enterprise_earnings`: `fiscal_quarter_id`, `scenario_id`, `enterprise_revenue_amount`, `enterprise_earnings_amount`, `enterprise_operating_margin_percent`
+- `airline.price.fact_skymiles_economics`: `fiscal_quarter_id`, `scenario_id`, `skymiles_tier_id`, `delta_card_program_id`, `loyalty_revenue_amount`, `cobrand_spend_amount`
 
-### Q1 2026 (3)
+### Q1 2026 (3) Delta Air Lines
 
-For Delta Air Lines, where has demand been more elastic to higher fares, by geography, customer, or cabin?
+Where has demand been more elastic to higher fares, by geography, customer, or cabin?
 
-- `airline.price.fact_yield_result`: `cabin_id`, `customer_segment_id`, `yield_amount`, `yield_change_rate`, `fiscal_quarter_id`, `geographic_entity_id`, `excluding_china_flag`
-- `airline.price.fact_unit_revenue`: `cabin_id`, `fiscal_quarter_id`, `geographic_entity_id`, `route_id`, `unit_revenue_amount`, `unit_revenue_change_rate`, `pass_through_flag`
-- `airline.demand.fact_corporate_demand`: `customer_segment_id`, `fiscal_quarter_id`, `geographic_entity_id`, `city_id`, `industry_vertical_id`, `hub_id`, `corporate_passenger_count`
-- `airline.geography.dim_geographic_entity`: `region_id`, `entity_name`, `entity_code`
-- `airline.demand.fact_elasticity_response`: `cabin_id`, `customer_segment_id`, `elastic_flag`, `different_from_last_shock_flag`, `fiscal_quarter_id`, `geographic_entity_id`, `response_rate`
-- `airline.customer.dim_customer_segment`: `segment_name`, `segment_code`
+- `airline.price.fact_yield`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `cabin_id`, `traveler_type_id`, `yield_cents_per_passenger_mile`, `yield_change_percent`
+- `airline.price.fact_fare_price`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `cabin_id`, `fare_product_id`, `average_fare_dollars_per_passenger`
+- `airline.price.fact_passenger_revenue`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `cabin_id`, `passenger_revenue_amount`
 
-### Q1 2026 (4)
+### Q1 2026 (4) Delta Air Lines
 
-For Delta Air Lines, how are international margins and the premium-versus-main mix inside international expected to evolve?
+How are international margins and the premium-versus-main mix inside international expected to evolve?
 
-- `airline.price.fact_geographic_margin`: `margin_rate`, `premium_versus_main_mix_rate`, `fiscal_quarter_id`, `geographic_entity_id`, `contribution_to_long_term_rate`, `in_company_control_flag`
-- `airline.demand.fact_international_demand`: `cabin_id`, `premium_mix_rate`, `main_mix_rate`, `fiscal_quarter_id`, `geographic_entity_id`, `route_id`, `passenger_count`
-- `airline.demand.fact_cabin_demand`: `cabin_id`, `fiscal_quarter_id`, `geographic_entity_id`, `customer_segment_id`, `passenger_count`, `demand_change_rate`, `holding_if_inelastic_flag`
-- `airline.price.fact_cabin_margin`: `cabin_id`, `margin_rate`, `gap_to_premium_rate`, `fiscal_quarter_id`, `geographic_entity_id`, `would_close_if_supply_cut_flag`
-- `airline.customer.dim_cabin`: `cabin_name`, `cabin_code`
-- `airline.time.dim_fiscal_quarter`: `quarter_label`, `quarter_code`, `guidance_horizon`
+- `airline.price.fact_cabin_margin`: `fiscal_quarter_id`, `scenario_id`, `cabin_id`, `geographic_entity_id`, `cabin_margin_percent`, `cabin_profit_amount`
+- `airline.price.fact_passenger_revenue`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `cabin_id`, `passenger_revenue_amount`
+- `airline.price.fact_geographic_margin`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `geographic_margin_percent`, `geographic_profit_amount`
 
-### Q1 2026 (9)
+### Q1 2026 (5) Delta Air Lines
 
-For Delta Air Lines, is Pacific yield, excluding China, improving as long-haul flows avoid the Middle East, including close-in premium?
+Where does further segmentation of the premium cabin stand, and what gates a launch?
 
-- `airline.price.fact_yield_result`: `cabin_id`, `yield_amount`, `yield_change_rate`, `excluding_china_flag`, `fiscal_quarter_id`, `geographic_entity_id`, `customer_segment_id`
-- `airline.demand.fact_passenger_flow`: `flow_passenger_count`, `fiscal_quarter_id`, `route_id`, `geographic_entity_id`, `partner_id`, `event_id`, `foreign_carrier_flag`
-- `airline.demand.fact_cabin_demand`: `cabin_id`, `fiscal_quarter_id`, `geographic_entity_id`, `customer_segment_id`, `passenger_count`, `demand_change_rate`, `holding_if_inelastic_flag`
-- `airline.price.fact_cabin_margin`: `cabin_id`, `gap_to_premium_rate`, `would_close_if_supply_cut_flag`, `fiscal_quarter_id`, `geographic_entity_id`, `margin_rate`
-- `airline.geography.dim_geographic_entity`: `region_id`, `entity_name`, `entity_code`
-- `airline.time.dim_fiscal_quarter`: `quarter_label`, `quarter_code`, `guidance_horizon`
+- `airline.price.fact_passenger_revenue`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `cabin_id`, `passenger_revenue_amount`
+- `airline.price.fact_yield`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `cabin_id`, `traveler_type_id`, `yield_cents_per_passenger_mile`, `yield_change_percent`
+- `airline.price.fact_cabin_margin`: `fiscal_quarter_id`, `scenario_id`, `cabin_id`, `geographic_entity_id`, `cabin_margin_percent`, `cabin_profit_amount`
 
-### Q1 2026 (10)
+### Q1 2026 (9) Delta Air Lines
+
+Is Pacific yield, excluding China, improving as long-haul flows avoid the Middle East, including close-in premium?
+
+- `airline.price.fact_yield`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `cabin_id`, `traveler_type_id`, `yield_cents_per_passenger_mile`, `yield_change_percent`
+- `airline.price.fact_passenger_revenue`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `cabin_id`, `passenger_revenue_amount`
+- `airline.price.fact_unit_revenue`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `revenue_cents_per_seat_mile`, `unit_revenue_change_percent`
+
+### Q1 2026 (10) Delta Air Lines
 
 What is driving maintenance-revenue growth, and how much of Delta's own engine work is done in-house?
 
-- `airline.price.fact_non_ticket_revenue`: `revenue_amount`, `growth_rate`, `maintenance_flag`, `fiscal_quarter_id`, `sustainable_flag`, `cargo_flag`
-- `airline.supply.fact_shop_capacity`: `maintenance_shop_id`, `capacity_quantity`, `in_house_share_rate`, `fiscal_quarter_id`, `added_recently_flag`
-- `airline.supply.fact_engine_insource`: `maintenance_shop_id`, `in_house_share_rate`, `third_party_growth_rate`, `fiscal_quarter_id`
-- `airline.fleet.dim_maintenance_shop`: `shop_name`, `shop_code`, `in_house_flag`
-- `airline.time.dim_fiscal_quarter`: `quarter_label`, `quarter_code`, `guidance_horizon`
+- `airline.price.fact_maintenance_revenue`: `fiscal_quarter_id`, `scenario_id`, `maintenance_type_id`, `maintenance_provider_id`, `maintenance_revenue_amount`
+- `airline.price.fact_skymiles_economics`: `fiscal_quarter_id`, `scenario_id`, `skymiles_tier_id`, `delta_card_program_id`, `loyalty_revenue_amount`, `cobrand_spend_amount`
+- `airline.price.fact_passenger_revenue`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `cabin_id`, `passenger_revenue_amount`
 
-### Q1 2026 (13)
+### Q1 2026 (13) Delta Air Lines
 
-For Delta Air Lines, does fuel recapture keep accelerating in the back half if fuel stays high?
+Does fuel recapture keep accelerating in the back half if fuel stays high?
 
-- `airline.price.fact_fuel_recapture`: `recapture_rate`, `accelerating_flag`, `full_recapture_flag`, `fiscal_quarter_id`, `geographic_entity_id`, `requires_competitor_cuts_flag`, `lag_versus_history_code`
-- `airline.supply.fact_fuel_cost`: `fuel_region_id`, `high_flag`, `fiscal_quarter_id`, `unit_cost_amount`, `shock_duration_code`, `price_to_restore_growth_amount`
-- `airline.price.fact_fare`: `fare_product_id`, `fare_amount`, `fare_change_rate`, `fiscal_quarter_id`, `geographic_entity_id`, `cabin_id`, `higher_flag`
-- `airline.demand.fact_elasticity_response`: `fiscal_quarter_id`, `geographic_entity_id`, `cabin_id`, `customer_segment_id`, `elastic_flag`, `response_rate`, `different_from_last_shock_flag`
-- `airline.supply.fact_capacity`: `capacity_change_rate`, `back_half_bound_rate`, `fiscal_quarter_id`, `geographic_entity_id`, `hub_id`, `route_id`, `aircraft_type_id`
-- `airline.supply.fact_industry_capacity`: `fiscal_quarter_id`, `geographic_entity_id`, `competitor_id`, `industry_seat_quantity`, `change_rate`, `irrational_return_flag`, `cuts_after_summer_flag`
+- `airline.price.fact_fuel_recapture_rate`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `fuel_recapture_percent`
+- `airline.price.fact_skymiles_economics`: `fiscal_quarter_id`, `scenario_id`, `skymiles_tier_id`, `delta_card_program_id`, `loyalty_revenue_amount`, `cobrand_spend_amount`
+- `airline.price.fact_skymiles_miles_quantity`: `fiscal_quarter_id`, `scenario_id`, `skymiles_tier_id`, `miles_earned_count`, `miles_redeemed_count`
 
-### Q1 2026 (17)
+### Q1 2026 (15) Delta Air Lines
 
-For Delta Air Lines, how much of demand strength is customers accepting higher fares versus more bookings?
+What is different about demand holding up despite higher fares versus last year's macro and geopolitical shock?
 
-- `airline.price.fact_fare`: `fare_product_id`, `fare_amount`, `fare_change_rate`, `higher_flag`, `fiscal_quarter_id`, `geographic_entity_id`, `cabin_id`
-- `airline.demand.fact_elasticity_response`: `customer_segment_id`, `fiscal_quarter_id`, `geographic_entity_id`, `cabin_id`, `elastic_flag`, `response_rate`, `different_from_last_shock_flag`
-- `airline.demand.fact_booking_demand`: `customer_segment_id`, `booking_window_id`, `booking_count`, `versus_january_flag`, `fiscal_quarter_id`, `geographic_entity_id`, `cabin_id`
-- `airline.demand.fact_booking_curve`: `booking_window_id`, `fiscal_quarter_id`, `geographic_entity_id`, `competitor_id`, `days_before_departure`, `booked_share_rate`, `close_in_weak_flag`
-- `airline.demand.fact_traffic_demand`: `customer_segment_id`, `strength_from_bookings_flag`, `fiscal_quarter_id`, `geographic_entity_id`, `cabin_id`, `passenger_count`, `traffic_change_rate`
-- `airline.time.dim_fiscal_quarter`: `quarter_label`, `quarter_code`, `guidance_horizon`
+- `airline.price.fact_fare_price`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `cabin_id`, `fare_product_id`, `average_fare_dollars_per_passenger`
+- `airline.price.fact_yield`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `cabin_id`, `traveler_type_id`, `yield_cents_per_passenger_mile`, `yield_change_percent`
+- `airline.price.fact_route_margin`: `fiscal_quarter_id`, `scenario_id`, `route_id`, `geographic_entity_id`, `route_margin_percent`
 
-### Q1 2026 (19)
+### Q1 2026 (18) Delta Air Lines
 
-For Delta Air Lines, how does brand-loyal share in focus cities compare with the coastal hubs?
+Where do international share opportunities sit as fuel rises, and were domestic and international price increases different?
 
-- `airline.price.fact_cobrand_economics`: `loyalty_program_id`, `fiscal_quarter_id`, `card_program_id`, `partner_id`, `spend_growth_rate`, `sustainable_flag`, `partner_economics_amount`
-- `airline.customer.dim_loyalty_program`: `program_name`, `program_code`
-- `airline.demand.fact_share_position`: `share_rate`, `loyal_share_rate`, `versus_coastal_rate`, `fiscal_quarter_id`, `geographic_entity_id`, `hub_id`, `city_id`
-- `airline.geography.dim_city`: `country_id`, `city_name`, `city_code`, `city_role_code`
-- `airline.geography.dim_hub`: `city_id`, `hub_name`, `hub_code`
-- `airline.time.dim_fiscal_quarter`: `quarter_label`, `quarter_code`, `guidance_horizon`
+- `airline.price.fact_fare_price`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `cabin_id`, `fare_product_id`, `average_fare_dollars_per_passenger`
+- `airline.price.fact_geographic_margin`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `geographic_margin_percent`, `geographic_profit_amount`
+- `airline.price.fact_unit_revenue`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `revenue_cents_per_seat_mile`, `unit_revenue_change_percent`
 
-### Q3 2025 (1)
+### Q3 2025 (1) Delta Air Lines
 
-For Delta Air Lines, how much of the cash-flow improvement is the booking curve normalizing?
+How much of the cash-flow improvement is the booking curve normalizing?
 
-- `airline.price.fact_cash_position`: `cash_flow_amount`, `improvement_from_curve_rate`, `working_capital_amount`, `fiscal_quarter_id`, `geographic_entity_id`
-- `airline.demand.fact_booking_curve`: `booking_window_id`, `holiday_curve_flag`, `fiscal_quarter_id`, `geographic_entity_id`, `competitor_id`, `days_before_departure`, `booked_share_rate`
-- `airline.demand.fact_booking_demand`: `booking_window_id`, `booking_count`, `curve_normalized_flag`, `fiscal_quarter_id`, `geographic_entity_id`, `cabin_id`, `customer_segment_id`
-- `airline.demand.fact_traffic_demand`: `strength_from_bookings_flag`, `fiscal_quarter_id`, `geographic_entity_id`, `cabin_id`, `customer_segment_id`, `passenger_count`, `traffic_change_rate`
-- `airline.time.dim_fiscal_quarter`: `quarter_label`, `quarter_code`, `guidance_horizon`
+- `airline.price.fact_cash_flow`: `fiscal_quarter_id`, `scenario_id`, `operating_cash_flow_amount`, `working_capital_amount`
+- `airline.price.fact_air_traffic_liability`: `fiscal_quarter_id`, `scenario_id`, `air_traffic_liability_amount`
+- `airline.price.fact_enterprise_earnings`: `fiscal_quarter_id`, `scenario_id`, `enterprise_revenue_amount`, `enterprise_earnings_amount`, `enterprise_operating_margin_percent`
 
-### Q3 2025 (3)
+### Q3 2025 (3) Delta Air Lines
 
-For Delta Air Lines, how much of the domestic improvement is unique to higher-income exposure?
+How much of the domestic improvement is unique to higher-income exposure?
 
-- `airline.price.fact_unit_revenue`: `unit_revenue_amount`, `unit_revenue_change_rate`, `fiscal_quarter_id`, `geographic_entity_id`, `cabin_id`, `route_id`, `pass_through_flag`
-- `airline.demand.fact_domestic_demand`: `sequential_improvement_flag`, `fiscal_quarter_id`, `geographic_entity_id`, `hub_id`, `passenger_count`, `best_geography_flag`
-- `airline.demand.fact_income_demand`: `customer_segment_id`, `higher_income_share_rate`, `unique_to_income_flag`, `fiscal_quarter_id`, `geographic_entity_id`
-- `airline.customer.dim_customer_segment`: `segment_name`, `segment_code`
-- `airline.time.dim_fiscal_quarter`: `quarter_label`, `quarter_code`, `guidance_horizon`
+- `airline.price.fact_fare_price`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `cabin_id`, `fare_product_id`, `average_fare_dollars_per_passenger`
+- `airline.price.fact_unit_revenue`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `revenue_cents_per_seat_mile`, `unit_revenue_change_percent`
+- `airline.price.fact_geographic_margin`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `geographic_margin_percent`, `geographic_profit_amount`
 
-### Q3 2025 (7)
+### Q3 2025 (6) Delta Air Lines
 
-For Delta Air Lines, how much premium growth is a change in loyalty-member behavior rather than oil and the consumer backdrop?
+By how much are domestic main-cabin seats down, and how does that relate to main cabin turning positive?
 
-- `airline.price.fact_unit_revenue`: `unit_revenue_amount`, `unit_revenue_change_rate`, `intra_quarter_change_rate`, `fiscal_quarter_id`, `geographic_entity_id`, `cabin_id`, `route_id`
-- `airline.demand.fact_segment_mix`: `loyalty_program_id`, `premium_over_main_flag`, `behavior_change_flag`, `fiscal_quarter_id`, `customer_segment_id`, `cabin_id`, `mix_rate`
-- `airline.customer.dim_loyalty_program`: `program_name`, `program_code`
-- `airline.customer.dim_cabin`: `cabin_name`, `cabin_code`
-- `airline.time.dim_fiscal_quarter`: `quarter_label`, `quarter_code`, `guidance_horizon`
+- `airline.price.fact_passenger_revenue`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `cabin_id`, `passenger_revenue_amount`
+- `airline.price.fact_unit_revenue`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `revenue_cents_per_seat_mile`, `unit_revenue_change_percent`
+- `airline.price.fact_cabin_margin`: `fiscal_quarter_id`, `scenario_id`, `cabin_id`, `geographic_entity_id`, `cabin_margin_percent`, `cabin_profit_amount`
 
-### Q3 2025 (9)
+### Q3 2025 (9) Delta Air Lines
 
-For Delta Air Lines, why would premium overtaking the main cabin slip past next year if 2027 was the prior marker?
+Why would premium overtaking the main cabin slip past next year if 2027 was the prior marker?
 
-- `airline.price.fact_unit_revenue`: `cabin_id`, `unit_revenue_amount`, `unit_revenue_change_rate`, `fiscal_quarter_id`, `geographic_entity_id`, `route_id`, `pass_through_flag`
-- `airline.demand.fact_segment_mix`: `cabin_id`, `premium_over_main_flag`, `crossover_year_code`, `fiscal_quarter_id`, `customer_segment_id`, `loyalty_program_id`, `mix_rate`
-- `airline.price.fact_cabin_margin`: `cabin_id`, `gap_to_premium_rate`, `would_close_if_supply_cut_flag`, `fiscal_quarter_id`, `geographic_entity_id`, `margin_rate`
-- `airline.customer.dim_cabin`: `cabin_name`, `cabin_code`
-- `airline.time.dim_fiscal_quarter`: `quarter_label`, `quarter_code`, `guidance_horizon`
+- `airline.price.fact_passenger_revenue`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `cabin_id`, `passenger_revenue_amount`
+- `airline.price.fact_cabin_margin`: `fiscal_quarter_id`, `scenario_id`, `cabin_id`, `geographic_entity_id`, `cabin_margin_percent`, `cabin_profit_amount`
+- `airline.price.fact_yield`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `cabin_id`, `traveler_type_id`, `yield_cents_per_passenger_mile`, `yield_change_percent`
 
-### Q3 2025 (10)
+### Q3 2025 (10) Delta Air Lines
 
-For Delta Air Lines, what did Atlantic unit revenue do through the quarter, and what is required to get back to flat?
+What did Atlantic unit revenue do through the quarter, and what is required to get back to flat?
 
-- `airline.price.fact_unit_revenue`: `fiscal_quarter_id`, `unit_revenue_amount`, `unit_revenue_change_rate`, `pass_through_flag`, `intra_quarter_change_rate`, `path_to_flat_rate`, `geographic_entity_id`
-- `airline.geography.dim_geographic_entity`: `region_id`, `entity_name`, `entity_code`
-- `airline.time.dim_fiscal_quarter`: `quarter_label`, `quarter_code`, `guidance_horizon`
+- `airline.price.fact_unit_revenue`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `revenue_cents_per_seat_mile`, `unit_revenue_change_percent`
+- `airline.price.fact_skymiles_economics`: `fiscal_quarter_id`, `scenario_id`, `skymiles_tier_id`, `delta_card_program_id`, `loyalty_revenue_amount`, `cobrand_spend_amount`
+- `airline.price.fact_passenger_revenue`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `cabin_id`, `passenger_revenue_amount`
 
-### Q3 2025 (14)
+### Q3 2025 (14) Delta Air Lines
 
-For Delta Air Lines, is a fourth quarter matching third-quarter earnings a new seasonality, or did the third quarter under-earn?
+Is a fourth quarter matching third-quarter earnings a new seasonality, or did the third quarter under-earn?
 
-- `airline.price.fact_earnings_path`: `fiscal_quarter_id`, `earnings_amount`, `matches_prior_quarter_flag`, `new_seasonality_flag`, `under_earned_flag`, `geographic_entity_id`, `neutral_to_capacity_flag`
-- `airline.price.fact_unit_revenue`: `fiscal_quarter_id`, `unit_revenue_amount`, `unit_revenue_change_rate`, `intra_quarter_change_rate`, `geographic_entity_id`, `cabin_id`, `route_id`
-- `airline.price.fact_non_ticket_revenue`: `fiscal_quarter_id`, `revenue_amount`, `growth_rate`, `sustainable_flag`, `maintenance_flag`, `cargo_flag`
-- `airline.time.dim_fiscal_quarter`: `quarter_label`, `quarter_code`, `guidance_horizon`
+- `airline.price.fact_enterprise_earnings`: `fiscal_quarter_id`, `scenario_id`, `enterprise_revenue_amount`, `enterprise_earnings_amount`, `enterprise_operating_margin_percent`
+- `airline.price.fact_route_margin`: `fiscal_quarter_id`, `scenario_id`, `route_id`, `geographic_entity_id`, `route_margin_percent`
+- `airline.price.fact_skymiles_economics`: `fiscal_quarter_id`, `scenario_id`, `skymiles_tier_id`, `delta_card_program_id`, `loyalty_revenue_amount`, `cobrand_spend_amount`
 
-### Q3 2025 (15)
+### Q3 2025 (18) Delta Air Lines
 
-For Delta Air Lines, is maintenance and cargo revenue strength sustainable into the fourth quarter?
+What margin improvement into next year is in the company's control?
 
-- `airline.price.fact_non_ticket_revenue`: `fiscal_quarter_id`, `revenue_amount`, `sustainable_flag`, `maintenance_flag`, `cargo_flag`, `growth_rate`
-- `airline.supply.fact_shop_capacity`: `fiscal_quarter_id`, `maintenance_shop_id`, `capacity_quantity`, `in_house_share_rate`, `added_recently_flag`
-- `airline.time.dim_fiscal_quarter`: `quarter_label`, `quarter_code`, `guidance_horizon`
+- `airline.price.fact_enterprise_earnings`: `fiscal_quarter_id`, `scenario_id`, `enterprise_revenue_amount`, `enterprise_earnings_amount`, `enterprise_operating_margin_percent`
+- `airline.price.fact_cabin_margin`: `fiscal_quarter_id`, `scenario_id`, `cabin_id`, `geographic_entity_id`, `cabin_margin_percent`, `cabin_profit_amount`
+- `airline.price.fact_geographic_margin`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `geographic_margin_percent`, `geographic_profit_amount`
 
-### Q3 2025 (18)
+### Q3 2025 (19) Delta Air Lines
 
-For Delta Air Lines, what margin improvement into next year is in the company's control?
+How sustainable is co-brand spend growth?
 
-- `airline.price.fact_geographic_margin`: `margin_rate`, `in_company_control_flag`, `fiscal_quarter_id`, `geographic_entity_id`, `contribution_to_long_term_rate`, `premium_versus_main_mix_rate`
-- `airline.price.fact_cabin_margin`: `margin_rate`, `fiscal_quarter_id`, `cabin_id`, `geographic_entity_id`, `gap_to_premium_rate`, `would_close_if_supply_cut_flag`
-- `airline.price.fact_unit_revenue`: `unit_revenue_amount`, `unit_revenue_change_rate`, `fiscal_quarter_id`, `geographic_entity_id`, `cabin_id`, `route_id`, `pass_through_flag`
-- `airline.price.fact_non_ticket_revenue`: `revenue_amount`, `fiscal_quarter_id`, `growth_rate`, `sustainable_flag`, `maintenance_flag`, `cargo_flag`
-- `airline.supply.fact_unit_cost`: `unit_cost_amount`, `carries_into_next_year_flag`, `fiscal_quarter_id`, `geographic_entity_id`, `change_rate`, `ex_fuel_change_rate`, `ex_labor_change_rate`
-- `airline.supply.fact_workforce_efficiency`: `fiscal_quarter_id`, `efficiency_rate`, `remaining_runway_rate`, `airport_component_flag`, `fleet_component_flag`
+- `airline.price.fact_skymiles_economics`: `fiscal_quarter_id`, `scenario_id`, `skymiles_tier_id`, `delta_card_program_id`, `loyalty_revenue_amount`, `cobrand_spend_amount`
+- `airline.price.fact_maintenance_revenue`: `fiscal_quarter_id`, `scenario_id`, `maintenance_type_id`, `maintenance_provider_id`, `maintenance_revenue_amount`
+- `airline.price.fact_mileageplus_economics`: `fiscal_quarter_id`, `scenario_id`, `mileageplus_tier_id`, `united_card_program_id`, `loyalty_revenue_amount`, `cobrand_spend_amount`
 
-### Q3 2025 (19)
+### Q4 2024 (1) Delta Air Lines
 
-For Delta Air Lines, how sustainable is co-brand spend growth?
+Which geographic entity improved the most versus the initial fourth-quarter expectation, and how does that change 2025 capacity allocation?
 
-- `airline.price.fact_cobrand_economics`: `loyalty_program_id`, `spend_growth_rate`, `sustainable_flag`, `fiscal_quarter_id`, `card_program_id`, `partner_id`, `partner_economics_amount`
-- `airline.price.dim_card_program`: `loyalty_program_id`, `card_name`, `card_code`, `rules_change_flag`
-- `airline.customer.dim_loyalty_program`: `program_name`, `program_code`
-- `airline.time.dim_fiscal_quarter`: `quarter_label`, `quarter_code`, `guidance_horizon`
+- `airline.price.fact_unit_revenue`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `revenue_cents_per_seat_mile`, `unit_revenue_change_percent`
+- `airline.price.fact_yield`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `cabin_id`, `traveler_type_id`, `yield_cents_per_passenger_mile`, `yield_change_percent`
+- `airline.price.fact_geographic_margin`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `geographic_margin_percent`, `geographic_profit_amount`
 
-### Q4 2024 (2)
+### Q4 2024 (2) Delta Air Lines
 
-For Delta Air Lines, how is SkyMiles monetized through the new partnerships?
+How is SkyMiles monetized through the new partnerships?
 
-- `airline.price.fact_cobrand_economics`: `partner_id`, `partner_economics_amount`, `fiscal_quarter_id`, `card_program_id`, `loyalty_program_id`, `spend_growth_rate`, `sustainable_flag`
-- `airline.customer.dim_loyalty_program`: `program_name`, `program_code`
-- `airline.customer.dim_partner`: `partner_name`, `partner_code`
-- `airline.time.dim_fiscal_quarter`: `quarter_label`, `quarter_code`, `guidance_horizon`
+- `airline.price.fact_skymiles_economics`: `fiscal_quarter_id`, `scenario_id`, `skymiles_tier_id`, `delta_card_program_id`, `loyalty_revenue_amount`, `cobrand_spend_amount`
+- `airline.price.fact_skymiles_miles_quantity`: `fiscal_quarter_id`, `scenario_id`, `skymiles_tier_id`, `miles_earned_count`, `miles_redeemed_count`
+- `airline.price.fact_route_margin`: `fiscal_quarter_id`, `scenario_id`, `route_id`, `geographic_entity_id`, `route_margin_percent`
 
-### Q4 2024 (3)
+### Q4 2024 (3) Delta Air Lines
 
-For Delta Air Lines, with difficult comparisons, including last year's competitor grounding, should unit revenue accelerate into the spring?
+With difficult comparisons, including last year's competitor grounding, should unit revenue accelerate into the spring?
 
-- `airline.price.fact_unit_revenue`: `unit_revenue_amount`, `unit_revenue_change_rate`, `intra_quarter_change_rate`, `path_to_flat_rate`, `sequential_step_rate`, `fiscal_quarter_id`, `geographic_entity_id`
-- `airline.price.fact_non_ticket_revenue`: `revenue_amount`, `growth_rate`, `fiscal_quarter_id`, `sustainable_flag`, `maintenance_flag`, `cargo_flag`
-- `airline.supply.fact_industry_capacity`: `competitor_id`, `change_rate`, `fiscal_quarter_id`, `geographic_entity_id`, `industry_seat_quantity`, `irrational_return_flag`, `cuts_after_summer_flag`
-- `airline.time.dim_fiscal_quarter`: `quarter_label`, `quarter_code`, `guidance_horizon`
+- `airline.price.fact_unit_revenue`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `revenue_cents_per_seat_mile`, `unit_revenue_change_percent`
+- `airline.price.fact_ancillary_revenue`: `fiscal_quarter_id`, `scenario_id`, `fee_type_id`, `geographic_entity_id`, `ancillary_revenue_amount`
+- `airline.price.fact_skymiles_economics`: `fiscal_quarter_id`, `scenario_id`, `skymiles_tier_id`, `delta_card_program_id`, `loyalty_revenue_amount`, `cobrand_spend_amount`
 
-### Q3 2024 (5)
+### Q4 2024 (5) Delta Air Lines
 
-For Delta Air Lines, how deep can the revenue premium versus domestic leisure carriers go as those carriers change product and network?
+How quickly can higher fuel be recaptured compared with the historical lag?
 
-- `airline.price.fact_revenue_premium`: `premium_rate`, `competitor_product_change_flag`, `fiscal_quarter_id`, `competitor_id`, `geographic_entity_id`, `depth_available_rate`
-- `airline.customer.dim_competitor`: `competitor_name`, `competitor_code`
-- `airline.price.dim_fare_product`: `product_name`, `product_code`, `cabin_id`
-- `airline.supply.fact_procurement_cost`: `product_investment_amount`, `fiscal_quarter_id`, `cost_amount`, `savings_follow_through_flag`, `keeping_unit_cost_in_check_flag`
-- `airline.time.dim_fiscal_quarter`: `quarter_label`, `quarter_code`, `guidance_horizon`
+- `airline.price.fact_fuel_recapture_rate`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `fuel_recapture_percent`
+- `airline.price.fact_fare_price`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `cabin_id`, `fare_product_id`, `average_fare_dollars_per_passenger`
+- `airline.price.fact_skymiles_economics`: `fiscal_quarter_id`, `scenario_id`, `skymiles_tier_id`, `delta_card_program_id`, `loyalty_revenue_amount`, `cobrand_spend_amount`
+
+### Q3 2024 (5) Delta Air Lines
+
+How deep can the revenue premium versus domestic leisure carriers go as those carriers change product and network?
+
+- `airline.price.fact_yield`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `cabin_id`, `traveler_type_id`, `yield_cents_per_passenger_mile`, `yield_change_percent`
+- `airline.price.fact_unit_revenue`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `revenue_cents_per_seat_mile`, `unit_revenue_change_percent`
+- `airline.price.fact_passenger_revenue`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `cabin_id`, `passenger_revenue_amount`
 
 ## United Airlines
 
-### Q1 2026 (9)
+### Q1 2026 (2) United Airlines
 
-For United Airlines, what longer-term margin uplift is expected from merchandising, fleet, and loyalty, including newer narrow-bodies on those routes?
+If fuel stays high for a long time, how does that change which hubs are run for system profit, including versus competitors?
 
-- `airline.price.fact_margin_bridge`: `merchandising_offer_id`, `long_term_flag`, `fiscal_quarter_id`, `geographic_entity_id`, `effect_rate`, `initiative_code`
-- `airline.price.dim_merchandising_offer`: `offer_name`, `offer_code`
-- `airline.supply.fact_fleet_delivery`: `fleet_family_id`, `fiscal_quarter_id`, `aircraft_type_id`, `manufacturer_id`, `delivery_count`, `ahead_of_plan_flag`, `this_year_narrowbody_count`
-- `airline.supply.fact_gauge_plan`: `route_id`, `unit_cost_effect_rate`, `fiscal_quarter_id`, `aircraft_type_id`, `gauge_change_rate`, `benefit_year_code`
-- `airline.price.fact_cobrand_economics`: `loyalty_program_id`, `fiscal_quarter_id`, `card_program_id`, `partner_id`, `spend_growth_rate`, `sustainable_flag`, `partner_economics_amount`
-- `airline.customer.dim_loyalty_program`: `program_name`, `program_code`
+- `airline.price.fact_fuel_recapture_rate`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `fuel_recapture_percent`
+- `airline.price.fact_geographic_margin`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `geographic_margin_percent`, `geographic_profit_amount`
+- `airline.price.fact_yield`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `cabin_id`, `traveler_type_id`, `yield_cents_per_passenger_mile`, `yield_change_percent`
 
-### Q1 2026 (10)
+### Q4 2025 (1) United Airlines
 
-For United Airlines, what supports full fuel-cost recapture, and does it require other carriers to cut capacity?
+What would turn the main cabin positive, and is a specific rate of change assumed?
 
-- `airline.price.fact_fuel_recapture`: `recapture_rate`, `full_recapture_flag`, `fiscal_quarter_id`, `geographic_entity_id`, `accelerating_flag`, `requires_competitor_cuts_flag`, `lag_versus_history_code`
-- `airline.supply.fact_fuel_cost`: `fuel_region_id`, `unit_cost_amount`, `fiscal_quarter_id`, `high_flag`, `shock_duration_code`, `price_to_restore_growth_amount`
-- `airline.supply.fact_industry_capacity`: `industry_seat_quantity`, `fiscal_quarter_id`, `geographic_entity_id`, `competitor_id`, `change_rate`, `irrational_return_flag`, `cuts_after_summer_flag`
-- `airline.price.fact_fare`: `fiscal_quarter_id`, `fare_product_id`, `geographic_entity_id`, `cabin_id`, `fare_amount`, `fare_change_rate`, `higher_flag`
-- `airline.supply.fact_capacity`: `capacity_change_rate`, `fiscal_quarter_id`, `geographic_entity_id`, `hub_id`, `route_id`, `aircraft_type_id`, `seat_quantity`
-- `airline.time.dim_fiscal_quarter`: `quarter_label`, `quarter_code`, `guidance_horizon`
+- `airline.price.fact_passenger_revenue`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `cabin_id`, `passenger_revenue_amount`
+- `airline.price.fact_yield`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `cabin_id`, `traveler_type_id`, `yield_cents_per_passenger_mile`, `yield_change_percent`
+- `airline.price.fact_cabin_margin`: `fiscal_quarter_id`, `scenario_id`, `cabin_id`, `geographic_entity_id`, `cabin_margin_percent`, `cabin_profit_amount`
 
-### Q4 2025 (2)
+### Q4 2025 (2) United Airlines
 
-For United Airlines, if card-program rules change, what can be done around the loyalty economics over the next couple of years?
+If card-program rules change, what can be done around the loyalty economics over the next couple of years?
 
-- `airline.price.fact_cobrand_economics`: `card_program_id`, `loyalty_program_id`, `partner_economics_amount`, `rules_response_code`, `fiscal_quarter_id`, `partner_id`, `spend_growth_rate`
-- `airline.price.dim_card_program`: `loyalty_program_id`, `card_name`, `card_code`, `rules_change_flag`
-- `airline.customer.dim_loyalty_program`: `program_name`, `program_code`
-- `airline.time.dim_fiscal_quarter`: `quarter_label`, `quarter_code`, `guidance_horizon`
+- `airline.price.fact_mileageplus_economics`: `fiscal_quarter_id`, `scenario_id`, `mileageplus_tier_id`, `united_card_program_id`, `loyalty_revenue_amount`, `cobrand_spend_amount`
+- `airline.price.fact_skymiles_economics`: `fiscal_quarter_id`, `scenario_id`, `skymiles_tier_id`, `delta_card_program_id`, `loyalty_revenue_amount`, `cobrand_spend_amount`
+- `airline.price.fact_yield`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `cabin_id`, `traveler_type_id`, `yield_cents_per_passenger_mile`, `yield_change_percent`
 
-### Q4 2025 (3)
+### Q4 2025 (3) United Airlines
 
-For United Airlines, what near-term program enhancements are possible on top of the existing card agreements?
+What near-term program enhancements are possible on top of the existing card agreements?
 
-- `airline.price.fact_cobrand_economics`: `card_program_id`, `loyalty_program_id`, `partner_id`, `partner_economics_amount`, `enhancement_without_renegotiation_flag`, `fiscal_quarter_id`, `spend_growth_rate`
-- `airline.customer.dim_loyalty_program`: `program_name`, `program_code`
-- `airline.customer.dim_partner`: `partner_name`, `partner_code`
-- `airline.price.dim_card_program`: `loyalty_program_id`, `card_name`, `card_code`, `rules_change_flag`
-- `airline.time.dim_fiscal_quarter`: `quarter_label`, `quarter_code`, `guidance_horizon`
+- `airline.price.fact_mileageplus_economics`: `fiscal_quarter_id`, `scenario_id`, `mileageplus_tier_id`, `united_card_program_id`, `loyalty_revenue_amount`, `cobrand_spend_amount`
+- `airline.price.fact_geographic_margin`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `geographic_margin_percent`, `geographic_profit_amount`
+- `airline.price.fact_mileageplus_miles_quantity`: `fiscal_quarter_id`, `scenario_id`, `mileageplus_tier_id`, `miles_earned_count`, `miles_redeemed_count`
 
-### Q4 2025 (6)
+### Q4 2025 (8) United Airlines
 
-For United Airlines, was most of the shutdown hit domestic revenue, so is the sequential improvement mostly domestic?
+Are recent international routes still opening at a margin premium to their geography, and how long does that last?
 
-- `airline.price.fact_unit_revenue`: `unit_revenue_amount`, `unit_revenue_change_rate`, `sequential_step_rate`, `fiscal_quarter_id`, `geographic_entity_id`, `cabin_id`, `route_id`
-- `airline.demand.fact_domestic_demand`: `sequential_improvement_flag`, `fiscal_quarter_id`, `geographic_entity_id`, `hub_id`, `passenger_count`, `best_geography_flag`
-- `airline.demand.fact_international_demand`: `fiscal_quarter_id`, `geographic_entity_id`, `cabin_id`, `route_id`, `passenger_count`, `premium_mix_rate`, `main_mix_rate`
-- `airline.supply.fact_shutdown_case`: `domestic_share_of_hit_rate`, `fiscal_quarter_id`, `event_id`, `geographic_entity_id`, `case_code`, `in_outlook_flag`
-- `airline.customer.dim_event`: `event_name`, `event_code`
-- `airline.time.dim_fiscal_quarter`: `quarter_label`, `quarter_code`, `guidance_horizon`
+- `airline.price.fact_route_margin`: `fiscal_quarter_id`, `scenario_id`, `route_id`, `geographic_entity_id`, `route_margin_percent`
+- `airline.price.fact_geographic_margin`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `geographic_margin_percent`, `geographic_profit_amount`
+- `airline.price.fact_cabin_margin`: `fiscal_quarter_id`, `scenario_id`, `cabin_id`, `geographic_entity_id`, `cabin_margin_percent`, `cabin_profit_amount`
 
-### Q4 2025 (8)
+### Q4 2025 (11) United Airlines
 
-For United Airlines, are recent international routes still opening at a margin premium to their geography, and how long does that last?
+How should price and cost deliver about a point of annual margin improvement given the comparison?
 
-- `airline.price.fact_route_margin`: `route_id`, `margin_rate`, `premium_to_geography_flag`, `premium_lasts_quarters`, `fiscal_quarter_id`, `geographic_entity_id`
-- `airline.supply.fact_fleet_delivery`: `international_entry_quarters`, `fiscal_quarter_id`, `aircraft_type_id`, `manufacturer_id`, `fleet_family_id`, `delivery_count`, `ahead_of_plan_flag`
-- `airline.price.fact_geographic_margin`: `margin_rate`, `contribution_to_long_term_rate`, `premium_versus_main_mix_rate`, `fiscal_quarter_id`, `geographic_entity_id`, `in_company_control_flag`
-- `airline.price.fact_cabin_margin`: `margin_rate`, `gap_to_premium_rate`, `fiscal_quarter_id`, `cabin_id`, `geographic_entity_id`, `would_close_if_supply_cut_flag`
-- `airline.geography.dim_route`: `route_name`, `route_code`, `international_flag`, `long_haul_flag`, `geographic_entity_id`, `hub_id`, `new_flag`
-- `airline.time.dim_fiscal_quarter`: `quarter_label`, `quarter_code`, `guidance_horizon`
+- `airline.price.fact_enterprise_earnings`: `fiscal_quarter_id`, `scenario_id`, `enterprise_revenue_amount`, `enterprise_earnings_amount`, `enterprise_operating_margin_percent`
+- `airline.price.fact_cabin_margin`: `fiscal_quarter_id`, `scenario_id`, `cabin_id`, `geographic_entity_id`, `cabin_margin_percent`, `cabin_profit_amount`
+- `airline.price.fact_geographic_margin`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `geographic_margin_percent`, `geographic_profit_amount`
 
-### Q4 2025 (11)
+### Q3 2025 (1) United Airlines
 
-For United Airlines, how should price and cost deliver about a point of annual margin improvement given the comparison?
+If main-cabin supply were cut in a step, would main-cabin margins close the gap with premium?
 
-- `airline.price.fact_price_action`: `fiscal_quarter_id`, `geographic_entity_id`, `fare_product_id`, `increase_rate`, `domestic_flag`, `international_flag`, `different_flag`
-- `airline.price.fact_fare`: `fiscal_quarter_id`, `fare_product_id`, `geographic_entity_id`, `cabin_id`, `fare_amount`, `fare_change_rate`, `higher_flag`
-- `airline.supply.fact_unit_cost`: `unit_cost_amount`, `fiscal_quarter_id`, `geographic_entity_id`, `change_rate`, `ex_fuel_change_rate`, `ex_labor_change_rate`, `carries_into_next_year_flag`
-- `airline.supply.fact_workforce_efficiency`: `fiscal_quarter_id`, `efficiency_rate`, `remaining_runway_rate`, `airport_component_flag`, `fleet_component_flag`
-- `airline.price.fact_geographic_margin`: `margin_rate`, `fiscal_quarter_id`, `geographic_entity_id`, `contribution_to_long_term_rate`, `premium_versus_main_mix_rate`, `in_company_control_flag`
-- `airline.price.fact_cabin_margin`: `margin_rate`, `fiscal_quarter_id`, `cabin_id`, `geographic_entity_id`, `gap_to_premium_rate`, `would_close_if_supply_cut_flag`
+- `airline.price.fact_cabin_margin`: `fiscal_quarter_id`, `scenario_id`, `cabin_id`, `geographic_entity_id`, `cabin_margin_percent`, `cabin_profit_amount`
+- `airline.price.fact_passenger_revenue`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `cabin_id`, `passenger_revenue_amount`
+- `airline.price.fact_yield`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `cabin_id`, `traveler_type_id`, `yield_cents_per_passenger_mile`, `yield_change_percent`
 
-### Q3 2025 (3)
+### Q3 2025 (3) United Airlines
 
-For United Airlines, how widespread is premium leisure yield exceeding some corporate yields, and is that a lasting change?
+How widespread is premium leisure yield exceeding some corporate yields, and is that a lasting change?
 
-- `airline.price.fact_yield_result`: `yield_amount`, `yield_change_rate`, `leisure_above_corporate_flag`, `lasting_flag`, `fiscal_quarter_id`, `geographic_entity_id`, `cabin_id`
-- `airline.customer.dim_cabin`: `cabin_name`, `cabin_code`
-- `airline.customer.dim_customer_segment`: `segment_name`, `segment_code`
-- `airline.time.dim_fiscal_quarter`: `quarter_label`, `quarter_code`, `guidance_horizon`
+- `airline.price.fact_yield`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `cabin_id`, `traveler_type_id`, `yield_cents_per_passenger_mile`, `yield_change_percent`
+- `airline.price.fact_passenger_revenue`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `cabin_id`, `passenger_revenue_amount`
+- `airline.price.fact_unit_revenue`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `revenue_cents_per_seat_mile`, `unit_revenue_change_percent`
 
-### Q3 2025 (5)
+### Q3 2025 (5) United Airlines
 
-For United Airlines, does the smaller seasonal drop in air-traffic liability reflect pricing, or a longer booking curve?
+Does the smaller seasonal drop in air-traffic liability reflect pricing, or a longer booking curve?
 
-- `airline.price.fact_traffic_liability`: `liability_amount`, `seasonal_drop_rate`, `from_pricing_flag`, `from_longer_curve_flag`, `fiscal_quarter_id`
-- `airline.demand.fact_booking_curve`: `booking_window_id`, `holiday_curve_flag`, `fiscal_quarter_id`, `geographic_entity_id`, `competitor_id`, `days_before_departure`, `booked_share_rate`
-- `airline.price.fact_fare`: `fiscal_quarter_id`, `fare_product_id`, `geographic_entity_id`, `cabin_id`, `fare_amount`, `fare_change_rate`, `higher_flag`
-- `airline.demand.fact_booking_demand`: `booking_window_id`, `booking_count`, `curve_normalized_flag`, `fiscal_quarter_id`, `geographic_entity_id`, `cabin_id`, `customer_segment_id`
-- `airline.price.fact_price_action`: `fiscal_quarter_id`, `geographic_entity_id`, `fare_product_id`, `increase_rate`, `domestic_flag`, `international_flag`, `different_flag`
-- `airline.time.dim_fiscal_quarter`: `quarter_label`, `quarter_code`, `guidance_horizon`
+- `airline.price.fact_air_traffic_liability`: `fiscal_quarter_id`, `scenario_id`, `air_traffic_liability_amount`
+- `airline.price.fact_cash_flow`: `fiscal_quarter_id`, `scenario_id`, `operating_cash_flow_amount`, `working_capital_amount`
+- `airline.price.fact_ancillary_price`: `fiscal_quarter_id`, `scenario_id`, `fee_type_id`, `geographic_entity_id`, `fee_dollars_per_bag`
 
-### Q3 2025 (7)
+### Q3 2025 (6) United Airlines
 
-For United Airlines, how does fourth-quarter unit revenue sequence between domestic and international, including the holiday booking curve?
+Why grow so much in Latin America in the quarter if unit revenue did not support it?
 
-- `airline.price.fact_unit_revenue`: `fiscal_quarter_id`, `unit_revenue_amount`, `unit_revenue_change_rate`, `intra_quarter_change_rate`, `geographic_entity_id`, `cabin_id`, `route_id`
-- `airline.demand.fact_domestic_demand`: `fiscal_quarter_id`, `geographic_entity_id`, `hub_id`, `passenger_count`, `sequential_improvement_flag`, `best_geography_flag`
-- `airline.demand.fact_international_demand`: `fiscal_quarter_id`, `geographic_entity_id`, `cabin_id`, `route_id`, `passenger_count`, `premium_mix_rate`, `main_mix_rate`
-- `airline.demand.fact_booking_curve`: `fiscal_quarter_id`, `booking_window_id`, `holiday_curve_flag`, `geographic_entity_id`, `competitor_id`, `days_before_departure`, `booked_share_rate`
-- `airline.price.fact_traffic_liability`: `fiscal_quarter_id`, `from_longer_curve_flag`, `liability_amount`, `seasonal_drop_rate`, `from_pricing_flag`
-- `airline.time.dim_fiscal_quarter`: `quarter_label`, `quarter_code`, `guidance_horizon`
+- `airline.price.fact_unit_revenue`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `revenue_cents_per_seat_mile`, `unit_revenue_change_percent`
+- `airline.price.fact_mileageplus_economics`: `fiscal_quarter_id`, `scenario_id`, `mileageplus_tier_id`, `united_card_program_id`, `loyalty_revenue_amount`, `cobrand_spend_amount`
+- `airline.price.fact_passenger_revenue`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `cabin_id`, `passenger_revenue_amount`
 
-### Q2 2025 (4)
+### Q3 2025 (7) United Airlines
 
-For United Airlines, which levers, including the main cabin, could make the fourth-quarter unit-revenue step better than the conservative case?
+How does fourth-quarter unit revenue sequence between domestic and international, including the holiday booking curve?
 
-- `airline.price.fact_unit_revenue`: `fiscal_quarter_id`, `cabin_id`, `unit_revenue_amount`, `unit_revenue_change_rate`, `intra_quarter_change_rate`, `sequential_step_rate`, `geographic_entity_id`
-- `airline.price.fact_non_ticket_revenue`: `fiscal_quarter_id`, `revenue_amount`, `growth_rate`, `sustainable_flag`, `maintenance_flag`, `cargo_flag`
-- `airline.demand.fact_cabin_demand`: `fiscal_quarter_id`, `cabin_id`, `geographic_entity_id`, `customer_segment_id`, `passenger_count`, `demand_change_rate`, `holding_if_inelastic_flag`
-- `airline.price.fact_cabin_margin`: `fiscal_quarter_id`, `cabin_id`, `geographic_entity_id`, `margin_rate`, `gap_to_premium_rate`, `would_close_if_supply_cut_flag`
-- `airline.customer.dim_cabin`: `cabin_name`, `cabin_code`
-- `airline.time.dim_fiscal_quarter`: `quarter_label`, `quarter_code`, `guidance_horizon`
+- `airline.price.fact_unit_revenue`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `revenue_cents_per_seat_mile`, `unit_revenue_change_percent`
+- `airline.price.fact_fare_price`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `cabin_id`, `fare_product_id`, `average_fare_dollars_per_passenger`
+- `airline.price.fact_geographic_margin`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `geographic_margin_percent`, `geographic_profit_amount`
 
-### Q2 2025 (9)
+### Q3 2025 (8) United Airlines
 
-For United Airlines, how does the partner arrangement change the longer-term margin view?
+If unit cost rises a few percent a year, what revenue drivers produce about a point of annual margin expansion?
 
-- `airline.price.fact_partnership_margin`: `partner_id`, `margin_rate`, `longer_term_change_rate`, `fiscal_quarter_id`, `geographic_entity_id`, `europe_hub_fit_flag`
-- `airline.customer.dim_partner`: `partner_name`, `partner_code`
-- `airline.price.fact_geographic_margin`: `margin_rate`, `contribution_to_long_term_rate`, `fiscal_quarter_id`, `geographic_entity_id`, `premium_versus_main_mix_rate`, `in_company_control_flag`
-- `airline.price.fact_cabin_margin`: `margin_rate`, `fiscal_quarter_id`, `cabin_id`, `geographic_entity_id`, `gap_to_premium_rate`, `would_close_if_supply_cut_flag`
-- `airline.price.fact_margin_bridge`: `long_term_flag`, `fiscal_quarter_id`, `geographic_entity_id`, `merchandising_offer_id`, `effect_rate`, `initiative_code`
-- `airline.time.dim_fiscal_quarter`: `quarter_label`, `quarter_code`, `guidance_horizon`
+- `airline.price.fact_enterprise_earnings`: `fiscal_quarter_id`, `scenario_id`, `enterprise_revenue_amount`, `enterprise_earnings_amount`, `enterprise_operating_margin_percent`
+- `airline.price.fact_unit_revenue`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `revenue_cents_per_seat_mile`, `unit_revenue_change_percent`
+- `airline.price.fact_geographic_margin`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `geographic_margin_percent`, `geographic_profit_amount`
 
-### Q2 2025 (11)
+### Q2 2025 (3) United Airlines
 
-For United Airlines, which geography contributes most to the longer-term margin expansion?
+What changed from the stable case to the lower second-half outlook?
 
-- `airline.price.fact_geographic_margin`: `margin_rate`, `contribution_to_long_term_rate`, `fiscal_quarter_id`, `geographic_entity_id`, `premium_versus_main_mix_rate`, `in_company_control_flag`
-- `airline.geography.dim_geographic_entity`: `region_id`, `entity_name`, `entity_code`
-- `airline.demand.fact_international_demand`: `fiscal_quarter_id`, `geographic_entity_id`, `cabin_id`, `route_id`, `passenger_count`, `premium_mix_rate`, `main_mix_rate`
-- `airline.time.dim_fiscal_quarter`: `quarter_label`, `quarter_code`, `guidance_horizon`
+- `airline.price.fact_ancillary_revenue`: `fiscal_quarter_id`, `scenario_id`, `fee_type_id`, `geographic_entity_id`, `ancillary_revenue_amount`
+- `airline.price.fact_fuel_recapture_rate`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `fuel_recapture_percent`
+- `airline.price.fact_mileageplus_economics`: `fiscal_quarter_id`, `scenario_id`, `mileageplus_tier_id`, `united_card_program_id`, `loyalty_revenue_amount`, `cobrand_spend_amount`
+
+### Q2 2025 (4) United Airlines
+
+Which levers, including the main cabin, could make the fourth-quarter unit-revenue step better than the conservative case?
+
+- `airline.price.fact_passenger_revenue`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `cabin_id`, `passenger_revenue_amount`
+- `airline.price.fact_unit_revenue`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `revenue_cents_per_seat_mile`, `unit_revenue_change_percent`
+- `airline.price.fact_cabin_margin`: `fiscal_quarter_id`, `scenario_id`, `cabin_id`, `geographic_entity_id`, `cabin_margin_percent`, `cabin_profit_amount`
+
+### Q2 2025 (8) United Airlines
+
+How much of the booking improvement is Newark versus the broader system, and is the fourth-quarter unit-revenue gain domestic or international?
+
+- `airline.price.fact_unit_revenue`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `revenue_cents_per_seat_mile`, `unit_revenue_change_percent`
+- `airline.price.fact_fare_price`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `cabin_id`, `fare_product_id`, `average_fare_dollars_per_passenger`
+- `airline.price.fact_geographic_margin`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `geographic_margin_percent`, `geographic_profit_amount`
+
+### Q2 2025 (9) United Airlines
+
+How does the partner arrangement change the longer-term margin view?
+
+- `airline.price.fact_geographic_margin`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `geographic_margin_percent`, `geographic_profit_amount`
+- `airline.price.fact_yield`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `cabin_id`, `traveler_type_id`, `yield_cents_per_passenger_mile`, `yield_change_percent`
+- `airline.price.fact_unit_revenue`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `revenue_cents_per_seat_mile`, `unit_revenue_change_percent`
+
+### Q2 2025 (11) United Airlines
+
+Which geography contributes most to the longer-term margin expansion?
+
+- `airline.price.fact_geographic_margin`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `geographic_margin_percent`, `geographic_profit_amount`
+- `airline.price.fact_route_margin`: `fiscal_quarter_id`, `scenario_id`, `route_id`, `geographic_entity_id`, `route_margin_percent`
+- `airline.price.fact_yield`: `fiscal_quarter_id`, `scenario_id`, `geographic_entity_id`, `cabin_id`, `traveler_type_id`, `yield_cents_per_passenger_mile`, `yield_change_percent`
+
+## Datasets
+
+| Qualified name | Questions served |
+| --- | --- |
+| `airline.loyalty.dim_skymiles_tier` | supporting population |
+| `airline.loyalty.dim_mileageplus_tier` | supporting population |
+| `airline.loyalty.dim_delta_card_program` | supporting population |
+| `airline.loyalty.dim_united_card_program` | supporting population |
+| `airline.loyalty.dim_skyteam_partner` | supporting population |
+| `airline.loyalty.dim_star_alliance_partner` | supporting population |
+| `airline.price.dim_fee_type` | supporting population |
+| `airline.price.dim_currency` | supporting population |
+| `airline.price.fact_passenger_revenue` | Q1 2026 (3), Q1 2026 (4), Q1 2026 (5), Q1 2026 (9), Q1 2026 (10), Q3 2025 (6), Q3 2025 (9), Q3 2025 (10), Q3 2024 (5), Q4 2025 (1), Q3 2025 (1), Q3 2025 (3), Q3 2025 (6), Q2 2025 (4) |
+| `airline.price.fact_yield` | Q1 2026 (3), Q1 2026 (5), Q1 2026 (9), Q1 2026 (15), Q3 2025 (9), Q4 2024 (1), Q3 2024 (5), Q1 2026 (2), Q4 2025 (1), Q4 2025 (2), Q3 2025 (1), Q3 2025 (3), Q2 2025 (9), Q2 2025 (11) |
+| `airline.price.fact_unit_revenue` | Q1 2026 (2), Q1 2026 (9), Q1 2026 (18), Q3 2025 (3), Q3 2025 (6), Q3 2025 (10), Q4 2024 (1), Q4 2024 (3), Q3 2024 (5), Q3 2025 (3), Q3 2025 (6), Q3 2025 (7), Q3 2025 (8), Q2 2025 (4), Q2 2025 (8), Q2 2025 (9) |
+| `airline.price.fact_fare_price` | Q1 2026 (1), Q1 2026 (3), Q1 2026 (15), Q1 2026 (18), Q3 2025 (3), Q4 2024 (5), Q3 2025 (7), Q2 2025 (8) |
+| `airline.price.fact_ancillary_revenue` | Q1 2026 (1), Q4 2024 (3), Q2 2025 (3) |
+| `airline.price.fact_baggage_quantity` | Q1 2026 (1) |
+| `airline.price.fact_ancillary_price` | Q3 2025 (5) |
+| `airline.price.fact_cabin_margin` | Q1 2026 (4), Q1 2026 (5), Q3 2025 (6), Q3 2025 (9), Q3 2025 (18), Q4 2025 (1), Q4 2025 (8), Q4 2025 (11), Q3 2025 (1), Q2 2025 (4) |
+| `airline.price.fact_geographic_margin` | Q1 2026 (4), Q1 2026 (18), Q3 2025 (3), Q3 2025 (18), Q4 2024 (1), Q1 2026 (2), Q4 2025 (3), Q4 2025 (8), Q4 2025 (11), Q3 2025 (7), Q3 2025 (8), Q2 2025 (8), Q2 2025 (9), Q2 2025 (11) |
+| `airline.price.fact_route_margin` | Q1 2026 (15), Q3 2025 (14), Q4 2024 (2), Q4 2025 (8), Q2 2025 (11) |
+| `airline.price.fact_enterprise_earnings` | Q1 2026 (2), Q3 2025 (1), Q3 2025 (14), Q3 2025 (18), Q4 2025 (11), Q3 2025 (8) |
+| `airline.price.fact_skymiles_economics` | Q1 2026 (2), Q1 2026 (10), Q1 2026 (13), Q3 2025 (10), Q3 2025 (14), Q3 2025 (19), Q4 2024 (2), Q4 2024 (3), Q4 2024 (5), Q4 2025 (2) |
+| `airline.price.fact_mileageplus_economics` | Q3 2025 (19), Q4 2025 (2), Q4 2025 (3), Q3 2025 (6), Q2 2025 (3) |
+| `airline.price.fact_skymiles_miles_quantity` | Q1 2026 (13), Q4 2024 (2) |
+| `airline.price.fact_mileageplus_miles_quantity` | Q4 2025 (3) |
+| `airline.price.fact_fuel_recapture_rate` | Q1 2026 (13), Q4 2024 (5), Q1 2026 (2), Q2 2025 (3) |
+| `airline.price.fact_cargo_revenue` | supporting population |
+| `airline.price.fact_maintenance_revenue` | Q1 2026 (10), Q3 2025 (19) |
+| `airline.price.fact_air_traffic_liability` | Q3 2025 (1), Q3 2025 (5) |
+| `airline.price.fact_cash_flow` | Q3 2025 (1), Q3 2025 (5) |

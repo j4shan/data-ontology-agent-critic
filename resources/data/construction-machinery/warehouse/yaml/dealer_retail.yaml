@@ -1,15 +1,92 @@
 schema_version: '3'
 nodes:
+- node_id: sf:machinery.time.dim_accounting_period
+  descriptor:
+    qualified_name: machinery.time.dim_accounting_period
+    display_name: Accounting Period
+    description: Accounting period on the Machinery Inc earnings calendar.
+    synonyms: []
+    tags:
+    - dimension
+    - dealer
+    - construction-machinery
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: machinery.us-central-1
+      database: MACHINERY
+      schema: TIME
+      object: DIM_ACCOUNTING_PERIOD
+      format: table
+  grain:
+    description: One row is one accounting period, identified by accounting_period_id.
+    components:
+    - identity_id: accounting_period_identity
+      dataset_columns:
+      - accounting_period_id
+      description: Identifier of the accounting period.
+  columns:
+  - name: accounting_period_id
+    description: Identifier of the accounting period.
+  - name: accounting_period_name
+    description: Name of the accounting period.
+  - name: accounting_period_code
+    description: Code of the accounting period.
+    value_description: 2024Q4, 2025Q1, 2025Q2, 2025Q3, 2025Q4, 2026Q1, 2026Q2
+  entity_definitions:
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: complete
+- node_id: sf:machinery.time.dim_scenario
+  descriptor:
+    qualified_name: machinery.time.dim_scenario
+    display_name: Scenario
+    description: 'Reporting scenario: a reported result or a management guide for the same accounting
+      period.'
+    synonyms: []
+    tags:
+    - dimension
+    - dealer
+    - construction-machinery
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: machinery.us-central-1
+      database: MACHINERY
+      schema: TIME
+      object: DIM_SCENARIO
+      format: table
+  grain:
+    description: One row is one scenario, identified by scenario_id.
+    components:
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+  columns:
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: scenario_name
+    description: Name of the scenario.
+  - name: scenario_code
+    description: Code of the scenario.
+    value_description: reported, guide
+  entity_definitions:
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: complete
 - node_id: sf:machinery.organization.dim_region
   descriptor:
     qualified_name: machinery.organization.dim_region
     display_name: Region
-    description: A Machinery Inc sales region. North America is the region used when construction users
-      and dealer stock are discussed together.
+    description: Sales region for Machinery Inc activity.
+    synonyms: []
     tags:
     - dimension
-    synonyms:
-    - sales region
+    - dealer
+    - construction-machinery
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
@@ -19,20 +96,20 @@ nodes:
       object: DIM_REGION
       format: table
   grain:
-    description: One row is one sales region.
+    description: One row is one region, identified by region_id.
     components:
     - identity_id: region_identity
       dataset_columns:
       - region_id
-      description: One row is one sales region.
+      description: Identifier of the region.
   columns:
   - name: region_id
-    description: Identifier of the sales region. This dataset holds the complete region population.
-  - name: region_code
-    description: Short code of the sales region.
-    value_description: north_america, latin_america, emea, or asia_pacific.
+    description: Identifier of the region.
   - name: region_name
-    description: Name of the sales region.
+    description: Name of the region.
+  - name: region_code
+    description: Code of the region.
+    value_description: north_america, latin_america, emea, asia_pacific
   entity_definitions:
   - identity_id: region_identity
     dataset_columns:
@@ -42,9 +119,12 @@ nodes:
   descriptor:
     qualified_name: machinery.organization.dim_country
     display_name: Country
-    description: A country inside one Machinery Inc sales region.
+    description: Country inside a Machinery Inc sales region.
+    synonyms: []
     tags:
     - dimension
+    - dealer
+    - construction-machinery
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
@@ -54,21 +134,22 @@ nodes:
       object: DIM_COUNTRY
       format: table
   grain:
-    description: One row is one country.
+    description: One row is one country, identified by country_id.
     components:
     - identity_id: country_identity
       dataset_columns:
       - country_id
-      description: One row is one country.
+      description: Identifier of the country.
   columns:
   - name: country_id
-    description: Identifier of the country. This dataset holds the complete country population.
-  - name: region_id
-    description: Sales region that contains the country.
+    description: Identifier of the country.
   - name: country_name
     description: Name of the country.
   - name: country_code
-    description: Short code of the country.
+    description: Code of the country.
+    value_description: united_states, canada, mexico, brazil, germany, china, australia, india
+  - name: region_id
+    description: Identifier of the region.
   entity_definitions:
   - identity_id: country_identity
     dataset_columns:
@@ -82,13 +163,12 @@ nodes:
   descriptor:
     qualified_name: machinery.dealer.dim_dealer
     display_name: Dealer
-    description: An independent Machinery Inc dealer that stocks machines and sells them to end users and
-      rental fleets.
+    description: Independent dealer that sells and services machines.
+    synonyms: []
     tags:
     - dimension
-    synonyms:
-    - dealership
-    - Machinery Inc dealer
+    - dealer
+    - construction-machinery
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
@@ -98,23 +178,21 @@ nodes:
       object: DIM_DEALER
       format: table
   grain:
-    description: One row is one dealer.
+    description: One row is one dealer, identified by dealer_id.
     components:
     - identity_id: dealer_identity
       dataset_columns:
       - dealer_id
-      description: One row is one dealer.
+      description: Identifier of the dealer.
   columns:
   - name: dealer_id
-    description: Identifier of the dealer. This dataset holds the complete dealer population.
-  - name: region_id
-    description: Sales region of the dealer.
-  - name: country_id
-    description: Country where the dealer is based.
+    description: Identifier of the dealer.
   - name: dealer_name
-    description: Trading name of the dealer.
-  - name: dealer_code
-    description: Machinery Inc code for the dealer.
+    description: Name of the dealer.
+  - name: region_id
+    description: Identifier of the region.
+  - name: country_id
+    description: Identifier of the country.
   entity_definitions:
   - identity_id: dealer_identity
     dataset_columns:
@@ -131,11 +209,13 @@ nodes:
 - node_id: sf:machinery.dealer.dim_dealer_location
   descriptor:
     qualified_name: machinery.dealer.dim_dealer_location
-    display_name: Dealer location
-    description: A dealer branch or yard that holds machines. Stock at a location is dealer inventory,
-      not factory inventory.
+    display_name: Dealer Location
+    description: Physical dealer location.
+    synonyms: []
     tags:
     - dimension
+    - dealer
+    - construction-machinery
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
@@ -145,24 +225,24 @@ nodes:
       object: DIM_DEALER_LOCATION
       format: table
   grain:
-    description: One row is one dealer location.
+    description: One row is one dealer location, identified by dealer_location_id.
     components:
     - identity_id: dealer_location_identity
       dataset_columns:
       - dealer_location_id
-      description: One row is one dealer location.
+      description: Identifier of the dealer location.
   columns:
   - name: dealer_location_id
-    description: Identifier of the dealer location. This dataset holds the complete dealer-location population.
-  - name: dealer_id
-    description: Dealer that operates the location.
-  - name: country_id
-    description: Country of the location.
-  - name: location_name
+    description: Identifier of the dealer location.
+  - name: dealer_location_name
     description: Name of the dealer location.
-  - name: location_role
-    description: Role of the location.
-    value_description: headquarters, branch, or yard.
+  - name: dealer_id
+    description: Identifier of the dealer.
+  - name: country_id
+    description: Identifier of the country.
+  - name: location_type_code
+    description: Type of dealer location.
+    value_description: headquarters, branch, equipment_yard
   entity_definitions:
   - identity_id: dealer_location_identity
     dataset_columns:
@@ -176,185 +256,352 @@ nodes:
     dataset_columns:
     - country_id
     entity_universe: partial
-- node_id: sf:machinery.retail.dim_sales_channel
+- node_id: sf:machinery.market.dim_cat_reporting_segment
   descriptor:
-    qualified_name: machinery.retail.dim_sales_channel
-    display_name: Sales channel
-    description: 'Who takes delivery of a Construction Industries machine: an end user, a rental fleet,
-      or dealer stock.'
+    qualified_name: machinery.market.dim_cat_reporting_segment
+    display_name: CAT Reporting Segment
+    description: Caterpillar reporting segment for Machinery Inc.
+    synonyms: []
     tags:
     - dimension
-    synonyms:
-    - end user
-    - rental fleet
+    - dealer
+    - construction-machinery
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: machinery.us-central-1
+      database: MACHINERY
+      schema: MARKET
+      object: DIM_CAT_REPORTING_SEGMENT
+      format: table
+  grain:
+    description: One row is one cat reporting segment, identified by cat_reporting_segment_id.
+    components:
+    - identity_id: cat_reporting_segment_identity
+      dataset_columns:
+      - cat_reporting_segment_id
+      description: Identifier of the cat reporting segment.
+  columns:
+  - name: cat_reporting_segment_id
+    description: Identifier of the cat reporting segment.
+  - name: cat_reporting_segment_name
+    description: Name of the cat reporting segment.
+  - name: cat_reporting_segment_code
+    description: Code of the cat reporting segment.
+    value_description: construction_industries, resource_industries, power_and_energy, financial_products
+  entity_definitions:
+  - identity_id: cat_reporting_segment_identity
+    dataset_columns:
+    - cat_reporting_segment_id
+    entity_universe: complete
+- node_id: sf:machinery.market.dim_paccar_reporting_segment
+  descriptor:
+    qualified_name: machinery.market.dim_paccar_reporting_segment
+    display_name: PACCAR Reporting Segment
+    description: PACCAR reporting segment for Machinery Inc.
+    synonyms: []
+    tags:
+    - dimension
+    - dealer
+    - construction-machinery
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: machinery.us-central-1
+      database: MACHINERY
+      schema: MARKET
+      object: DIM_PACCAR_REPORTING_SEGMENT
+      format: table
+  grain:
+    description: One row is one paccar reporting segment, identified by paccar_reporting_segment_id.
+    components:
+    - identity_id: paccar_reporting_segment_identity
+      dataset_columns:
+      - paccar_reporting_segment_id
+      description: Identifier of the paccar reporting segment.
+  columns:
+  - name: paccar_reporting_segment_id
+    description: Identifier of the paccar reporting segment.
+  - name: paccar_reporting_segment_name
+    description: Name of the paccar reporting segment.
+  - name: paccar_reporting_segment_code
+    description: Code of the paccar reporting segment.
+    value_description: truck, parts, financial_services, other
+  entity_definitions:
+  - identity_id: paccar_reporting_segment_identity
+    dataset_columns:
+    - paccar_reporting_segment_id
+    entity_universe: complete
+- node_id: sf:machinery.product.dim_machine_model
+  descriptor:
+    qualified_name: machinery.product.dim_machine_model
+    display_name: Machine Model
+    description: Caterpillar machine model family.
+    synonyms: []
+    tags:
+    - dimension
+    - dealer
+    - construction-machinery
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: machinery.us-central-1
+      database: MACHINERY
+      schema: PRODUCT
+      object: DIM_MACHINE_MODEL
+      format: table
+  grain:
+    description: One row is one machine model, identified by machine_model_id.
+    components:
+    - identity_id: machine_model_identity
+      dataset_columns:
+      - machine_model_id
+      description: Identifier of the machine model.
+  columns:
+  - name: machine_model_id
+    description: Identifier of the machine model.
+  - name: machine_model_name
+    description: Name of the machine model.
+  - name: machine_model_code
+    description: Code of the machine model.
+    value_description: hydraulic_excavator, wheel_loader, track_dozer, mining_truck, articulated_truck,
+      motor_grader, backhoe_loader
+  entity_definitions:
+  - identity_id: machine_model_identity
+    dataset_columns:
+    - machine_model_id
+    entity_universe: complete
+- node_id: sf:machinery.retail.dim_end_user_type
+  descriptor:
+    qualified_name: machinery.retail.dim_end_user_type
+    display_name: End User Type
+    description: Type of end user buying machines.
+    synonyms: []
+    tags:
+    - dimension
+    - dealer
+    - construction-machinery
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: machinery.us-central-1
       database: MACHINERY
       schema: RETAIL
-      object: DIM_SALES_CHANNEL
+      object: DIM_END_USER_TYPE
       format: table
   grain:
-    description: One row is one sales channel.
+    description: One row is one end user type, identified by end_user_type_id.
     components:
-    - identity_id: sales_channel_identity
+    - identity_id: end_user_type_identity
       dataset_columns:
-      - sales_channel_id
-      description: One row is one sales channel.
+      - end_user_type_id
+      description: Identifier of the end user type.
   columns:
-  - name: sales_channel_id
-    description: Identifier of the sales channel. This dataset holds the complete sales-channel population.
-  - name: channel_code
-    description: Code of the sales channel.
-    value_description: end_user, rental_fleet, or dealer_stock.
-  - name: channel_name
-    description: Name of the sales channel.
+  - name: end_user_type_id
+    description: Identifier of the end user type.
+  - name: end_user_type_name
+    description: Name of the end user type.
+  - name: end_user_type_code
+    description: Code of the end user type.
+    value_description: construction_contractor, mining_operator, quarry_operator, government, utility,
+      oil_gas_producer
   entity_definitions:
-  - identity_id: sales_channel_identity
+  - identity_id: end_user_type_identity
     dataset_columns:
-    - sales_channel_id
+    - end_user_type_id
     entity_universe: complete
-- node_id: sf:machinery.retail.dim_rental_peer
+- node_id: sf:machinery.retail.dim_delivery_recipient
   descriptor:
-    qualified_name: machinery.retail.dim_rental_peer
-    display_name: Rental peer
-    description: 'The rental operator whose fleet mix is being compared: a Cat Rental dealer or a national
-      rental company.'
+    qualified_name: machinery.retail.dim_delivery_recipient
+    display_name: Delivery Recipient
+    description: Recipient of a factory delivery to the field.
+    synonyms: []
     tags:
     - dimension
-    synonyms:
-    - Cat Rental
-    - national rental
+    - dealer
+    - construction-machinery
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: machinery.us-central-1
       database: MACHINERY
       schema: RETAIL
-      object: DIM_RENTAL_PEER
+      object: DIM_DELIVERY_RECIPIENT
       format: table
   grain:
-    description: One row is one rental peer.
+    description: One row is one delivery recipient, identified by delivery_recipient_id.
     components:
-    - identity_id: rental_peer_identity
+    - identity_id: delivery_recipient_identity
       dataset_columns:
-      - rental_peer_id
-      description: One row is one rental peer.
+      - delivery_recipient_id
+      description: Identifier of the delivery recipient.
   columns:
-  - name: rental_peer_id
-    description: Identifier of the rental peer. This dataset holds the complete rental-peer population.
-  - name: peer_code
-    description: Code of the rental peer.
-    value_description: cat_rental or national_rental.
-  - name: peer_name
-    description: Name of the rental peer class.
+  - name: delivery_recipient_id
+    description: Identifier of the delivery recipient.
+  - name: delivery_recipient_name
+    description: Name of the delivery recipient.
+  - name: delivery_recipient_code
+    description: Code of the delivery recipient.
+    value_description: end_user, rental_fleet
   entity_definitions:
-  - identity_id: rental_peer_identity
+  - identity_id: delivery_recipient_identity
     dataset_columns:
-    - rental_peer_id
+    - delivery_recipient_id
     entity_universe: complete
-- node_id: sf:machinery.retail.dim_equipment_origin
+- node_id: sf:machinery.retail.dim_equipment_source
   descriptor:
-    qualified_name: machinery.retail.dim_equipment_origin
-    display_name: Equipment origin
-    description: Whether a unit in a rental fleet is Cat equipment or an alliance product.
+    qualified_name: machinery.retail.dim_equipment_source
+    display_name: Equipment Source
+    description: Source of equipment in a rental fleet.
+    synonyms: []
     tags:
     - dimension
-    synonyms:
-    - alliance product
-    - Cat equipment
+    - dealer
+    - construction-machinery
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: machinery.us-central-1
       database: MACHINERY
       schema: RETAIL
-      object: DIM_EQUIPMENT_ORIGIN
+      object: DIM_EQUIPMENT_SOURCE
       format: table
   grain:
-    description: One row is one equipment origin.
+    description: One row is one equipment source, identified by equipment_source_id.
     components:
-    - identity_id: equipment_origin_identity
+    - identity_id: equipment_source_identity
       dataset_columns:
-      - equipment_origin_id
-      description: One row is one equipment origin.
+      - equipment_source_id
+      description: Identifier of the equipment source.
   columns:
-  - name: equipment_origin_id
-    description: Identifier of the equipment origin. This dataset holds the complete equipment-origin
-      population.
-  - name: origin_code
-    description: Code of the equipment origin.
-    value_description: cat_equipment or alliance_product.
-  - name: origin_name
-    description: Name of the equipment origin.
+  - name: equipment_source_id
+    description: Identifier of the equipment source.
+  - name: equipment_source_name
+    description: Name of the equipment source.
+  - name: equipment_source_code
+    description: Code of the equipment source.
+    value_description: cat_equipment, alliance_product
   entity_definitions:
-  - identity_id: equipment_origin_identity
+  - identity_id: equipment_source_identity
     dataset_columns:
-    - equipment_origin_id
+    - equipment_source_id
     entity_universe: complete
-- node_id: sf:machinery.retail.fact_dealer_inventory
+- node_id: sf:machinery.retail.dim_rental_operator
   descriptor:
-    qualified_name: machinery.retail.fact_dealer_inventory
-    display_name: Dealer inventory
-    description: Machines on a dealer's books. This is dealer stock, separate from factory production,
-      shipments, and unfilled backlog.
+    qualified_name: machinery.retail.dim_rental_operator
+    display_name: Rental Operator
+    description: Operator class of a rental fleet.
+    synonyms: []
+    tags:
+    - dimension
+    - dealer
+    - construction-machinery
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: machinery.us-central-1
+      database: MACHINERY
+      schema: RETAIL
+      object: DIM_RENTAL_OPERATOR
+      format: table
+  grain:
+    description: One row is one rental operator, identified by rental_operator_id.
+    components:
+    - identity_id: rental_operator_identity
+      dataset_columns:
+      - rental_operator_id
+      description: Identifier of the rental operator.
+  columns:
+  - name: rental_operator_id
+    description: Identifier of the rental operator.
+  - name: rental_operator_name
+    description: Name of the rental operator.
+  - name: rental_operator_code
+    description: Code of the rental operator.
+    value_description: cat_rental, national_rental_company
+  entity_definitions:
+  - identity_id: rental_operator_identity
+    dataset_columns:
+    - rental_operator_id
+    entity_universe: complete
+- node_id: sf:machinery.retail.fact_dealer_inventory_quantity
+  descriptor:
+    qualified_name: machinery.retail.fact_dealer_inventory_quantity
+    display_name: Dealer Inventory Quantity
+    description: Dealer on-hand machine inventory; dealer stock is inventory, not a retail channel.
+    synonyms: []
     tags:
     - fact
-    synonyms:
-    - dealer stock
-    - machine inventory
+    - dealer
+    - construction-machinery
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: machinery.us-central-1
       database: MACHINERY
       schema: RETAIL
-      object: FACT_DEALER_INVENTORY
+      object: FACT_DEALER_INVENTORY_QUANTITY
       format: table
   grain:
-    description: One row is one dealer, machine model, and accounting period.
+    description: One row is one dealer inventory quantity observation for the combination of accounting
+      period, scenario, dealer, dealer location, machine model, cat reporting segment, region.
     components:
-    - identity_id: dealer_inventory_identity
+    - identity_id: accounting_period_identity
       dataset_columns:
-      - dealer_inventory_id
-      description: One row is one dealer, machine model, and accounting period.
+      - accounting_period_id
+      description: Identifier of the accounting period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dealer_identity
+      dataset_columns:
+      - dealer_id
+      description: Identifier of the dealer.
+    - identity_id: dealer_location_identity
+      dataset_columns:
+      - dealer_location_id
+      description: Identifier of the dealer location.
+    - identity_id: machine_model_identity
+      dataset_columns:
+      - machine_model_id
+      description: Identifier of the machine model.
+    - identity_id: cat_reporting_segment_identity
+      dataset_columns:
+      - cat_reporting_segment_id
+      description: Identifier of the cat reporting segment.
+    - identity_id: region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
   columns:
-  - name: dealer_inventory_id
-    description: Identifier of the dealer inventory row. This dataset holds the complete dealer-inventory
-      population.
-  - name: dealer_id
-    description: Dealer that holds the machines.
-  - name: dealer_location_id
-    description: Location of the on-hand machines.
-  - name: machine_model_id
-    description: Machine model in dealer stock. The model population is owned outside this slice.
-  - name: segment_id
-    description: Operating segment of the stock. The segment population is owned outside this slice.
-  - name: region_id
-    description: Sales region of the dealer.
   - name: accounting_period_id
-    description: Accounting period of the stock observation. The period population is owned outside this
-      slice.
+    description: Identifier of the accounting period.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: dealer_id
+    description: Identifier of the dealer.
+  - name: dealer_location_id
+    description: Identifier of the dealer location.
+  - name: machine_model_id
+    description: Identifier of the machine model.
+  - name: cat_reporting_segment_id
+    description: Identifier of the cat reporting segment.
+  - name: region_id
+    description: Identifier of the region.
   - name: on_hand_units
-    description: Machines on the dealer lot in the period.
-    synonyms:
-    - dealer inventory
-    - dealer stock
+    description: On-hand machines in units.
   - name: inventory_change_units
-    description: Change in dealer on-hand units during the period. Positive is a restock and negative
-      is a destock.
-  - name: destock_flag
-    description: Whether the dealer reduced stock in the period.
-    value_description: Y or N.
-  - name: prior_year_destock_units
-    description: Units the dealer already destocked in the prior year, kept so a further reduction can
-      be compared with that destock.
+    description: Change in on-hand machines in units.
   entity_definitions:
-  - identity_id: dealer_inventory_identity
+  - identity_id: accounting_period_identity
     dataset_columns:
-    - dealer_inventory_id
-    entity_universe: complete
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
   - identity_id: dealer_identity
     dataset_columns:
     - dealer_id
@@ -367,509 +614,679 @@ nodes:
     dataset_columns:
     - machine_model_id
     entity_universe: partial
-  - identity_id: segment_identity
+  - identity_id: cat_reporting_segment_identity
     dataset_columns:
-    - segment_id
+    - cat_reporting_segment_id
     entity_universe: partial
   - identity_id: region_identity
     dataset_columns:
     - region_id
     entity_universe: partial
-  - identity_id: accounting_period_identity
-    dataset_columns:
-    - accounting_period_id
-    entity_universe: partial
-- node_id: sf:machinery.retail.fact_retail_demand
+- node_id: sf:machinery.retail.fact_dealer_stock_value
   descriptor:
-    qualified_name: machinery.retail.fact_retail_demand
-    display_name: Retail demand
-    description: Retail demand at a dealer, measured in units and amount. Retail demand is sales to users
-      and rental customers, not dealer inventory and not a factory order.
+    qualified_name: machinery.retail.fact_dealer_stock_value
+    display_name: Dealer Stock Value
+    description: Value of dealer machine stock.
+    synonyms: []
     tags:
     - fact
-    synonyms:
-    - sales to users
-    - retail sales
+    - dealer
+    - construction-machinery
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: machinery.us-central-1
       database: MACHINERY
       schema: RETAIL
-      object: FACT_RETAIL_DEMAND
+      object: FACT_DEALER_STOCK_VALUE
       format: table
   grain:
-    description: One row is one dealer, segment, channel, and accounting period.
+    description: One row is one dealer stock value observation for the combination of accounting period,
+      scenario, dealer, cat reporting segment, region.
     components:
-    - identity_id: retail_demand_identity
+    - identity_id: accounting_period_identity
       dataset_columns:
-      - retail_demand_id
-      description: One row is one dealer, segment, channel, and accounting period.
+      - accounting_period_id
+      description: Identifier of the accounting period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dealer_identity
+      dataset_columns:
+      - dealer_id
+      description: Identifier of the dealer.
+    - identity_id: cat_reporting_segment_identity
+      dataset_columns:
+      - cat_reporting_segment_id
+      description: Identifier of the cat reporting segment.
+    - identity_id: region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
   columns:
-  - name: retail_demand_id
-    description: Identifier of the retail demand row. This dataset holds the complete retail-demand population.
-  - name: dealer_id
-    description: Dealer that faces the retail demand.
-  - name: region_id
-    description: Sales region of the demand.
-  - name: segment_id
-    description: Operating segment. The segment population is owned outside this slice.
-  - name: sales_channel_id
-    description: Channel of the retail demand.
   - name: accounting_period_id
-    description: Accounting period. The period population is owned outside this slice.
-  - name: retail_demand_units
-    description: Retail units demanded. This measure is not a price.
-  - name: retail_demand_amount
-    description: Retail demand stated as a sales amount. Stored beside units so the amount is not treated
-      as dealer stock.
-  - name: expected_direction
-    description: Expected direction of retail demand versus the prior view.
-    value_description: up, down, or flat.
+    description: Identifier of the accounting period.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: dealer_id
+    description: Identifier of the dealer.
+  - name: cat_reporting_segment_id
+    description: Identifier of the cat reporting segment.
+  - name: region_id
+    description: Identifier of the region.
+  - name: dealer_stock_amount
+    description: Dealer stock value in dollars.
   entity_definitions:
-  - identity_id: retail_demand_identity
+  - identity_id: accounting_period_identity
     dataset_columns:
-    - retail_demand_id
-    entity_universe: complete
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
   - identity_id: dealer_identity
     dataset_columns:
     - dealer_id
     entity_universe: partial
+  - identity_id: cat_reporting_segment_identity
+    dataset_columns:
+    - cat_reporting_segment_id
+    entity_universe: partial
   - identity_id: region_identity
     dataset_columns:
     - region_id
     entity_universe: partial
-  - identity_id: segment_identity
-    dataset_columns:
-    - segment_id
-    entity_universe: partial
-  - identity_id: sales_channel_identity
-    dataset_columns:
-    - sales_channel_id
-    entity_universe: partial
-  - identity_id: accounting_period_identity
-    dataset_columns:
-    - accounting_period_id
-    entity_universe: partial
-- node_id: sf:machinery.retail.fact_production_versus_retail
+- node_id: sf:machinery.retail.fact_retail_sales_quantity
   descriptor:
-    qualified_name: machinery.retail.fact_production_versus_retail
-    display_name: Production versus retail
-    description: Factory production set next to retail demand for a segment and period, so a build-to-retail
-      decision can be read without mixing in dealer stock.
+    qualified_name: machinery.retail.fact_retail_sales_quantity
+    display_name: Retail Sales Quantity
+    description: Retail machines sold by dealers to end users.
+    synonyms: []
     tags:
     - fact
+    - dealer
+    - construction-machinery
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: machinery.us-central-1
       database: MACHINERY
       schema: RETAIL
-      object: FACT_PRODUCTION_VERSUS_RETAIL
+      object: FACT_RETAIL_SALES_QUANTITY
       format: table
   grain:
-    description: One row is one segment and accounting period.
+    description: One row is one retail sales quantity observation for the combination of accounting period,
+      scenario, dealer, cat reporting segment, region, end user type.
     components:
-    - identity_id: production_versus_retail_identity
+    - identity_id: accounting_period_identity
       dataset_columns:
-      - production_versus_retail_id
-      description: One row is one segment and accounting period.
+      - accounting_period_id
+      description: Identifier of the accounting period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dealer_identity
+      dataset_columns:
+      - dealer_id
+      description: Identifier of the dealer.
+    - identity_id: cat_reporting_segment_identity
+      dataset_columns:
+      - cat_reporting_segment_id
+      description: Identifier of the cat reporting segment.
+    - identity_id: region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+    - identity_id: end_user_type_identity
+      dataset_columns:
+      - end_user_type_id
+      description: Identifier of the end user type.
   columns:
-  - name: production_versus_retail_id
-    description: Identifier of the production-versus-retail row. This dataset holds the complete population
-      of those comparisons.
-  - name: segment_id
-    description: Operating segment whose production is compared with retail demand.
   - name: accounting_period_id
-    description: Accounting period of the comparison.
+    description: Identifier of the accounting period.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: dealer_id
+    description: Identifier of the dealer.
+  - name: cat_reporting_segment_id
+    description: Identifier of the cat reporting segment.
+  - name: region_id
+    description: Identifier of the region.
+  - name: end_user_type_id
+    description: Identifier of the end user type.
+  - name: retail_sales_units
+    description: Retail machines sold in units.
+  entity_definitions:
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dealer_identity
+    dataset_columns:
+    - dealer_id
+    entity_universe: partial
+  - identity_id: cat_reporting_segment_identity
+    dataset_columns:
+    - cat_reporting_segment_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+  - identity_id: end_user_type_identity
+    dataset_columns:
+    - end_user_type_id
+    entity_universe: partial
+- node_id: sf:machinery.retail.fact_factory_production_quantity
+  descriptor:
+    qualified_name: machinery.retail.fact_factory_production_quantity
+    display_name: Factory Production Quantity
+    description: Factory production and factory shipments of machines.
+    synonyms: []
+    tags:
+    - fact
+    - dealer
+    - construction-machinery
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: machinery.us-central-1
+      database: MACHINERY
+      schema: RETAIL
+      object: FACT_FACTORY_PRODUCTION_QUANTITY
+      format: table
+  grain:
+    description: One row is one factory production quantity observation for the combination of accounting
+      period, scenario, cat reporting segment, machine model.
+    components:
+    - identity_id: accounting_period_identity
+      dataset_columns:
+      - accounting_period_id
+      description: Identifier of the accounting period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: cat_reporting_segment_identity
+      dataset_columns:
+      - cat_reporting_segment_id
+      description: Identifier of the cat reporting segment.
+    - identity_id: machine_model_identity
+      dataset_columns:
+      - machine_model_id
+      description: Identifier of the machine model.
+  columns:
+  - name: accounting_period_id
+    description: Identifier of the accounting period.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: cat_reporting_segment_id
+    description: Identifier of the cat reporting segment.
+  - name: machine_model_id
+    description: Identifier of the machine model.
   - name: production_units
-    description: Units Machinery Inc plans to build. This is factory output, not dealer inventory.
-  - name: retail_demand_units
-    description: Retail units the production plan is being matched against.
-  - name: build_to_retail_flag
-    description: Whether the production decision is to build to retail demand.
-    value_description: Y or N.
+    description: Machines produced in units.
+  - name: factory_shipment_units
+    description: Machines shipped from factories in units.
   entity_definitions:
-  - identity_id: production_versus_retail_identity
-    dataset_columns:
-    - production_versus_retail_id
-    entity_universe: complete
-  - identity_id: segment_identity
-    dataset_columns:
-    - segment_id
-    entity_universe: partial
   - identity_id: accounting_period_identity
     dataset_columns:
     - accounting_period_id
     entity_universe: partial
-- node_id: sf:machinery.retail.fact_user_sales_outlook
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: cat_reporting_segment_identity
+    dataset_columns:
+    - cat_reporting_segment_id
+    entity_universe: partial
+  - identity_id: machine_model_identity
+    dataset_columns:
+    - machine_model_id
+    entity_universe: partial
+- node_id: sf:machinery.retail.fact_sales_to_users_amount
   descriptor:
-    qualified_name: machinery.retail.fact_user_sales_outlook
-    display_name: Sales to users outlook
-    description: Sales to end users for a period, including the first-half result and the full-year outlook.
+    qualified_name: machinery.retail.fact_sales_to_users_amount
+    display_name: Sales To Users Amount
+    description: Sales to end users stated as an amount, with retail units on the retail quantity fact.
+    synonyms: []
     tags:
     - fact
+    - dealer
+    - construction-machinery
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: machinery.us-central-1
       database: MACHINERY
       schema: RETAIL
-      object: FACT_USER_SALES_OUTLOOK
+      object: FACT_SALES_TO_USERS_AMOUNT
       format: table
   grain:
-    description: One row is one region, segment, and accounting period.
+    description: One row is one sales to users amount observation for the combination of accounting period,
+      scenario, region, cat reporting segment.
     components:
-    - identity_id: user_sales_outlook_identity
+    - identity_id: accounting_period_identity
       dataset_columns:
-      - user_sales_outlook_id
-      description: One row is one region, segment, and accounting period.
+      - accounting_period_id
+      description: Identifier of the accounting period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+    - identity_id: cat_reporting_segment_identity
+      dataset_columns:
+      - cat_reporting_segment_id
+      description: Identifier of the cat reporting segment.
   columns:
-  - name: user_sales_outlook_id
-    description: Identifier of the sales-to-users outlook row. This dataset holds the complete population
-      of those outlooks.
-  - name: region_id
-    description: Sales region of the outlook.
-  - name: segment_id
-    description: Operating segment of the outlook.
   - name: accounting_period_id
-    description: Accounting period the outlook refers to.
-  - name: currency_id
-    description: Currency of the sales amounts. The currency population is owned outside this slice.
-  - name: first_half_sales_to_users_amount
-    description: Sales to users already recorded in the first half.
-  - name: full_year_sales_to_users_amount
-    description: Full-year sales to users expected after the first half.
-  - name: sales_to_users_outlook_amount
-    description: Sales-to-users outlook Machinery Inc is carrying for the period.
-    synonyms:
-    - sales to users
+    description: Identifier of the accounting period.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: region_id
+    description: Identifier of the region.
+  - name: cat_reporting_segment_id
+    description: Identifier of the cat reporting segment.
+  - name: sales_to_users_amount
+    description: Sales to users in dollars.
   entity_definitions:
-  - identity_id: user_sales_outlook_identity
+  - identity_id: accounting_period_identity
     dataset_columns:
-    - user_sales_outlook_id
-    entity_universe: complete
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
   - identity_id: region_identity
     dataset_columns:
     - region_id
     entity_universe: partial
-  - identity_id: segment_identity
+  - identity_id: cat_reporting_segment_identity
     dataset_columns:
-    - segment_id
+    - cat_reporting_segment_id
     entity_universe: partial
-  - identity_id: accounting_period_identity
-    dataset_columns:
-    - accounting_period_id
-    entity_universe: partial
-  - identity_id: currency_identity
-    dataset_columns:
-    - currency_id
-    entity_universe: partial
-- node_id: sf:machinery.retail.fact_delivery_split
+- node_id: sf:machinery.retail.fact_delivery_quantity
   descriptor:
-    qualified_name: machinery.retail.fact_delivery_split
-    display_name: Delivery split
-    description: Construction Industries deliveries split between end users and rental fleets, with major-project
-      loading kept as its own unit count.
+    qualified_name: machinery.retail.fact_delivery_quantity
+    display_name: Delivery Quantity
+    description: Factory deliveries to end users and rental fleets; dealer stock is not a recipient here.
+    synonyms: []
     tags:
     - fact
+    - dealer
+    - construction-machinery
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: machinery.us-central-1
       database: MACHINERY
       schema: RETAIL
-      object: FACT_DELIVERY_SPLIT
+      object: FACT_DELIVERY_QUANTITY
       format: table
   grain:
-    description: One row is one segment, sales channel, demand driver, and accounting period.
+    description: One row is one delivery quantity observation for the combination of accounting period,
+      scenario, cat reporting segment, end market, delivery recipient.
     components:
-    - identity_id: delivery_split_identity
+    - identity_id: accounting_period_identity
       dataset_columns:
-      - delivery_split_id
-      description: One row is one segment, sales channel, demand driver, and accounting period.
+      - accounting_period_id
+      description: Identifier of the accounting period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: cat_reporting_segment_identity
+      dataset_columns:
+      - cat_reporting_segment_id
+      description: Identifier of the cat reporting segment.
+    - identity_id: end_market_identity
+      dataset_columns:
+      - end_market_id
+      description: Identifier of the end market.
+    - identity_id: delivery_recipient_identity
+      dataset_columns:
+      - delivery_recipient_id
+      description: Identifier of the delivery recipient.
   columns:
-  - name: delivery_split_id
-    description: Identifier of the delivery-split row. This dataset holds the complete population of those
-      splits.
-  - name: segment_id
-    description: Operating segment of the deliveries.
-  - name: sales_channel_id
-    description: Whether the delivery went to an end user or a rental fleet.
-  - name: demand_driver_id
-    description: Demand driver, including major-project loading. The driver population is owned outside
-      this slice.
   - name: accounting_period_id
-    description: Accounting period of the deliveries.
+    description: Identifier of the accounting period.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: cat_reporting_segment_id
+    description: Identifier of the cat reporting segment.
+  - name: end_market_id
+    description: Identifier of the end market.
+  - name: delivery_recipient_id
+    description: Identifier of the delivery recipient.
   - name: delivery_units
-    description: Units delivered to the channel.
-  - name: major_project_units
-    description: Units inside those deliveries that loaded a major project.
+    description: Machines delivered in units.
   entity_definitions:
-  - identity_id: delivery_split_identity
-    dataset_columns:
-    - delivery_split_id
-    entity_universe: complete
-  - identity_id: segment_identity
-    dataset_columns:
-    - segment_id
-    entity_universe: partial
-  - identity_id: sales_channel_identity
-    dataset_columns:
-    - sales_channel_id
-    entity_universe: partial
-  - identity_id: demand_driver_identity
-    dataset_columns:
-    - demand_driver_id
-    entity_universe: partial
   - identity_id: accounting_period_identity
     dataset_columns:
     - accounting_period_id
     entity_universe: partial
-- node_id: sf:machinery.retail.fact_construction_ex_mega
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: cat_reporting_segment_identity
+    dataset_columns:
+    - cat_reporting_segment_id
+    entity_universe: partial
+  - identity_id: end_market_identity
+    dataset_columns:
+    - end_market_id
+    entity_universe: partial
+  - identity_id: delivery_recipient_identity
+    dataset_columns:
+    - delivery_recipient_id
+    entity_universe: partial
+- node_id: sf:machinery.market.fact_construction_activity_amount
   descriptor:
-    qualified_name: machinery.retail.fact_construction_ex_mega
-    display_name: Construction demand excluding mega-projects
-    description: Construction demand after major projects and rental restocking are set aside, so private
-      nonresidential and residential can be read on their own.
+    qualified_name: machinery.market.fact_construction_activity_amount
+    display_name: Construction Activity Amount
+    description: Construction demand by sector and project scale.
+    synonyms: []
     tags:
     - fact
+    - dealer
+    - construction-machinery
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: machinery.us-central-1
       database: MACHINERY
-      schema: RETAIL
-      object: FACT_CONSTRUCTION_EX_MEGA
+      schema: MARKET
+      object: FACT_CONSTRUCTION_ACTIVITY_AMOUNT
       format: table
   grain:
-    description: One row is one demand driver, region, and accounting period.
+    description: One row is one construction activity amount observation for the combination of accounting
+      period, scenario, construction sector, project scale, region.
     components:
-    - identity_id: construction_ex_mega_identity
+    - identity_id: accounting_period_identity
       dataset_columns:
-      - construction_ex_mega_id
-      description: One row is one demand driver, region, and accounting period.
+      - accounting_period_id
+      description: Identifier of the accounting period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: construction_sector_identity
+      dataset_columns:
+      - construction_sector_id
+      description: Identifier of the construction sector.
+    - identity_id: project_scale_identity
+      dataset_columns:
+      - project_scale_id
+      description: Identifier of the project scale.
+    - identity_id: region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
   columns:
-  - name: construction_ex_mega_id
-    description: Identifier of the ex-mega construction demand row. This dataset holds the complete population
-      of those rows.
-  - name: segment_id
-    description: Operating segment. Used for Construction Industries.
-  - name: demand_driver_id
-    description: Private nonresidential, residential, or another driver outside mega-projects and rental
-      restock.
-  - name: region_id
-    description: Sales region of the demand.
   - name: accounting_period_id
-    description: Accounting period of the demand.
-  - name: demand_amount
-    description: Demand amount for the driver after the stated exclusions.
-  - name: excludes_major_project_flag
-    description: Whether major-project loading has been excluded from the amount.
-    value_description: Y or N.
-  - name: excludes_rental_restock_flag
-    description: Whether rental restocking has been excluded from the amount.
-    value_description: Y or N.
+    description: Identifier of the accounting period.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: construction_sector_id
+    description: Identifier of the construction sector.
+  - name: project_scale_id
+    description: Identifier of the project scale.
+  - name: region_id
+    description: Identifier of the region.
+  - name: construction_demand_amount
+    description: Construction demand in dollars.
   entity_definitions:
-  - identity_id: construction_ex_mega_identity
+  - identity_id: accounting_period_identity
     dataset_columns:
-    - construction_ex_mega_id
-    entity_universe: complete
-  - identity_id: segment_identity
-    dataset_columns:
-    - segment_id
+    - accounting_period_id
     entity_universe: partial
-  - identity_id: demand_driver_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - demand_driver_id
+    - scenario_id
+    entity_universe: partial
+  - identity_id: construction_sector_identity
+    dataset_columns:
+    - construction_sector_id
+    entity_universe: partial
+  - identity_id: project_scale_identity
+    dataset_columns:
+    - project_scale_id
     entity_universe: partial
   - identity_id: region_identity
     dataset_columns:
     - region_id
     entity_universe: partial
-  - identity_id: accounting_period_identity
-    dataset_columns:
-    - accounting_period_id
-    entity_universe: partial
-- node_id: sf:machinery.retail.fact_rental_fleet_plan
+- node_id: sf:machinery.retail.fact_rental_fleet_quantity
   descriptor:
-    qualified_name: machinery.retail.fact_rental_fleet_plan
-    display_name: Rental fleet plan
-    description: How a dealer plans the mix of Cat equipment versus alliance products as Cat Rental expands,
-      compared with national rental fleets.
+    qualified_name: machinery.retail.fact_rental_fleet_quantity
+    display_name: Rental Fleet Quantity
+    description: Planned rental fleet units by operator and equipment source.
+    synonyms: []
     tags:
     - fact
+    - dealer
+    - construction-machinery
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: machinery.us-central-1
       database: MACHINERY
       schema: RETAIL
-      object: FACT_RENTAL_FLEET_PLAN
+      object: FACT_RENTAL_FLEET_QUANTITY
       format: table
   grain:
-    description: One row is one dealer, rental peer, equipment origin, and accounting period.
+    description: One row is one rental fleet quantity observation for the combination of accounting period,
+      scenario, rental operator, equipment source, region.
     components:
-    - identity_id: rental_fleet_plan_identity
+    - identity_id: accounting_period_identity
       dataset_columns:
-      - rental_fleet_plan_id
-      description: One row is one dealer, rental peer, equipment origin, and accounting period.
+      - accounting_period_id
+      description: Identifier of the accounting period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: rental_operator_identity
+      dataset_columns:
+      - rental_operator_id
+      description: Identifier of the rental operator.
+    - identity_id: equipment_source_identity
+      dataset_columns:
+      - equipment_source_id
+      description: Identifier of the equipment source.
+    - identity_id: region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
   columns:
-  - name: rental_fleet_plan_id
-    description: Identifier of the rental fleet plan row. This dataset holds the complete population of
-      those plans.
-  - name: dealer_id
-    description: Dealer whose rental fleet is being planned.
-  - name: rental_peer_id
-    description: Cat Rental or a national rental company.
-  - name: equipment_origin_id
-    description: Cat equipment or an alliance product.
   - name: accounting_period_id
-    description: Accounting period of the plan.
-  - name: planned_units
-    description: Units planned in the fleet for that origin.
-  - name: mix_share
-    description: Share of the fleet plan represented by that equipment origin.
-  entity_definitions:
-  - identity_id: rental_fleet_plan_identity
-    dataset_columns:
-    - rental_fleet_plan_id
-    entity_universe: complete
-  - identity_id: dealer_identity
-    dataset_columns:
-    - dealer_id
-    entity_universe: partial
-  - identity_id: rental_peer_identity
-    dataset_columns:
-    - rental_peer_id
-    entity_universe: partial
-  - identity_id: equipment_origin_identity
-    dataset_columns:
-    - equipment_origin_id
-    entity_universe: partial
-  - identity_id: accounting_period_identity
-    dataset_columns:
-    - accounting_period_id
-    entity_universe: partial
-- node_id: sf:machinery.retail.fact_north_america_stock
-  descriptor:
-    qualified_name: machinery.retail.fact_north_america_stock
-    display_name: North America construction stock
-    description: North American construction dealer stock set against the expected direction of user sales,
-      including whether a further destock is required.
-    tags:
-    - fact
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: machinery.us-central-1
-      database: MACHINERY
-      schema: RETAIL
-      object: FACT_NORTH_AMERICA_STOCK
-      format: table
-  grain:
-    description: One row is one dealer, segment, and accounting period in a region.
-    components:
-    - identity_id: north_america_stock_identity
-      dataset_columns:
-      - north_america_stock_id
-      description: One row is one dealer, segment, and accounting period in a region.
-  columns:
-  - name: north_america_stock_id
-    description: Identifier of the North America stock row. This dataset holds the complete population
-      of those rows.
+    description: Identifier of the accounting period.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: rental_operator_id
+    description: Identifier of the rental operator.
+  - name: equipment_source_id
+    description: Identifier of the equipment source.
   - name: region_id
-    description: Sales region. North America is the region this fact is for.
-  - name: segment_id
-    description: Operating segment. Construction Industries is the segment this fact is for.
-  - name: dealer_id
-    description: Dealer whose stock is being judged.
-  - name: accounting_period_id
-    description: Accounting period of the stock judgment.
-  - name: expected_user_sales_direction
-    description: Expected direction of sales to construction users.
-    value_description: up, down, or flat.
-  - name: on_hand_units
-    description: Dealer on-hand units the judgment is made against.
-  - name: further_destock_flag
-    description: Whether dealer inventories need to fall further after the prior destock.
-    value_description: Y or N.
+    description: Identifier of the region.
+  - name: planned_fleet_units
+    description: Planned rental fleet machines in units.
   entity_definitions:
-  - identity_id: north_america_stock_identity
-    dataset_columns:
-    - north_america_stock_id
-    entity_universe: complete
-  - identity_id: region_identity
-    dataset_columns:
-    - region_id
-    entity_universe: partial
-  - identity_id: segment_identity
-    dataset_columns:
-    - segment_id
-    entity_universe: partial
-  - identity_id: dealer_identity
-    dataset_columns:
-    - dealer_id
-    entity_universe: partial
   - identity_id: accounting_period_identity
     dataset_columns:
     - accounting_period_id
     entity_universe: partial
-- node_id: sf:machinery.retail.fact_inventory_swing
-  descriptor:
-    qualified_name: machinery.retail.fact_inventory_swing
-    display_name: Inventory swing
-    description: The dealer-inventory swing for a segment and period. A restock or destock is not the
-      same thing as end-user volume.
-    tags:
-    - fact
-    synonyms:
-    - inventory swing
-    - restock
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: machinery.us-central-1
-      database: MACHINERY
-      schema: RETAIL
-      object: FACT_INVENTORY_SWING
-      format: table
-  grain:
-    description: One row is one segment, region, and accounting period.
-    components:
-    - identity_id: inventory_swing_identity
-      dataset_columns:
-      - inventory_swing_id
-      description: One row is one segment, region, and accounting period.
-  columns:
-  - name: inventory_swing_id
-    description: Identifier of the inventory swing row. This dataset holds the complete population of
-      those swings.
-  - name: segment_id
-    description: Operating segment whose dealer stock swung.
-  - name: region_id
-    description: Sales region of the swing.
-  - name: accounting_period_id
-    description: Accounting period of the swing.
-  - name: inventory_change_units
-    description: Dealer inventory change. Separate from segment sales volume.
-  - name: swing_direction
-    description: Direction of the dealer inventory swing.
-    value_description: restock or destock.
-  entity_definitions:
-  - identity_id: inventory_swing_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - inventory_swing_id
-    entity_universe: complete
-  - identity_id: segment_identity
+    - scenario_id
+    entity_universe: partial
+  - identity_id: rental_operator_identity
     dataset_columns:
-    - segment_id
+    - rental_operator_id
+    entity_universe: partial
+  - identity_id: equipment_source_identity
+    dataset_columns:
+    - equipment_source_id
     entity_universe: partial
   - identity_id: region_identity
     dataset_columns:
     - region_id
     entity_universe: partial
+- node_id: sf:machinery.retail.fact_installed_base_quantity
+  descriptor:
+    qualified_name: machinery.retail.fact_installed_base_quantity
+    display_name: Installed Base Quantity
+    description: Installed base of machines in the field.
+    synonyms: []
+    tags:
+    - fact
+    - dealer
+    - construction-machinery
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: machinery.us-central-1
+      database: MACHINERY
+      schema: RETAIL
+      object: FACT_INSTALLED_BASE_QUANTITY
+      format: table
+  grain:
+    description: One row is one installed base quantity observation for the combination of accounting
+      period, scenario, cat reporting segment, machine model, region.
+    components:
+    - identity_id: accounting_period_identity
+      dataset_columns:
+      - accounting_period_id
+      description: Identifier of the accounting period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: cat_reporting_segment_identity
+      dataset_columns:
+      - cat_reporting_segment_id
+      description: Identifier of the cat reporting segment.
+    - identity_id: machine_model_identity
+      dataset_columns:
+      - machine_model_id
+      description: Identifier of the machine model.
+    - identity_id: region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+  columns:
+  - name: accounting_period_id
+    description: Identifier of the accounting period.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: cat_reporting_segment_id
+    description: Identifier of the cat reporting segment.
+  - name: machine_model_id
+    description: Identifier of the machine model.
+  - name: region_id
+    description: Identifier of the region.
+  - name: installed_base_units
+    description: Installed machines in units.
+  - name: active_installed_units
+    description: Active installed machines in units.
+  entity_definitions:
   - identity_id: accounting_period_identity
     dataset_columns:
     - accounting_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: cat_reporting_segment_identity
+    dataset_columns:
+    - cat_reporting_segment_id
+    entity_universe: partial
+  - identity_id: machine_model_identity
+    dataset_columns:
+    - machine_model_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:machinery.retail.fact_service_contract_quantity
+  descriptor:
+    qualified_name: machinery.retail.fact_service_contract_quantity
+    display_name: Service Contract Quantity
+    description: Customer service contracts on machines.
+    synonyms: []
+    tags:
+    - fact
+    - dealer
+    - construction-machinery
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: machinery.us-central-1
+      database: MACHINERY
+      schema: RETAIL
+      object: FACT_SERVICE_CONTRACT_QUANTITY
+      format: table
+  grain:
+    description: One row is one service contract quantity observation for the combination of accounting
+      period, scenario, cat reporting segment, end user type.
+    components:
+    - identity_id: accounting_period_identity
+      dataset_columns:
+      - accounting_period_id
+      description: Identifier of the accounting period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: cat_reporting_segment_identity
+      dataset_columns:
+      - cat_reporting_segment_id
+      description: Identifier of the cat reporting segment.
+    - identity_id: end_user_type_identity
+      dataset_columns:
+      - end_user_type_id
+      description: Identifier of the end user type.
+  columns:
+  - name: accounting_period_id
+    description: Identifier of the accounting period.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: cat_reporting_segment_id
+    description: Identifier of the cat reporting segment.
+  - name: end_user_type_id
+    description: Identifier of the end user type.
+  - name: service_contract_count
+    description: Service contracts in contracts.
+  entity_definitions:
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: cat_reporting_segment_identity
+    dataset_columns:
+    - cat_reporting_segment_id
+    entity_universe: partial
+  - identity_id: end_user_type_identity
+    dataset_columns:
+    - end_user_type_id
     entity_universe: partial

@@ -1,96 +1,15 @@
 schema_version: '3'
 nodes:
-- node_id: sf:machinery.calendar.dim_calendar_day
-  descriptor:
-    qualified_name: machinery.calendar.dim_calendar_day
-    display_name: Calendar day
-    description: A calendar day in the Machinery Inc reporting calendar.
-    tags:
-    - dimension
-    synonyms:
-    - date
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: machinery.us-central-1
-      database: MACHINERY
-      schema: CALENDAR
-      object: DIM_CALENDAR_DAY
-      format: table
-  grain:
-    description: One row is one calendar day.
-    components:
-    - identity_id: calendar_day_identity
-      dataset_columns:
-      - calendar_day_id
-      description: One row is one calendar day.
-  columns:
-  - name: calendar_day_id
-    description: Identifier of the calendar day. This dataset holds the complete calendar-day population.
-  - name: accounting_period_id
-    description: Accounting period that contains the day.
-  - name: day_label
-    description: Calendar date label of the day.
-  entity_definitions:
-  - identity_id: calendar_day_identity
-    dataset_columns:
-    - calendar_day_id
-    entity_universe: complete
-  - identity_id: accounting_period_identity
-    dataset_columns:
-    - accounting_period_id
-    entity_universe: partial
-- node_id: sf:machinery.calendar.dim_accounting_period
-  descriptor:
-    qualified_name: machinery.calendar.dim_accounting_period
-    display_name: Accounting period
-    description: A Machinery Inc accounting period, with fiscal year, quarter, and half.
-    tags:
-    - dimension
-    synonyms:
-    - quarter
-    - fiscal period
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: machinery.us-central-1
-      database: MACHINERY
-      schema: CALENDAR
-      object: DIM_ACCOUNTING_PERIOD
-      format: table
-  grain:
-    description: One row is one accounting period.
-    components:
-    - identity_id: accounting_period_identity
-      dataset_columns:
-      - accounting_period_id
-      description: One row is one accounting period.
-  columns:
-  - name: accounting_period_id
-    description: Identifier of the accounting period. This dataset holds the complete accounting-period
-      population.
-  - name: period_label
-    description: Label of the accounting period.
-  - name: fiscal_year
-    description: Fiscal year of the period.
-  - name: quarter_label
-    description: Quarter label of the period.
-    value_description: Q1, Q2, Q3, or Q4.
-  - name: half_code
-    description: Half of the fiscal year.
-    value_description: first_half or second_half.
-  entity_definitions:
-  - identity_id: accounting_period_identity
-    dataset_columns:
-    - accounting_period_id
-    entity_universe: complete
 - node_id: sf:machinery.commercial.dim_currency
   descriptor:
     qualified_name: machinery.commercial.dim_currency
     display_name: Currency
-    description: A currency used on Machinery Inc price, sales, and margin amounts.
+    description: Currency of an amount.
+    synonyms: []
     tags:
     - dimension
+    - commercial
+    - construction-machinery
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
@@ -100,76 +19,35 @@ nodes:
       object: DIM_CURRENCY
       format: table
   grain:
-    description: One row is one currency.
+    description: One row is one currency, identified by currency_id.
     components:
     - identity_id: currency_identity
       dataset_columns:
       - currency_id
-      description: One row is one currency.
+      description: Identifier of the currency.
   columns:
   - name: currency_id
-    description: Identifier of the currency. This dataset holds the complete currency population.
-  - name: currency_code
-    description: Short code of the currency.
+    description: Identifier of the currency.
   - name: currency_name
     description: Name of the currency.
+  - name: currency_code
+    description: Code of the currency.
+    value_description: usd, eur, local_currency
   entity_definitions:
   - identity_id: currency_identity
     dataset_columns:
     - currency_id
     entity_universe: complete
-- node_id: sf:machinery.commercial.dim_margin_framework
-  descriptor:
-    qualified_name: machinery.commercial.dim_margin_framework
-    display_name: Margin framework
-    description: The operating-margin range Machinery Inc set, including the range from the supply-chain
-      disruption period and the analyst-day view.
-    tags:
-    - dimension
-    synonyms:
-    - margin target
-    - analyst day
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: machinery.us-central-1
-      database: MACHINERY
-      schema: COMMERCIAL
-      object: DIM_MARGIN_FRAMEWORK
-      format: table
-  grain:
-    description: One row is one margin framework.
-    components:
-    - identity_id: margin_framework_identity
-      dataset_columns:
-      - margin_framework_id
-      description: One row is one margin framework.
-  columns:
-  - name: margin_framework_id
-    description: Identifier of the margin framework. This dataset holds the complete margin-framework
-      population.
-  - name: framework_name
-    description: Name of the framework, including the analyst-day range and the supply-disruption range.
-  - name: low_rate
-    description: Low end of the margin range.
-  - name: high_rate
-    description: High end of the margin range.
-  - name: set_during_supply_disruption_flag
-    description: Whether this range was set during the supply-chain disruption.
-    value_description: Y or N.
-  entity_definitions:
-  - identity_id: margin_framework_identity
-    dataset_columns:
-    - margin_framework_id
-    entity_universe: complete
 - node_id: sf:machinery.commercial.dim_cost_element
   descriptor:
     qualified_name: machinery.commercial.dim_cost_element
-    display_name: Cost element
-    description: A cost element that can move margin separately from price, including manufacturing cost
-      and tariffs.
+    display_name: Cost Element
+    description: Element of manufacturing or operating cost.
+    synonyms: []
     tags:
     - dimension
+    - commercial
+    - construction-machinery
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
@@ -179,583 +57,973 @@ nodes:
       object: DIM_COST_ELEMENT
       format: table
   grain:
-    description: One row is one cost element.
+    description: One row is one cost element, identified by cost_element_id.
     components:
     - identity_id: cost_element_identity
       dataset_columns:
       - cost_element_id
-      description: One row is one cost element.
+      description: Identifier of the cost element.
   columns:
   - name: cost_element_id
-    description: Identifier of the cost element. This dataset holds the complete cost-element population.
-  - name: element_code
-    description: Code of the cost element.
-    value_description: manufacturing, tariff, or fixed.
-  - name: element_name
+    description: Identifier of the cost element.
+  - name: cost_element_name
     description: Name of the cost element.
+  - name: cost_element_code
+    description: Code of the cost element.
+    value_description: materials, labor, energy, logistics, tariff, warranty
   entity_definitions:
   - identity_id: cost_element_identity
     dataset_columns:
     - cost_element_id
     entity_universe: complete
-- node_id: sf:machinery.commercial.fact_segment_volume
+- node_id: sf:machinery.commercial.dim_order_size_class
   descriptor:
-    qualified_name: machinery.commercial.fact_segment_volume
-    display_name: Segment volume
-    description: Unit volume by operating segment. This fact stores no price.
+    qualified_name: machinery.commercial.dim_order_size_class
+    display_name: Order Size Class
+    description: Size class of an order.
+    synonyms: []
     tags:
-    - fact
+    - dimension
+    - commercial
+    - construction-machinery
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: machinery.us-central-1
       database: MACHINERY
       schema: COMMERCIAL
-      object: FACT_SEGMENT_VOLUME
+      object: DIM_ORDER_SIZE_CLASS
       format: table
   grain:
-    description: One row is one segment and accounting period.
+    description: One row is one order size class, identified by order_size_class_id.
     components:
-    - identity_id: segment_volume_identity
+    - identity_id: order_size_class_identity
       dataset_columns:
-      - segment_volume_id
-      description: One row is one segment and accounting period.
+      - order_size_class_id
+      description: Identifier of the order size class.
   columns:
-  - name: segment_volume_id
-    description: Identifier of the segment volume row. This dataset holds the complete segment-volume
-      population.
-  - name: segment_id
-    description: Operating segment of the volume.
-  - name: accounting_period_id
-    description: Accounting period of the volume.
-  - name: volume_units
-    description: Units of segment volume. This measure is not a price.
-    synonyms:
-    - Construction Industries volume
-    - Power & Energy volume
-  - name: volume_versus_expectation
-    description: How volume compared with the expectation coming into the period.
-    value_description: stronger, in_line, or lighter.
-  - name: excludes_power_generation_flag
-    description: Whether the volume row is stated with power generation removed.
-    value_description: Y or N.
+  - name: order_size_class_id
+    description: Identifier of the order size class.
+  - name: order_size_class_name
+    description: Name of the order size class.
+  - name: order_size_class_code
+    description: Code of the order size class.
+    value_description: large_award, standard_order
   entity_definitions:
-  - identity_id: segment_volume_identity
+  - identity_id: order_size_class_identity
     dataset_columns:
-    - segment_volume_id
+    - order_size_class_id
     entity_universe: complete
-  - identity_id: segment_identity
-    dataset_columns:
-    - segment_id
-    entity_universe: partial
-  - identity_id: accounting_period_identity
-    dataset_columns:
-    - accounting_period_id
-    entity_universe: partial
-- node_id: sf:machinery.commercial.fact_price_realization
+- node_id: sf:machinery.commercial.dim_demand_motive
   descriptor:
-    qualified_name: machinery.commercial.fact_price_realization
-    display_name: Price realization
-    description: Price realization by segment and period. This fact stores no unit volume.
+    qualified_name: machinery.commercial.dim_demand_motive
+    display_name: Demand Motive
+    description: Reason a customer places an order.
+    synonyms: []
     tags:
-    - fact
+    - dimension
+    - commercial
+    - construction-machinery
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: machinery.us-central-1
       database: MACHINERY
       schema: COMMERCIAL
-      object: FACT_PRICE_REALIZATION
+      object: DIM_DEMAND_MOTIVE
       format: table
   grain:
-    description: One row is one segment and accounting period.
+    description: One row is one demand motive, identified by demand_motive_id.
     components:
-    - identity_id: price_realization_identity
+    - identity_id: demand_motive_identity
       dataset_columns:
-      - price_realization_id
-      description: One row is one segment and accounting period.
+      - demand_motive_id
+      description: Identifier of the demand motive.
   columns:
-  - name: price_realization_id
-    description: Identifier of the price-realization row. This dataset holds the complete price-realization
-      population.
-  - name: segment_id
-    description: Operating segment of the price.
-  - name: accounting_period_id
-    description: Accounting period of the price.
-  - name: currency_id
-    description: Currency of the price.
-  - name: power_product_id
-    description: Power product whose price is in view, when the price is product-specific.
-  - name: price_realization_rate
-    description: Price realization rate. A negative rate is price down. This measure is not a unit count.
-    synonyms:
-    - price
-  - name: new_product_mix_flag
-    description: Whether new products are in the price mix.
-    value_description: Y or N.
-  - name: half_code
-    description: Half the price applies to, when the comparison is first half versus second half.
-    value_description: first_half or second_half.
-  - name: competitive_pressure_note
-    description: Competitive environment around the price, including merchandise programs rolling off.
+  - name: demand_motive_id
+    description: Identifier of the demand motive.
+  - name: demand_motive_name
+    description: Name of the demand motive.
+  - name: demand_motive_code
+    description: Code of the demand motive.
+    value_description: replacement, fleet_expansion, project_loading, regulatory_prebuy
   entity_definitions:
-  - identity_id: price_realization_identity
+  - identity_id: demand_motive_identity
     dataset_columns:
-    - price_realization_id
+    - demand_motive_id
     entity_universe: complete
-  - identity_id: segment_identity
-    dataset_columns:
-    - segment_id
-    entity_universe: partial
-  - identity_id: accounting_period_identity
-    dataset_columns:
-    - accounting_period_id
-    entity_universe: partial
-  - identity_id: currency_identity
-    dataset_columns:
-    - currency_id
-    entity_universe: partial
-  - identity_id: power_product_identity
-    dataset_columns:
-    - power_product_id
-    entity_universe: partial
-- node_id: sf:machinery.commercial.fact_order_intake
+- node_id: sf:machinery.truck.dim_truck_brand
   descriptor:
-    qualified_name: machinery.commercial.fact_order_intake
-    display_name: Order intake
-    description: Orders taken in a period, with large power awards distinguished from broad-based orders
-      and with power generation able to be excluded.
+    qualified_name: machinery.truck.dim_truck_brand
+    display_name: Truck Brand
+    description: PACCAR truck brand.
+    synonyms: []
     tags:
-    - fact
-    synonyms:
-    - orders
+    - dimension
+    - commercial
+    - construction-machinery
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: machinery.us-central-1
+      database: MACHINERY
+      schema: TRUCK
+      object: DIM_TRUCK_BRAND
+      format: table
+  grain:
+    description: One row is one truck brand, identified by truck_brand_id.
+    components:
+    - identity_id: truck_brand_identity
+      dataset_columns:
+      - truck_brand_id
+      description: Identifier of the truck brand.
+  columns:
+  - name: truck_brand_id
+    description: Identifier of the truck brand.
+  - name: truck_brand_name
+    description: Name of the truck brand.
+  - name: truck_brand_code
+    description: Code of the truck brand.
+    value_description: kenworth, peterbilt, daf
+  entity_definitions:
+  - identity_id: truck_brand_identity
+    dataset_columns:
+    - truck_brand_id
+    entity_universe: complete
+- node_id: sf:machinery.truck.dim_vehicle_class
+  descriptor:
+    qualified_name: machinery.truck.dim_vehicle_class
+    display_name: Vehicle Class
+    description: Truck vehicle class.
+    synonyms: []
+    tags:
+    - dimension
+    - commercial
+    - construction-machinery
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: machinery.us-central-1
+      database: MACHINERY
+      schema: TRUCK
+      object: DIM_VEHICLE_CLASS
+      format: table
+  grain:
+    description: One row is one vehicle class, identified by vehicle_class_id.
+    components:
+    - identity_id: vehicle_class_identity
+      dataset_columns:
+      - vehicle_class_id
+      description: Identifier of the vehicle class.
+  columns:
+  - name: vehicle_class_id
+    description: Identifier of the vehicle class.
+  - name: vehicle_class_name
+    description: Name of the vehicle class.
+  - name: vehicle_class_code
+    description: Code of the vehicle class.
+    value_description: class_8_tractor, class_8_vocational, medium_duty, light_medium_duty
+  entity_definitions:
+  - identity_id: vehicle_class_identity
+    dataset_columns:
+    - vehicle_class_id
+    entity_universe: complete
+- node_id: sf:machinery.truck.dim_paccar_dealer
+  descriptor:
+    qualified_name: machinery.truck.dim_paccar_dealer
+    display_name: PACCAR Dealer
+    description: Dealer that sells PACCAR trucks.
+    synonyms: []
+    tags:
+    - dimension
+    - commercial
+    - construction-machinery
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: machinery.us-central-1
+      database: MACHINERY
+      schema: TRUCK
+      object: DIM_PACCAR_DEALER
+      format: table
+  grain:
+    description: One row is one paccar dealer, identified by paccar_dealer_id.
+    components:
+    - identity_id: paccar_dealer_identity
+      dataset_columns:
+      - paccar_dealer_id
+      description: Identifier of the paccar dealer.
+  columns:
+  - name: paccar_dealer_id
+    description: Identifier of the paccar dealer.
+  - name: paccar_dealer_name
+    description: Name of the paccar dealer.
+  - name: region_id
+    description: Identifier of the region.
+  - name: country_id
+    description: Identifier of the country.
+  entity_definitions:
+  - identity_id: paccar_dealer_identity
+    dataset_columns:
+    - paccar_dealer_id
+    entity_universe: complete
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+- node_id: sf:machinery.truck.dim_truck_component
+  descriptor:
+    qualified_name: machinery.truck.dim_truck_component
+    display_name: Truck Component
+    description: Component of a truck build.
+    synonyms: []
+    tags:
+    - dimension
+    - commercial
+    - construction-machinery
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: machinery.us-central-1
+      database: MACHINERY
+      schema: TRUCK
+      object: DIM_TRUCK_COMPONENT
+      format: table
+  grain:
+    description: One row is one truck component, identified by truck_component_id.
+    components:
+    - identity_id: truck_component_identity
+      dataset_columns:
+      - truck_component_id
+      description: Identifier of the truck component.
+  columns:
+  - name: truck_component_id
+    description: Identifier of the truck component.
+  - name: truck_component_name
+    description: Name of the truck component.
+  - name: truck_component_code
+    description: Code of the truck component.
+    value_description: engine, transmission, aluminum_cab, memory_chip, tire, aftertreatment
+  entity_definitions:
+  - identity_id: truck_component_identity
+    dataset_columns:
+    - truck_component_id
+    entity_universe: complete
+- node_id: sf:machinery.truck.dim_customer_fleet_type
+  descriptor:
+    qualified_name: machinery.truck.dim_customer_fleet_type
+    display_name: Customer Fleet Type
+    description: Size type of a truck customer fleet.
+    synonyms: []
+    tags:
+    - dimension
+    - commercial
+    - construction-machinery
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: machinery.us-central-1
+      database: MACHINERY
+      schema: TRUCK
+      object: DIM_CUSTOMER_FLEET_TYPE
+      format: table
+  grain:
+    description: One row is one customer fleet type, identified by customer_fleet_type_id.
+    components:
+    - identity_id: customer_fleet_type_identity
+      dataset_columns:
+      - customer_fleet_type_id
+      description: Identifier of the customer fleet type.
+  columns:
+  - name: customer_fleet_type_id
+    description: Identifier of the customer fleet type.
+  - name: customer_fleet_type_name
+    description: Name of the customer fleet type.
+  - name: customer_fleet_type_code
+    description: Code of the customer fleet type.
+    value_description: large_fleet, small_fleet, mid_size_fleet, owner_operator
+  entity_definitions:
+  - identity_id: customer_fleet_type_identity
+    dataset_columns:
+    - customer_fleet_type_id
+    entity_universe: complete
+- node_id: sf:machinery.commercial.dim_competitor
+  descriptor:
+    qualified_name: machinery.commercial.dim_competitor
+    display_name: Competitor
+    description: Competitor class in machinery or truck markets.
+    synonyms: []
+    tags:
+    - dimension
+    - commercial
+    - construction-machinery
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: machinery.us-central-1
       database: MACHINERY
       schema: COMMERCIAL
-      object: FACT_ORDER_INTAKE
+      object: DIM_COMPETITOR
       format: table
   grain:
-    description: One row is one segment, end market, and accounting period.
+    description: One row is one competitor, identified by competitor_id.
     components:
-    - identity_id: order_intake_identity
+    - identity_id: competitor_identity
       dataset_columns:
-      - order_intake_id
-      description: One row is one segment, end market, and accounting period.
+      - competitor_id
+      description: Identifier of the competitor.
   columns:
-  - name: order_intake_id
-    description: Identifier of the order-intake row. This dataset holds the complete order-intake population.
-  - name: segment_id
-    description: Operating segment of the orders.
+  - name: competitor_id
+    description: Identifier of the competitor.
+  - name: competitor_name
+    description: Name of the competitor.
+  - name: competitor_code
+    description: Code of the competitor.
+    value_description: global_competitor, regional_competitor
+  entity_definitions:
+  - identity_id: competitor_identity
+    dataset_columns:
+    - competitor_id
+    entity_universe: complete
+- node_id: sf:machinery.commercial.dim_emissions_standard
+  descriptor:
+    qualified_name: machinery.commercial.dim_emissions_standard
+    display_name: Emissions Standard
+    description: Truck emissions standard.
+    synonyms: []
+    tags:
+    - dimension
+    - commercial
+    - construction-machinery
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: machinery.us-central-1
+      database: MACHINERY
+      schema: COMMERCIAL
+      object: DIM_EMISSIONS_STANDARD
+      format: table
+  grain:
+    description: One row is one emissions standard, identified by emissions_standard_id.
+    components:
+    - identity_id: emissions_standard_identity
+      dataset_columns:
+      - emissions_standard_id
+      description: Identifier of the emissions standard.
+  columns:
+  - name: emissions_standard_id
+    description: Identifier of the emissions standard.
+  - name: emissions_standard_name
+    description: Name of the emissions standard.
+  - name: emissions_standard_code
+    description: Code of the emissions standard.
+    value_description: epa_2027_low_nox, current_nox, euro_6
+  entity_definitions:
+  - identity_id: emissions_standard_identity
+    dataset_columns:
+    - emissions_standard_id
+    entity_universe: complete
+- node_id: sf:machinery.commercial.fact_cat_order_quantity
+  descriptor:
+    qualified_name: machinery.commercial.fact_cat_order_quantity
+    display_name: CAT Order Quantity
+    description: Machine and power orders in units.
+    synonyms: []
+    tags:
+    - fact
+    - commercial
+    - construction-machinery
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: machinery.us-central-1
+      database: MACHINERY
+      schema: COMMERCIAL
+      object: FACT_CAT_ORDER_QUANTITY
+      format: table
+  grain:
+    description: One row is one cat order quantity observation for the combination of accounting period,
+      scenario, cat reporting segment, end market.
+    components:
+    - identity_id: accounting_period_identity
+      dataset_columns:
+      - accounting_period_id
+      description: Identifier of the accounting period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: cat_reporting_segment_identity
+      dataset_columns:
+      - cat_reporting_segment_id
+      description: Identifier of the cat reporting segment.
+    - identity_id: end_market_identity
+      dataset_columns:
+      - end_market_id
+      description: Identifier of the end market.
+  columns:
+  - name: accounting_period_id
+    description: Identifier of the accounting period.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: cat_reporting_segment_id
+    description: Identifier of the cat reporting segment.
   - name: end_market_id
-    description: End market of the orders.
-  - name: power_product_id
-    description: Power product on the order, when the order is a power order.
-  - name: accounting_period_id
-    description: Accounting period of the orders.
-  - name: currency_id
-    description: Currency of the order amount.
-  - name: order_amount
-    description: Order amount taken in the period.
+    description: Identifier of the end market.
   - name: order_units
-    description: Units ordered. This measure is not a price.
-  - name: order_scope_code
-    description: Whether the orders are a large power award or broad-based.
-    value_description: large_power, broad_based, or other.
-  - name: excludes_power_generation_flag
-    description: Whether this order row is outside power generation.
-    value_description: Y or N.
-  - name: sequential_change_amount
-    description: Change in orders versus the prior quarter.
+    description: Orders in units.
   entity_definitions:
-  - identity_id: order_intake_identity
+  - identity_id: accounting_period_identity
     dataset_columns:
-    - order_intake_id
-    entity_universe: complete
-  - identity_id: segment_identity
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
     dataset_columns:
-    - segment_id
+    - scenario_id
+    entity_universe: partial
+  - identity_id: cat_reporting_segment_identity
+    dataset_columns:
+    - cat_reporting_segment_id
     entity_universe: partial
   - identity_id: end_market_identity
     dataset_columns:
     - end_market_id
     entity_universe: partial
-  - identity_id: power_product_identity
-    dataset_columns:
-    - power_product_id
-    entity_universe: partial
-  - identity_id: accounting_period_identity
-    dataset_columns:
-    - accounting_period_id
-    entity_universe: partial
-  - identity_id: currency_identity
-    dataset_columns:
-    - currency_id
-    entity_universe: partial
-- node_id: sf:machinery.commercial.fact_backlog_position
+- node_id: sf:machinery.commercial.fact_cat_order_amount
   descriptor:
-    qualified_name: machinery.commercial.fact_backlog_position
-    display_name: Backlog position
-    description: Unfilled orders at the end of a period. Backlog is not dealer inventory and not a shipment.
+    qualified_name: machinery.commercial.fact_cat_order_amount
+    display_name: CAT Order Amount
+    description: Orders stated as an amount by size class and demand motive.
+    synonyms: []
     tags:
     - fact
+    - commercial
+    - construction-machinery
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: machinery.us-central-1
       database: MACHINERY
       schema: COMMERCIAL
-      object: FACT_BACKLOG_POSITION
+      object: FACT_CAT_ORDER_AMOUNT
       format: table
   grain:
-    description: One row is one segment and accounting period.
+    description: One row is one cat order amount observation for the combination of accounting period,
+      scenario, cat reporting segment, end market, order size class, demand motive.
     components:
-    - identity_id: backlog_position_identity
+    - identity_id: accounting_period_identity
       dataset_columns:
-      - backlog_position_id
-      description: One row is one segment and accounting period.
+      - accounting_period_id
+      description: Identifier of the accounting period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: cat_reporting_segment_identity
+      dataset_columns:
+      - cat_reporting_segment_id
+      description: Identifier of the cat reporting segment.
+    - identity_id: end_market_identity
+      dataset_columns:
+      - end_market_id
+      description: Identifier of the end market.
+    - identity_id: order_size_class_identity
+      dataset_columns:
+      - order_size_class_id
+      description: Identifier of the order size class.
+    - identity_id: demand_motive_identity
+      dataset_columns:
+      - demand_motive_id
+      description: Identifier of the demand motive.
   columns:
-  - name: backlog_position_id
-    description: Identifier of the backlog position. This dataset holds the complete backlog-position
-      population.
-  - name: segment_id
-    description: Operating segment of the backlog.
+  - name: accounting_period_id
+    description: Identifier of the accounting period.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: cat_reporting_segment_id
+    description: Identifier of the cat reporting segment.
   - name: end_market_id
-    description: End market of the unfilled orders.
-  - name: power_product_id
-    description: Power product in the backlog, when the backlog is product-specific.
-  - name: accounting_period_id
-    description: Accounting period of the backlog observation.
-  - name: currency_id
-    description: Currency of the backlog amount.
-  - name: backlog_amount
-    description: Unfilled order amount. This is not dealer on-hand stock.
-    synonyms:
-    - backlog
-  - name: backlog_change_amount
-    description: Change in backlog during the period.
+    description: Identifier of the end market.
+  - name: order_size_class_id
+    description: Identifier of the order size class.
+  - name: demand_motive_id
+    description: Identifier of the demand motive.
+  - name: order_amount
+    description: Order amount in dollars.
   entity_definitions:
-  - identity_id: backlog_position_identity
+  - identity_id: accounting_period_identity
     dataset_columns:
-    - backlog_position_id
-    entity_universe: complete
-  - identity_id: segment_identity
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
     dataset_columns:
-    - segment_id
+    - scenario_id
+    entity_universe: partial
+  - identity_id: cat_reporting_segment_identity
+    dataset_columns:
+    - cat_reporting_segment_id
     entity_universe: partial
   - identity_id: end_market_identity
     dataset_columns:
     - end_market_id
     entity_universe: partial
-  - identity_id: power_product_identity
+  - identity_id: order_size_class_identity
     dataset_columns:
-    - power_product_id
+    - order_size_class_id
     entity_universe: partial
-  - identity_id: accounting_period_identity
+  - identity_id: demand_motive_identity
     dataset_columns:
-    - accounting_period_id
+    - demand_motive_id
     entity_universe: partial
-  - identity_id: currency_identity
-    dataset_columns:
-    - currency_id
-    entity_universe: partial
-- node_id: sf:machinery.commercial.fact_backlog_bridge
+- node_id: sf:machinery.commercial.fact_cat_backlog_quantity
   descriptor:
-    qualified_name: machinery.commercial.fact_backlog_bridge
-    display_name: Backlog bridge
-    description: The backlog increase split between large power awards and broad-based orders.
+    qualified_name: machinery.commercial.fact_cat_backlog_quantity
+    display_name: CAT Backlog Quantity
+    description: Unfilled orders in units; backlog is not dealer stock and not a shipment.
+    synonyms: []
     tags:
     - fact
+    - commercial
+    - construction-machinery
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: machinery.us-central-1
       database: MACHINERY
       schema: COMMERCIAL
-      object: FACT_BACKLOG_BRIDGE
+      object: FACT_CAT_BACKLOG_QUANTITY
       format: table
   grain:
-    description: One row is one segment and accounting period.
+    description: One row is one cat backlog quantity observation for the combination of accounting period,
+      scenario, cat reporting segment, end market.
     components:
-    - identity_id: backlog_bridge_identity
+    - identity_id: accounting_period_identity
       dataset_columns:
-      - backlog_bridge_id
-      description: One row is one segment and accounting period.
+      - accounting_period_id
+      description: Identifier of the accounting period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: cat_reporting_segment_identity
+      dataset_columns:
+      - cat_reporting_segment_id
+      description: Identifier of the cat reporting segment.
+    - identity_id: end_market_identity
+      dataset_columns:
+      - end_market_id
+      description: Identifier of the end market.
   columns:
-  - name: backlog_bridge_id
-    description: Identifier of the backlog bridge row. This dataset holds the complete backlog-bridge
-      population.
-  - name: segment_id
-    description: Operating segment of the bridge.
   - name: accounting_period_id
-    description: Accounting period of the bridge.
-  - name: currency_id
-    description: Currency of the bridge amounts.
-  - name: large_power_award_amount
-    description: Backlog increase from large power awards.
-  - name: broad_based_order_amount
-    description: Backlog increase from broad-based orders.
+    description: Identifier of the accounting period.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: cat_reporting_segment_id
+    description: Identifier of the cat reporting segment.
+  - name: end_market_id
+    description: Identifier of the end market.
+  - name: backlog_units
+    description: Unfilled orders in units.
+  entity_definitions:
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: cat_reporting_segment_identity
+    dataset_columns:
+    - cat_reporting_segment_id
+    entity_universe: partial
+  - identity_id: end_market_identity
+    dataset_columns:
+    - end_market_id
+    entity_universe: partial
+- node_id: sf:machinery.commercial.fact_cat_backlog_amount
+  descriptor:
+    qualified_name: machinery.commercial.fact_cat_backlog_amount
+    display_name: CAT Backlog Amount
+    description: Unfilled orders stated as an amount.
+    synonyms: []
+    tags:
+    - fact
+    - commercial
+    - construction-machinery
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: machinery.us-central-1
+      database: MACHINERY
+      schema: COMMERCIAL
+      object: FACT_CAT_BACKLOG_AMOUNT
+      format: table
+  grain:
+    description: One row is one cat backlog amount observation for the combination of accounting period,
+      scenario, cat reporting segment, end market.
+    components:
+    - identity_id: accounting_period_identity
+      dataset_columns:
+      - accounting_period_id
+      description: Identifier of the accounting period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: cat_reporting_segment_identity
+      dataset_columns:
+      - cat_reporting_segment_id
+      description: Identifier of the cat reporting segment.
+    - identity_id: end_market_identity
+      dataset_columns:
+      - end_market_id
+      description: Identifier of the end market.
+  columns:
+  - name: accounting_period_id
+    description: Identifier of the accounting period.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: cat_reporting_segment_id
+    description: Identifier of the cat reporting segment.
+  - name: end_market_id
+    description: Identifier of the end market.
+  - name: backlog_amount
+    description: Unfilled order amount in dollars.
   - name: backlog_change_amount
-    description: Total backlog change the two pieces explain.
+    description: Change in unfilled order amount in dollars.
   entity_definitions:
-  - identity_id: backlog_bridge_identity
-    dataset_columns:
-    - backlog_bridge_id
-    entity_universe: complete
-  - identity_id: segment_identity
-    dataset_columns:
-    - segment_id
-    entity_universe: partial
   - identity_id: accounting_period_identity
     dataset_columns:
     - accounting_period_id
     entity_universe: partial
-  - identity_id: currency_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - currency_id
+    - scenario_id
     entity_universe: partial
-- node_id: sf:machinery.commercial.fact_backlog_pullforward
+  - identity_id: cat_reporting_segment_identity
+    dataset_columns:
+    - cat_reporting_segment_id
+    entity_universe: partial
+  - identity_id: end_market_identity
+    dataset_columns:
+    - end_market_id
+    entity_universe: partial
+- node_id: sf:machinery.commercial.fact_machine_price
   descriptor:
-    qualified_name: machinery.commercial.fact_backlog_pullforward
-    display_name: Backlog pull-forward
-    description: Backlog growth that was a one-time pull-forward, kept separate from the project that
-      lands the next quarter.
+    qualified_name: machinery.commercial.fact_machine_price
+    display_name: Machine Price
+    description: Average machine price; segment volume in units on the segment volume fact is the denominator.
+    synonyms: []
     tags:
     - fact
+    - commercial
+    - construction-machinery
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: machinery.us-central-1
       database: MACHINERY
       schema: COMMERCIAL
-      object: FACT_BACKLOG_PULLFORWARD
+      object: FACT_MACHINE_PRICE
       format: table
   grain:
-    description: One row is one segment and accounting period.
+    description: One row is one machine price observation for the combination of accounting period, scenario,
+      cat reporting segment.
     components:
-    - identity_id: backlog_pullforward_identity
+    - identity_id: accounting_period_identity
       dataset_columns:
-      - backlog_pullforward_id
-      description: One row is one segment and accounting period.
+      - accounting_period_id
+      description: Identifier of the accounting period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: cat_reporting_segment_identity
+      dataset_columns:
+      - cat_reporting_segment_id
+      description: Identifier of the cat reporting segment.
   columns:
-  - name: backlog_pullforward_id
-    description: Identifier of the pull-forward row. This dataset holds the complete pull-forward population.
-  - name: segment_id
-    description: Operating segment of the pull-forward.
   - name: accounting_period_id
-    description: Accounting period in which the pull-forward was recognized.
-  - name: project_id
-    description: Project that lands next quarter and is not the pull-forward.
-  - name: currency_id
-    description: Currency of the amounts.
-  - name: pullforward_amount
-    description: Backlog amount attributed to orders pulled forward.
-  - name: one_time_flag
-    description: Whether the pull-forward is one-time.
-    value_description: Y or N.
-  - name: next_quarter_project_amount
-    description: Amount of the separate project expected to land next quarter.
+    description: Identifier of the accounting period.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: cat_reporting_segment_id
+    description: Identifier of the cat reporting segment.
+  - name: price_dollars_per_machine
+    description: Average price in dollars per machine.
+  - name: price_change_percent
+    description: Price change in percent.
   entity_definitions:
-  - identity_id: backlog_pullforward_identity
-    dataset_columns:
-    - backlog_pullforward_id
-    entity_universe: complete
-  - identity_id: segment_identity
-    dataset_columns:
-    - segment_id
-    entity_universe: partial
   - identity_id: accounting_period_identity
     dataset_columns:
     - accounting_period_id
     entity_universe: partial
-  - identity_id: project_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - project_id
+    - scenario_id
     entity_universe: partial
-  - identity_id: currency_identity
+  - identity_id: cat_reporting_segment_identity
     dataset_columns:
-    - currency_id
+    - cat_reporting_segment_id
     entity_universe: partial
-- node_id: sf:machinery.commercial.fact_backlog_shipping_window
+- node_id: sf:machinery.commercial.fact_power_price
   descriptor:
-    qualified_name: machinery.commercial.fact_backlog_shipping_window
-    display_name: Backlog shipping window
-    description: Backlog expected to ship within the next twelve months, kept apart from the sales-growth
-      outlook.
+    qualified_name: machinery.commercial.fact_power_price
+    display_name: Power Price
+    description: Power product price per kilowatt; capacity in gigawatts and units on the capacity quantity
+      fact is the denominator.
+    synonyms: []
     tags:
     - fact
+    - commercial
+    - construction-machinery
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: machinery.us-central-1
       database: MACHINERY
       schema: COMMERCIAL
-      object: FACT_BACKLOG_SHIPPING_WINDOW
+      object: FACT_POWER_PRICE
       format: table
   grain:
-    description: One row is one segment and accounting period.
+    description: One row is one power price observation for the combination of accounting period, scenario,
+      power technology, engine fuel, power size class.
     components:
-    - identity_id: backlog_shipping_window_identity
+    - identity_id: accounting_period_identity
       dataset_columns:
-      - backlog_shipping_window_id
-      description: One row is one segment and accounting period.
+      - accounting_period_id
+      description: Identifier of the accounting period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: power_technology_identity
+      dataset_columns:
+      - power_technology_id
+      description: Identifier of the power technology.
+    - identity_id: engine_fuel_identity
+      dataset_columns:
+      - engine_fuel_id
+      description: Identifier of the engine fuel.
+    - identity_id: power_size_class_identity
+      dataset_columns:
+      - power_size_class_id
+      description: Identifier of the power size class.
   columns:
-  - name: backlog_shipping_window_id
-    description: Identifier of the shipping-window row. This dataset holds the complete shipping-window
-      population.
-  - name: segment_id
-    description: Operating segment of the shipping backlog.
   - name: accounting_period_id
-    description: Accounting period the twelve-month window starts from.
-  - name: currency_id
-    description: Currency of the shipping amount.
-  - name: shipping_within_twelve_months_amount
-    description: Backlog expected to ship in the next twelve months.
+    description: Identifier of the accounting period.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: power_technology_id
+    description: Identifier of the power technology.
+  - name: engine_fuel_id
+    description: Identifier of the engine fuel.
+  - name: power_size_class_id
+    description: Identifier of the power size class.
+  - name: price_dollars_per_kilowatt
+    description: Price in dollars per kilowatt.
+  - name: price_change_percent
+    description: Price change in percent.
   entity_definitions:
-  - identity_id: backlog_shipping_window_identity
-    dataset_columns:
-    - backlog_shipping_window_id
-    entity_universe: complete
-  - identity_id: segment_identity
-    dataset_columns:
-    - segment_id
-    entity_universe: partial
   - identity_id: accounting_period_identity
     dataset_columns:
     - accounting_period_id
     entity_universe: partial
-  - identity_id: currency_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - currency_id
+    - scenario_id
     entity_universe: partial
-- node_id: sf:machinery.commercial.fact_segment_margin
+  - identity_id: power_technology_identity
+    dataset_columns:
+    - power_technology_id
+    entity_universe: partial
+  - identity_id: engine_fuel_identity
+    dataset_columns:
+    - engine_fuel_id
+    entity_universe: partial
+  - identity_id: power_size_class_identity
+    dataset_columns:
+    - power_size_class_id
+    entity_universe: partial
+- node_id: sf:machinery.commercial.fact_cat_segment_revenue
   descriptor:
-    qualified_name: machinery.commercial.fact_segment_margin
-    display_name: Segment margin
-    description: Revenue and operating margin for a segment and period, including the sequential path.
+    qualified_name: machinery.commercial.fact_cat_segment_revenue
+    display_name: CAT Segment Revenue
+    description: Revenue by Caterpillar reporting segment.
+    synonyms: []
     tags:
     - fact
-    synonyms:
-    - Construction Industries margin
-    - Resource Industries margin
+    - commercial
+    - construction-machinery
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: machinery.us-central-1
       database: MACHINERY
       schema: COMMERCIAL
-      object: FACT_SEGMENT_MARGIN
+      object: FACT_CAT_SEGMENT_REVENUE
       format: table
   grain:
-    description: One row is one segment and accounting period.
+    description: One row is one cat segment revenue observation for the combination of accounting period,
+      scenario, cat reporting segment.
     components:
-    - identity_id: segment_margin_identity
+    - identity_id: accounting_period_identity
       dataset_columns:
-      - segment_margin_id
-      description: One row is one segment and accounting period.
+      - accounting_period_id
+      description: Identifier of the accounting period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: cat_reporting_segment_identity
+      dataset_columns:
+      - cat_reporting_segment_id
+      description: Identifier of the cat reporting segment.
   columns:
-  - name: segment_margin_id
-    description: Identifier of the segment margin row. This dataset holds the complete segment-margin
-      population.
-  - name: segment_id
-    description: Operating segment of the margin.
   - name: accounting_period_id
-    description: Accounting period of the margin.
-  - name: currency_id
-    description: Currency of the amounts.
-  - name: margin_framework_id
-    description: Margin framework the result is compared with.
+    description: Identifier of the accounting period.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: cat_reporting_segment_id
+    description: Identifier of the cat reporting segment.
   - name: revenue_amount
-    description: Segment revenue.
-  - name: operating_margin_amount
-    description: Segment operating margin amount.
-  - name: margin_rate
-    description: Segment operating margin rate.
-  - name: sequential_change_amount
-    description: Change in margin versus the prior quarter.
-  - name: pressure_concentrated_flag
-    description: Whether the period's pressure is concentrated in this segment.
-    value_description: Y or N.
+    description: Segment revenue in dollars.
   entity_definitions:
-  - identity_id: segment_margin_identity
-    dataset_columns:
-    - segment_margin_id
-    entity_universe: complete
-  - identity_id: segment_identity
-    dataset_columns:
-    - segment_id
-    entity_universe: partial
   - identity_id: accounting_period_identity
     dataset_columns:
     - accounting_period_id
     entity_universe: partial
-  - identity_id: currency_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - currency_id
+    - scenario_id
     entity_universe: partial
-  - identity_id: margin_framework_identity
+  - identity_id: cat_reporting_segment_identity
     dataset_columns:
-    - margin_framework_id
+    - cat_reporting_segment_id
     entity_universe: partial
-- node_id: sf:machinery.commercial.fact_incremental_margin
+- node_id: sf:machinery.commercial.fact_cat_segment_margin
   descriptor:
-    qualified_name: machinery.commercial.fact_incremental_margin
-    display_name: Incremental margin
-    description: Incremental margin for a segment, including whether the Power & Energy rate is sustainable
-      while capacity is still being added.
+    qualified_name: machinery.commercial.fact_cat_segment_margin
+    display_name: CAT Segment Margin
+    description: Operating margin by Caterpillar reporting segment, with no unit quantity.
+    synonyms: []
     tags:
     - fact
+    - commercial
+    - construction-machinery
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: machinery.us-central-1
       database: MACHINERY
       schema: COMMERCIAL
-      object: FACT_INCREMENTAL_MARGIN
+      object: FACT_CAT_SEGMENT_MARGIN
       format: table
   grain:
-    description: One row is one segment and accounting period.
+    description: One row is one cat segment margin observation for the combination of accounting period,
+      scenario, cat reporting segment.
     components:
-    - identity_id: incremental_margin_identity
+    - identity_id: accounting_period_identity
       dataset_columns:
-      - incremental_margin_id
-      description: One row is one segment and accounting period.
+      - accounting_period_id
+      description: Identifier of the accounting period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: cat_reporting_segment_identity
+      dataset_columns:
+      - cat_reporting_segment_id
+      description: Identifier of the cat reporting segment.
   columns:
-  - name: incremental_margin_id
-    description: Identifier of the incremental-margin row. This dataset holds the complete incremental-margin
-      population.
-  - name: segment_id
-    description: Operating segment of the incremental margin.
   - name: accounting_period_id
-    description: Accounting period of the incremental margin.
-  - name: incremental_margin_rate
-    description: Incremental margin rate.
-  - name: sustainability_flag
-    description: Whether the rate is expected to hold while capacity is still coming online.
-    value_description: sustainable or not_sustainable.
+    description: Identifier of the accounting period.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: cat_reporting_segment_id
+    description: Identifier of the cat reporting segment.
+  - name: operating_profit_amount
+    description: Segment operating profit in dollars.
+  - name: operating_margin_percent
+    description: Segment operating margin in percent.
   entity_definitions:
-  - identity_id: incremental_margin_identity
-    dataset_columns:
-    - incremental_margin_id
-    entity_universe: complete
-  - identity_id: segment_identity
-    dataset_columns:
-    - segment_id
-    entity_universe: partial
   - identity_id: accounting_period_identity
     dataset_columns:
     - accounting_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: cat_reporting_segment_identity
+    dataset_columns:
+    - cat_reporting_segment_id
+    entity_universe: partial
+- node_id: sf:machinery.commercial.fact_enterprise_earnings
+  descriptor:
+    qualified_name: machinery.commercial.fact_enterprise_earnings
+    display_name: Enterprise Earnings
+    description: Machinery Inc enterprise earnings and revenue at enterprise level.
+    synonyms: []
+    tags:
+    - fact
+    - commercial
+    - construction-machinery
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: machinery.us-central-1
+      database: MACHINERY
+      schema: COMMERCIAL
+      object: FACT_ENTERPRISE_EARNINGS
+      format: table
+  grain:
+    description: One row is one enterprise earnings observation for the combination of accounting period,
+      scenario.
+    components:
+    - identity_id: accounting_period_identity
+      dataset_columns:
+      - accounting_period_id
+      description: Identifier of the accounting period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+  columns:
+  - name: accounting_period_id
+    description: Identifier of the accounting period.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: enterprise_revenue_amount
+    description: Enterprise revenue in dollars.
+  - name: enterprise_earnings_amount
+    description: Enterprise earnings in dollars.
+  - name: enterprise_operating_margin_percent
+    description: Enterprise operating margin in percent.
+  entity_definitions:
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
     entity_universe: partial
 - node_id: sf:machinery.commercial.fact_price_cost_bridge
   descriptor:
     qualified_name: machinery.commercial.fact_price_cost_bridge
-    display_name: Price cost bridge
-    description: Price realization and manufacturing cost stated as separate effects on margin, so a negative
-      price/cost outlook can be compared with a year in which manufacturing cost was a help.
+    display_name: Price Cost Bridge
+    description: Price and cost effects on margin by cost element.
+    synonyms: []
     tags:
     - fact
+    - commercial
+    - construction-machinery
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
@@ -765,133 +1033,65 @@ nodes:
       object: FACT_PRICE_COST_BRIDGE
       format: table
   grain:
-    description: One row is one segment, cost element, and accounting period.
+    description: One row is one price cost bridge observation for the combination of accounting period,
+      scenario, cat reporting segment, cost element.
     components:
-    - identity_id: price_cost_bridge_identity
+    - identity_id: accounting_period_identity
       dataset_columns:
-      - price_cost_bridge_id
-      description: One row is one segment, cost element, and accounting period.
+      - accounting_period_id
+      description: Identifier of the accounting period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: cat_reporting_segment_identity
+      dataset_columns:
+      - cat_reporting_segment_id
+      description: Identifier of the cat reporting segment.
+    - identity_id: cost_element_identity
+      dataset_columns:
+      - cost_element_id
+      description: Identifier of the cost element.
   columns:
-  - name: price_cost_bridge_id
-    description: Identifier of the price-cost bridge row. This dataset holds the complete price-cost-bridge
-      population.
-  - name: segment_id
-    description: Operating segment of the bridge.
-  - name: cost_element_id
-    description: Cost element, including manufacturing cost.
   - name: accounting_period_id
-    description: Accounting period of the bridge.
-  - name: currency_id
-    description: Currency of the effects.
-  - name: price_cost_effect_amount
-    description: Combined price/cost effect on margin. Negative means price/cost is a headwind.
-  - name: price_realization_effect_amount
-    description: Portion of the margin change from price. This is not a unit volume.
-  - name: manufacturing_cost_effect_amount
-    description: Portion of the margin change from manufacturing cost.
-  - name: prior_year_manufacturing_cost_help_flag
-    description: Whether manufacturing cost was a year-over-year help in the comparison year.
-    value_description: Y or N.
+    description: Identifier of the accounting period.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: cat_reporting_segment_id
+    description: Identifier of the cat reporting segment.
+  - name: cost_element_id
+    description: Identifier of the cost element.
+  - name: price_effect_amount
+    description: Price effect on margin in dollars.
+  - name: cost_effect_amount
+    description: Cost effect on margin in dollars.
   entity_definitions:
-  - identity_id: price_cost_bridge_identity
+  - identity_id: accounting_period_identity
     dataset_columns:
-    - price_cost_bridge_id
-    entity_universe: complete
-  - identity_id: segment_identity
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
     dataset_columns:
-    - segment_id
+    - scenario_id
+    entity_universe: partial
+  - identity_id: cat_reporting_segment_identity
+    dataset_columns:
+    - cat_reporting_segment_id
     entity_universe: partial
   - identity_id: cost_element_identity
     dataset_columns:
     - cost_element_id
     entity_universe: partial
-  - identity_id: accounting_period_identity
-    dataset_columns:
-    - accounting_period_id
-    entity_universe: partial
-  - identity_id: currency_identity
-    dataset_columns:
-    - currency_id
-    entity_universe: partial
-- node_id: sf:machinery.commercial.fact_operating_profit_outlook
-  descriptor:
-    qualified_name: machinery.commercial.fact_operating_profit_outlook
-    display_name: Operating profit outlook
-    description: The company operating-profit outlook, including where it sits in the range and whether
-      the long-term margin view changed after a higher sales outlook.
-    tags:
-    - fact
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: machinery.us-central-1
-      database: MACHINERY
-      schema: COMMERCIAL
-      object: FACT_OPERATING_PROFIT_OUTLOOK
-      format: table
-  grain:
-    description: One row is one accounting period and margin framework.
-    components:
-    - identity_id: operating_profit_outlook_identity
-      dataset_columns:
-      - operating_profit_outlook_id
-      description: One row is one accounting period and margin framework.
-  columns:
-  - name: operating_profit_outlook_id
-    description: Identifier of the operating-profit outlook. This dataset holds the complete population
-      of those outlooks.
-  - name: accounting_period_id
-    description: Accounting period of the outlook.
-  - name: margin_framework_id
-    description: Margin framework the outlook is judged against.
-  - name: currency_id
-    description: Currency of the profit and revenue amounts.
-  - name: operating_profit_amount
-    description: Operating profit in the outlook.
-  - name: revenue_amount
-    description: Revenue in the outlook.
-  - name: sales_outlook_amount
-    description: Sales outlook the margin view is being held against.
-  - name: fixed_cost_absorption_amount
-    description: Fixed-cost absorption implied by the higher sales outlook.
-  - name: range_position
-    description: Where the outlook sits in the framework.
-    value_description: top or midpoint.
-  - name: margin_view_unchanged_flag
-    description: Whether the long-term margin view is unchanged.
-    value_description: Y or N.
-  - name: framework_still_valid_flag
-    description: Whether the margin framework is still the right range.
-    value_description: Y or N.
-  - name: price_impact_direction
-    description: Direction of the price impact on the margin view.
-    value_description: positive or negative.
-  - name: pressure_condition
-    description: Condition that would move the outlook from the top of the range toward the midpoint.
-  entity_definitions:
-  - identity_id: operating_profit_outlook_identity
-    dataset_columns:
-    - operating_profit_outlook_id
-    entity_universe: complete
-  - identity_id: accounting_period_identity
-    dataset_columns:
-    - accounting_period_id
-    entity_universe: partial
-  - identity_id: margin_framework_identity
-    dataset_columns:
-    - margin_framework_id
-    entity_universe: partial
-  - identity_id: currency_identity
-    dataset_columns:
-    - currency_id
-    entity_universe: partial
 - node_id: sf:machinery.commercial.fact_manufacturing_cost
   descriptor:
     qualified_name: machinery.commercial.fact_manufacturing_cost
-    display_name: Manufacturing cost
-    description: Manufacturing cost by segment and period, including whether it was a year-over-year help.
+    display_name: Manufacturing Cost
+    description: Manufacturing cost by segment and cost element.
+    synonyms: []
     tags:
     - fact
+    - commercial
+    - construction-machinery
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
@@ -901,463 +1101,129 @@ nodes:
       object: FACT_MANUFACTURING_COST
       format: table
   grain:
-    description: One row is one segment, cost element, and accounting period.
+    description: One row is one manufacturing cost observation for the combination of accounting period,
+      scenario, cat reporting segment, cost element.
     components:
-    - identity_id: manufacturing_cost_identity
+    - identity_id: accounting_period_identity
       dataset_columns:
-      - manufacturing_cost_id
-      description: One row is one segment, cost element, and accounting period.
+      - accounting_period_id
+      description: Identifier of the accounting period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: cat_reporting_segment_identity
+      dataset_columns:
+      - cat_reporting_segment_id
+      description: Identifier of the cat reporting segment.
+    - identity_id: cost_element_identity
+      dataset_columns:
+      - cost_element_id
+      description: Identifier of the cost element.
   columns:
-  - name: manufacturing_cost_id
-    description: Identifier of the manufacturing-cost row. This dataset holds the complete manufacturing-cost
-      population.
-  - name: segment_id
-    description: Operating segment of the cost.
-  - name: cost_element_id
-    description: Manufacturing cost element.
   - name: accounting_period_id
-    description: Accounting period of the cost.
-  - name: currency_id
-    description: Currency of the cost.
+    description: Identifier of the accounting period.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: cat_reporting_segment_id
+    description: Identifier of the cat reporting segment.
+  - name: cost_element_id
+    description: Identifier of the cost element.
   - name: manufacturing_cost_amount
-    description: Manufacturing cost amount.
-  - name: year_over_year_help_flag
-    description: Whether manufacturing cost helped margin versus the prior year.
-    value_description: Y or N.
+    description: Manufacturing cost in dollars.
   entity_definitions:
-  - identity_id: manufacturing_cost_identity
+  - identity_id: accounting_period_identity
     dataset_columns:
-    - manufacturing_cost_id
-    entity_universe: complete
-  - identity_id: segment_identity
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
     dataset_columns:
-    - segment_id
+    - scenario_id
+    entity_universe: partial
+  - identity_id: cat_reporting_segment_identity
+    dataset_columns:
+    - cat_reporting_segment_id
     entity_universe: partial
   - identity_id: cost_element_identity
     dataset_columns:
     - cost_element_id
     entity_universe: partial
-  - identity_id: accounting_period_identity
-    dataset_columns:
-    - accounting_period_id
-    entity_universe: partial
-  - identity_id: currency_identity
-    dataset_columns:
-    - currency_id
-    entity_universe: partial
-- node_id: sf:machinery.commercial.fact_tariff_impact
+- node_id: sf:machinery.commercial.fact_tariff_cost
   descriptor:
-    qualified_name: machinery.commercial.fact_tariff_impact
-    display_name: Tariff impact
-    description: Tariff effect on segment margin, kept apart from price realization and from order strength.
+    qualified_name: machinery.commercial.fact_tariff_cost
+    display_name: Tariff Cost
+    description: Tariff cost by segment and country of exposure.
+    synonyms: []
     tags:
     - fact
+    - commercial
+    - construction-machinery
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: machinery.us-central-1
       database: MACHINERY
       schema: COMMERCIAL
-      object: FACT_TARIFF_IMPACT
+      object: FACT_TARIFF_COST
       format: table
   grain:
-    description: One row is one segment and accounting period.
+    description: One row is one tariff cost observation for the combination of accounting period, scenario,
+      cat reporting segment, country.
     components:
-    - identity_id: tariff_impact_identity
+    - identity_id: accounting_period_identity
       dataset_columns:
-      - tariff_impact_id
-      description: One row is one segment and accounting period.
+      - accounting_period_id
+      description: Identifier of the accounting period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: cat_reporting_segment_identity
+      dataset_columns:
+      - cat_reporting_segment_id
+      description: Identifier of the cat reporting segment.
+    - identity_id: country_identity
+      dataset_columns:
+      - country_id
+      description: Identifier of the country.
   columns:
-  - name: tariff_impact_id
-    description: Identifier of the tariff-impact row. This dataset holds the complete tariff-impact population.
-  - name: segment_id
-    description: Operating segment the tariff hits.
   - name: accounting_period_id
-    description: Accounting period of the tariff effect.
-  - name: currency_id
-    description: Currency of the tariff effect.
-  - name: tariff_margin_effect_amount
-    description: Margin effect of tariffs. Separate from price realization.
+    description: Identifier of the accounting period.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: cat_reporting_segment_id
+    description: Identifier of the cat reporting segment.
+  - name: country_id
+    description: Identifier of the country.
+  - name: tariff_cost_amount
+    description: Tariff cost in dollars.
   entity_definitions:
-  - identity_id: tariff_impact_identity
-    dataset_columns:
-    - tariff_impact_id
-    entity_universe: complete
-  - identity_id: segment_identity
-    dataset_columns:
-    - segment_id
-    entity_universe: partial
   - identity_id: accounting_period_identity
     dataset_columns:
     - accounting_period_id
     entity_universe: partial
-  - identity_id: currency_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - currency_id
+    - scenario_id
     entity_universe: partial
-- node_id: sf:machinery.commercial.fact_merchandise_program
-  descriptor:
-    qualified_name: machinery.commercial.fact_merchandise_program
-    display_name: Merchandise program
-    description: A merchandising program and the price support it provides, including when the program
-      rolls off.
-    tags:
-    - fact
-    synonyms:
-    - merchandising program
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: machinery.us-central-1
-      database: MACHINERY
-      schema: COMMERCIAL
-      object: FACT_MERCHANDISE_PROGRAM
-      format: table
-  grain:
-    description: One row is one segment, half, and accounting period.
-    components:
-    - identity_id: merchandise_program_identity
-      dataset_columns:
-      - merchandise_program_id
-      description: One row is one segment, half, and accounting period.
-  columns:
-  - name: merchandise_program_id
-    description: Identifier of the merchandise program row. This dataset holds the complete merchandise-program
-      population.
-  - name: segment_id
-    description: Operating segment of the program.
-  - name: accounting_period_id
-    description: Accounting period of the program.
-  - name: currency_id
-    description: Currency of the price support.
-  - name: half_code
-    description: Half the program applies to.
-    value_description: first_half or second_half.
-  - name: program_status
-    description: Whether the program is still running or rolling off.
-    value_description: active or rolling_off.
-  - name: price_support_amount
-    description: Price support from the program. This is not a unit volume.
-  entity_definitions:
-  - identity_id: merchandise_program_identity
+  - identity_id: cat_reporting_segment_identity
     dataset_columns:
-    - merchandise_program_id
-    entity_universe: complete
-  - identity_id: segment_identity
-    dataset_columns:
-    - segment_id
+    - cat_reporting_segment_id
     entity_universe: partial
-  - identity_id: accounting_period_identity
+  - identity_id: country_identity
     dataset_columns:
-    - accounting_period_id
-    entity_universe: partial
-  - identity_id: currency_identity
-    dataset_columns:
-    - currency_id
-    entity_universe: partial
-- node_id: sf:machinery.commercial.fact_inventory_absorption
-  descriptor:
-    qualified_name: machinery.commercial.fact_inventory_absorption
-    display_name: Inventory absorption
-    description: Margin effect of inventory absorption when sales and production change. The effect can
-      be company-wide rather than only construction.
-    tags:
-    - fact
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: machinery.us-central-1
-      database: MACHINERY
-      schema: COMMERCIAL
-      object: FACT_INVENTORY_ABSORPTION
-      format: table
-  grain:
-    description: One row is one scope and accounting period.
-    components:
-    - identity_id: inventory_absorption_identity
-      dataset_columns:
-      - inventory_absorption_id
-      description: One row is one scope and accounting period.
-  columns:
-  - name: inventory_absorption_id
-    description: Identifier of the inventory-absorption row. This dataset holds the complete inventory-absorption
-      population.
-  - name: segment_id
-    description: Operating segment, when the effect is not company-wide.
-  - name: accounting_period_id
-    description: Accounting period of the absorption effect.
-  - name: currency_id
-    description: Currency of the margin effect.
-  - name: sales_direction
-    description: Direction of company or segment sales.
-    value_description: up, slightly_lower, or down.
-  - name: absorption_margin_effect_amount
-    description: Margin effect of inventory absorption. A negative amount is a headwind.
-  - name: company_wide_flag
-    description: Whether the absorption headwind applies to the whole company, not only construction.
-    value_description: Y or N.
-  - name: production_units
-    description: Production level the absorption is based on. This is not dealer inventory.
-  entity_definitions:
-  - identity_id: inventory_absorption_identity
-    dataset_columns:
-    - inventory_absorption_id
-    entity_universe: complete
-  - identity_id: segment_identity
-    dataset_columns:
-    - segment_id
-    entity_universe: partial
-  - identity_id: accounting_period_identity
-    dataset_columns:
-    - accounting_period_id
-    entity_universe: partial
-  - identity_id: currency_identity
-    dataset_columns:
-    - currency_id
-    entity_universe: partial
-- node_id: sf:machinery.commercial.fact_sales_outlook
-  descriptor:
-    qualified_name: machinery.commercial.fact_sales_outlook
-    display_name: Sales outlook
-    description: Company sales outlook, including whether growth is modest relative to backlog and orders.
-    tags:
-    - fact
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: machinery.us-central-1
-      database: MACHINERY
-      schema: COMMERCIAL
-      object: FACT_SALES_OUTLOOK
-      format: table
-  grain:
-    description: One row is one accounting period.
-    components:
-    - identity_id: sales_outlook_identity
-      dataset_columns:
-      - sales_outlook_id
-      description: One row is one accounting period.
-  columns:
-  - name: sales_outlook_id
-    description: Identifier of the sales outlook. This dataset holds the complete sales-outlook population.
-  - name: accounting_period_id
-    description: Accounting period of the sales outlook.
-  - name: currency_id
-    description: Currency of the sales outlook.
-  - name: sales_outlook_amount
-    description: Sales amount in the outlook.
-  - name: sales_growth_rate
-    description: Sales growth rate in the outlook.
-  - name: modest_growth_flag
-    description: Whether the growth rate is the modest case being explained.
-    value_description: Y or N.
-  entity_definitions:
-  - identity_id: sales_outlook_identity
-    dataset_columns:
-    - sales_outlook_id
-    entity_universe: complete
-  - identity_id: accounting_period_identity
-    dataset_columns:
-    - accounting_period_id
-    entity_universe: partial
-  - identity_id: currency_identity
-    dataset_columns:
-    - currency_id
-    entity_universe: partial
-- node_id: sf:machinery.commercial.fact_delayed_shipment
-  descriptor:
-    qualified_name: machinery.commercial.fact_delayed_shipment
-    display_name: Delayed shipment
-    description: Energy & Transportation shipments that slipped, the period they land, and the capacity
-      that supports the following year's growth.
-    tags:
-    - fact
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: machinery.us-central-1
-      database: MACHINERY
-      schema: COMMERCIAL
-      object: FACT_DELAYED_SHIPMENT
-      format: table
-  grain:
-    description: One row is one segment and the period the delay was recognized.
-    components:
-    - identity_id: delayed_shipment_identity
-      dataset_columns:
-      - delayed_shipment_id
-      description: One row is one segment and the period the delay was recognized.
-  columns:
-  - name: delayed_shipment_id
-    description: Identifier of the delayed-shipment row. This dataset holds the complete delayed-shipment
-      population.
-  - name: segment_id
-    description: Operating segment of the delayed shipments, including Energy & Transportation.
-  - name: accounting_period_id
-    description: Period in which the shipments were delayed.
-  - name: currency_id
-    description: Currency of the shipment amounts.
-  - name: delayed_amount
-    description: Amount of shipments delayed out of the period.
-  - name: capacity_support_amount
-    description: Sales supported by new capacity after the softer year.
-  - name: prior_year_sales_amount
-    description: Sales of the softer comparison year.
-  entity_definitions:
-  - identity_id: delayed_shipment_identity
-    dataset_columns:
-    - delayed_shipment_id
-    entity_universe: complete
-  - identity_id: segment_identity
-    dataset_columns:
-    - segment_id
-    entity_universe: partial
-  - identity_id: accounting_period_identity
-    dataset_columns:
-    - accounting_period_id
-    entity_universe: partial
-  - identity_id: currency_identity
-    dataset_columns:
-    - currency_id
-    entity_universe: partial
-- node_id: sf:machinery.commercial.fact_shipment_landing
-  descriptor:
-    qualified_name: machinery.commercial.fact_shipment_landing
-    display_name: Shipment landing
-    description: The accounting period when a delayed Energy & Transportation shipment lands. Kept apart
-      from the period the delay was recognized so each row joins the calendar once.
-    tags:
-    - fact
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: machinery.us-central-1
-      database: MACHINERY
-      schema: COMMERCIAL
-      object: FACT_SHIPMENT_LANDING
-      format: table
-  grain:
-    description: One row is one segment and the period the delayed shipments land.
-    components:
-    - identity_id: shipment_landing_identity
-      dataset_columns:
-      - shipment_landing_id
-      description: One row is one segment and the period the delayed shipments land.
-  columns:
-  - name: shipment_landing_id
-    description: Identifier of the shipment-landing row. This dataset holds the complete population of
-      those landings.
-  - name: segment_id
-    description: Operating segment of the landed shipments.
-  - name: landing_period_id
-    description: Period the delayed shipments land.
-  - name: currency_id
-    description: Currency of the landed amount.
-  - name: landed_amount
-    description: Amount of previously delayed shipments that land in the period.
-  entity_definitions:
-  - identity_id: shipment_landing_identity
-    dataset_columns:
-    - shipment_landing_id
-    entity_universe: complete
-  - identity_id: segment_identity
-    dataset_columns:
-    - segment_id
-    entity_universe: partial
-  - identity_id: accounting_period_identity
-    dataset_columns:
-    - landing_period_id
-    entity_universe: partial
-  - identity_id: currency_identity
-    dataset_columns:
-    - currency_id
-    entity_universe: partial
-- node_id: sf:machinery.commercial.fact_mining_order_cycle
-  descriptor:
-    qualified_name: machinery.commercial.fact_mining_order_cycle
-    display_name: Mining order cycle
-    description: Resource Industries orders, including how they compare with 2012 and how early-year conversations
-      follow a fourth-quarter improvement.
-    tags:
-    - fact
-    synonyms:
-    - Resource Industries orders
-    - mining orders
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: machinery.us-central-1
-      database: MACHINERY
-      schema: COMMERCIAL
-      object: FACT_MINING_ORDER_CYCLE
-      format: table
-  grain:
-    description: One row is one customer, end market, and accounting period.
-    components:
-    - identity_id: mining_order_cycle_identity
-      dataset_columns:
-      - mining_order_cycle_id
-      description: One row is one customer, end market, and accounting period.
-  columns:
-  - name: mining_order_cycle_id
-    description: Identifier of the mining order-cycle row. This dataset holds the complete mining-order-cycle
-      population.
-  - name: segment_id
-    description: Resource Industries segment.
-  - name: end_market_id
-    description: Mining end market.
-  - name: customer_id
-    description: Mining customer in the conversation.
-  - name: accounting_period_id
-    description: Accounting period of the orders or the conversation.
-  - name: currency_id
-    description: Currency of the order amount.
-  - name: order_amount
-    description: Mining order amount.
-  - name: order_strength_index
-    description: Order strength relative to the comparison year. The 2012 comparison uses comparison_year.
-  - name: comparison_year
-    description: Year the order strength is compared with, including 2012.
-  - name: early_year_order_amount
-    description: Orders in the early part of the following year.
-  - name: conversation_status
-    description: Status of customer conversations.
-    value_description: progressing, steady, or quiet.
-  - name: fourth_quarter_improvement_flag
-    description: Whether the fourth quarter improved before the early-year conversations.
-    value_description: Y or N.
-  entity_definitions:
-  - identity_id: mining_order_cycle_identity
-    dataset_columns:
-    - mining_order_cycle_id
-    entity_universe: complete
-  - identity_id: segment_identity
-    dataset_columns:
-    - segment_id
-    entity_universe: partial
-  - identity_id: end_market_identity
-    dataset_columns:
-    - end_market_id
-    entity_universe: partial
-  - identity_id: customer_identity
-    dataset_columns:
-    - customer_id
-    entity_universe: partial
-  - identity_id: accounting_period_identity
-    dataset_columns:
-    - accounting_period_id
-    entity_universe: partial
-  - identity_id: currency_identity
-    dataset_columns:
-    - currency_id
+    - country_id
     entity_universe: partial
 - node_id: sf:machinery.commercial.fact_capacity_ramp_cost
   descriptor:
     qualified_name: machinery.commercial.fact_capacity_ramp_cost
-    display_name: Capacity ramp cost
-    description: Extra cost of bringing power capacity online, kept apart from the orders already in hand.
+    display_name: Capacity Ramp Cost
+    description: Extra cost of ramping power capacity.
+    synonyms: []
     tags:
     - fact
+    - commercial
+    - construction-machinery
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
@@ -1367,106 +1233,1517 @@ nodes:
       object: FACT_CAPACITY_RAMP_COST
       format: table
   grain:
-    description: One row is one power product, segment, and accounting period.
+    description: One row is one capacity ramp cost observation for the combination of accounting period,
+      scenario, power technology, cat reporting segment.
     components:
-    - identity_id: capacity_ramp_cost_identity
+    - identity_id: accounting_period_identity
       dataset_columns:
-      - capacity_ramp_cost_id
-      description: One row is one power product, segment, and accounting period.
+      - accounting_period_id
+      description: Identifier of the accounting period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: power_technology_identity
+      dataset_columns:
+      - power_technology_id
+      description: Identifier of the power technology.
+    - identity_id: cat_reporting_segment_identity
+      dataset_columns:
+      - cat_reporting_segment_id
+      description: Identifier of the cat reporting segment.
   columns:
-  - name: capacity_ramp_cost_id
-    description: Identifier of the ramp-cost row. This dataset holds the complete ramp-cost population.
-  - name: power_product_id
-    description: Power product whose capacity is being ramped.
-  - name: segment_id
-    description: Operating segment bearing the ramp cost.
   - name: accounting_period_id
-    description: Accounting period of the ramp cost.
-  - name: currency_id
-    description: Currency of the ramp cost.
-  - name: ramp_cost_amount
-    description: Extra cost of the capacity ramp. This is not the order amount and not a unit count.
-  - name: capacity_still_coming_online_flag
-    description: Whether capacity is still being added while the cost is incurred.
-    value_description: Y or N.
+    description: Identifier of the accounting period.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: power_technology_id
+    description: Identifier of the power technology.
+  - name: cat_reporting_segment_id
+    description: Identifier of the cat reporting segment.
+  - name: capacity_ramp_cost_amount
+    description: Capacity ramp cost in dollars.
   entity_definitions:
-  - identity_id: capacity_ramp_cost_identity
-    dataset_columns:
-    - capacity_ramp_cost_id
-    entity_universe: complete
-  - identity_id: power_product_identity
-    dataset_columns:
-    - power_product_id
-    entity_universe: partial
-  - identity_id: segment_identity
-    dataset_columns:
-    - segment_id
-    entity_universe: partial
   - identity_id: accounting_period_identity
     dataset_columns:
     - accounting_period_id
     entity_universe: partial
-  - identity_id: currency_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - currency_id
+    - scenario_id
     entity_universe: partial
-- node_id: sf:machinery.commercial.fact_ten_megawatt_orders
+  - identity_id: power_technology_identity
+    dataset_columns:
+    - power_technology_id
+    entity_universe: partial
+  - identity_id: cat_reporting_segment_identity
+    dataset_columns:
+    - cat_reporting_segment_id
+    entity_universe: partial
+- node_id: sf:machinery.commercial.fact_delayed_shipment_amount
   descriptor:
-    qualified_name: machinery.commercial.fact_ten_megawatt_orders
-    display_name: Ten-megawatt orders
-    description: Orders already in hand for 10-megawatt engine deliveries in a quarter, including the
-      fourth quarter.
+    qualified_name: machinery.commercial.fact_delayed_shipment_amount
+    display_name: Delayed Shipment Amount
+    description: Delayed and subsequently shipped amounts by segment.
+    synonyms: []
     tags:
     - fact
+    - commercial
+    - construction-machinery
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: machinery.us-central-1
       database: MACHINERY
       schema: COMMERCIAL
-      object: FACT_TEN_MEGAWATT_ORDERS
+      object: FACT_DELAYED_SHIPMENT_AMOUNT
       format: table
   grain:
-    description: One row is one power product and accounting period.
+    description: One row is one delayed shipment amount observation for the combination of accounting
+      period, scenario, cat reporting segment.
     components:
-    - identity_id: ten_megawatt_order_identity
+    - identity_id: accounting_period_identity
       dataset_columns:
-      - ten_megawatt_order_id
-      description: One row is one power product and accounting period.
+      - accounting_period_id
+      description: Identifier of the accounting period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: cat_reporting_segment_identity
+      dataset_columns:
+      - cat_reporting_segment_id
+      description: Identifier of the cat reporting segment.
   columns:
-  - name: ten_megawatt_order_id
-    description: Identifier of the ten-megawatt order row. This dataset holds the complete population
-      of those order rows.
-  - name: power_product_id
-    description: 10-megawatt reciprocating engine.
   - name: accounting_period_id
-    description: Delivery quarter the orders are in hand for, including the fourth quarter.
-  - name: segment_id
-    description: Power & Energy segment.
-  - name: currency_id
-    description: Currency of the order amount.
-  - name: orders_in_hand_units
-    description: Units already ordered for delivery in the quarter.
-  - name: orders_in_hand_amount
-    description: Amount already ordered for delivery in the quarter. The ramp cost is a different fact.
+    description: Identifier of the accounting period.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: cat_reporting_segment_id
+    description: Identifier of the cat reporting segment.
+  - name: delayed_shipment_amount
+    description: Delayed shipments in dollars.
+  - name: landed_shipment_amount
+    description: Previously delayed shipments landed in dollars.
   entity_definitions:
-  - identity_id: ten_megawatt_order_identity
-    dataset_columns:
-    - ten_megawatt_order_id
-    entity_universe: complete
-  - identity_id: power_product_identity
-    dataset_columns:
-    - power_product_id
-    entity_universe: partial
   - identity_id: accounting_period_identity
     dataset_columns:
     - accounting_period_id
     entity_universe: partial
-  - identity_id: segment_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - segment_id
+    - scenario_id
     entity_universe: partial
-  - identity_id: currency_identity
+  - identity_id: cat_reporting_segment_identity
     dataset_columns:
-    - currency_id
+    - cat_reporting_segment_id
+    entity_universe: partial
+- node_id: sf:machinery.truck.fact_truck_order_quantity
+  descriptor:
+    qualified_name: machinery.truck.fact_truck_order_quantity
+    display_name: Truck Order Quantity
+    description: PACCAR truck orders in units.
+    synonyms: []
+    tags:
+    - fact
+    - commercial
+    - construction-machinery
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: machinery.us-central-1
+      database: MACHINERY
+      schema: TRUCK
+      object: FACT_TRUCK_ORDER_QUANTITY
+      format: table
+  grain:
+    description: One row is one truck order quantity observation for the combination of accounting period,
+      scenario, paccar reporting segment, truck brand, vehicle class, region.
+    components:
+    - identity_id: accounting_period_identity
+      dataset_columns:
+      - accounting_period_id
+      description: Identifier of the accounting period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: paccar_reporting_segment_identity
+      dataset_columns:
+      - paccar_reporting_segment_id
+      description: Identifier of the paccar reporting segment.
+    - identity_id: truck_brand_identity
+      dataset_columns:
+      - truck_brand_id
+      description: Identifier of the truck brand.
+    - identity_id: vehicle_class_identity
+      dataset_columns:
+      - vehicle_class_id
+      description: Identifier of the vehicle class.
+    - identity_id: region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+  columns:
+  - name: accounting_period_id
+    description: Identifier of the accounting period.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: paccar_reporting_segment_id
+    description: Identifier of the paccar reporting segment.
+  - name: truck_brand_id
+    description: Identifier of the truck brand.
+  - name: vehicle_class_id
+    description: Identifier of the vehicle class.
+  - name: region_id
+    description: Identifier of the region.
+  - name: truck_order_units
+    description: Truck orders in units.
+  entity_definitions:
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: paccar_reporting_segment_identity
+    dataset_columns:
+    - paccar_reporting_segment_id
+    entity_universe: partial
+  - identity_id: truck_brand_identity
+    dataset_columns:
+    - truck_brand_id
+    entity_universe: partial
+  - identity_id: vehicle_class_identity
+    dataset_columns:
+    - vehicle_class_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:machinery.truck.fact_truck_delivery_quantity
+  descriptor:
+    qualified_name: machinery.truck.fact_truck_delivery_quantity
+    display_name: Truck Delivery Quantity
+    description: PACCAR truck deliveries in units; the denominator for truck price and profit per truck.
+    synonyms: []
+    tags:
+    - fact
+    - commercial
+    - construction-machinery
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: machinery.us-central-1
+      database: MACHINERY
+      schema: TRUCK
+      object: FACT_TRUCK_DELIVERY_QUANTITY
+      format: table
+  grain:
+    description: One row is one truck delivery quantity observation for the combination of accounting
+      period, scenario, paccar reporting segment, truck brand, vehicle class, region.
+    components:
+    - identity_id: accounting_period_identity
+      dataset_columns:
+      - accounting_period_id
+      description: Identifier of the accounting period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: paccar_reporting_segment_identity
+      dataset_columns:
+      - paccar_reporting_segment_id
+      description: Identifier of the paccar reporting segment.
+    - identity_id: truck_brand_identity
+      dataset_columns:
+      - truck_brand_id
+      description: Identifier of the truck brand.
+    - identity_id: vehicle_class_identity
+      dataset_columns:
+      - vehicle_class_id
+      description: Identifier of the vehicle class.
+    - identity_id: region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+  columns:
+  - name: accounting_period_id
+    description: Identifier of the accounting period.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: paccar_reporting_segment_id
+    description: Identifier of the paccar reporting segment.
+  - name: truck_brand_id
+    description: Identifier of the truck brand.
+  - name: vehicle_class_id
+    description: Identifier of the vehicle class.
+  - name: region_id
+    description: Identifier of the region.
+  - name: truck_delivery_units
+    description: Trucks delivered in units.
+  entity_definitions:
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: paccar_reporting_segment_identity
+    dataset_columns:
+    - paccar_reporting_segment_id
+    entity_universe: partial
+  - identity_id: truck_brand_identity
+    dataset_columns:
+    - truck_brand_id
+    entity_universe: partial
+  - identity_id: vehicle_class_identity
+    dataset_columns:
+    - vehicle_class_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:machinery.truck.fact_truck_backlog_quantity
+  descriptor:
+    qualified_name: machinery.truck.fact_truck_backlog_quantity
+    display_name: Truck Backlog Quantity
+    description: PACCAR unfilled truck orders in units.
+    synonyms: []
+    tags:
+    - fact
+    - commercial
+    - construction-machinery
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: machinery.us-central-1
+      database: MACHINERY
+      schema: TRUCK
+      object: FACT_TRUCK_BACKLOG_QUANTITY
+      format: table
+  grain:
+    description: One row is one truck backlog quantity observation for the combination of accounting period,
+      scenario, paccar reporting segment, truck brand, vehicle class.
+    components:
+    - identity_id: accounting_period_identity
+      dataset_columns:
+      - accounting_period_id
+      description: Identifier of the accounting period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: paccar_reporting_segment_identity
+      dataset_columns:
+      - paccar_reporting_segment_id
+      description: Identifier of the paccar reporting segment.
+    - identity_id: truck_brand_identity
+      dataset_columns:
+      - truck_brand_id
+      description: Identifier of the truck brand.
+    - identity_id: vehicle_class_identity
+      dataset_columns:
+      - vehicle_class_id
+      description: Identifier of the vehicle class.
+  columns:
+  - name: accounting_period_id
+    description: Identifier of the accounting period.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: paccar_reporting_segment_id
+    description: Identifier of the paccar reporting segment.
+  - name: truck_brand_id
+    description: Identifier of the truck brand.
+  - name: vehicle_class_id
+    description: Identifier of the vehicle class.
+  - name: truck_backlog_units
+    description: Unfilled truck orders in units.
+  entity_definitions:
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: paccar_reporting_segment_identity
+    dataset_columns:
+    - paccar_reporting_segment_id
+    entity_universe: partial
+  - identity_id: truck_brand_identity
+    dataset_columns:
+    - truck_brand_id
+    entity_universe: partial
+  - identity_id: vehicle_class_identity
+    dataset_columns:
+    - vehicle_class_id
+    entity_universe: partial
+- node_id: sf:machinery.truck.fact_truck_price
+  descriptor:
+    qualified_name: machinery.truck.fact_truck_price
+    display_name: Truck Price
+    description: Truck price per delivered truck; deliveries in units on the delivery quantity fact share
+      the same keys.
+    synonyms: []
+    tags:
+    - fact
+    - commercial
+    - construction-machinery
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: machinery.us-central-1
+      database: MACHINERY
+      schema: TRUCK
+      object: FACT_TRUCK_PRICE
+      format: table
+  grain:
+    description: One row is one truck price observation for the combination of accounting period, scenario,
+      paccar reporting segment, truck brand, vehicle class, region.
+    components:
+    - identity_id: accounting_period_identity
+      dataset_columns:
+      - accounting_period_id
+      description: Identifier of the accounting period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: paccar_reporting_segment_identity
+      dataset_columns:
+      - paccar_reporting_segment_id
+      description: Identifier of the paccar reporting segment.
+    - identity_id: truck_brand_identity
+      dataset_columns:
+      - truck_brand_id
+      description: Identifier of the truck brand.
+    - identity_id: vehicle_class_identity
+      dataset_columns:
+      - vehicle_class_id
+      description: Identifier of the vehicle class.
+    - identity_id: region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+  columns:
+  - name: accounting_period_id
+    description: Identifier of the accounting period.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: paccar_reporting_segment_id
+    description: Identifier of the paccar reporting segment.
+  - name: truck_brand_id
+    description: Identifier of the truck brand.
+  - name: vehicle_class_id
+    description: Identifier of the vehicle class.
+  - name: region_id
+    description: Identifier of the region.
+  - name: price_dollars_per_truck
+    description: Average price in dollars per truck.
+  - name: price_change_percent
+    description: Truck price change in percent.
+  entity_definitions:
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: paccar_reporting_segment_identity
+    dataset_columns:
+    - paccar_reporting_segment_id
+    entity_universe: partial
+  - identity_id: truck_brand_identity
+    dataset_columns:
+    - truck_brand_id
+    entity_universe: partial
+  - identity_id: vehicle_class_identity
+    dataset_columns:
+    - vehicle_class_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:machinery.truck.fact_truck_margin
+  descriptor:
+    qualified_name: machinery.truck.fact_truck_margin
+    display_name: Truck Margin
+    description: Truck gross margin and profit per truck, with no unit quantity on this fact.
+    synonyms: []
+    tags:
+    - fact
+    - commercial
+    - construction-machinery
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: machinery.us-central-1
+      database: MACHINERY
+      schema: TRUCK
+      object: FACT_TRUCK_MARGIN
+      format: table
+  grain:
+    description: One row is one truck margin observation for the combination of accounting period, scenario,
+      paccar reporting segment, truck brand, vehicle class.
+    components:
+    - identity_id: accounting_period_identity
+      dataset_columns:
+      - accounting_period_id
+      description: Identifier of the accounting period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: paccar_reporting_segment_identity
+      dataset_columns:
+      - paccar_reporting_segment_id
+      description: Identifier of the paccar reporting segment.
+    - identity_id: truck_brand_identity
+      dataset_columns:
+      - truck_brand_id
+      description: Identifier of the truck brand.
+    - identity_id: vehicle_class_identity
+      dataset_columns:
+      - vehicle_class_id
+      description: Identifier of the vehicle class.
+  columns:
+  - name: accounting_period_id
+    description: Identifier of the accounting period.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: paccar_reporting_segment_id
+    description: Identifier of the paccar reporting segment.
+  - name: truck_brand_id
+    description: Identifier of the truck brand.
+  - name: vehicle_class_id
+    description: Identifier of the vehicle class.
+  - name: gross_profit_amount
+    description: Truck gross profit in dollars.
+  - name: gross_margin_percent
+    description: Truck gross margin in percent.
+  - name: profit_dollars_per_truck
+    description: Gross profit in dollars per truck.
+  entity_definitions:
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: paccar_reporting_segment_identity
+    dataset_columns:
+    - paccar_reporting_segment_id
+    entity_universe: partial
+  - identity_id: truck_brand_identity
+    dataset_columns:
+    - truck_brand_id
+    entity_universe: partial
+  - identity_id: vehicle_class_identity
+    dataset_columns:
+    - vehicle_class_id
+    entity_universe: partial
+- node_id: sf:machinery.truck.fact_truck_market_quantity
+  descriptor:
+    qualified_name: machinery.truck.fact_truck_market_quantity
+    display_name: Truck Market Quantity
+    description: Industry truck retail market in units by vehicle class and region.
+    synonyms: []
+    tags:
+    - fact
+    - commercial
+    - construction-machinery
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: machinery.us-central-1
+      database: MACHINERY
+      schema: TRUCK
+      object: FACT_TRUCK_MARKET_QUANTITY
+      format: table
+  grain:
+    description: One row is one truck market quantity observation for the combination of accounting period,
+      scenario, vehicle class, region.
+    components:
+    - identity_id: accounting_period_identity
+      dataset_columns:
+      - accounting_period_id
+      description: Identifier of the accounting period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: vehicle_class_identity
+      dataset_columns:
+      - vehicle_class_id
+      description: Identifier of the vehicle class.
+    - identity_id: region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+  columns:
+  - name: accounting_period_id
+    description: Identifier of the accounting period.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: vehicle_class_id
+    description: Identifier of the vehicle class.
+  - name: region_id
+    description: Identifier of the region.
+  - name: industry_retail_units
+    description: Industry retail trucks in units.
+  entity_definitions:
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: vehicle_class_identity
+    dataset_columns:
+    - vehicle_class_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:machinery.truck.fact_paccar_parts_quantity
+  descriptor:
+    qualified_name: machinery.truck.fact_paccar_parts_quantity
+    display_name: PACCAR Parts Quantity
+    description: PACCAR parts sold in units by fleet type.
+    synonyms: []
+    tags:
+    - fact
+    - commercial
+    - construction-machinery
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: machinery.us-central-1
+      database: MACHINERY
+      schema: TRUCK
+      object: FACT_PACCAR_PARTS_QUANTITY
+      format: table
+  grain:
+    description: One row is one paccar parts quantity observation for the combination of accounting period,
+      scenario, paccar reporting segment, customer fleet type.
+    components:
+    - identity_id: accounting_period_identity
+      dataset_columns:
+      - accounting_period_id
+      description: Identifier of the accounting period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: paccar_reporting_segment_identity
+      dataset_columns:
+      - paccar_reporting_segment_id
+      description: Identifier of the paccar reporting segment.
+    - identity_id: customer_fleet_type_identity
+      dataset_columns:
+      - customer_fleet_type_id
+      description: Identifier of the customer fleet type.
+  columns:
+  - name: accounting_period_id
+    description: Identifier of the accounting period.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: paccar_reporting_segment_id
+    description: Identifier of the paccar reporting segment.
+  - name: customer_fleet_type_id
+    description: Identifier of the customer fleet type.
+  - name: parts_units
+    description: Parts sold in units.
+  entity_definitions:
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: paccar_reporting_segment_identity
+    dataset_columns:
+    - paccar_reporting_segment_id
+    entity_universe: partial
+  - identity_id: customer_fleet_type_identity
+    dataset_columns:
+    - customer_fleet_type_id
+    entity_universe: partial
+- node_id: sf:machinery.truck.fact_paccar_parts_amount
+  descriptor:
+    qualified_name: machinery.truck.fact_paccar_parts_amount
+    display_name: PACCAR Parts Amount
+    description: PACCAR parts revenue and margin amount.
+    synonyms: []
+    tags:
+    - fact
+    - commercial
+    - construction-machinery
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: machinery.us-central-1
+      database: MACHINERY
+      schema: TRUCK
+      object: FACT_PACCAR_PARTS_AMOUNT
+      format: table
+  grain:
+    description: One row is one paccar parts amount observation for the combination of accounting period,
+      scenario, paccar reporting segment, customer fleet type.
+    components:
+    - identity_id: accounting_period_identity
+      dataset_columns:
+      - accounting_period_id
+      description: Identifier of the accounting period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: paccar_reporting_segment_identity
+      dataset_columns:
+      - paccar_reporting_segment_id
+      description: Identifier of the paccar reporting segment.
+    - identity_id: customer_fleet_type_identity
+      dataset_columns:
+      - customer_fleet_type_id
+      description: Identifier of the customer fleet type.
+  columns:
+  - name: accounting_period_id
+    description: Identifier of the accounting period.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: paccar_reporting_segment_id
+    description: Identifier of the paccar reporting segment.
+  - name: customer_fleet_type_id
+    description: Identifier of the customer fleet type.
+  - name: parts_revenue_amount
+    description: Parts revenue in dollars.
+  - name: parts_margin_percent
+    description: Parts margin in percent.
+  entity_definitions:
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: paccar_reporting_segment_identity
+    dataset_columns:
+    - paccar_reporting_segment_id
+    entity_universe: partial
+  - identity_id: customer_fleet_type_identity
+    dataset_columns:
+    - customer_fleet_type_id
+    entity_universe: partial
+- node_id: sf:machinery.commercial.fact_machine_parts_amount
+  descriptor:
+    qualified_name: machinery.commercial.fact_machine_parts_amount
+    display_name: Machine Parts Amount
+    description: Caterpillar machine parts revenue by segment.
+    synonyms: []
+    tags:
+    - fact
+    - commercial
+    - construction-machinery
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: machinery.us-central-1
+      database: MACHINERY
+      schema: COMMERCIAL
+      object: FACT_MACHINE_PARTS_AMOUNT
+      format: table
+  grain:
+    description: One row is one machine parts amount observation for the combination of accounting period,
+      scenario, cat reporting segment.
+    components:
+    - identity_id: accounting_period_identity
+      dataset_columns:
+      - accounting_period_id
+      description: Identifier of the accounting period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: cat_reporting_segment_identity
+      dataset_columns:
+      - cat_reporting_segment_id
+      description: Identifier of the cat reporting segment.
+  columns:
+  - name: accounting_period_id
+    description: Identifier of the accounting period.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: cat_reporting_segment_id
+    description: Identifier of the cat reporting segment.
+  - name: parts_revenue_amount
+    description: Machine parts revenue in dollars.
+  entity_definitions:
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: cat_reporting_segment_identity
+    dataset_columns:
+    - cat_reporting_segment_id
+    entity_universe: partial
+- node_id: sf:machinery.commercial.fact_financial_services_amount
+  descriptor:
+    qualified_name: machinery.commercial.fact_financial_services_amount
+    display_name: Financial Services Amount
+    description: Finance and lease revenue by the reporting segment that owns the finance business.
+    synonyms: []
+    tags:
+    - fact
+    - commercial
+    - construction-machinery
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: machinery.us-central-1
+      database: MACHINERY
+      schema: COMMERCIAL
+      object: FACT_FINANCIAL_SERVICES_AMOUNT
+      format: table
+  grain:
+    description: One row is one financial services amount observation for the combination of accounting
+      period, scenario, cat reporting segment.
+    components:
+    - identity_id: accounting_period_identity
+      dataset_columns:
+      - accounting_period_id
+      description: Identifier of the accounting period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: cat_reporting_segment_identity
+      dataset_columns:
+      - cat_reporting_segment_id
+      description: Identifier of the cat reporting segment.
+  columns:
+  - name: accounting_period_id
+    description: Identifier of the accounting period.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: cat_reporting_segment_id
+    description: Identifier of the cat reporting segment.
+  - name: financial_services_revenue_amount
+    description: Caterpillar financial services revenue in dollars.
+  entity_definitions:
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: cat_reporting_segment_identity
+    dataset_columns:
+    - cat_reporting_segment_id
+    entity_universe: partial
+- node_id: sf:machinery.truck.fact_paccar_financial_amount
+  descriptor:
+    qualified_name: machinery.truck.fact_paccar_financial_amount
+    display_name: PACCAR Financial Amount
+    description: PACCAR financial services and lease amount.
+    synonyms: []
+    tags:
+    - fact
+    - commercial
+    - construction-machinery
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: machinery.us-central-1
+      database: MACHINERY
+      schema: TRUCK
+      object: FACT_PACCAR_FINANCIAL_AMOUNT
+      format: table
+  grain:
+    description: One row is one paccar financial amount observation for the combination of accounting
+      period, scenario, paccar reporting segment.
+    components:
+    - identity_id: accounting_period_identity
+      dataset_columns:
+      - accounting_period_id
+      description: Identifier of the accounting period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: paccar_reporting_segment_identity
+      dataset_columns:
+      - paccar_reporting_segment_id
+      description: Identifier of the paccar reporting segment.
+  columns:
+  - name: accounting_period_id
+    description: Identifier of the accounting period.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: paccar_reporting_segment_id
+    description: Identifier of the paccar reporting segment.
+  - name: financial_services_revenue_amount
+    description: PACCAR financial services revenue in dollars.
+  - name: lease_revenue_amount
+    description: Lease and rental revenue in dollars.
+  entity_definitions:
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: paccar_reporting_segment_identity
+    dataset_columns:
+    - paccar_reporting_segment_id
+    entity_universe: partial
+- node_id: sf:machinery.truck.fact_emissions_compliance_cost
+  descriptor:
+    qualified_name: machinery.truck.fact_emissions_compliance_cost
+    display_name: Emissions Compliance Cost
+    description: Emissions compliance cost and noncompliance penalty per truck; truck deliveries share
+      brand and class keys.
+    synonyms: []
+    tags:
+    - fact
+    - commercial
+    - construction-machinery
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: machinery.us-central-1
+      database: MACHINERY
+      schema: TRUCK
+      object: FACT_EMISSIONS_COMPLIANCE_COST
+      format: table
+  grain:
+    description: One row is one emissions compliance cost observation for the combination of accounting
+      period, scenario, truck brand, vehicle class, emissions standard.
+    components:
+    - identity_id: accounting_period_identity
+      dataset_columns:
+      - accounting_period_id
+      description: Identifier of the accounting period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: truck_brand_identity
+      dataset_columns:
+      - truck_brand_id
+      description: Identifier of the truck brand.
+    - identity_id: vehicle_class_identity
+      dataset_columns:
+      - vehicle_class_id
+      description: Identifier of the vehicle class.
+    - identity_id: emissions_standard_identity
+      dataset_columns:
+      - emissions_standard_id
+      description: Identifier of the emissions standard.
+  columns:
+  - name: accounting_period_id
+    description: Identifier of the accounting period.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: truck_brand_id
+    description: Identifier of the truck brand.
+  - name: vehicle_class_id
+    description: Identifier of the vehicle class.
+  - name: emissions_standard_id
+    description: Identifier of the emissions standard.
+  - name: compliance_cost_dollars_per_truck
+    description: Compliance cost in dollars per truck.
+  - name: penalty_dollars_per_truck
+    description: Noncompliance penalty in dollars per truck.
+  entity_definitions:
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: truck_brand_identity
+    dataset_columns:
+    - truck_brand_id
+    entity_universe: partial
+  - identity_id: vehicle_class_identity
+    dataset_columns:
+    - vehicle_class_id
+    entity_universe: partial
+  - identity_id: emissions_standard_identity
+    dataset_columns:
+    - emissions_standard_id
+    entity_universe: partial
+- node_id: sf:machinery.truck.fact_freight_market_quantity
+  descriptor:
+    qualified_name: machinery.truck.fact_freight_market_quantity
+    display_name: Freight Market Quantity
+    description: Freight loads and freight rate context for truck demand.
+    synonyms: []
+    tags:
+    - fact
+    - commercial
+    - construction-machinery
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: machinery.us-central-1
+      database: MACHINERY
+      schema: TRUCK
+      object: FACT_FREIGHT_MARKET_QUANTITY
+      format: table
+  grain:
+    description: One row is one freight market quantity observation for the combination of accounting
+      period, scenario, region.
+    components:
+    - identity_id: accounting_period_identity
+      dataset_columns:
+      - accounting_period_id
+      description: Identifier of the accounting period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+  columns:
+  - name: accounting_period_id
+    description: Identifier of the accounting period.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: region_id
+    description: Identifier of the region.
+  - name: freight_load_count
+    description: Freight loads in loads.
+  entity_definitions:
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:machinery.truck.fact_truck_production_quantity
+  descriptor:
+    qualified_name: machinery.truck.fact_truck_production_quantity
+    display_name: Truck Production Quantity
+    description: Truck production and build slots by brand and region.
+    synonyms: []
+    tags:
+    - fact
+    - commercial
+    - construction-machinery
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: machinery.us-central-1
+      database: MACHINERY
+      schema: TRUCK
+      object: FACT_TRUCK_PRODUCTION_QUANTITY
+      format: table
+  grain:
+    description: One row is one truck production quantity observation for the combination of accounting
+      period, scenario, truck brand, vehicle class, region.
+    components:
+    - identity_id: accounting_period_identity
+      dataset_columns:
+      - accounting_period_id
+      description: Identifier of the accounting period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: truck_brand_identity
+      dataset_columns:
+      - truck_brand_id
+      description: Identifier of the truck brand.
+    - identity_id: vehicle_class_identity
+      dataset_columns:
+      - vehicle_class_id
+      description: Identifier of the vehicle class.
+    - identity_id: region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+  columns:
+  - name: accounting_period_id
+    description: Identifier of the accounting period.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: truck_brand_id
+    description: Identifier of the truck brand.
+  - name: vehicle_class_id
+    description: Identifier of the vehicle class.
+  - name: region_id
+    description: Identifier of the region.
+  - name: truck_production_units
+    description: Trucks produced in units.
+  - name: build_slot_count
+    description: Build slots in slots.
+  entity_definitions:
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: truck_brand_identity
+    dataset_columns:
+    - truck_brand_id
+    entity_universe: partial
+  - identity_id: vehicle_class_identity
+    dataset_columns:
+    - vehicle_class_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:machinery.truck.fact_truck_supplier_capacity
+  descriptor:
+    qualified_name: machinery.truck.fact_truck_supplier_capacity
+    display_name: Truck Supplier Capacity
+    description: Supplier capacity for truck components in units.
+    synonyms: []
+    tags:
+    - fact
+    - commercial
+    - construction-machinery
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: machinery.us-central-1
+      database: MACHINERY
+      schema: TRUCK
+      object: FACT_TRUCK_SUPPLIER_CAPACITY
+      format: table
+  grain:
+    description: One row is one truck supplier capacity observation for the combination of accounting
+      period, scenario, supplier, truck component.
+    components:
+    - identity_id: accounting_period_identity
+      dataset_columns:
+      - accounting_period_id
+      description: Identifier of the accounting period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: supplier_identity
+      dataset_columns:
+      - supplier_id
+      description: Identifier of the supplier.
+    - identity_id: truck_component_identity
+      dataset_columns:
+      - truck_component_id
+      description: Identifier of the truck component.
+  columns:
+  - name: accounting_period_id
+    description: Identifier of the accounting period.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: supplier_id
+    description: Identifier of the supplier.
+  - name: truck_component_id
+    description: Identifier of the truck component.
+  - name: component_capacity_units
+    description: Component capacity in units.
+  entity_definitions:
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: supplier_identity
+    dataset_columns:
+    - supplier_id
+    entity_universe: partial
+  - identity_id: truck_component_identity
+    dataset_columns:
+    - truck_component_id
+    entity_universe: partial
+- node_id: sf:machinery.commercial.fact_merchandise_price_support
+  descriptor:
+    qualified_name: machinery.commercial.fact_merchandise_price_support
+    display_name: Merchandise Price Support
+    description: Merchandise program price support amount.
+    synonyms: []
+    tags:
+    - fact
+    - commercial
+    - construction-machinery
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: machinery.us-central-1
+      database: MACHINERY
+      schema: COMMERCIAL
+      object: FACT_MERCHANDISE_PRICE_SUPPORT
+      format: table
+  grain:
+    description: One row is one merchandise price support observation for the combination of accounting
+      period, scenario, cat reporting segment.
+    components:
+    - identity_id: accounting_period_identity
+      dataset_columns:
+      - accounting_period_id
+      description: Identifier of the accounting period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: cat_reporting_segment_identity
+      dataset_columns:
+      - cat_reporting_segment_id
+      description: Identifier of the cat reporting segment.
+  columns:
+  - name: accounting_period_id
+    description: Identifier of the accounting period.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: cat_reporting_segment_id
+    description: Identifier of the cat reporting segment.
+  - name: price_support_amount
+    description: Merchandise price support in dollars.
+  entity_definitions:
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: cat_reporting_segment_identity
+    dataset_columns:
+    - cat_reporting_segment_id
+    entity_universe: partial
+- node_id: sf:machinery.truck.fact_truck_market_share
+  descriptor:
+    qualified_name: machinery.truck.fact_truck_market_share
+    display_name: Truck Market Share
+    description: PACCAR share of industry truck retail units; industry units on the truck market quantity
+      fact share vehicle class and region keys.
+    synonyms: []
+    tags:
+    - fact
+    - commercial
+    - construction-machinery
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: machinery.us-central-1
+      database: MACHINERY
+      schema: TRUCK
+      object: FACT_TRUCK_MARKET_SHARE
+      format: table
+  grain:
+    description: One row is one truck market share observation for the combination of accounting period,
+      scenario, vehicle class, region.
+    components:
+    - identity_id: accounting_period_identity
+      dataset_columns:
+      - accounting_period_id
+      description: Identifier of the accounting period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: vehicle_class_identity
+      dataset_columns:
+      - vehicle_class_id
+      description: Identifier of the vehicle class.
+    - identity_id: region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+  columns:
+  - name: accounting_period_id
+    description: Identifier of the accounting period.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: vehicle_class_id
+    description: Identifier of the vehicle class.
+  - name: region_id
+    description: Identifier of the region.
+  - name: market_share_percent
+    description: Share of industry retail trucks in percent.
+  entity_definitions:
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: vehicle_class_identity
+    dataset_columns:
+    - vehicle_class_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:machinery.truck.fact_emissions_credit_quantity
+  descriptor:
+    qualified_name: machinery.truck.fact_emissions_credit_quantity
+    display_name: Emissions Credit Quantity
+    description: Emissions credits held in credits by truck brand, vehicle class, and standard.
+    synonyms: []
+    tags:
+    - fact
+    - commercial
+    - construction-machinery
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: machinery.us-central-1
+      database: MACHINERY
+      schema: TRUCK
+      object: FACT_EMISSIONS_CREDIT_QUANTITY
+      format: table
+  grain:
+    description: One row is one emissions credit quantity observation for the combination of accounting
+      period, scenario, truck brand, vehicle class, emissions standard.
+    components:
+    - identity_id: accounting_period_identity
+      dataset_columns:
+      - accounting_period_id
+      description: Identifier of the accounting period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: truck_brand_identity
+      dataset_columns:
+      - truck_brand_id
+      description: Identifier of the truck brand.
+    - identity_id: vehicle_class_identity
+      dataset_columns:
+      - vehicle_class_id
+      description: Identifier of the vehicle class.
+    - identity_id: emissions_standard_identity
+      dataset_columns:
+      - emissions_standard_id
+      description: Identifier of the emissions standard.
+  columns:
+  - name: accounting_period_id
+    description: Identifier of the accounting period.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: truck_brand_id
+    description: Identifier of the truck brand.
+  - name: vehicle_class_id
+    description: Identifier of the vehicle class.
+  - name: emissions_standard_id
+    description: Identifier of the emissions standard.
+  - name: emissions_credit_count
+    description: Emissions credits in credits.
+  entity_definitions:
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: truck_brand_identity
+    dataset_columns:
+    - truck_brand_id
+    entity_universe: partial
+  - identity_id: vehicle_class_identity
+    dataset_columns:
+    - vehicle_class_id
+    entity_universe: partial
+  - identity_id: emissions_standard_identity
+    dataset_columns:
+    - emissions_standard_id
+    entity_universe: partial
+- node_id: sf:machinery.truck.fact_freight_rate
+  descriptor:
+    qualified_name: machinery.truck.fact_freight_rate
+    display_name: Freight Rate
+    description: Freight rate per mile by region, a rate fact with no load quantity.
+    synonyms: []
+    tags:
+    - fact
+    - commercial
+    - construction-machinery
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: machinery.us-central-1
+      database: MACHINERY
+      schema: TRUCK
+      object: FACT_FREIGHT_RATE
+      format: table
+  grain:
+    description: One row is one freight rate observation for the combination of accounting period, scenario,
+      region.
+    components:
+    - identity_id: accounting_period_identity
+      dataset_columns:
+      - accounting_period_id
+      description: Identifier of the accounting period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+  columns:
+  - name: accounting_period_id
+    description: Identifier of the accounting period.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: region_id
+    description: Identifier of the region.
+  - name: freight_rate_dollars_per_mile
+    description: Freight rate in dollars per mile.
+  entity_definitions:
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:machinery.truck.fact_truck_dealer_inventory_quantity
+  descriptor:
+    qualified_name: machinery.truck.fact_truck_dealer_inventory_quantity
+    display_name: Truck Dealer Inventory Quantity
+    description: PACCAR dealer truck stock in units; truck dealer stock is inventory, not a retail channel.
+    synonyms: []
+    tags:
+    - fact
+    - commercial
+    - construction-machinery
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: machinery.us-central-1
+      database: MACHINERY
+      schema: TRUCK
+      object: FACT_TRUCK_DEALER_INVENTORY_QUANTITY
+      format: table
+  grain:
+    description: One row is one truck dealer inventory quantity observation for the combination of accounting
+      period, scenario, paccar dealer, truck brand, vehicle class, region.
+    components:
+    - identity_id: accounting_period_identity
+      dataset_columns:
+      - accounting_period_id
+      description: Identifier of the accounting period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: paccar_dealer_identity
+      dataset_columns:
+      - paccar_dealer_id
+      description: Identifier of the paccar dealer.
+    - identity_id: truck_brand_identity
+      dataset_columns:
+      - truck_brand_id
+      description: Identifier of the truck brand.
+    - identity_id: vehicle_class_identity
+      dataset_columns:
+      - vehicle_class_id
+      description: Identifier of the vehicle class.
+    - identity_id: region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+  columns:
+  - name: accounting_period_id
+    description: Identifier of the accounting period.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: paccar_dealer_id
+    description: Identifier of the paccar dealer.
+  - name: truck_brand_id
+    description: Identifier of the truck brand.
+  - name: vehicle_class_id
+    description: Identifier of the vehicle class.
+  - name: region_id
+    description: Identifier of the region.
+  - name: dealer_stock_units
+    description: Trucks in dealer stock in units.
+  - name: dealer_stock_change_units
+    description: Change in dealer stock trucks in units.
+  entity_definitions:
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: paccar_dealer_identity
+    dataset_columns:
+    - paccar_dealer_id
+    entity_universe: partial
+  - identity_id: truck_brand_identity
+    dataset_columns:
+    - truck_brand_id
+    entity_universe: partial
+  - identity_id: vehicle_class_identity
+    dataset_columns:
+    - vehicle_class_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
     entity_universe: partial

@@ -1,97 +1,92 @@
 schema_version: '3'
 nodes:
-- node_id: sf:airline.fleet.dim_aircraft_type
+- node_id: sf:airline.fleet.dim_aircraft_model
   descriptor:
-    qualified_name: airline.fleet.dim_aircraft_type
-    display_name: Aircraft Type
-    description: Aircraft type Airline Inc flies or is considering.
+    qualified_name: airline.fleet.dim_aircraft_model
+    display_name: Aircraft Model
+    description: Specific aircraft model operated by Airline Inc.
     synonyms: []
     tags:
-    - dim
+    - dimension
     - supply_fleet
-    - airline
+    - passenger-airlines
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: airline.us-central-1
       database: AIRLINE
       schema: FLEET
-      object: DIM_AIRCRAFT_TYPE
+      object: DIM_AIRCRAFT_MODEL
       format: table
   grain:
-    description: One row is one aircraft type.
+    description: One row is one aircraft model, identified by aircraft_model_id.
     components:
-    - identity_id: aircraft_type_identity
+    - identity_id: aircraft_model_identity
       dataset_columns:
-      - aircraft_type_id
-      description: Identifier of the aircraft type.
+      - aircraft_model_id
+      description: Identifier of the aircraft model.
   columns:
-  - name: aircraft_type_id
-    description: Identifier of the aircraft type.
-  - name: type_name
-    description: Name of the type.
-  - name: type_code
-    description: Type code.
-    value_description: narrow_body, wide_body, long_range_narrowbody, new_gauge
+  - name: aircraft_model_id
+    description: Identifier of the aircraft model.
+  - name: aircraft_model_name
+    description: Name of the aircraft model.
+  - name: aircraft_model_code
+    description: Code of the aircraft model.
+    value_description: boeing_737_800, boeing_737_max_9, airbus_a321neo, airbus_a220_300, boeing_767_300,
+      airbus_a330_900, boeing_787_9, airbus_a350_900, embraer_e175
   entity_definitions:
-  - identity_id: aircraft_type_identity
+  - identity_id: aircraft_model_identity
     dataset_columns:
-    - aircraft_type_id
+    - aircraft_model_id
     entity_universe: complete
-- node_id: sf:airline.fleet.dim_fleet_family
+- node_id: sf:airline.fleet.dim_fleet_category
   descriptor:
-    qualified_name: airline.fleet.dim_fleet_family
-    display_name: Fleet Family
-    description: Fleet family in the Airline Inc plan.
+    qualified_name: airline.fleet.dim_fleet_category
+    display_name: Fleet Category
+    description: Fleet category of an aircraft model.
     synonyms: []
     tags:
-    - dim
+    - dimension
     - supply_fleet
-    - airline
+    - passenger-airlines
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: airline.us-central-1
       database: AIRLINE
       schema: FLEET
-      object: DIM_FLEET_FAMILY
+      object: DIM_FLEET_CATEGORY
       format: table
   grain:
-    description: One row is one fleet family.
+    description: One row is one fleet category, identified by fleet_category_id.
     components:
-    - identity_id: fleet_family_identity
+    - identity_id: fleet_category_identity
       dataset_columns:
-      - fleet_family_id
-      description: Identifier of the fleet family.
+      - fleet_category_id
+      description: Identifier of the fleet category.
   columns:
-  - name: fleet_family_id
-    description: Identifier of the fleet family.
-  - name: aircraft_type_id
-    description: Aircraft type in the family.
-  - name: family_name
-    description: Name of the family.
-  - name: family_code
-    description: Family code.
-    value_description: mainline_narrow, mainline_wide, regional
+  - name: fleet_category_id
+    description: Identifier of the fleet category.
+  - name: fleet_category_name
+    description: Name of the fleet category.
+  - name: fleet_category_code
+    description: Code of the fleet category.
+    value_description: mainline_narrowbody, mainline_widebody, regional_jet
   entity_definitions:
-  - identity_id: fleet_family_identity
+  - identity_id: fleet_category_identity
     dataset_columns:
-    - fleet_family_id
+    - fleet_category_id
     entity_universe: complete
-  - identity_id: aircraft_type_identity
-    dataset_columns:
-    - aircraft_type_id
-    entity_universe: partial
 - node_id: sf:airline.fleet.dim_manufacturer
   descriptor:
     qualified_name: airline.fleet.dim_manufacturer
     display_name: Manufacturer
-    description: Aircraft manufacturer supplying Airline Inc.
+    description: Aircraft manufacturer.
     synonyms: []
     tags:
-    - dim
+    - dimension
     - supply_fleet
-    - airline
+    - passenger-airlines
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
@@ -101,7 +96,7 @@ nodes:
       object: DIM_MANUFACTURER
       format: table
   grain:
-    description: One row is one manufacturer.
+    description: One row is one manufacturer, identified by manufacturer_id.
     components:
     - identity_id: manufacturer_identity
       dataset_columns:
@@ -113,144 +108,137 @@ nodes:
   - name: manufacturer_name
     description: Name of the manufacturer.
   - name: manufacturer_code
-    description: Manufacturer code.
-    value_description: airbus, boeing
+    description: Code of the manufacturer.
+    value_description: airbus, boeing, embraer
   entity_definitions:
   - identity_id: manufacturer_identity
     dataset_columns:
     - manufacturer_id
     entity_universe: complete
-- node_id: sf:airline.fleet.dim_fuel_region
+- node_id: sf:airline.fleet.dim_maintenance_type
   descriptor:
-    qualified_name: airline.fleet.dim_fuel_region
-    display_name: Fuel Region
-    description: Region where Airline Inc sources jet fuel.
+    qualified_name: airline.fleet.dim_maintenance_type
+    display_name: Maintenance Type
+    description: Type of maintenance work.
     synonyms: []
     tags:
-    - dim
+    - dimension
     - supply_fleet
-    - airline
+    - passenger-airlines
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: airline.us-central-1
       database: AIRLINE
       schema: FLEET
-      object: DIM_FUEL_REGION
+      object: DIM_MAINTENANCE_TYPE
       format: table
   grain:
-    description: One row is one fuel region.
+    description: One row is one maintenance type, identified by maintenance_type_id.
     components:
-    - identity_id: fuel_region_identity
+    - identity_id: maintenance_type_identity
       dataset_columns:
-      - fuel_region_id
-      description: Identifier of the fuel region.
+      - maintenance_type_id
+      description: Identifier of the maintenance type.
   columns:
-  - name: fuel_region_id
-    description: Identifier of the fuel region.
-  - name: fuel_region_name
-    description: Name of the fuel region.
-  - name: fuel_region_code
-    description: Fuel region code.
-    value_description: asia_pacific, europe, domestic, middle_east
+  - name: maintenance_type_id
+    description: Identifier of the maintenance type.
+  - name: maintenance_type_name
+    description: Name of the maintenance type.
+  - name: maintenance_type_code
+    description: Code of the maintenance type.
+    value_description: engine_overhaul, airframe_heavy_check, line_maintenance, component_repair
   entity_definitions:
-  - identity_id: fuel_region_identity
+  - identity_id: maintenance_type_identity
     dataset_columns:
-    - fuel_region_id
+    - maintenance_type_id
     entity_universe: complete
-- node_id: sf:airline.fleet.dim_maintenance_shop
+- node_id: sf:airline.fleet.dim_maintenance_provider
   descriptor:
-    qualified_name: airline.fleet.dim_maintenance_shop
-    display_name: Maintenance Shop
-    description: Engine and airframe shop Airline Inc uses.
+    qualified_name: airline.fleet.dim_maintenance_provider
+    display_name: Maintenance Provider
+    description: Provider of maintenance work, separate from maintenance type.
     synonyms: []
     tags:
-    - dim
+    - dimension
     - supply_fleet
-    - airline
+    - passenger-airlines
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: airline.us-central-1
       database: AIRLINE
       schema: FLEET
-      object: DIM_MAINTENANCE_SHOP
+      object: DIM_MAINTENANCE_PROVIDER
       format: table
   grain:
-    description: One row is one maintenance shop.
+    description: One row is one maintenance provider, identified by maintenance_provider_id.
     components:
-    - identity_id: maintenance_shop_identity
+    - identity_id: maintenance_provider_identity
       dataset_columns:
-      - maintenance_shop_id
-      description: Identifier of the maintenance shop.
+      - maintenance_provider_id
+      description: Identifier of the maintenance provider.
   columns:
-  - name: maintenance_shop_id
-    description: Identifier of the maintenance shop.
-  - name: shop_name
-    description: Name of the shop.
-  - name: shop_code
-    description: Shop code.
-    value_description: engine, airframe, in_house, vendor
-  - name: in_house_flag
-    description: Whether the shop is in house.
+  - name: maintenance_provider_id
+    description: Identifier of the maintenance provider.
+  - name: maintenance_provider_name
+    description: Name of the maintenance provider.
+  - name: maintenance_provider_code
+    description: Code of the maintenance provider.
+    value_description: in_house, third_party_vendor
   entity_definitions:
-  - identity_id: maintenance_shop_identity
+  - identity_id: maintenance_provider_identity
     dataset_columns:
-    - maintenance_shop_id
+    - maintenance_provider_id
     entity_universe: complete
-- node_id: sf:airline.fleet.dim_airport
+- node_id: sf:airline.fleet.dim_cargo_type
   descriptor:
-    qualified_name: airline.fleet.dim_airport
-    display_name: Airport
-    description: Airport in the Airline Inc network.
+    qualified_name: airline.fleet.dim_cargo_type
+    display_name: Cargo Type
+    description: Type of cargo carried.
     synonyms: []
     tags:
-    - dim
+    - dimension
     - supply_fleet
-    - airline
+    - passenger-airlines
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: airline.us-central-1
       database: AIRLINE
       schema: FLEET
-      object: DIM_AIRPORT
+      object: DIM_CARGO_TYPE
       format: table
   grain:
-    description: One row is one airport.
+    description: One row is one cargo type, identified by cargo_type_id.
     components:
-    - identity_id: airport_identity
+    - identity_id: cargo_type_identity
       dataset_columns:
-      - airport_id
-      description: Identifier of the airport.
+      - cargo_type_id
+      description: Identifier of the cargo type.
   columns:
-  - name: airport_id
-    description: Identifier of the airport.
-  - name: city_id
-    description: City.
-  - name: airport_name
-    description: Name of the airport.
-  - name: airport_code
-    description: Airport code.
+  - name: cargo_type_id
+    description: Identifier of the cargo type.
+  - name: cargo_type_name
+    description: Name of the cargo type.
+  - name: cargo_type_code
+    description: Code of the cargo type.
+    value_description: belly_freight, mail, express_package, perishable_freight
   entity_definitions:
-  - identity_id: airport_identity
+  - identity_id: cargo_type_identity
     dataset_columns:
-    - airport_id
+    - cargo_type_id
     entity_universe: complete
-  - identity_id: city_identity
-    dataset_columns:
-    - city_id
-    entity_universe: partial
 - node_id: sf:airline.fleet.dim_labor_group
   descriptor:
     qualified_name: airline.fleet.dim_labor_group
     display_name: Labor Group
-    description: Labor group at Airline Inc.
+    description: Airline labor group.
     synonyms: []
     tags:
-    - dim
+    - dimension
     - supply_fleet
-    - airline
+    - passenger-airlines
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
@@ -260,7 +248,7 @@ nodes:
       object: DIM_LABOR_GROUP
       format: table
   grain:
-    description: One row is one labor group.
+    description: One row is one labor group, identified by labor_group_id.
     components:
     - identity_id: labor_group_identity
       dataset_columns:
@@ -269,450 +257,94 @@ nodes:
   columns:
   - name: labor_group_id
     description: Identifier of the labor group.
-  - name: group_name
-    description: Name of the group.
-  - name: group_code
-    description: Group code.
-    value_description: pilot, flight_attendant, mechanic, airport
+  - name: labor_group_name
+    description: Name of the labor group.
+  - name: labor_group_code
+    description: Code of the labor group.
+    value_description: pilot, flight_attendant, mechanic, airport_operations, reservation
   entity_definitions:
   - identity_id: labor_group_identity
     dataset_columns:
     - labor_group_id
     entity_universe: complete
-- node_id: sf:airline.fleet.dim_constraint_type
+- node_id: sf:airline.supply.fact_fuel_quantity
   descriptor:
-    qualified_name: airline.fleet.dim_constraint_type
-    display_name: Constraint Type
-    description: Operating constraint on Airline Inc capacity.
-    synonyms: []
-    tags:
-    - dim
-    - supply_fleet
-    - airline
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: airline.us-central-1
-      database: AIRLINE
-      schema: FLEET
-      object: DIM_CONSTRAINT_TYPE
-      format: table
-  grain:
-    description: One row is one constraint type.
-    components:
-    - identity_id: constraint_type_identity
-      dataset_columns:
-      - constraint_type_id
-      description: Identifier of the constraint type.
-  columns:
-  - name: constraint_type_id
-    description: Identifier of the constraint type.
-  - name: constraint_name
-    description: Name of the constraint.
-  - name: constraint_code
-    description: Constraint code.
-    value_description: summer_cap, airspace, fuel, maintenance, crew
-  entity_definitions:
-  - identity_id: constraint_type_identity
-    dataset_columns:
-    - constraint_type_id
-    entity_universe: complete
-- node_id: sf:airline.supply.fact_capacity
-  descriptor:
-    qualified_name: airline.supply.fact_capacity
-    display_name: Capacity
-    description: Airline Inc capacity. This fact stores capacity, supply, or input cost, not a fare and
-      not booked passenger quantity.
+    qualified_name: airline.supply.fact_fuel_quantity
+    display_name: Fuel Quantity
+    description: Jet fuel consumed in gallons by geographic entity and aircraft model; the denominator
+      for fuel cost per gallon.
     synonyms: []
     tags:
     - fact
     - supply_fleet
-    - airline
+    - passenger-airlines
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: airline.us-central-1
       database: AIRLINE
       schema: SUPPLY
-      object: FACT_CAPACITY
+      object: FACT_FUEL_QUANTITY
       format: table
   grain:
-    description: One row is one capacity.
+    description: One row is one fuel quantity observation for the combination of fiscal quarter, scenario,
+      geographic entity, aircraft model.
     components:
-    - identity_id: capacity_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - capacity_id
-      description: Identifier of the capacity.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: geographic_entity_identity
+      dataset_columns:
+      - geographic_entity_id
+      description: Identifier of the geographic entity.
+    - identity_id: aircraft_model_identity
+      dataset_columns:
+      - aircraft_model_id
+      description: Identifier of the aircraft model.
   columns:
-  - name: capacity_id
-    description: Identifier of the capacity.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
   - name: geographic_entity_id
-    description: Geographic entity.
-  - name: hub_id
-    description: Hub.
-  - name: route_id
-    description: Route.
-  - name: aircraft_type_id
-    description: Aircraft type.
-  - name: seat_quantity
-    description: Seat quantity.
-  - name: capacity_change_rate
-    description: Capacity change.
-  - name: cut_points
-    description: Capacity points removed.
-  - name: back_half_bound_rate
-    description: Bound on back-half growth.
-  - name: earnings_neutral_flag
-    description: Whether capacity is managed to earnings neutrality.
-  - name: guardrail_code
-    description: Guardrail limiting growth.
-    value_description: deliveries, retirements, demand, hub
+    description: Identifier of the geographic entity.
+  - name: aircraft_model_id
+    description: Identifier of the aircraft model.
+  - name: fuel_gallons_consumed
+    description: Jet fuel consumed in gallons.
   entity_definitions:
-  - identity_id: capacity_identity
-    dataset_columns:
-    - capacity_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
     entity_universe: partial
   - identity_id: geographic_entity_identity
     dataset_columns:
     - geographic_entity_id
     entity_universe: partial
-  - identity_id: hub_identity
+  - identity_id: aircraft_model_identity
     dataset_columns:
-    - hub_id
-    entity_universe: partial
-  - identity_id: route_identity
-    dataset_columns:
-    - route_id
-    entity_universe: partial
-  - identity_id: aircraft_type_identity
-    dataset_columns:
-    - aircraft_type_id
-    entity_universe: partial
-- node_id: sf:airline.supply.fact_industry_capacity
-  descriptor:
-    qualified_name: airline.supply.fact_industry_capacity
-    display_name: Industry Capacity
-    description: Industry capacity Airline Inc watches. This fact stores capacity, supply, or input cost,
-      not a fare and not booked passenger quantity.
-    synonyms: []
-    tags:
-    - fact
-    - supply_fleet
-    - airline
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: airline.us-central-1
-      database: AIRLINE
-      schema: SUPPLY
-      object: FACT_INDUSTRY_CAPACITY
-      format: table
-  grain:
-    description: One row is one industry capacity.
-    components:
-    - identity_id: industry_capacity_identity
-      dataset_columns:
-      - industry_capacity_id
-      description: Identifier of the industry capacity.
-  columns:
-  - name: industry_capacity_id
-    description: Identifier of the industry capacity.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: geographic_entity_id
-    description: Geographic entity.
-  - name: competitor_id
-    description: Competitor.
-  - name: industry_seat_quantity
-    description: Industry seats.
-  - name: change_rate
-    description: Industry capacity change.
-  - name: irrational_return_flag
-    description: Whether irrational capacity could return.
-  - name: cuts_after_summer_flag
-    description: Whether cuts show up after peak summer.
-  - name: low_end_exit_flag
-    description: Whether low-end capacity is exiting.
-  - name: front_loaded_benefit_flag
-    description: Whether tighter industry capacity benefits the carrier that is not cutting.
-  entity_definitions:
-  - identity_id: industry_capacity_identity
-    dataset_columns:
-    - industry_capacity_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: geographic_entity_identity
-    dataset_columns:
-    - geographic_entity_id
-    entity_universe: partial
-  - identity_id: competitor_identity
-    dataset_columns:
-    - competitor_id
-    entity_universe: partial
-- node_id: sf:airline.supply.fact_basic_economy_inventory
-  descriptor:
-    qualified_name: airline.supply.fact_basic_economy_inventory
-    display_name: Basic Economy Inventory
-    description: Basic-economy seat inventory at Airline Inc. This fact stores capacity, supply, or input
-      cost, not a fare and not booked passenger quantity.
-    synonyms: []
-    tags:
-    - fact
-    - supply_fleet
-    - airline
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: airline.us-central-1
-      database: AIRLINE
-      schema: SUPPLY
-      object: FACT_BASIC_ECONOMY_INVENTORY
-      format: table
-  grain:
-    description: One row is one basic economy inventory.
-    components:
-    - identity_id: basic_economy_inventory_identity
-      dataset_columns:
-      - basic_economy_inventory_id
-      description: Identifier of the basic economy inventory.
-  columns:
-  - name: basic_economy_inventory_id
-    description: Identifier of the basic economy inventory.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: cabin_id
-    description: Cabin.
-  - name: geographic_entity_id
-    description: Geographic entity.
-  - name: seat_quantity
-    description: Basic-economy seats.
-  - name: cut_flag
-    description: Whether inventory is being cut.
-  - name: main_cabin_down_rate
-    description: How much main-cabin seats are down.
-  entity_definitions:
-  - identity_id: basic_economy_inventory_identity
-    dataset_columns:
-    - basic_economy_inventory_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: cabin_identity
-    dataset_columns:
-    - cabin_id
-    entity_universe: partial
-  - identity_id: geographic_entity_identity
-    dataset_columns:
-    - geographic_entity_id
-    entity_universe: partial
-- node_id: sf:airline.supply.fact_fleet_delivery
-  descriptor:
-    qualified_name: airline.supply.fact_fleet_delivery
-    display_name: Fleet Delivery
-    description: Aircraft deliveries to Airline Inc. This fact stores capacity, supply, or input cost,
-      not a fare and not booked passenger quantity.
-    synonyms: []
-    tags:
-    - fact
-    - supply_fleet
-    - airline
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: airline.us-central-1
-      database: AIRLINE
-      schema: SUPPLY
-      object: FACT_FLEET_DELIVERY
-      format: table
-  grain:
-    description: One row is one fleet delivery.
-    components:
-    - identity_id: fleet_delivery_identity
-      dataset_columns:
-      - fleet_delivery_id
-      description: Identifier of the fleet delivery.
-  columns:
-  - name: fleet_delivery_id
-    description: Identifier of the fleet delivery.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: aircraft_type_id
-    description: Aircraft type.
-  - name: manufacturer_id
-    description: Manufacturer.
-  - name: fleet_family_id
-    description: Fleet family.
-  - name: delivery_count
-    description: Deliveries.
-  - name: ahead_of_plan_flag
-    description: Whether deliveries are ahead of the original plan.
-  - name: this_year_narrowbody_count
-    description: Long-range narrow-bodies arriving this year.
-  - name: international_entry_quarters
-    description: Quarters until they fly internationally.
-  - name: mix_benefit_year_code
-    description: Year the mix benefit arrives.
-    value_description: 2026, 2027
-  entity_definitions:
-  - identity_id: fleet_delivery_identity
-    dataset_columns:
-    - fleet_delivery_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: aircraft_type_identity
-    dataset_columns:
-    - aircraft_type_id
-    entity_universe: partial
-  - identity_id: manufacturer_identity
-    dataset_columns:
-    - manufacturer_id
-    entity_universe: partial
-  - identity_id: fleet_family_identity
-    dataset_columns:
-    - fleet_family_id
-    entity_universe: partial
-- node_id: sf:airline.supply.fact_retirement
-  descriptor:
-    qualified_name: airline.supply.fact_retirement
-    display_name: Retirement
-    description: Aircraft retirements in the Airline Inc fleet plan. This fact stores capacity, supply,
-      or input cost, not a fare and not booked passenger quantity.
-    synonyms: []
-    tags:
-    - fact
-    - supply_fleet
-    - airline
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: airline.us-central-1
-      database: AIRLINE
-      schema: SUPPLY
-      object: FACT_RETIREMENT
-      format: table
-  grain:
-    description: One row is one retirement.
-    components:
-    - identity_id: retirement_identity
-      dataset_columns:
-      - retirement_id
-      description: Identifier of the retirement.
-  columns:
-  - name: retirement_id
-    description: Identifier of the retirement.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: aircraft_type_id
-    description: Aircraft type.
-  - name: retirement_count
-    description: Retirements.
-  - name: earlier_flag
-    description: Whether a fuel shock pulls retirements forward.
-  - name: exit_type_flag
-    description: Whether an aircraft type would be exited.
-  - name: few_retirements_flag
-    description: Whether the plan has few retirements.
-  entity_definitions:
-  - identity_id: retirement_identity
-    dataset_columns:
-    - retirement_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: aircraft_type_identity
-    dataset_columns:
-    - aircraft_type_id
-    entity_universe: partial
-- node_id: sf:airline.supply.fact_fuel_supply
-  descriptor:
-    qualified_name: airline.supply.fact_fuel_supply
-    display_name: Fuel Supply
-    description: Jet fuel availability for Airline Inc. This fact stores capacity, supply, or input cost,
-      not a fare and not booked passenger quantity.
-    synonyms: []
-    tags:
-    - fact
-    - supply_fleet
-    - airline
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: airline.us-central-1
-      database: AIRLINE
-      schema: SUPPLY
-      object: FACT_FUEL_SUPPLY
-      format: table
-  grain:
-    description: One row is one fuel supply.
-    components:
-    - identity_id: fuel_supply_identity
-      dataset_columns:
-      - fuel_supply_id
-      description: Identifier of the fuel supply.
-  columns:
-  - name: fuel_supply_id
-    description: Identifier of the fuel supply.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: fuel_region_id
-    description: Fuel region.
-  - name: geographic_entity_id
-    description: Geographic entity.
-  - name: available_quantity
-    description: Fuel quantity available.
-  - name: shortage_flag
-    description: Whether a shortage is visible.
-  - name: constraint_flag
-    description: Whether sourcing is constrained.
-  - name: backup_plan_flag
-    description: Whether a backup plan is in place.
-  - name: region_covered_code
-    description: Region asked about.
-    value_description: asia_pacific, europe, elsewhere
-  entity_definitions:
-  - identity_id: fuel_supply_identity
-    dataset_columns:
-    - fuel_supply_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: fuel_region_identity
-    dataset_columns:
-    - fuel_region_id
-    entity_universe: partial
-  - identity_id: geographic_entity_identity
-    dataset_columns:
-    - geographic_entity_id
+    - aircraft_model_id
     entity_universe: partial
 - node_id: sf:airline.supply.fact_fuel_cost
   descriptor:
     qualified_name: airline.supply.fact_fuel_cost
     display_name: Fuel Cost
-    description: Jet fuel unit cost for Airline Inc. Not gallons and not the fare. This fact stores capacity,
-      supply, or input cost, not a fare and not booked passenger quantity.
+    description: Jet fuel cost per gallon by geographic entity; fuel gallons consumed share the geographic
+      entity key.
     synonyms: []
     tags:
     - fact
     - supply_fleet
-    - airline
+    - passenger-airlines
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
@@ -722,274 +354,110 @@ nodes:
       object: FACT_FUEL_COST
       format: table
   grain:
-    description: One row is one fuel cost.
+    description: One row is one fuel cost observation for the combination of fiscal quarter, scenario,
+      geographic entity.
     components:
-    - identity_id: fuel_cost_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - fuel_cost_id
-      description: Identifier of the fuel cost.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: geographic_entity_identity
+      dataset_columns:
+      - geographic_entity_id
+      description: Identifier of the geographic entity.
   columns:
-  - name: fuel_cost_id
-    description: Identifier of the fuel cost.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: fuel_region_id
-    description: Fuel region.
-  - name: unit_cost_amount
-    description: Fuel unit cost.
-  - name: high_flag
-    description: Whether fuel is in the high case.
-  - name: shock_duration_code
-    description: How long the shock lasts.
-    value_description: transient, persistent
-  - name: price_to_restore_growth_amount
-    description: Fuel unit cost that would put capacity growth back.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: geographic_entity_id
+    description: Identifier of the geographic entity.
+  - name: fuel_cost_dollars_per_gallon
+    description: Jet fuel cost in dollars per gallon.
   entity_definitions:
-  - identity_id: fuel_cost_identity
-    dataset_columns:
-    - fuel_cost_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: fuel_region_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - fuel_region_id
+    - scenario_id
     entity_universe: partial
-- node_id: sf:airline.supply.fact_maintenance_events
+  - identity_id: geographic_entity_identity
+    dataset_columns:
+    - geographic_entity_id
+    entity_universe: partial
+- node_id: sf:airline.supply.fact_fuel_expense
   descriptor:
-    qualified_name: airline.supply.fact_maintenance_events
-    display_name: Maintenance Events
-    description: Heavy-maintenance events at Airline Inc. This fact stores capacity, supply, or input
-      cost, not a fare and not booked passenger quantity.
+    qualified_name: airline.supply.fact_fuel_expense
+    display_name: Fuel Expense
+    description: Jet fuel expense amount by geographic entity.
     synonyms: []
     tags:
     - fact
     - supply_fleet
-    - airline
+    - passenger-airlines
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: airline.us-central-1
       database: AIRLINE
       schema: SUPPLY
-      object: FACT_MAINTENANCE_EVENTS
+      object: FACT_FUEL_EXPENSE
       format: table
   grain:
-    description: One row is one maintenance events.
+    description: One row is one fuel expense observation for the combination of fiscal quarter, scenario,
+      geographic entity.
     components:
-    - identity_id: maintenance_events_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - maintenance_events_id
-      description: Identifier of the maintenance events.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: geographic_entity_identity
+      dataset_columns:
+      - geographic_entity_id
+      description: Identifier of the geographic entity.
   columns:
-  - name: maintenance_events_id
-    description: Identifier of the maintenance events.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: maintenance_shop_id
-    description: Shop.
-  - name: event_count
-    description: Event count.
-  - name: higher_next_year_flag
-    description: Whether next year is higher.
-  - name: real_deferral_flag
-    description: Whether a moved expense is a real deferral.
-  - name: in_quarter_outlook_flag
-    description: Whether an accrual is in the quarter outlook.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: geographic_entity_id
+    description: Identifier of the geographic entity.
+  - name: fuel_expense_amount
+    description: Jet fuel expense in dollars.
   entity_definitions:
-  - identity_id: maintenance_events_identity
-    dataset_columns:
-    - maintenance_events_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: maintenance_shop_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - maintenance_shop_id
+    - scenario_id
     entity_universe: partial
-- node_id: sf:airline.supply.fact_maintenance_cost
-  descriptor:
-    qualified_name: airline.supply.fact_maintenance_cost
-    display_name: Maintenance Cost
-    description: Maintenance cost at Airline Inc. This fact stores capacity, supply, or input cost, not
-      a fare and not booked passenger quantity.
-    synonyms: []
-    tags:
-    - fact
-    - supply_fleet
-    - airline
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: airline.us-central-1
-      database: AIRLINE
-      schema: SUPPLY
-      object: FACT_MAINTENANCE_COST
-      format: table
-  grain:
-    description: One row is one maintenance cost.
-    components:
-    - identity_id: maintenance_cost_identity
-      dataset_columns:
-      - maintenance_cost_id
-      description: Identifier of the maintenance cost.
-  columns:
-  - name: maintenance_cost_id
-    description: Identifier of the maintenance cost.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: maintenance_shop_id
-    description: Shop.
-  - name: labor_group_id
-    description: Labor group.
-  - name: cost_amount
-    description: Maintenance cost.
-  - name: leverage_from_cut_flag
-    description: Whether a capacity cut creates cost leverage.
-  - name: lumpy_flag
-    description: Whether maintenance stays lumpy.
-  - name: inflation_rate
-    description: Parts and labor inflation rate.
-  entity_definitions:
-  - identity_id: maintenance_cost_identity
+  - identity_id: geographic_entity_identity
     dataset_columns:
-    - maintenance_cost_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: maintenance_shop_identity
-    dataset_columns:
-    - maintenance_shop_id
-    entity_universe: partial
-  - identity_id: labor_group_identity
-    dataset_columns:
-    - labor_group_id
-    entity_universe: partial
-- node_id: sf:airline.supply.fact_shop_capacity
-  descriptor:
-    qualified_name: airline.supply.fact_shop_capacity
-    display_name: Shop Capacity
-    description: In-house engine shop capacity at Airline Inc. This fact stores capacity, supply, or input
-      cost, not a fare and not booked passenger quantity.
-    synonyms: []
-    tags:
-    - fact
-    - supply_fleet
-    - airline
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: airline.us-central-1
-      database: AIRLINE
-      schema: SUPPLY
-      object: FACT_SHOP_CAPACITY
-      format: table
-  grain:
-    description: One row is one shop capacity.
-    components:
-    - identity_id: shop_capacity_identity
-      dataset_columns:
-      - shop_capacity_id
-      description: Identifier of the shop capacity.
-  columns:
-  - name: shop_capacity_id
-    description: Identifier of the shop capacity.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: maintenance_shop_id
-    description: Shop.
-  - name: capacity_quantity
-    description: Shop capacity.
-  - name: in_house_share_rate
-    description: Share of engine work done in house.
-  - name: added_recently_flag
-    description: Whether capacity was added in recent years.
-  entity_definitions:
-  - identity_id: shop_capacity_identity
-    dataset_columns:
-    - shop_capacity_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: maintenance_shop_identity
-    dataset_columns:
-    - maintenance_shop_id
-    entity_universe: partial
-- node_id: sf:airline.supply.fact_staffing
-  descriptor:
-    qualified_name: airline.supply.fact_staffing
-    display_name: Staffing
-    description: Crew staffing versus the Airline Inc schedule. This fact stores capacity, supply, or
-      input cost, not a fare and not booked passenger quantity.
-    synonyms: []
-    tags:
-    - fact
-    - supply_fleet
-    - airline
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: airline.us-central-1
-      database: AIRLINE
-      schema: SUPPLY
-      object: FACT_STAFFING
-      format: table
-  grain:
-    description: One row is one staffing.
-    components:
-    - identity_id: staffing_identity
-      dataset_columns:
-      - staffing_id
-      description: Identifier of the staffing.
-  columns:
-  - name: staffing_id
-    description: Identifier of the staffing.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: labor_group_id
-    description: Labor group.
-  - name: headcount_quantity
-    description: Headcount.
-  - name: overstaffed_flag
-    description: Whether the group is still overstaffed.
-  - name: in_balance_flag
-    description: Whether staffing is in balance with deliveries.
-  - name: recovery_cost_open_flag
-    description: Whether recovery cost is still open before summer.
-  - name: operation_tighter_flag
-    description: Whether the summer operation is tighter.
-  entity_definitions:
-  - identity_id: staffing_identity
-    dataset_columns:
-    - staffing_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: labor_group_identity
-    dataset_columns:
-    - labor_group_id
+    - geographic_entity_id
     entity_universe: partial
 - node_id: sf:airline.supply.fact_unit_cost
   descriptor:
     qualified_name: airline.supply.fact_unit_cost
     display_name: Unit Cost
-    description: Unit cost at Airline Inc, excluding the fare. This fact stores capacity, supply, or input
-      cost, not a fare and not booked passenger quantity.
+    description: Unit cost per available seat-mile; available seat-miles on the capacity fact share the
+      geographic entity key.
     synonyms: []
     tags:
     - fact
     - supply_fleet
-    - airline
+    - passenger-airlines
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
@@ -999,41 +467,40 @@ nodes:
       object: FACT_UNIT_COST
       format: table
   grain:
-    description: One row is one unit cost.
+    description: One row is one unit cost observation for the combination of fiscal quarter, scenario,
+      geographic entity.
     components:
-    - identity_id: unit_cost_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - unit_cost_id
-      description: Identifier of the unit cost.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: geographic_entity_identity
+      dataset_columns:
+      - geographic_entity_id
+      description: Identifier of the geographic entity.
   columns:
-  - name: unit_cost_id
-    description: Identifier of the unit cost.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
   - name: geographic_entity_id
-    description: Geographic entity.
-  - name: unit_cost_amount
-    description: Unit cost.
-  - name: change_rate
-    description: Unit cost change.
-  - name: ex_fuel_change_rate
-    description: Unit cost change excluding fuel.
-  - name: ex_labor_change_rate
-    description: Unit cost change excluding labor.
-  - name: carries_into_next_year_flag
-    description: Whether this year's efficiency carries forward.
-  - name: near_reference_quarter_flag
-    description: Whether the quarter is still near the reference quarter.
-  - name: distribution_item_flag
-    description: Whether a distribution-expense item is in the figure.
+    description: Identifier of the geographic entity.
+  - name: cost_cents_per_seat_mile
+    description: Unit cost in cents per available seat-mile.
+  - name: ex_fuel_cost_cents_per_seat_mile
+    description: Unit cost excluding fuel in cents per available seat-mile.
   entity_definitions:
-  - identity_id: unit_cost_identity
-    dataset_columns:
-    - unit_cost_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
     entity_universe: partial
   - identity_id: geographic_entity_identity
     dataset_columns:
@@ -1043,13 +510,12 @@ nodes:
   descriptor:
     qualified_name: airline.supply.fact_labor_cost
     display_name: Labor Cost
-    description: Labor cost and accruals at Airline Inc. This fact stores capacity, supply, or input cost,
-      not a fare and not booked passenger quantity.
+    description: Labor cost amount by labor group.
     synonyms: []
     tags:
     - fact
     - supply_fleet
-    - airline
+    - passenger-airlines
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
@@ -1059,160 +525,489 @@ nodes:
       object: FACT_LABOR_COST
       format: table
   grain:
-    description: One row is one labor cost.
+    description: One row is one labor cost observation for the combination of fiscal quarter, scenario,
+      labor group.
     components:
-    - identity_id: labor_cost_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - labor_cost_id
-      description: Identifier of the labor cost.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: labor_group_identity
+      dataset_columns:
+      - labor_group_id
+      description: Identifier of the labor group.
   columns:
-  - name: labor_cost_id
-    description: Identifier of the labor cost.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
   - name: labor_group_id
-    description: Labor group.
-  - name: cost_amount
-    description: Labor cost.
-  - name: accrual_in_outlook_flag
-    description: Whether a flight-attendant accrual is in the outlook.
-  - name: contract_ratified_flag
-    description: Whether the agreement is in the cost.
-  - name: gap_to_peer_flag
-    description: Whether labor is still a structural gap.
+    description: Identifier of the labor group.
+  - name: labor_cost_amount
+    description: Labor cost in dollars.
   entity_definitions:
-  - identity_id: labor_cost_identity
-    dataset_columns:
-    - labor_cost_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
     entity_universe: partial
   - identity_id: labor_group_identity
     dataset_columns:
     - labor_group_id
     entity_universe: partial
-- node_id: sf:airline.supply.fact_parts_cost
+- node_id: sf:airline.supply.fact_headcount_quantity
   descriptor:
-    qualified_name: airline.supply.fact_parts_cost
-    display_name: Parts Cost
-    description: Parts inflation in Airline Inc maintenance. This fact stores capacity, supply, or input
-      cost, not a fare and not booked passenger quantity.
+    qualified_name: airline.supply.fact_headcount_quantity
+    display_name: Headcount Quantity
+    description: Employees by labor group in employees.
     synonyms: []
     tags:
     - fact
     - supply_fleet
-    - airline
+    - passenger-airlines
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: airline.us-central-1
       database: AIRLINE
       schema: SUPPLY
-      object: FACT_PARTS_COST
+      object: FACT_HEADCOUNT_QUANTITY
       format: table
   grain:
-    description: One row is one parts cost.
+    description: One row is one headcount quantity observation for the combination of fiscal quarter,
+      scenario, labor group.
     components:
-    - identity_id: parts_cost_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - parts_cost_id
-      description: Identifier of the parts cost.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: labor_group_identity
+      dataset_columns:
+      - labor_group_id
+      description: Identifier of the labor group.
   columns:
-  - name: parts_cost_id
-    description: Identifier of the parts cost.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: maintenance_shop_id
-    description: Shop.
-  - name: inflation_rate
-    description: Parts inflation rate.
-  - name: cost_amount
-    description: Parts cost.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: labor_group_id
+    description: Identifier of the labor group.
+  - name: headcount_count
+    description: Employees in employees.
   entity_definitions:
-  - identity_id: parts_cost_identity
-    dataset_columns:
-    - parts_cost_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: maintenance_shop_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - maintenance_shop_id
+    - scenario_id
     entity_universe: partial
-- node_id: sf:airline.supply.fact_gauge_plan
+  - identity_id: labor_group_identity
+    dataset_columns:
+    - labor_group_id
+    entity_universe: partial
+- node_id: sf:airline.supply.fact_maintenance_cost
   descriptor:
-    qualified_name: airline.supply.fact_gauge_plan
-    display_name: Gauge Plan
-    description: Gauge benefit in the Airline Inc fleet. This fact stores capacity, supply, or input cost,
-      not a fare and not booked passenger quantity.
+    qualified_name: airline.supply.fact_maintenance_cost
+    display_name: Maintenance Cost
+    description: Maintenance cost by maintenance type and provider.
     synonyms: []
     tags:
     - fact
     - supply_fleet
-    - airline
+    - passenger-airlines
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: airline.us-central-1
       database: AIRLINE
       schema: SUPPLY
-      object: FACT_GAUGE_PLAN
+      object: FACT_MAINTENANCE_COST
       format: table
   grain:
-    description: One row is one gauge plan.
+    description: One row is one maintenance cost observation for the combination of fiscal quarter, scenario,
+      maintenance type, maintenance provider.
     components:
-    - identity_id: gauge_plan_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - gauge_plan_id
-      description: Identifier of the gauge plan.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: maintenance_type_identity
+      dataset_columns:
+      - maintenance_type_id
+      description: Identifier of the maintenance type.
+    - identity_id: maintenance_provider_identity
+      dataset_columns:
+      - maintenance_provider_id
+      description: Identifier of the maintenance provider.
   columns:
-  - name: gauge_plan_id
-    description: Identifier of the gauge plan.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: aircraft_type_id
-    description: Aircraft type.
-  - name: route_id
-    description: Route.
-  - name: gauge_change_rate
-    description: Gauge change.
-  - name: benefit_year_code
-    description: Year of the next benefit step.
-    value_description: this_year, next_year, year_two
-  - name: unit_cost_effect_rate
-    description: Unit-cost effect of gauge, stored as a cost rate.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: maintenance_type_id
+    description: Identifier of the maintenance type.
+  - name: maintenance_provider_id
+    description: Identifier of the maintenance provider.
+  - name: maintenance_cost_amount
+    description: Maintenance cost in dollars.
   entity_definitions:
-  - identity_id: gauge_plan_identity
-    dataset_columns:
-    - gauge_plan_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: aircraft_type_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - aircraft_type_id
+    - scenario_id
     entity_universe: partial
-  - identity_id: route_identity
+  - identity_id: maintenance_type_identity
     dataset_columns:
-    - route_id
+    - maintenance_type_id
+    entity_universe: partial
+  - identity_id: maintenance_provider_identity
+    dataset_columns:
+    - maintenance_provider_id
+    entity_universe: partial
+- node_id: sf:airline.supply.fact_maintenance_events
+  descriptor:
+    qualified_name: airline.supply.fact_maintenance_events
+    display_name: Maintenance Events
+    description: Maintenance events by type and provider in events; the capacity denominator for shop
+      work.
+    synonyms: []
+    tags:
+    - fact
+    - supply_fleet
+    - passenger-airlines
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: airline.us-central-1
+      database: AIRLINE
+      schema: SUPPLY
+      object: FACT_MAINTENANCE_EVENTS
+      format: table
+  grain:
+    description: One row is one maintenance events observation for the combination of fiscal quarter,
+      scenario, maintenance type, maintenance provider.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: maintenance_type_identity
+      dataset_columns:
+      - maintenance_type_id
+      description: Identifier of the maintenance type.
+    - identity_id: maintenance_provider_identity
+      dataset_columns:
+      - maintenance_provider_id
+      description: Identifier of the maintenance provider.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: maintenance_type_id
+    description: Identifier of the maintenance type.
+  - name: maintenance_provider_id
+    description: Identifier of the maintenance provider.
+  - name: maintenance_event_count
+    description: Maintenance events in events.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: maintenance_type_identity
+    dataset_columns:
+    - maintenance_type_id
+    entity_universe: partial
+  - identity_id: maintenance_provider_identity
+    dataset_columns:
+    - maintenance_provider_id
+    entity_universe: partial
+- node_id: sf:airline.supply.fact_fleet_delivery_quantity
+  descriptor:
+    qualified_name: airline.supply.fact_fleet_delivery_quantity
+    display_name: Fleet Delivery Quantity
+    description: Aircraft deliveries in aircraft by model and manufacturer.
+    synonyms: []
+    tags:
+    - fact
+    - supply_fleet
+    - passenger-airlines
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: airline.us-central-1
+      database: AIRLINE
+      schema: SUPPLY
+      object: FACT_FLEET_DELIVERY_QUANTITY
+      format: table
+  grain:
+    description: One row is one fleet delivery quantity observation for the combination of fiscal quarter,
+      scenario, aircraft model, manufacturer.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: aircraft_model_identity
+      dataset_columns:
+      - aircraft_model_id
+      description: Identifier of the aircraft model.
+    - identity_id: manufacturer_identity
+      dataset_columns:
+      - manufacturer_id
+      description: Identifier of the manufacturer.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: aircraft_model_id
+    description: Identifier of the aircraft model.
+  - name: manufacturer_id
+    description: Identifier of the manufacturer.
+  - name: aircraft_delivery_count
+    description: Aircraft delivered in aircraft.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: aircraft_model_identity
+    dataset_columns:
+    - aircraft_model_id
+    entity_universe: partial
+  - identity_id: manufacturer_identity
+    dataset_columns:
+    - manufacturer_id
+    entity_universe: partial
+- node_id: sf:airline.supply.fact_fleet_retirement_quantity
+  descriptor:
+    qualified_name: airline.supply.fact_fleet_retirement_quantity
+    display_name: Fleet Retirement Quantity
+    description: Aircraft retirements in aircraft by model.
+    synonyms: []
+    tags:
+    - fact
+    - supply_fleet
+    - passenger-airlines
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: airline.us-central-1
+      database: AIRLINE
+      schema: SUPPLY
+      object: FACT_FLEET_RETIREMENT_QUANTITY
+      format: table
+  grain:
+    description: One row is one fleet retirement quantity observation for the combination of fiscal quarter,
+      scenario, aircraft model.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: aircraft_model_identity
+      dataset_columns:
+      - aircraft_model_id
+      description: Identifier of the aircraft model.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: aircraft_model_id
+    description: Identifier of the aircraft model.
+  - name: aircraft_retirement_count
+    description: Aircraft retired in aircraft.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: aircraft_model_identity
+    dataset_columns:
+    - aircraft_model_id
+    entity_universe: partial
+- node_id: sf:airline.supply.fact_fleet_quantity
+  descriptor:
+    qualified_name: airline.supply.fact_fleet_quantity
+    display_name: Fleet Quantity
+    description: Aircraft in fleet by model and fleet category.
+    synonyms: []
+    tags:
+    - fact
+    - supply_fleet
+    - passenger-airlines
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: airline.us-central-1
+      database: AIRLINE
+      schema: SUPPLY
+      object: FACT_FLEET_QUANTITY
+      format: table
+  grain:
+    description: One row is one fleet quantity observation for the combination of fiscal quarter, scenario,
+      aircraft model, fleet category.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: aircraft_model_identity
+      dataset_columns:
+      - aircraft_model_id
+      description: Identifier of the aircraft model.
+    - identity_id: fleet_category_identity
+      dataset_columns:
+      - fleet_category_id
+      description: Identifier of the fleet category.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: aircraft_model_id
+    description: Identifier of the aircraft model.
+  - name: fleet_category_id
+    description: Identifier of the fleet category.
+  - name: aircraft_count
+    description: Aircraft in fleet in aircraft.
+  - name: average_aircraft_age_years
+    description: Average aircraft age in years.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: aircraft_model_identity
+    dataset_columns:
+    - aircraft_model_id
+    entity_universe: partial
+  - identity_id: fleet_category_identity
+    dataset_columns:
+    - fleet_category_id
+    entity_universe: partial
+- node_id: sf:airline.supply.fact_aircraft_utilization
+  descriptor:
+    qualified_name: airline.supply.fact_aircraft_utilization
+    display_name: Aircraft Utilization
+    description: Aircraft block hours by model; aircraft count on the fleet quantity fact shares the model
+      key.
+    synonyms: []
+    tags:
+    - fact
+    - supply_fleet
+    - passenger-airlines
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: airline.us-central-1
+      database: AIRLINE
+      schema: SUPPLY
+      object: FACT_AIRCRAFT_UTILIZATION
+      format: table
+  grain:
+    description: One row is one aircraft utilization observation for the combination of fiscal quarter,
+      scenario, aircraft model.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: aircraft_model_identity
+      dataset_columns:
+      - aircraft_model_id
+      description: Identifier of the aircraft model.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: aircraft_model_id
+    description: Identifier of the aircraft model.
+  - name: block_hours
+    description: Aircraft block hours in hours.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: aircraft_model_identity
+    dataset_columns:
+    - aircraft_model_id
     entity_universe: partial
 - node_id: sf:airline.supply.fact_hub_capacity
   descriptor:
     qualified_name: airline.supply.fact_hub_capacity
     display_name: Hub Capacity
-    description: Capacity and rebuild status at an Airline Inc hub. This fact stores capacity, supply,
-      or input cost, not a fare and not booked passenger quantity.
+    description: Capacity at a hub as available seat-miles, a capacity quantity not an earnings measure.
     synonyms: []
     tags:
     - fact
     - supply_fleet
-    - airline
+    - passenger-airlines
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
@@ -1222,584 +1017,182 @@ nodes:
       object: FACT_HUB_CAPACITY
       format: table
   grain:
-    description: One row is one hub capacity.
+    description: One row is one hub capacity observation for the combination of fiscal quarter, scenario,
+      hub, geographic entity.
     components:
-    - identity_id: hub_capacity_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - hub_capacity_id
-      description: Identifier of the hub capacity.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: hub_identity
+      dataset_columns:
+      - hub_id
+      description: Identifier of the hub.
+    - identity_id: geographic_entity_identity
+      dataset_columns:
+      - geographic_entity_id
+      description: Identifier of the geographic entity.
   columns:
-  - name: hub_capacity_id
-    description: Identifier of the hub capacity.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
   - name: hub_id
-    description: Hub.
-  - name: constraint_type_id
-    description: Constraint.
-  - name: airport_id
-    description: Airport.
-  - name: seat_quantity
-    description: Hub seats.
-  - name: rebuild_complete_flag
-    description: Whether the rebuild has reached the plan.
-  - name: profit_versus_plan_rate
-    description: Hub result versus the original rebuild plan, as a rate.
-  - name: cap_in_place_flag
-    description: Whether an operations cap is in place.
-  - name: less_restricted_under_debate_flag
-    description: Whether a less restricted level is being debated.
+    description: Identifier of the hub.
+  - name: geographic_entity_id
+    description: Identifier of the geographic entity.
+  - name: hub_available_seat_miles
+    description: Hub available seat-miles in seat-miles.
   entity_definitions:
-  - identity_id: hub_capacity_identity
-    dataset_columns:
-    - hub_capacity_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
     entity_universe: partial
   - identity_id: hub_identity
     dataset_columns:
     - hub_id
     entity_universe: partial
-  - identity_id: constraint_type_identity
-    dataset_columns:
-    - constraint_type_id
-    entity_universe: partial
-  - identity_id: airport_identity
-    dataset_columns:
-    - airport_id
-    entity_universe: partial
-- node_id: sf:airline.supply.fact_network_plan
-  descriptor:
-    qualified_name: airline.supply.fact_network_plan
-    display_name: Network Plan
-    description: Airline Inc network plan for a coming quarter. This fact stores capacity, supply, or
-      input cost, not a fare and not booked passenger quantity.
-    synonyms: []
-    tags:
-    - fact
-    - supply_fleet
-    - airline
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: airline.us-central-1
-      database: AIRLINE
-      schema: SUPPLY
-      object: FACT_NETWORK_PLAN
-      format: table
-  grain:
-    description: One row is one network plan.
-    components:
-    - identity_id: network_plan_identity
-      dataset_columns:
-      - network_plan_id
-      description: Identifier of the network plan.
-  columns:
-  - name: network_plan_id
-    description: Identifier of the network plan.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: geographic_entity_id
-    description: Geographic entity.
-  - name: plan_status_code
-    description: Plan status.
-    value_description: set, open, revised
-  - name: uses_last_year_weakness_flag
-    description: Whether the plan reflects last year's close-in weakness.
-  - name: even_spread_flag
-    description: Whether next-year capacity is spread more evenly.
-  - name: allocation_changed_flag
-    description: Whether allocation changed after a geographic surprise.
-  entity_definitions:
-  - identity_id: network_plan_identity
-    dataset_columns:
-    - network_plan_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
   - identity_id: geographic_entity_identity
     dataset_columns:
     - geographic_entity_id
     entity_universe: partial
-- node_id: sf:airline.supply.fact_seasonal_capacity
+- node_id: sf:airline.supply.fact_competitor_capacity
   descriptor:
-    qualified_name: airline.supply.fact_seasonal_capacity
-    display_name: Seasonal Capacity
-    description: Seasonal shape of Airline Inc capacity. This fact stores capacity, supply, or input cost,
-      not a fare and not booked passenger quantity.
+    qualified_name: airline.supply.fact_competitor_capacity
+    display_name: Competitor Capacity
+    description: Competitor capacity as available seat-miles by geographic entity.
     synonyms: []
     tags:
     - fact
     - supply_fleet
-    - airline
+    - passenger-airlines
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: airline.us-central-1
       database: AIRLINE
       schema: SUPPLY
-      object: FACT_SEASONAL_CAPACITY
+      object: FACT_COMPETITOR_CAPACITY
       format: table
   grain:
-    description: One row is one seasonal capacity.
+    description: One row is one competitor capacity observation for the combination of fiscal quarter,
+      scenario, competitor, geographic entity.
     components:
-    - identity_id: seasonal_capacity_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - seasonal_capacity_id
-      description: Identifier of the seasonal capacity.
-  columns:
-  - name: seasonal_capacity_id
-    description: Identifier of the seasonal capacity.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: geographic_entity_id
-    description: Geographic entity.
-  - name: peak_share_rate
-    description: Share of capacity in the peak.
-  - name: more_even_flag
-    description: Whether the shape is more even than this year.
-  - name: summer_tight_flag
-    description: Whether summer is operationally tight.
-  entity_definitions:
-  - identity_id: seasonal_capacity_identity
-    dataset_columns:
-    - seasonal_capacity_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: geographic_entity_identity
-    dataset_columns:
-    - geographic_entity_id
-    entity_universe: partial
-- node_id: sf:airline.supply.fact_workforce_efficiency
-  descriptor:
-    qualified_name: airline.supply.fact_workforce_efficiency
-    display_name: Workforce Efficiency
-    description: Unit-cost efficiency from growing into the Airline Inc workforce, fleet, and airports.
-      This fact stores capacity, supply, or input cost, not a fare and not booked passenger quantity.
-    synonyms: []
-    tags:
-    - fact
-    - supply_fleet
-    - airline
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: airline.us-central-1
-      database: AIRLINE
-      schema: SUPPLY
-      object: FACT_WORKFORCE_EFFICIENCY
-      format: table
-  grain:
-    description: One row is one workforce efficiency.
-    components:
-    - identity_id: workforce_efficiency_identity
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
       dataset_columns:
-      - workforce_efficiency_id
-      description: Identifier of the workforce efficiency.
-  columns:
-  - name: workforce_efficiency_id
-    description: Identifier of the workforce efficiency.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: efficiency_rate
-    description: Efficiency already captured.
-  - name: remaining_runway_rate
-    description: Efficiency still available.
-  - name: airport_component_flag
-    description: Whether airports are part of the runway.
-  - name: fleet_component_flag
-    description: Whether the fleet is part of the runway.
-  entity_definitions:
-  - identity_id: workforce_efficiency_identity
-    dataset_columns:
-    - workforce_efficiency_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-- node_id: sf:airline.supply.fact_procurement_cost
-  descriptor:
-    qualified_name: airline.supply.fact_procurement_cost
-    display_name: Procurement Cost
-    description: Procurement and product-investment cost at Airline Inc. This fact stores capacity, supply,
-      or input cost, not a fare and not booked passenger quantity.
-    synonyms: []
-    tags:
-    - fact
-    - supply_fleet
-    - airline
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: airline.us-central-1
-      database: AIRLINE
-      schema: SUPPLY
-      object: FACT_PROCUREMENT_COST
-      format: table
-  grain:
-    description: One row is one procurement cost.
-    components:
-    - identity_id: procurement_cost_identity
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: competitor_identity
       dataset_columns:
-      - procurement_cost_id
-      description: Identifier of the procurement cost.
-  columns:
-  - name: procurement_cost_id
-    description: Identifier of the procurement cost.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: cost_amount
-    description: Procurement cost.
-  - name: savings_follow_through_flag
-    description: Whether this year's savings still have follow-through.
-  - name: product_investment_amount
-    description: Product investment still being made.
-  - name: keeping_unit_cost_in_check_flag
-    description: Whether unit cost is in check despite the investment.
-  entity_definitions:
-  - identity_id: procurement_cost_identity
-    dataset_columns:
-    - procurement_cost_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-- node_id: sf:airline.supply.fact_widebody_case
-  descriptor:
-    qualified_name: airline.supply.fact_widebody_case
-    display_name: Widebody Case
-    description: Whether another wide-body type is too expensive for Airline Inc. This fact stores capacity,
-      supply, or input cost, not a fare and not booked passenger quantity.
-    synonyms: []
-    tags:
-    - fact
-    - supply_fleet
-    - airline
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: airline.us-central-1
-      database: AIRLINE
-      schema: SUPPLY
-      object: FACT_WIDEBODY_CASE
-      format: table
-  grain:
-    description: One row is one widebody case.
-    components:
-    - identity_id: widebody_case_identity
+      - competitor_id
+      description: Identifier of the competitor.
+    - identity_id: geographic_entity_identity
       dataset_columns:
-      - widebody_case_id
-      description: Identifier of the widebody case.
+      - geographic_entity_id
+      description: Identifier of the geographic entity.
   columns:
-  - name: widebody_case_id
-    description: Identifier of the widebody case.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: aircraft_type_id
-    description: Aircraft type.
-  - name: too_expensive_flag
-    description: Whether the type is still too expensive.
-  - name: cost_versus_existing_rate
-    description: Cost versus the existing wide-body fleet.
-  entity_definitions:
-  - identity_id: widebody_case_identity
-    dataset_columns:
-    - widebody_case_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: aircraft_type_identity
-    dataset_columns:
-    - aircraft_type_id
-    entity_universe: partial
-- node_id: sf:airline.supply.fact_pilot_balance
-  descriptor:
-    qualified_name: airline.supply.fact_pilot_balance
-    display_name: Pilot Balance
-    description: Whether Airline Inc pilots are in balance with deliveries. This fact stores capacity,
-      supply, or input cost, not a fare and not booked passenger quantity.
-    synonyms: []
-    tags:
-    - fact
-    - supply_fleet
-    - airline
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: airline.us-central-1
-      database: AIRLINE
-      schema: SUPPLY
-      object: FACT_PILOT_BALANCE
-      format: table
-  grain:
-    description: One row is one pilot balance.
-    components:
-    - identity_id: pilot_balance_identity
-      dataset_columns:
-      - pilot_balance_id
-      description: Identifier of the pilot balance.
-  columns:
-  - name: pilot_balance_id
-    description: Identifier of the pilot balance.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: labor_group_id
-    description: Labor group.
-  - name: aircraft_type_id
-    description: Aircraft type.
-  - name: pilot_count
-    description: Pilot count.
-  - name: in_balance_flag
-    description: Whether pilots match the delivery pickup.
-  - name: overstaffed_flag
-    description: Whether pilots are still overstaffed.
-  entity_definitions:
-  - identity_id: pilot_balance_identity
-    dataset_columns:
-    - pilot_balance_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: labor_group_identity
-    dataset_columns:
-    - labor_group_id
-    entity_universe: partial
-  - identity_id: aircraft_type_identity
-    dataset_columns:
-    - aircraft_type_id
-    entity_universe: partial
-- node_id: sf:airline.supply.fact_engine_insource
-  descriptor:
-    qualified_name: airline.supply.fact_engine_insource
-    display_name: Engine Insource
-    description: Share of Airline Inc engine work done in house. This fact stores capacity, supply, or
-      input cost, not a fare and not booked passenger quantity.
-    synonyms: []
-    tags:
-    - fact
-    - supply_fleet
-    - airline
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: airline.us-central-1
-      database: AIRLINE
-      schema: SUPPLY
-      object: FACT_ENGINE_INSOURCE
-      format: table
-  grain:
-    description: One row is one engine insource.
-    components:
-    - identity_id: engine_insource_identity
-      dataset_columns:
-      - engine_insource_id
-      description: Identifier of the engine insource.
-  columns:
-  - name: engine_insource_id
-    description: Identifier of the engine insource.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: maintenance_shop_id
-    description: Shop.
-  - name: in_house_share_rate
-    description: In-house share.
-  - name: third_party_growth_rate
-    description: Third-party maintenance growth rate, stored as a rate.
-  entity_definitions:
-  - identity_id: engine_insource_identity
-    dataset_columns:
-    - engine_insource_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: maintenance_shop_identity
-    dataset_columns:
-    - maintenance_shop_id
-    entity_universe: partial
-- node_id: sf:airline.supply.fact_cost_opportunity
-  descriptor:
-    qualified_name: airline.supply.fact_cost_opportunity
-    display_name: Cost Opportunity
-    description: Next-year cost opportunity at Airline Inc. This fact stores capacity, supply, or input
-      cost, not a fare and not booked passenger quantity.
-    synonyms: []
-    tags:
-    - fact
-    - supply_fleet
-    - airline
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: airline.us-central-1
-      database: AIRLINE
-      schema: SUPPLY
-      object: FACT_COST_OPPORTUNITY
-      format: table
-  grain:
-    description: One row is one cost opportunity.
-    components:
-    - identity_id: cost_opportunity_identity
-      dataset_columns:
-      - cost_opportunity_id
-      description: Identifier of the cost opportunity.
-  columns:
-  - name: cost_opportunity_id
-    description: Identifier of the cost opportunity.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: opportunity_code
-    description: Opportunity.
-    value_description: operation, procurement, follow_through
-  - name: priority_rank
-    description: Priority rank.
-  - name: savings_amount
-    description: Savings amount.
-  entity_definitions:
-  - identity_id: cost_opportunity_identity
-    dataset_columns:
-    - cost_opportunity_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-- node_id: sf:airline.supply.fact_shutdown_case
-  descriptor:
-    qualified_name: airline.supply.fact_shutdown_case
-    display_name: Shutdown Case
-    description: Government-shutdown cases in an Airline Inc outlook. Planning ranges, not fares. This
-      fact stores capacity, supply, or input cost, not a fare and not booked passenger quantity.
-    synonyms: []
-    tags:
-    - fact
-    - supply_fleet
-    - airline
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: airline.us-central-1
-      database: AIRLINE
-      schema: SUPPLY
-      object: FACT_SHUTDOWN_CASE
-      format: table
-  grain:
-    description: One row is one shutdown case.
-    components:
-    - identity_id: shutdown_case_identity
-      dataset_columns:
-      - shutdown_case_id
-      description: Identifier of the shutdown case.
-  columns:
-  - name: shutdown_case_id
-    description: Identifier of the shutdown case.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: event_id
-    description: Shutdown event.
-  - name: geographic_entity_id
-    description: Geographic entity.
-  - name: case_code
-    description: Case.
-    value_description: low, base, high
-  - name: in_outlook_flag
-    description: Whether the case is already in the outlook.
-  - name: domestic_share_of_hit_rate
-    description: Share of the hit that is domestic.
-  entity_definitions:
-  - identity_id: shutdown_case_identity
-    dataset_columns:
-    - shutdown_case_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: event_identity
-    dataset_columns:
-    - event_id
-    entity_universe: partial
-  - identity_id: geographic_entity_identity
-    dataset_columns:
-    - geographic_entity_id
-    entity_universe: partial
-- node_id: sf:airline.supply.fact_competitor_schedule
-  descriptor:
-    qualified_name: airline.supply.fact_competitor_schedule
-    display_name: Competitor Schedule
-    description: Competitor capacity on an Airline Inc city, including a summer cap at Chicago. This fact
-      stores capacity, supply, or input cost, not a fare and not booked passenger quantity.
-    synonyms: []
-    tags:
-    - fact
-    - supply_fleet
-    - airline
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: airline.us-central-1
-      database: AIRLINE
-      schema: SUPPLY
-      object: FACT_COMPETITOR_SCHEDULE
-      format: table
-  grain:
-    description: One row is one competitor schedule.
-    components:
-    - identity_id: competitor_schedule_identity
-      dataset_columns:
-      - competitor_schedule_id
-      description: Identifier of the competitor schedule.
-  columns:
-  - name: competitor_schedule_id
-    description: Identifier of the competitor schedule.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
   - name: competitor_id
-    description: Competitor.
-  - name: city_id
-    description: City.
-  - name: hub_id
-    description: Hub.
-  - name: competitor_seat_quantity
-    description: Competitor seats.
-  - name: unprofitable_flag
-    description: Whether the flying is unprofitable.
-  - name: cap_proposed_flag
-    description: Whether an operations cap is proposed.
-  - name: changes_domestic_view_flag
-    description: Whether it changes the view of domestic.
+    description: Identifier of the competitor.
+  - name: geographic_entity_id
+    description: Identifier of the geographic entity.
+  - name: competitor_available_seat_miles
+    description: Competitor available seat-miles in seat-miles.
   entity_definitions:
-  - identity_id: competitor_schedule_identity
-    dataset_columns:
-    - competitor_schedule_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
     entity_universe: partial
   - identity_id: competitor_identity
     dataset_columns:
     - competitor_id
     entity_universe: partial
-  - identity_id: city_identity
+  - identity_id: geographic_entity_identity
     dataset_columns:
-    - city_id
+    - geographic_entity_id
     entity_universe: partial
-  - identity_id: hub_identity
+- node_id: sf:airline.supply.fact_shop_capacity_quantity
+  descriptor:
+    qualified_name: airline.supply.fact_shop_capacity_quantity
+    display_name: Shop Capacity Quantity
+    description: Maintenance shop capacity in events by maintenance type and provider.
+    synonyms: []
+    tags:
+    - fact
+    - supply_fleet
+    - passenger-airlines
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: airline.us-central-1
+      database: AIRLINE
+      schema: SUPPLY
+      object: FACT_SHOP_CAPACITY_QUANTITY
+      format: table
+  grain:
+    description: One row is one shop capacity quantity observation for the combination of fiscal quarter,
+      scenario, maintenance type, maintenance provider.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: maintenance_type_identity
+      dataset_columns:
+      - maintenance_type_id
+      description: Identifier of the maintenance type.
+    - identity_id: maintenance_provider_identity
+      dataset_columns:
+      - maintenance_provider_id
+      description: Identifier of the maintenance provider.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: maintenance_type_id
+    description: Identifier of the maintenance type.
+  - name: maintenance_provider_id
+    description: Identifier of the maintenance provider.
+  - name: shop_capacity_event_count
+    description: Shop capacity in events.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
     dataset_columns:
-    - hub_id
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: maintenance_type_identity
+    dataset_columns:
+    - maintenance_type_id
+    entity_universe: partial
+  - identity_id: maintenance_provider_identity
+    dataset_columns:
+    - maintenance_provider_id
     entity_universe: partial

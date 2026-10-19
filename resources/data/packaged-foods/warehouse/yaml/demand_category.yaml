@@ -4,12 +4,12 @@ nodes:
   descriptor:
     qualified_name: food.time.dim_fiscal_quarter
     display_name: Fiscal Quarter
-    description: Food Inc fiscal quarter, including the fiscal calendar used on the calls.
+    description: Fiscal quarter on the Food Inc earnings calendar.
     synonyms: []
     tags:
-    - dim
+    - dimension
     - demand_category
-    - food
+    - packaged-foods
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
@@ -19,7 +19,7 @@ nodes:
       object: DIM_FISCAL_QUARTER
       format: table
   grain:
-    description: One row is one fiscal quarter.
+    description: One row is one fiscal quarter, identified by fiscal_quarter_id.
     components:
     - identity_id: fiscal_quarter_identity
       dataset_columns:
@@ -28,70 +28,64 @@ nodes:
   columns:
   - name: fiscal_quarter_id
     description: Identifier of the fiscal quarter.
-  - name: quarter_label
-    description: Label of the fiscal quarter.
-  - name: quarter_code
-    description: Quarter code.
-    value_description: 2025Q2, 2025Q3, 2025Q4, 2026Q1, FY2026Q2, FY2026Q3, FY2026Q4, FY2027Q1
-  - name: guidance_horizon
-    description: Whether the quarter is reported or guided.
-    value_description: reported, guided_next, guided_year
+  - name: fiscal_quarter_name
+    description: Name of the fiscal quarter.
+  - name: fiscal_quarter_code
+    description: Code of the fiscal quarter.
+    value_description: 2025Q2, 2025Q3, 2025Q4, 2026Q1, 2026Q2, FY2026Q3, FY2026Q4, FY2027Q1
   entity_definitions:
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: complete
-- node_id: sf:food.time.dim_calendar_day
+- node_id: sf:food.time.dim_scenario
   descriptor:
-    qualified_name: food.time.dim_calendar_day
-    display_name: Calendar Day
-    description: Calendar day for Food Inc shipments and consumption.
+    qualified_name: food.time.dim_scenario
+    display_name: Scenario
+    description: 'Reporting scenario: a reported result or a management guide for the same fiscal quarter.'
     synonyms: []
     tags:
-    - dim
+    - dimension
     - demand_category
-    - food
+    - packaged-foods
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: food.us-east-1
       database: FOOD
       schema: TIME
-      object: DIM_CALENDAR_DAY
+      object: DIM_SCENARIO
       format: table
   grain:
-    description: One row is one calendar day.
+    description: One row is one scenario, identified by scenario_id.
     components:
-    - identity_id: calendar_day_identity
+    - identity_id: scenario_identity
       dataset_columns:
-      - calendar_day_id
-      description: Identifier of the calendar day.
+      - scenario_id
+      description: Identifier of the scenario.
   columns:
-  - name: calendar_day_id
-    description: Identifier of the calendar day.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter that contains the day.
-  - name: calendar_date
-    description: Civil date of the day.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: scenario_name
+    description: Name of the scenario.
+  - name: scenario_code
+    description: Code of the scenario.
+    value_description: reported, guide
   entity_definitions:
-  - identity_id: calendar_day_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - calendar_day_id
+    - scenario_id
     entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
 - node_id: sf:food.geography.dim_region
   descriptor:
     qualified_name: food.geography.dim_region
     display_name: Region
-    description: Region Food Inc sells in.
+    description: Geographic sales region for Food Inc.
     synonyms: []
     tags:
-    - dim
+    - dimension
     - demand_category
-    - food
+    - packaged-foods
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
@@ -101,7 +95,7 @@ nodes:
       object: DIM_REGION
       format: table
   grain:
-    description: One row is one region.
+    description: One row is one region, identified by region_id.
     components:
     - identity_id: region_identity
       dataset_columns:
@@ -113,23 +107,61 @@ nodes:
   - name: region_name
     description: Name of the region.
   - name: region_code
-    description: Region code.
-    value_description: north_america, europe, latin_america, emerging_markets, developed_markets, west_africa
+    description: Code of the region.
+    value_description: north_america, europe, latin_america, asia_pacific, africa
   entity_definitions:
   - identity_id: region_identity
     dataset_columns:
     - region_id
     entity_universe: complete
+- node_id: sf:food.geography.dim_market_development
+  descriptor:
+    qualified_name: food.geography.dim_market_development
+    display_name: Market Development
+    description: Development class of a market, separate from geography.
+    synonyms: []
+    tags:
+    - dimension
+    - demand_category
+    - packaged-foods
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: food.us-east-1
+      database: FOOD
+      schema: GEOGRAPHY
+      object: DIM_MARKET_DEVELOPMENT
+      format: table
+  grain:
+    description: One row is one market development, identified by market_development_id.
+    components:
+    - identity_id: market_development_identity
+      dataset_columns:
+      - market_development_id
+      description: Identifier of the market development.
+  columns:
+  - name: market_development_id
+    description: Identifier of the market development.
+  - name: market_development_name
+    description: Name of the market development.
+  - name: market_development_code
+    description: Code of the market development.
+    value_description: developed_market, emerging_market
+  entity_definitions:
+  - identity_id: market_development_identity
+    dataset_columns:
+    - market_development_id
+    entity_universe: complete
 - node_id: sf:food.geography.dim_country
   descriptor:
     qualified_name: food.geography.dim_country
     display_name: Country
-    description: Country Food Inc sells in, including the United States and Brazil.
+    description: Country inside a geographic region.
     synonyms: []
     tags:
-    - dim
+    - dimension
     - demand_category
-    - food
+    - packaged-foods
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
@@ -139,7 +171,7 @@ nodes:
       object: DIM_COUNTRY
       format: table
   grain:
-    description: One row is one country.
+    description: One row is one country, identified by country_id.
     components:
     - identity_id: country_identity
       dataset_columns:
@@ -148,13 +180,13 @@ nodes:
   columns:
   - name: country_id
     description: Identifier of the country.
-  - name: region_id
-    description: Region.
   - name: country_name
     description: Name of the country.
   - name: country_code
-    description: Country code.
+    description: Code of the country.
     value_description: united_states, canada, brazil, mexico, united_kingdom, germany, france, china
+  - name: region_id
+    description: Identifier of the region.
   entity_definitions:
   - identity_id: country_identity
     dataset_columns:
@@ -164,109 +196,256 @@ nodes:
     dataset_columns:
     - region_id
     entity_universe: partial
-- node_id: sf:food.category.dim_category
+- node_id: sf:food.segment.dim_gis_reporting_segment
   descriptor:
-    qualified_name: food.category.dim_category
-    display_name: Category
-    description: Category Food Inc sells, including chocolate, biscuits, cereal, snacks, and pet.
+    qualified_name: food.segment.dim_gis_reporting_segment
+    display_name: GIS Reporting Segment
+    description: General Mills reporting segment for Food Inc.
     synonyms: []
     tags:
-    - dim
+    - dimension
     - demand_category
-    - food
+    - packaged-foods
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: food.us-east-1
+      database: FOOD
+      schema: SEGMENT
+      object: DIM_GIS_REPORTING_SEGMENT
+      format: table
+  grain:
+    description: One row is one gis reporting segment, identified by gis_reporting_segment_id.
+    components:
+    - identity_id: gis_reporting_segment_identity
+      dataset_columns:
+      - gis_reporting_segment_id
+      description: Identifier of the gis reporting segment.
+  columns:
+  - name: gis_reporting_segment_id
+    description: Identifier of the gis reporting segment.
+  - name: gis_reporting_segment_name
+    description: Name of the gis reporting segment.
+  - name: gis_reporting_segment_code
+    description: Code of the gis reporting segment.
+    value_description: north_america_retail, north_america_pet, north_america_foodservice, international
+  entity_definitions:
+  - identity_id: gis_reporting_segment_identity
+    dataset_columns:
+    - gis_reporting_segment_id
+    entity_universe: complete
+- node_id: sf:food.segment.dim_mdlz_reporting_segment
+  descriptor:
+    qualified_name: food.segment.dim_mdlz_reporting_segment
+    display_name: MDLZ Reporting Segment
+    description: Mondelez reporting segment for Food Inc.
+    synonyms: []
+    tags:
+    - dimension
+    - demand_category
+    - packaged-foods
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: food.us-east-1
+      database: FOOD
+      schema: SEGMENT
+      object: DIM_MDLZ_REPORTING_SEGMENT
+      format: table
+  grain:
+    description: One row is one mdlz reporting segment, identified by mdlz_reporting_segment_id.
+    components:
+    - identity_id: mdlz_reporting_segment_identity
+      dataset_columns:
+      - mdlz_reporting_segment_id
+      description: Identifier of the mdlz reporting segment.
+  columns:
+  - name: mdlz_reporting_segment_id
+    description: Identifier of the mdlz reporting segment.
+  - name: mdlz_reporting_segment_name
+    description: Name of the mdlz reporting segment.
+  - name: mdlz_reporting_segment_code
+    description: Code of the mdlz reporting segment.
+    value_description: north_america, latin_america, europe, asia_middle_east_africa
+  entity_definitions:
+  - identity_id: mdlz_reporting_segment_identity
+    dataset_columns:
+    - mdlz_reporting_segment_id
+    entity_universe: complete
+- node_id: sf:food.category.dim_gis_category
+  descriptor:
+    qualified_name: food.category.dim_gis_category
+    display_name: GIS Category
+    description: General Mills product category.
+    synonyms: []
+    tags:
+    - dimension
+    - demand_category
+    - packaged-foods
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: food.us-east-1
       database: FOOD
       schema: CATEGORY
-      object: DIM_CATEGORY
+      object: DIM_GIS_CATEGORY
       format: table
   grain:
-    description: One row is one category.
+    description: One row is one gis category, identified by gis_category_id.
     components:
-    - identity_id: category_identity
+    - identity_id: gis_category_identity
       dataset_columns:
-      - category_id
-      description: Identifier of the category.
+      - gis_category_id
+      description: Identifier of the gis category.
   columns:
-  - name: category_id
-    description: Identifier of the category.
-  - name: category_name
-    description: Name of the category.
-  - name: category_code
-    description: Category code.
-    value_description: chocolate, biscuits, cereal, snacks, pet, dog_food, wet_dog, flour, foodservice,
-      indulgent_snacks
+  - name: gis_category_id
+    description: Identifier of the gis category.
+  - name: gis_category_name
+    description: Name of the gis category.
+  - name: gis_category_code
+    description: Code of the gis category.
+    value_description: ready_to_eat_cereal, frozen_meals, fruit_and_grain_snacks, baking_mixes_and_dough,
+      pet_food, pet_treats
   entity_definitions:
-  - identity_id: category_identity
+  - identity_id: gis_category_identity
     dataset_columns:
-    - category_id
+    - gis_category_id
     entity_universe: complete
-- node_id: sf:food.category.dim_brand
+- node_id: sf:food.category.dim_mdlz_category
   descriptor:
-    qualified_name: food.category.dim_brand
-    display_name: Brand
-    description: Brand Food Inc sells, including Love Made Fresh, Wilderness, Blue Buffalo, and Totino's.
+    qualified_name: food.category.dim_mdlz_category
+    display_name: MDLZ Category
+    description: Mondelez product category.
     synonyms: []
     tags:
-    - dim
+    - dimension
     - demand_category
-    - food
+    - packaged-foods
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: food.us-east-1
       database: FOOD
       schema: CATEGORY
-      object: DIM_BRAND
+      object: DIM_MDLZ_CATEGORY
       format: table
   grain:
-    description: One row is one brand.
+    description: One row is one mdlz category, identified by mdlz_category_id.
     components:
-    - identity_id: brand_identity
+    - identity_id: mdlz_category_identity
       dataset_columns:
-      - brand_id
-      description: Identifier of the brand.
+      - mdlz_category_id
+      description: Identifier of the mdlz category.
   columns:
-  - name: brand_id
-    description: Identifier of the brand.
-  - name: category_id
-    description: Category.
-  - name: brand_name
-    description: Name of the brand.
-  - name: brand_code
-    description: Brand code.
-    value_description: love_made_fresh, wilderness, blue_buffalo, totinos, retailer_brand, base_pet
+  - name: mdlz_category_id
+    description: Identifier of the mdlz category.
+  - name: mdlz_category_name
+    description: Name of the mdlz category.
+  - name: mdlz_category_code
+    description: Code of the mdlz category.
+    value_description: chocolate, biscuits, candy, gum, powdered_beverages
   entity_definitions:
-  - identity_id: brand_identity
+  - identity_id: mdlz_category_identity
     dataset_columns:
-    - brand_id
+    - mdlz_category_id
     entity_universe: complete
-  - identity_id: category_identity
-    dataset_columns:
-    - category_id
-    entity_universe: partial
-- node_id: sf:food.category.dim_channel
+- node_id: sf:food.brand.dim_gis_brand
   descriptor:
-    qualified_name: food.category.dim_channel
+    qualified_name: food.brand.dim_gis_brand
+    display_name: GIS Brand
+    description: General Mills brand, kept separate from Mondelez brands.
+    synonyms: []
+    tags:
+    - dimension
+    - demand_category
+    - packaged-foods
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: food.us-east-1
+      database: FOOD
+      schema: BRAND
+      object: DIM_GIS_BRAND
+      format: table
+  grain:
+    description: One row is one gis brand, identified by gis_brand_id.
+    components:
+    - identity_id: gis_brand_identity
+      dataset_columns:
+      - gis_brand_id
+      description: Identifier of the gis brand.
+  columns:
+  - name: gis_brand_id
+    description: Identifier of the gis brand.
+  - name: gis_brand_name
+    description: Name of the gis brand.
+  - name: gis_brand_code
+    description: Code of the gis brand.
+    value_description: cheerios, nature_valley, totinos, pillsbury, blue_buffalo, annie_s
+  entity_definitions:
+  - identity_id: gis_brand_identity
+    dataset_columns:
+    - gis_brand_id
+    entity_universe: complete
+- node_id: sf:food.brand.dim_mdlz_brand
+  descriptor:
+    qualified_name: food.brand.dim_mdlz_brand
+    display_name: MDLZ Brand
+    description: Mondelez brand, kept separate from General Mills brands.
+    synonyms: []
+    tags:
+    - dimension
+    - demand_category
+    - packaged-foods
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: food.us-east-1
+      database: FOOD
+      schema: BRAND
+      object: DIM_MDLZ_BRAND
+      format: table
+  grain:
+    description: One row is one mdlz brand, identified by mdlz_brand_id.
+    components:
+    - identity_id: mdlz_brand_identity
+      dataset_columns:
+      - mdlz_brand_id
+      description: Identifier of the mdlz brand.
+  columns:
+  - name: mdlz_brand_id
+    description: Identifier of the mdlz brand.
+  - name: mdlz_brand_name
+    description: Name of the mdlz brand.
+  - name: mdlz_brand_code
+    description: Code of the mdlz brand.
+    value_description: oreo, cadbury, milka, ritz, belvita, triscuit, sour_patch_kids, toblerone
+  entity_definitions:
+  - identity_id: mdlz_brand_identity
+    dataset_columns:
+    - mdlz_brand_id
+    entity_universe: complete
+- node_id: sf:food.channel.dim_channel
+  descriptor:
+    qualified_name: food.channel.dim_channel
     display_name: Channel
-    description: Channel Food Inc sells through.
+    description: Route to market for packaged food; North America Retail is a GIS reporting segment, not
+      a channel.
     synonyms: []
     tags:
-    - dim
+    - dimension
     - demand_category
-    - food
+    - packaged-foods
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: food.us-east-1
       database: FOOD
-      schema: CATEGORY
+      schema: CHANNEL
       object: DIM_CHANNEL
       format: table
   grain:
-    description: One row is one channel.
+    description: One row is one channel, identified by channel_id.
     components:
     - identity_id: channel_identity
       dataset_columns:
@@ -278,33 +457,33 @@ nodes:
   - name: channel_name
     description: Name of the channel.
   - name: channel_code
-    description: Channel code.
-    value_description: north_america_retail, foodservice, measured_retail, unmeasured, ecommerce, club
+    description: Code of the channel.
+    value_description: grocery_retail, mass_merchandiser, club, ecommerce, foodservice, convenience
   entity_definitions:
   - identity_id: channel_identity
     dataset_columns:
     - channel_id
     entity_universe: complete
-- node_id: sf:food.category.dim_retailer
+- node_id: sf:food.channel.dim_retailer
   descriptor:
-    qualified_name: food.category.dim_retailer
+    qualified_name: food.channel.dim_retailer
     display_name: Retailer
-    description: Retailer Food Inc sells through, including Instacart and Kroger.
+    description: Retail customer of Food Inc.
     synonyms: []
     tags:
-    - dim
+    - dimension
     - demand_category
-    - food
+    - packaged-foods
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: food.us-east-1
       database: FOOD
-      schema: CATEGORY
+      schema: CHANNEL
       object: DIM_RETAILER
       format: table
   grain:
-    description: One row is one retailer.
+    description: One row is one retailer, identified by retailer_id.
     components:
     - identity_id: retailer_identity
       dataset_columns:
@@ -313,1946 +492,1685 @@ nodes:
   columns:
   - name: retailer_id
     description: Identifier of the retailer.
-  - name: channel_id
-    description: Channel.
   - name: retailer_name
     description: Name of the retailer.
   - name: retailer_code
-    description: Retailer code.
-    value_description: instacart, kroger, grocery, pet_specialty
+    description: Code of the retailer.
+    value_description: walmart, kroger, target, costco, amazon, pet_specialty_retailer
   entity_definitions:
   - identity_id: retailer_identity
     dataset_columns:
     - retailer_id
     entity_universe: complete
-  - identity_id: channel_identity
-    dataset_columns:
-    - channel_id
-    entity_universe: partial
-- node_id: sf:food.category.dim_consumer_cohort
+- node_id: sf:food.consumer.dim_income_cohort
   descriptor:
-    qualified_name: food.category.dim_consumer_cohort
-    display_name: Consumer Cohort
-    description: Consumer cohort Food Inc tracks.
+    qualified_name: food.consumer.dim_income_cohort
+    display_name: Income Cohort
+    description: Household income cohort of a consumer.
     synonyms: []
     tags:
-    - dim
+    - dimension
     - demand_category
-    - food
+    - packaged-foods
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: food.us-east-1
       database: FOOD
-      schema: CATEGORY
-      object: DIM_CONSUMER_COHORT
+      schema: CONSUMER
+      object: DIM_INCOME_COHORT
       format: table
   grain:
-    description: One row is one consumer cohort.
+    description: One row is one income cohort, identified by income_cohort_id.
     components:
-    - identity_id: consumer_cohort_identity
+    - identity_id: income_cohort_identity
       dataset_columns:
-      - consumer_cohort_id
-      description: Identifier of the consumer cohort.
+      - income_cohort_id
+      description: Identifier of the income cohort.
   columns:
-  - name: consumer_cohort_id
-    description: Identifier of the consumer cohort.
-  - name: cohort_name
-    description: Name of the cohort.
-  - name: cohort_code
-    description: Cohort code.
-    value_description: low_income, middle, high_income, glp1, fragile, value_seeking
+  - name: income_cohort_id
+    description: Identifier of the income cohort.
+  - name: income_cohort_name
+    description: Name of the income cohort.
+  - name: income_cohort_code
+    description: Code of the income cohort.
+    value_description: low_income, middle_income, high_income
   entity_definitions:
-  - identity_id: consumer_cohort_identity
+  - identity_id: income_cohort_identity
     dataset_columns:
-    - consumer_cohort_id
+    - income_cohort_id
     entity_universe: complete
-- node_id: sf:food.category.dim_competitor
+- node_id: sf:food.consumer.dim_health_cohort
   descriptor:
-    qualified_name: food.category.dim_competitor
-    display_name: Competitor
-    description: Competitor Food Inc measures, including private label and insurgent brands.
+    qualified_name: food.consumer.dim_health_cohort
+    display_name: Health Cohort
+    description: Health cohort of a consumer, separate from income cohort.
     synonyms: []
     tags:
-    - dim
+    - dimension
     - demand_category
-    - food
+    - packaged-foods
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: food.us-east-1
       database: FOOD
-      schema: CATEGORY
-      object: DIM_COMPETITOR
+      schema: CONSUMER
+      object: DIM_HEALTH_COHORT
       format: table
   grain:
-    description: One row is one competitor.
+    description: One row is one health cohort, identified by health_cohort_id.
     components:
-    - identity_id: competitor_identity
+    - identity_id: health_cohort_identity
       dataset_columns:
-      - competitor_id
-      description: Identifier of the competitor.
+      - health_cohort_id
+      description: Identifier of the health cohort.
   columns:
-  - name: competitor_id
-    description: Identifier of the competitor.
-  - name: competitor_name
-    description: Name of the competitor.
-  - name: competitor_code
-    description: Competitor code.
-    value_description: private_label, insurgent, large_peer, retailer_brand
+  - name: health_cohort_id
+    description: Identifier of the health cohort.
+  - name: health_cohort_name
+    description: Name of the health cohort.
+  - name: health_cohort_code
+    description: Code of the health cohort.
+    value_description: glp1_medication_user, non_glp1_consumer
   entity_definitions:
-  - identity_id: competitor_identity
+  - identity_id: health_cohort_identity
     dataset_columns:
-    - competitor_id
+    - health_cohort_id
     entity_universe: complete
-- node_id: sf:food.category.dim_innovation_item
+- node_id: sf:food.consumer.dim_competitor_type
   descriptor:
-    qualified_name: food.category.dim_innovation_item
-    display_name: Innovation Item
-    description: Innovation or renovation item at Food Inc.
+    qualified_name: food.consumer.dim_competitor_type
+    display_name: Competitor Type
+    description: Type of competitor in a category.
     synonyms: []
     tags:
-    - dim
+    - dimension
     - demand_category
-    - food
+    - packaged-foods
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: food.us-east-1
       database: FOOD
-      schema: CATEGORY
-      object: DIM_INNOVATION_ITEM
+      schema: CONSUMER
+      object: DIM_COMPETITOR_TYPE
       format: table
   grain:
-    description: One row is one innovation item.
+    description: One row is one competitor type, identified by competitor_type_id.
     components:
-    - identity_id: innovation_item_identity
+    - identity_id: competitor_type_identity
       dataset_columns:
-      - innovation_item_id
-      description: Identifier of the innovation item.
+      - competitor_type_id
+      description: Identifier of the competitor type.
   columns:
-  - name: innovation_item_id
-    description: Identifier of the innovation item.
-  - name: category_id
-    description: Category.
-  - name: brand_id
-    description: Brand.
-  - name: item_name
-    description: Name of the item.
-  - name: item_code
-    description: Item code.
-    value_description: love_made_fresh, cereal_renovation, better_for_you, seasonal
-  - name: item_type_code
-    description: Type of item.
-    value_description: innovation, renovation, seasonal
+  - name: competitor_type_id
+    description: Identifier of the competitor type.
+  - name: competitor_type_name
+    description: Name of the competitor type.
+  - name: competitor_type_code
+    description: Code of the competitor type.
+    value_description: private_label, insurgent_brand, large_peer
   entity_definitions:
-  - identity_id: innovation_item_identity
+  - identity_id: competitor_type_identity
     dataset_columns:
-    - innovation_item_id
+    - competitor_type_id
     entity_universe: complete
-  - identity_id: category_identity
-    dataset_columns:
-    - category_id
-    entity_universe: partial
-  - identity_id: brand_identity
-    dataset_columns:
-    - brand_id
-    entity_universe: partial
-- node_id: sf:food.category.dim_occasion
+- node_id: sf:food.innovation.dim_innovation_type
   descriptor:
-    qualified_name: food.category.dim_occasion
-    display_name: Occasion
-    description: Shopping occasion Food Inc plans for.
+    qualified_name: food.innovation.dim_innovation_type
+    display_name: Innovation Type
+    description: Type of product innovation activity.
     synonyms: []
     tags:
-    - dim
+    - dimension
     - demand_category
-    - food
+    - packaged-foods
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: food.us-east-1
       database: FOOD
-      schema: CATEGORY
-      object: DIM_OCCASION
+      schema: INNOVATION
+      object: DIM_INNOVATION_TYPE
       format: table
   grain:
-    description: One row is one occasion.
+    description: One row is one innovation type, identified by innovation_type_id.
     components:
-    - identity_id: occasion_identity
+    - identity_id: innovation_type_identity
       dataset_columns:
-      - occasion_id
-      description: Identifier of the occasion.
+      - innovation_type_id
+      description: Identifier of the innovation type.
   columns:
-  - name: occasion_id
-    description: Identifier of the occasion.
-  - name: occasion_name
-    description: Name of the occasion.
-  - name: occasion_code
-    description: Occasion code.
-    value_description: everyday, seasonal, holiday
+  - name: innovation_type_id
+    description: Identifier of the innovation type.
+  - name: innovation_type_name
+    description: Name of the innovation type.
+  - name: innovation_type_code
+    description: Code of the innovation type.
+    value_description: new_product, renovation, seasonal_product, better_for_you_product
   entity_definitions:
-  - identity_id: occasion_identity
+  - identity_id: innovation_type_identity
     dataset_columns:
-    - occasion_id
+    - innovation_type_id
     entity_universe: complete
-- node_id: sf:food.demand.fact_category_volume
+- node_id: sf:food.demand.fact_gis_category_volume
   descriptor:
-    qualified_name: food.demand.fact_category_volume
-    display_name: Category Volume
-    description: Volume Food Inc sells in a category, and category pounds. This fact stores quantity,
-      not a list price.
+    qualified_name: food.demand.fact_gis_category_volume
+    display_name: GIS Category Volume
+    description: General Mills category volume in pounds by reporting segment, category, and region.
     synonyms: []
     tags:
     - fact
     - demand_category
-    - food
+    - packaged-foods
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: food.us-east-1
       database: FOOD
       schema: DEMAND
-      object: FACT_CATEGORY_VOLUME
+      object: FACT_GIS_CATEGORY_VOLUME
       format: table
   grain:
-    description: One row is one category volume.
+    description: One row is one gis category volume observation for the combination of fiscal quarter,
+      scenario, gis reporting segment, gis category, region.
     components:
-    - identity_id: category_volume_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - category_volume_id
-      description: Identifier of the category volume.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: gis_reporting_segment_identity
+      dataset_columns:
+      - gis_reporting_segment_id
+      description: Identifier of the gis reporting segment.
+    - identity_id: gis_category_identity
+      dataset_columns:
+      - gis_category_id
+      description: Identifier of the gis category.
+    - identity_id: region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
   columns:
-  - name: category_volume_id
-    description: Identifier of the category volume.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: category_id
-    description: Category.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: gis_reporting_segment_id
+    description: Identifier of the gis reporting segment.
+  - name: gis_category_id
+    description: Identifier of the gis category.
   - name: region_id
-    description: Region.
-  - name: country_id
-    description: Country.
-  - name: volume_quantity
-    description: Volume quantity.
-  - name: volume_change_rate
-    description: Volume change.
-  - name: category_pounds_quantity
-    description: Category pounds.
-  - name: below_trend_flag
-    description: Whether category growth is below the long-term trend.
-  - name: cyclical_flag
-    description: Whether the gap is cyclical.
+    description: Identifier of the region.
+  - name: volume_pounds
+    description: Category volume in pounds.
+  - name: volume_case_count
+    description: Category volume in cases.
   entity_definitions:
-  - identity_id: category_volume_identity
-    dataset_columns:
-    - category_volume_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: category_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - category_id
+    - scenario_id
+    entity_universe: partial
+  - identity_id: gis_reporting_segment_identity
+    dataset_columns:
+    - gis_reporting_segment_id
+    entity_universe: partial
+  - identity_id: gis_category_identity
+    dataset_columns:
+    - gis_category_id
     entity_universe: partial
   - identity_id: region_identity
     dataset_columns:
     - region_id
     entity_universe: partial
-  - identity_id: country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
-- node_id: sf:food.demand.fact_consumption
+- node_id: sf:food.demand.fact_mdlz_category_volume
   descriptor:
-    qualified_name: food.demand.fact_consumption
-    display_name: Consumption
-    description: Retail consumption for Food Inc, separate from shipments. This fact stores quantity,
-      not a list price.
+    qualified_name: food.demand.fact_mdlz_category_volume
+    display_name: MDLZ Category Volume
+    description: Mondelez category volume in kilograms by reporting segment, category, and region.
     synonyms: []
     tags:
     - fact
     - demand_category
-    - food
+    - packaged-foods
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: food.us-east-1
       database: FOOD
       schema: DEMAND
-      object: FACT_CONSUMPTION
+      object: FACT_MDLZ_CATEGORY_VOLUME
       format: table
   grain:
-    description: One row is one consumption.
+    description: One row is one mdlz category volume observation for the combination of fiscal quarter,
+      scenario, mdlz reporting segment, mdlz category, region.
     components:
-    - identity_id: consumption_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - consumption_id
-      description: Identifier of the consumption.
-  columns:
-  - name: consumption_id
-    description: Identifier of the consumption.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: category_id
-    description: Category.
-  - name: channel_id
-    description: Channel.
-  - name: brand_id
-    description: Brand.
-  - name: consumption_quantity
-    description: Consumption quantity.
-  - name: consumption_change_rate
-    description: Consumption change.
-  - name: healthier_than_shipments_flag
-    description: Whether consumption is healthier than reported shipments.
-  - name: stabilize_flag
-    description: Whether the rate is expected to stabilize.
-  entity_definitions:
-  - identity_id: consumption_identity
-    dataset_columns:
-    - consumption_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: category_identity
-    dataset_columns:
-    - category_id
-    entity_universe: partial
-  - identity_id: channel_identity
-    dataset_columns:
-    - channel_id
-    entity_universe: partial
-  - identity_id: brand_identity
-    dataset_columns:
-    - brand_id
-    entity_universe: partial
-- node_id: sf:food.demand.fact_volume_share
-  descriptor:
-    qualified_name: food.demand.fact_volume_share
-    display_name: Volume Share
-    description: Volume share for Food Inc. This fact stores quantity, not a list price.
-    synonyms: []
-    tags:
-    - fact
-    - demand_category
-    - food
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: food.us-east-1
-      database: FOOD
-      schema: DEMAND
-      object: FACT_VOLUME_SHARE
-      format: table
-  grain:
-    description: One row is one volume share.
-    components:
-    - identity_id: volume_share_identity
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
       dataset_columns:
-      - volume_share_id
-      description: Identifier of the volume share.
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: mdlz_reporting_segment_identity
+      dataset_columns:
+      - mdlz_reporting_segment_id
+      description: Identifier of the mdlz reporting segment.
+    - identity_id: mdlz_category_identity
+      dataset_columns:
+      - mdlz_category_id
+      description: Identifier of the mdlz category.
+    - identity_id: region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
   columns:
-  - name: volume_share_id
-    description: Identifier of the volume share.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: category_id
-    description: Category.
-  - name: brand_id
-    description: Brand.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: mdlz_reporting_segment_id
+    description: Identifier of the mdlz reporting segment.
+  - name: mdlz_category_id
+    description: Identifier of the mdlz category.
   - name: region_id
-    description: Region.
-  - name: country_id
-    description: Country.
-  - name: volume_share_rate
-    description: Volume share.
-  - name: share_change_rate
-    description: Share change.
-  - name: negative_category_count
-    description: Count of categories where volume and share are still negative.
-  - name: returned_to_growth_flag
-    description: Whether volume share has returned to growth.
+    description: Identifier of the region.
+  - name: volume_kilograms
+    description: Category volume in kilograms.
   entity_definitions:
-  - identity_id: volume_share_identity
-    dataset_columns:
-    - volume_share_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: category_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - category_id
+    - scenario_id
     entity_universe: partial
-  - identity_id: brand_identity
+  - identity_id: mdlz_reporting_segment_identity
     dataset_columns:
-    - brand_id
+    - mdlz_reporting_segment_id
+    entity_universe: partial
+  - identity_id: mdlz_category_identity
+    dataset_columns:
+    - mdlz_category_id
     entity_universe: partial
   - identity_id: region_identity
     dataset_columns:
     - region_id
     entity_universe: partial
-  - identity_id: country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
-- node_id: sf:food.demand.fact_organic_result
+- node_id: sf:food.demand.fact_gis_brand_volume
   descriptor:
-    qualified_name: food.demand.fact_organic_result
-    display_name: Organic Result
-    description: Food Inc organic sales rate. The row stores the rate, not the unit price and not the
-      case quantity. This fact stores a rate or flag, not a list price and not a case quantity.
+    qualified_name: food.demand.fact_gis_brand_volume
+    display_name: GIS Brand Volume
+    description: General Mills brand volume in pounds by brand, category, channel, and region; the denominator
+      for GIS price per pound.
     synonyms: []
     tags:
     - fact
     - demand_category
-    - food
+    - packaged-foods
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: food.us-east-1
       database: FOOD
       schema: DEMAND
-      object: FACT_ORGANIC_RESULT
+      object: FACT_GIS_BRAND_VOLUME
       format: table
   grain:
-    description: One row is one organic result.
+    description: One row is one gis brand volume observation for the combination of fiscal quarter, scenario,
+      gis brand, gis category, channel, region.
     components:
-    - identity_id: organic_result_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - organic_result_id
-      description: Identifier of the organic result.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: gis_brand_identity
+      dataset_columns:
+      - gis_brand_id
+      description: Identifier of the gis brand.
+    - identity_id: gis_category_identity
+      dataset_columns:
+      - gis_category_id
+      description: Identifier of the gis category.
+    - identity_id: channel_identity
+      dataset_columns:
+      - channel_id
+      description: Identifier of the channel.
+    - identity_id: region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
   columns:
-  - name: organic_result_id
-    description: Identifier of the organic result.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: category_id
-    description: Category.
-  - name: region_id
-    description: Region.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: gis_brand_id
+    description: Identifier of the gis brand.
+  - name: gis_category_id
+    description: Identifier of the gis category.
   - name: channel_id
-    description: Channel.
-  - name: organic_sales_rate
-    description: Organic sales rate.
-  - name: volume_contributed_flag
-    description: Whether volume contributed.
-  - name: price_contributed_flag
-    description: Whether price contributed.
-  - name: versus_algorithm_flag
-    description: Whether the rate clears the long-term algorithm.
-  - name: quarter_phasing_gap_rate
-    description: How far the quarter starts below the full-year guide.
+    description: Identifier of the channel.
+  - name: region_id
+    description: Identifier of the region.
+  - name: brand_volume_pounds
+    description: Brand volume in pounds.
   entity_definitions:
-  - identity_id: organic_result_identity
-    dataset_columns:
-    - organic_result_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: category_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - category_id
+    - scenario_id
     entity_universe: partial
-  - identity_id: region_identity
+  - identity_id: gis_brand_identity
     dataset_columns:
-    - region_id
+    - gis_brand_id
+    entity_universe: partial
+  - identity_id: gis_category_identity
+    dataset_columns:
+    - gis_category_id
     entity_universe: partial
   - identity_id: channel_identity
     dataset_columns:
     - channel_id
     entity_universe: partial
-- node_id: sf:food.demand.fact_elasticity
-  descriptor:
-    qualified_name: food.demand.fact_elasticity
-    display_name: Elasticity
-    description: Price response Food Inc observes. A coefficient, not the price and not the volume. This
-      fact stores a rate or flag, not a list price and not a case quantity.
-    synonyms: []
-    tags:
-    - fact
-    - demand_category
-    - food
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: food.us-east-1
-      database: FOOD
-      schema: DEMAND
-      object: FACT_ELASTICITY
-      format: table
-  grain:
-    description: One row is one elasticity.
-    components:
-    - identity_id: elasticity_identity
-      dataset_columns:
-      - elasticity_id
-      description: Identifier of the elasticity.
-  columns:
-  - name: elasticity_id
-    description: Identifier of the elasticity.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: category_id
-    description: Category.
-  - name: country_id
-    description: Country.
-  - name: consumer_cohort_id
-    description: Consumer cohort.
-  - name: elasticity_rate
-    description: Elasticity coefficient.
-  - name: trade_down_rate
-    description: Trade-down rate.
-  - name: fatigue_flag
-    description: Whether elasticity shows fatigue.
-  - name: small_sales_decline_flag
-    description: Whether organic sales declined only slightly.
-  entity_definitions:
-  - identity_id: elasticity_identity
-    dataset_columns:
-    - elasticity_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: category_identity
-    dataset_columns:
-    - category_id
-    entity_universe: partial
-  - identity_id: country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
-  - identity_id: consumer_cohort_identity
-    dataset_columns:
-    - consumer_cohort_id
-    entity_universe: partial
-- node_id: sf:food.demand.fact_regional_volume
-  descriptor:
-    qualified_name: food.demand.fact_regional_volume
-    display_name: Regional Volume
-    description: Food Inc volume by region. This fact stores quantity, not a list price.
-    synonyms: []
-    tags:
-    - fact
-    - demand_category
-    - food
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: food.us-east-1
-      database: FOOD
-      schema: DEMAND
-      object: FACT_REGIONAL_VOLUME
-      format: table
-  grain:
-    description: One row is one regional volume.
-    components:
-    - identity_id: regional_volume_identity
-      dataset_columns:
-      - regional_volume_id
-      description: Identifier of the regional volume.
-  columns:
-  - name: regional_volume_id
-    description: Identifier of the regional volume.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: region_id
-    description: Region.
-  - name: country_id
-    description: Country.
-  - name: category_id
-    description: Category.
-  - name: volume_quantity
-    description: Regional volume.
-  - name: volume_change_rate
-    description: Regional volume change.
-  - name: improving_flag
-    description: Whether the region is improving.
-  - name: driver_flag
-    description: Whether the region is a material driver of the trajectory.
-  entity_definitions:
-  - identity_id: regional_volume_identity
-    dataset_columns:
-    - regional_volume_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
   - identity_id: region_identity
     dataset_columns:
     - region_id
     entity_universe: partial
-  - identity_id: country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
-  - identity_id: category_identity
-    dataset_columns:
-    - category_id
-    entity_universe: partial
-- node_id: sf:food.demand.fact_brand_volume
+- node_id: sf:food.demand.fact_mdlz_brand_volume
   descriptor:
-    qualified_name: food.demand.fact_brand_volume
-    display_name: Brand Volume
-    description: Volume for a Food Inc brand. This fact stores quantity, not a list price.
+    qualified_name: food.demand.fact_mdlz_brand_volume
+    display_name: MDLZ Brand Volume
+    description: Mondelez brand volume in kilograms by brand, category, channel, and region; the denominator
+      for Mondelez price per kilogram.
     synonyms: []
     tags:
     - fact
     - demand_category
-    - food
+    - packaged-foods
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: food.us-east-1
       database: FOOD
       schema: DEMAND
-      object: FACT_BRAND_VOLUME
+      object: FACT_MDLZ_BRAND_VOLUME
       format: table
   grain:
-    description: One row is one brand volume.
+    description: One row is one mdlz brand volume observation for the combination of fiscal quarter, scenario,
+      mdlz brand, mdlz category, channel, region.
     components:
-    - identity_id: brand_volume_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - brand_volume_id
-      description: Identifier of the brand volume.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: mdlz_brand_identity
+      dataset_columns:
+      - mdlz_brand_id
+      description: Identifier of the mdlz brand.
+    - identity_id: mdlz_category_identity
+      dataset_columns:
+      - mdlz_category_id
+      description: Identifier of the mdlz category.
+    - identity_id: channel_identity
+      dataset_columns:
+      - channel_id
+      description: Identifier of the channel.
+    - identity_id: region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
   columns:
-  - name: brand_volume_id
-    description: Identifier of the brand volume.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: brand_id
-    description: Brand.
-  - name: category_id
-    description: Category.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: mdlz_brand_id
+    description: Identifier of the mdlz brand.
+  - name: mdlz_category_id
+    description: Identifier of the mdlz category.
   - name: channel_id
-    description: Channel.
-  - name: volume_quantity
-    description: Brand volume.
-  - name: volume_change_rate
-    description: Brand volume change.
-  - name: incremental_flag
-    description: Whether the item is incremental to the base.
-  - name: base_separate_flag
-    description: Whether the new item is still separate from the base brand.
-  - name: excluded_flag
-    description: Whether the row is the business with this brand removed.
+    description: Identifier of the channel.
+  - name: region_id
+    description: Identifier of the region.
+  - name: brand_volume_kilograms
+    description: Brand volume in kilograms.
   entity_definitions:
-  - identity_id: brand_volume_identity
-    dataset_columns:
-    - brand_volume_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: brand_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - brand_id
+    - scenario_id
     entity_universe: partial
-  - identity_id: category_identity
+  - identity_id: mdlz_brand_identity
     dataset_columns:
-    - category_id
+    - mdlz_brand_id
+    entity_universe: partial
+  - identity_id: mdlz_category_identity
+    dataset_columns:
+    - mdlz_category_id
     entity_universe: partial
   - identity_id: channel_identity
     dataset_columns:
     - channel_id
     entity_universe: partial
-- node_id: sf:food.demand.fact_channel_volume
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:food.demand.fact_gis_shipment_quantity
   descriptor:
-    qualified_name: food.demand.fact_channel_volume
-    display_name: Channel Volume
-    description: Food Inc volume by channel. This fact stores quantity, not a list price.
+    qualified_name: food.demand.fact_gis_shipment_quantity
+    display_name: GIS Shipment Quantity
+    description: General Mills manufacturer shipments to retailers in pounds, separate from retail consumption.
     synonyms: []
     tags:
     - fact
     - demand_category
-    - food
+    - packaged-foods
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: food.us-east-1
       database: FOOD
       schema: DEMAND
-      object: FACT_CHANNEL_VOLUME
+      object: FACT_GIS_SHIPMENT_QUANTITY
       format: table
   grain:
-    description: One row is one channel volume.
+    description: One row is one gis shipment quantity observation for the combination of fiscal quarter,
+      scenario, gis category, region.
     components:
-    - identity_id: channel_volume_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - channel_volume_id
-      description: Identifier of the channel volume.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: gis_category_identity
+      dataset_columns:
+      - gis_category_id
+      description: Identifier of the gis category.
+    - identity_id: region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
   columns:
-  - name: channel_volume_id
-    description: Identifier of the channel volume.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: gis_category_id
+    description: Identifier of the gis category.
+  - name: region_id
+    description: Identifier of the region.
+  - name: shipment_pounds
+    description: Manufacturer shipments in pounds.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: gis_category_identity
+    dataset_columns:
+    - gis_category_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:food.demand.fact_mdlz_shipment_quantity
+  descriptor:
+    qualified_name: food.demand.fact_mdlz_shipment_quantity
+    display_name: MDLZ Shipment Quantity
+    description: Mondelez manufacturer shipments in kilograms, separate from retail consumption.
+    synonyms: []
+    tags:
+    - fact
+    - demand_category
+    - packaged-foods
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: food.us-east-1
+      database: FOOD
+      schema: DEMAND
+      object: FACT_MDLZ_SHIPMENT_QUANTITY
+      format: table
+  grain:
+    description: One row is one mdlz shipment quantity observation for the combination of fiscal quarter,
+      scenario, mdlz category, region.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: mdlz_category_identity
+      dataset_columns:
+      - mdlz_category_id
+      description: Identifier of the mdlz category.
+    - identity_id: region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: mdlz_category_id
+    description: Identifier of the mdlz category.
+  - name: region_id
+    description: Identifier of the region.
+  - name: shipment_kilograms
+    description: Manufacturer shipments in kilograms.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: mdlz_category_identity
+    dataset_columns:
+    - mdlz_category_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:food.demand.fact_gis_consumption_quantity
+  descriptor:
+    qualified_name: food.demand.fact_gis_consumption_quantity
+    display_name: GIS Consumption Quantity
+    description: Retail consumption of General Mills categories in pounds, separate from shipments.
+    synonyms: []
+    tags:
+    - fact
+    - demand_category
+    - packaged-foods
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: food.us-east-1
+      database: FOOD
+      schema: DEMAND
+      object: FACT_GIS_CONSUMPTION_QUANTITY
+      format: table
+  grain:
+    description: One row is one gis consumption quantity observation for the combination of fiscal quarter,
+      scenario, gis category, channel, region.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: gis_category_identity
+      dataset_columns:
+      - gis_category_id
+      description: Identifier of the gis category.
+    - identity_id: channel_identity
+      dataset_columns:
+      - channel_id
+      description: Identifier of the channel.
+    - identity_id: region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: gis_category_id
+    description: Identifier of the gis category.
   - name: channel_id
-    description: Channel.
-  - name: category_id
-    description: Category.
+    description: Identifier of the channel.
+  - name: region_id
+    description: Identifier of the region.
+  - name: consumption_pounds
+    description: Retail consumption in pounds.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: gis_category_identity
+    dataset_columns:
+    - gis_category_id
+    entity_universe: partial
+  - identity_id: channel_identity
+    dataset_columns:
+    - channel_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:food.demand.fact_mdlz_consumption_quantity
+  descriptor:
+    qualified_name: food.demand.fact_mdlz_consumption_quantity
+    display_name: MDLZ Consumption Quantity
+    description: Retail consumption of Mondelez categories in kilograms.
+    synonyms: []
+    tags:
+    - fact
+    - demand_category
+    - packaged-foods
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: food.us-east-1
+      database: FOOD
+      schema: DEMAND
+      object: FACT_MDLZ_CONSUMPTION_QUANTITY
+      format: table
+  grain:
+    description: One row is one mdlz consumption quantity observation for the combination of fiscal quarter,
+      scenario, mdlz category, region.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: mdlz_category_identity
+      dataset_columns:
+      - mdlz_category_id
+      description: Identifier of the mdlz category.
+    - identity_id: region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: mdlz_category_id
+    description: Identifier of the mdlz category.
+  - name: region_id
+    description: Identifier of the region.
+  - name: consumption_kilograms
+    description: Retail consumption in kilograms.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: mdlz_category_identity
+    dataset_columns:
+    - mdlz_category_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:food.demand.fact_gis_volume_share
+  descriptor:
+    qualified_name: food.demand.fact_gis_volume_share
+    display_name: GIS Volume Share
+    description: General Mills volume share by category and region; category volume in pounds is on the
+      category volume fact.
+    synonyms: []
+    tags:
+    - fact
+    - demand_category
+    - packaged-foods
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: food.us-east-1
+      database: FOOD
+      schema: DEMAND
+      object: FACT_GIS_VOLUME_SHARE
+      format: table
+  grain:
+    description: One row is one gis volume share observation for the combination of fiscal quarter, scenario,
+      gis category, region.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: gis_category_identity
+      dataset_columns:
+      - gis_category_id
+      description: Identifier of the gis category.
+    - identity_id: region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: gis_category_id
+    description: Identifier of the gis category.
+  - name: region_id
+    description: Identifier of the region.
+  - name: volume_share_percent
+    description: Volume share in percent.
+  - name: value_share_percent
+    description: Value share in percent.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: gis_category_identity
+    dataset_columns:
+    - gis_category_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:food.demand.fact_mdlz_volume_share
+  descriptor:
+    qualified_name: food.demand.fact_mdlz_volume_share
+    display_name: MDLZ Volume Share
+    description: Mondelez volume share by category and region.
+    synonyms: []
+    tags:
+    - fact
+    - demand_category
+    - packaged-foods
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: food.us-east-1
+      database: FOOD
+      schema: DEMAND
+      object: FACT_MDLZ_VOLUME_SHARE
+      format: table
+  grain:
+    description: One row is one mdlz volume share observation for the combination of fiscal quarter, scenario,
+      mdlz category, region.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: mdlz_category_identity
+      dataset_columns:
+      - mdlz_category_id
+      description: Identifier of the mdlz category.
+    - identity_id: region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: mdlz_category_id
+    description: Identifier of the mdlz category.
+  - name: region_id
+    description: Identifier of the region.
+  - name: volume_share_percent
+    description: Volume share in percent.
+  - name: value_share_percent
+    description: Value share in percent.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: mdlz_category_identity
+    dataset_columns:
+    - mdlz_category_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:food.demand.fact_gis_sales_amount
+  descriptor:
+    qualified_name: food.demand.fact_gis_sales_amount
+    display_name: GIS Sales Amount
+    description: General Mills sales amount by reporting segment and category.
+    synonyms: []
+    tags:
+    - fact
+    - demand_category
+    - packaged-foods
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: food.us-east-1
+      database: FOOD
+      schema: DEMAND
+      object: FACT_GIS_SALES_AMOUNT
+      format: table
+  grain:
+    description: One row is one gis sales amount observation for the combination of fiscal quarter, scenario,
+      gis reporting segment, gis category.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: gis_reporting_segment_identity
+      dataset_columns:
+      - gis_reporting_segment_id
+      description: Identifier of the gis reporting segment.
+    - identity_id: gis_category_identity
+      dataset_columns:
+      - gis_category_id
+      description: Identifier of the gis category.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: gis_reporting_segment_id
+    description: Identifier of the gis reporting segment.
+  - name: gis_category_id
+    description: Identifier of the gis category.
+  - name: sales_amount
+    description: Sales in dollars.
+  - name: organic_sales_change_percent
+    description: Organic sales change in percent.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: gis_reporting_segment_identity
+    dataset_columns:
+    - gis_reporting_segment_id
+    entity_universe: partial
+  - identity_id: gis_category_identity
+    dataset_columns:
+    - gis_category_id
+    entity_universe: partial
+- node_id: sf:food.demand.fact_mdlz_sales_amount
+  descriptor:
+    qualified_name: food.demand.fact_mdlz_sales_amount
+    display_name: MDLZ Sales Amount
+    description: Mondelez sales amount by reporting segment and category.
+    synonyms: []
+    tags:
+    - fact
+    - demand_category
+    - packaged-foods
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: food.us-east-1
+      database: FOOD
+      schema: DEMAND
+      object: FACT_MDLZ_SALES_AMOUNT
+      format: table
+  grain:
+    description: One row is one mdlz sales amount observation for the combination of fiscal quarter, scenario,
+      mdlz reporting segment, mdlz category.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: mdlz_reporting_segment_identity
+      dataset_columns:
+      - mdlz_reporting_segment_id
+      description: Identifier of the mdlz reporting segment.
+    - identity_id: mdlz_category_identity
+      dataset_columns:
+      - mdlz_category_id
+      description: Identifier of the mdlz category.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: mdlz_reporting_segment_id
+    description: Identifier of the mdlz reporting segment.
+  - name: mdlz_category_id
+    description: Identifier of the mdlz category.
+  - name: sales_amount
+    description: Sales in dollars.
+  - name: organic_sales_change_percent
+    description: Organic sales change in percent.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: mdlz_reporting_segment_identity
+    dataset_columns:
+    - mdlz_reporting_segment_id
+    entity_universe: partial
+  - identity_id: mdlz_category_identity
+    dataset_columns:
+    - mdlz_category_id
+    entity_universe: partial
+- node_id: sf:food.demand.fact_gis_elasticity
+  descriptor:
+    qualified_name: food.demand.fact_gis_elasticity
+    display_name: GIS Elasticity
+    description: General Mills price elasticity by category, region, and income cohort, as a unitless
+      ratio.
+    synonyms: []
+    tags:
+    - fact
+    - demand_category
+    - packaged-foods
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: food.us-east-1
+      database: FOOD
+      schema: DEMAND
+      object: FACT_GIS_ELASTICITY
+      format: table
+  grain:
+    description: One row is one gis elasticity observation for the combination of fiscal quarter, scenario,
+      gis category, region, income cohort.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: gis_category_identity
+      dataset_columns:
+      - gis_category_id
+      description: Identifier of the gis category.
+    - identity_id: region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+    - identity_id: income_cohort_identity
+      dataset_columns:
+      - income_cohort_id
+      description: Identifier of the income cohort.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: gis_category_id
+    description: Identifier of the gis category.
+  - name: region_id
+    description: Identifier of the region.
+  - name: income_cohort_id
+    description: Identifier of the income cohort.
+  - name: elasticity_coefficient
+    description: Elasticity coefficient in unitless ratio units.
+  - name: trade_down_percent
+    description: Trade-down share in percent.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: gis_category_identity
+    dataset_columns:
+    - gis_category_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+  - identity_id: income_cohort_identity
+    dataset_columns:
+    - income_cohort_id
+    entity_universe: partial
+- node_id: sf:food.demand.fact_mdlz_elasticity
+  descriptor:
+    qualified_name: food.demand.fact_mdlz_elasticity
+    display_name: MDLZ Elasticity
+    description: Mondelez price elasticity by category, region, and market development class, as a unitless
+      ratio.
+    synonyms: []
+    tags:
+    - fact
+    - demand_category
+    - packaged-foods
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: food.us-east-1
+      database: FOOD
+      schema: DEMAND
+      object: FACT_MDLZ_ELASTICITY
+      format: table
+  grain:
+    description: One row is one mdlz elasticity observation for the combination of fiscal quarter, scenario,
+      mdlz category, region, market development.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: mdlz_category_identity
+      dataset_columns:
+      - mdlz_category_id
+      description: Identifier of the mdlz category.
+    - identity_id: region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+    - identity_id: market_development_identity
+      dataset_columns:
+      - market_development_id
+      description: Identifier of the market development.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: mdlz_category_id
+    description: Identifier of the mdlz category.
+  - name: region_id
+    description: Identifier of the region.
+  - name: market_development_id
+    description: Identifier of the market development.
+  - name: elasticity_coefficient
+    description: Elasticity coefficient in unitless ratio units.
+  - name: trade_down_percent
+    description: Trade-down share in percent.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: mdlz_category_identity
+    dataset_columns:
+    - mdlz_category_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+  - identity_id: market_development_identity
+    dataset_columns:
+    - market_development_id
+    entity_universe: partial
+- node_id: sf:food.demand.fact_cohort_consumption_quantity
+  descriptor:
+    qualified_name: food.demand.fact_cohort_consumption_quantity
+    display_name: Cohort Consumption Quantity
+    description: Consumption by income cohort and General Mills category in pounds.
+    synonyms: []
+    tags:
+    - fact
+    - demand_category
+    - packaged-foods
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: food.us-east-1
+      database: FOOD
+      schema: DEMAND
+      object: FACT_COHORT_CONSUMPTION_QUANTITY
+      format: table
+  grain:
+    description: One row is one cohort consumption quantity observation for the combination of fiscal
+      quarter, scenario, income cohort, gis category.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: income_cohort_identity
+      dataset_columns:
+      - income_cohort_id
+      description: Identifier of the income cohort.
+    - identity_id: gis_category_identity
+      dataset_columns:
+      - gis_category_id
+      description: Identifier of the gis category.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: income_cohort_id
+    description: Identifier of the income cohort.
+  - name: gis_category_id
+    description: Identifier of the gis category.
+  - name: cohort_consumption_pounds
+    description: Cohort consumption in pounds.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: income_cohort_identity
+    dataset_columns:
+    - income_cohort_id
+    entity_universe: partial
+  - identity_id: gis_category_identity
+    dataset_columns:
+    - gis_category_id
+    entity_universe: partial
+- node_id: sf:food.demand.fact_glp_affected_volume
+  descriptor:
+    qualified_name: food.demand.fact_glp_affected_volume
+    display_name: GLP Affected Volume
+    description: Mondelez volume affected by GLP-1 use by category, health cohort, and region in kilograms.
+    synonyms: []
+    tags:
+    - fact
+    - demand_category
+    - packaged-foods
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: food.us-east-1
+      database: FOOD
+      schema: DEMAND
+      object: FACT_GLP_AFFECTED_VOLUME
+      format: table
+  grain:
+    description: One row is one glp affected volume observation for the combination of fiscal quarter,
+      scenario, mdlz category, health cohort, region.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: mdlz_category_identity
+      dataset_columns:
+      - mdlz_category_id
+      description: Identifier of the mdlz category.
+    - identity_id: health_cohort_identity
+      dataset_columns:
+      - health_cohort_id
+      description: Identifier of the health cohort.
+    - identity_id: region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: mdlz_category_id
+    description: Identifier of the mdlz category.
+  - name: health_cohort_id
+    description: Identifier of the health cohort.
+  - name: region_id
+    description: Identifier of the region.
+  - name: affected_volume_kilograms
+    description: GLP-1 affected volume in kilograms.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: mdlz_category_identity
+    dataset_columns:
+    - mdlz_category_id
+    entity_universe: partial
+  - identity_id: health_cohort_identity
+    dataset_columns:
+    - health_cohort_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:food.demand.fact_innovation_sales_amount
+  descriptor:
+    qualified_name: food.demand.fact_innovation_sales_amount
+    display_name: Innovation Sales Amount
+    description: Innovation and renovation sales amount by General Mills category and innovation type.
+    synonyms: []
+    tags:
+    - fact
+    - demand_category
+    - packaged-foods
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: food.us-east-1
+      database: FOOD
+      schema: DEMAND
+      object: FACT_INNOVATION_SALES_AMOUNT
+      format: table
+  grain:
+    description: One row is one innovation sales amount observation for the combination of fiscal quarter,
+      scenario, gis category, innovation type.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: gis_category_identity
+      dataset_columns:
+      - gis_category_id
+      description: Identifier of the gis category.
+    - identity_id: innovation_type_identity
+      dataset_columns:
+      - innovation_type_id
+      description: Identifier of the innovation type.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: gis_category_id
+    description: Identifier of the gis category.
+  - name: innovation_type_id
+    description: Identifier of the innovation type.
+  - name: innovation_sales_amount
+    description: Innovation sales in dollars.
+  - name: innovation_sales_change_percent
+    description: Innovation sales change in percent.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: gis_category_identity
+    dataset_columns:
+    - gis_category_id
+    entity_universe: partial
+  - identity_id: innovation_type_identity
+    dataset_columns:
+    - innovation_type_id
+    entity_universe: partial
+- node_id: sf:food.demand.fact_retailer_inventory_quantity
+  descriptor:
+    qualified_name: food.demand.fact_retailer_inventory_quantity
+    display_name: Retailer Inventory Quantity
+    description: Retailer inventory of General Mills categories in cases.
+    synonyms: []
+    tags:
+    - fact
+    - demand_category
+    - packaged-foods
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: food.us-east-1
+      database: FOOD
+      schema: DEMAND
+      object: FACT_RETAILER_INVENTORY_QUANTITY
+      format: table
+  grain:
+    description: One row is one retailer inventory quantity observation for the combination of fiscal
+      quarter, scenario, retailer, gis category, channel.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: retailer_identity
+      dataset_columns:
+      - retailer_id
+      description: Identifier of the retailer.
+    - identity_id: gis_category_identity
+      dataset_columns:
+      - gis_category_id
+      description: Identifier of the gis category.
+    - identity_id: channel_identity
+      dataset_columns:
+      - channel_id
+      description: Identifier of the channel.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
   - name: retailer_id
-    description: Retailer.
-  - name: volume_quantity
-    description: Channel volume.
-  - name: volume_change_rate
-    description: Channel volume change.
-  - name: material_driver_flag
-    description: Whether the channel strategy is a material driver.
-  - name: unmeasured_gain_flag
-    description: Whether unmeasured channels are taking share.
+    description: Identifier of the retailer.
+  - name: gis_category_id
+    description: Identifier of the gis category.
+  - name: channel_id
+    description: Identifier of the channel.
+  - name: retailer_inventory_case_count
+    description: Retailer inventory in cases.
+  - name: inventory_reduction_case_count
+    description: Retailer inventory reduction in cases.
   entity_definitions:
-  - identity_id: channel_volume_identity
-    dataset_columns:
-    - channel_volume_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: channel_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - channel_id
-    entity_universe: partial
-  - identity_id: category_identity
-    dataset_columns:
-    - category_id
+    - scenario_id
     entity_universe: partial
   - identity_id: retailer_identity
     dataset_columns:
     - retailer_id
     entity_universe: partial
-- node_id: sf:food.demand.fact_innovation_demand
-  descriptor:
-    qualified_name: food.demand.fact_innovation_demand
-    display_name: Innovation Demand
-    description: Demand for a Food Inc innovation or renovation. This fact stores quantity, not a list
-      price.
-    synonyms: []
-    tags:
-    - fact
-    - demand_category
-    - food
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: food.us-east-1
-      database: FOOD
-      schema: DEMAND
-      object: FACT_INNOVATION_DEMAND
-      format: table
-  grain:
-    description: One row is one innovation demand.
-    components:
-    - identity_id: innovation_demand_identity
-      dataset_columns:
-      - innovation_demand_id
-      description: Identifier of the innovation demand.
-  columns:
-  - name: innovation_demand_id
-    description: Identifier of the innovation demand.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: innovation_item_id
-    description: Innovation item.
-  - name: category_id
-    description: Category.
-  - name: brand_id
-    description: Brand.
-  - name: velocity_quantity
-    description: Velocity.
-  - name: ahead_of_plan_flag
-    description: Whether the item is ahead of plan.
-  - name: growth_versus_goal_rate
-    description: Growth versus the innovation goal.
-  - name: distribution_remaining_rate
-    description: Distribution still available, as a rate.
-  - name: turns_before_doors_flag
-    description: Whether the next step is higher turns rather than more doors.
-  entity_definitions:
-  - identity_id: innovation_demand_identity
+  - identity_id: gis_category_identity
     dataset_columns:
-    - innovation_demand_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: innovation_item_identity
-    dataset_columns:
-    - innovation_item_id
-    entity_universe: partial
-  - identity_id: category_identity
-    dataset_columns:
-    - category_id
-    entity_universe: partial
-  - identity_id: brand_identity
-    dataset_columns:
-    - brand_id
-    entity_universe: partial
-- node_id: sf:food.demand.fact_consumer_demand
-  descriptor:
-    qualified_name: food.demand.fact_consumer_demand
-    display_name: Consumer Demand
-    description: Consumer behavior Food Inc is seeing. This fact stores quantity, not a list price.
-    synonyms: []
-    tags:
-    - fact
-    - demand_category
-    - food
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: food.us-east-1
-      database: FOOD
-      schema: DEMAND
-      object: FACT_CONSUMER_DEMAND
-      format: table
-  grain:
-    description: One row is one consumer demand.
-    components:
-    - identity_id: consumer_demand_identity
-      dataset_columns:
-      - consumer_demand_id
-      description: Identifier of the consumer demand.
-  columns:
-  - name: consumer_demand_id
-    description: Identifier of the consumer demand.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: consumer_cohort_id
-    description: Consumer cohort.
-  - name: category_id
-    description: Category.
-  - name: confidence_index
-    description: Consumer confidence index.
-  - name: promo_waiting_faded_flag
-    description: Whether waiting for promotions has faded.
-  - name: fragile_flag
-    description: Whether the consumer is fragile.
-  - name: insight_code
-    description: Insight shaping innovation.
-    value_description: value, health, convenience
-  entity_definitions:
-  - identity_id: consumer_demand_identity
-    dataset_columns:
-    - consumer_demand_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: consumer_cohort_identity
-    dataset_columns:
-    - consumer_cohort_id
-    entity_universe: partial
-  - identity_id: category_identity
-    dataset_columns:
-    - category_id
-    entity_universe: partial
-- node_id: sf:food.demand.fact_cohort_demand
-  descriptor:
-    qualified_name: food.demand.fact_cohort_demand
-    display_name: Cohort Demand
-    description: At-home demand by income cohort for Food Inc. This fact stores quantity, not a list price.
-    synonyms: []
-    tags:
-    - fact
-    - demand_category
-    - food
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: food.us-east-1
-      database: FOOD
-      schema: DEMAND
-      object: FACT_COHORT_DEMAND
-      format: table
-  grain:
-    description: One row is one cohort demand.
-    components:
-    - identity_id: cohort_demand_identity
-      dataset_columns:
-      - cohort_demand_id
-      description: Identifier of the cohort demand.
-  columns:
-  - name: cohort_demand_id
-    description: Identifier of the cohort demand.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: consumer_cohort_id
-    description: Consumer cohort.
-  - name: category_id
-    description: Category.
-  - name: demand_quantity
-    description: Demand quantity.
-  - name: trade_down_from_restaurants_flag
-    description: Whether low income is trading down from restaurants.
-  - name: trade_up_to_small_brands_flag
-    description: Whether high income is trading up to smaller brands.
-  - name: improvement_source_flag
-    description: Whether this cohort is the fiscal improvement source.
-  entity_definitions:
-  - identity_id: cohort_demand_identity
-    dataset_columns:
-    - cohort_demand_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: consumer_cohort_identity
-    dataset_columns:
-    - consumer_cohort_id
-    entity_universe: partial
-  - identity_id: category_identity
-    dataset_columns:
-    - category_id
-    entity_universe: partial
-- node_id: sf:food.demand.fact_glp_demand
-  descriptor:
-    qualified_name: food.demand.fact_glp_demand
-    display_name: GLP Demand
-    description: Effect of GLP-1 use on Food Inc indulgent volume. A demand effect, not a price. This
-      fact stores quantity, not a list price.
-    synonyms: []
-    tags:
-    - fact
-    - demand_category
-    - food
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: food.us-east-1
-      database: FOOD
-      schema: DEMAND
-      object: FACT_GLP_DEMAND
-      format: table
-  grain:
-    description: One row is one glp demand.
-    components:
-    - identity_id: glp_demand_identity
-      dataset_columns:
-      - glp_demand_id
-      description: Identifier of the glp demand.
-  columns:
-  - name: glp_demand_id
-    description: Identifier of the glp demand.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: category_id
-    description: Category.
-  - name: consumer_cohort_id
-    description: Consumer cohort.
-  - name: region_id
-    description: Region.
-  - name: affected_volume_change_rate
-    description: Volume change attributed to GLP-1.
-  - name: pill_form_flag
-    description: Whether the case includes a pill form.
-  - name: longer_than_value_seeking_flag
-    description: Whether the effect lasts beyond value-seeking.
-  entity_definitions:
-  - identity_id: glp_demand_identity
-    dataset_columns:
-    - glp_demand_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: category_identity
-    dataset_columns:
-    - category_id
-    entity_universe: partial
-  - identity_id: consumer_cohort_identity
-    dataset_columns:
-    - consumer_cohort_id
-    entity_universe: partial
-  - identity_id: region_identity
-    dataset_columns:
-    - region_id
-    entity_universe: partial
-- node_id: sf:food.demand.fact_share_destination
-  descriptor:
-    qualified_name: food.demand.fact_share_destination
-    display_name: Share Destination
-    description: Where Food Inc share went. This fact stores quantity, not a list price.
-    synonyms: []
-    tags:
-    - fact
-    - demand_category
-    - food
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: food.us-east-1
-      database: FOOD
-      schema: DEMAND
-      object: FACT_SHARE_DESTINATION
-      format: table
-  grain:
-    description: One row is one share destination.
-    components:
-    - identity_id: share_destination_identity
-      dataset_columns:
-      - share_destination_id
-      description: Identifier of the share destination.
-  columns:
-  - name: share_destination_id
-    description: Identifier of the share destination.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: category_id
-    description: Category.
-  - name: competitor_id
-    description: Competitor.
-  - name: channel_id
-    description: Channel.
-  - name: private_label_share_rate
-    description: Share that went to private label.
-  - name: insurgent_share_rate
-    description: Share that went to insurgent brands.
-  - name: not_mainly_private_label_flag
-    description: Whether losses are not mainly private label.
-  - name: remarkability_recovers_flag
-    description: Whether remarkability work is aimed at taking it back.
-  entity_definitions:
-  - identity_id: share_destination_identity
-    dataset_columns:
-    - share_destination_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: category_identity
-    dataset_columns:
-    - category_id
-    entity_universe: partial
-  - identity_id: competitor_identity
-    dataset_columns:
-    - competitor_id
+    - gis_category_id
     entity_universe: partial
   - identity_id: channel_identity
     dataset_columns:
     - channel_id
     entity_universe: partial
-- node_id: sf:food.demand.fact_scanner_demand
+- node_id: sf:food.demand.fact_distribution_quantity
   descriptor:
-    qualified_name: food.demand.fact_scanner_demand
-    display_name: Scanner Demand
-    description: Scanner trends Food Inc compares with its shipments. This fact stores a rate or flag,
-      not a list price and not a case quantity.
+    qualified_name: food.demand.fact_distribution_quantity
+    display_name: Distribution Quantity
+    description: Retail doors carrying a General Mills brand, in doors.
     synonyms: []
     tags:
     - fact
     - demand_category
-    - food
+    - packaged-foods
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: food.us-east-1
       database: FOOD
       schema: DEMAND
-      object: FACT_SCANNER_DEMAND
+      object: FACT_DISTRIBUTION_QUANTITY
       format: table
   grain:
-    description: One row is one scanner demand.
+    description: One row is one distribution quantity observation for the combination of fiscal quarter,
+      scenario, gis brand, channel.
     components:
-    - identity_id: scanner_demand_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - scanner_demand_id
-      description: Identifier of the scanner demand.
-  columns:
-  - name: scanner_demand_id
-    description: Identifier of the scanner demand.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: category_id
-    description: Category.
-  - name: region_id
-    description: Region.
-  - name: scanner_change_rate
-    description: Scanner change.
-  - name: softer_flag
-    description: Whether recent scanner data is softer.
-  - name: category_dollar_growth_rate
-    description: Category dollar growth rate, stored as a rate.
-  entity_definitions:
-  - identity_id: scanner_demand_identity
-    dataset_columns:
-    - scanner_demand_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: category_identity
-    dataset_columns:
-    - category_id
-    entity_universe: partial
-  - identity_id: region_identity
-    dataset_columns:
-    - region_id
-    entity_universe: partial
-- node_id: sf:food.demand.fact_digital_selection
-  descriptor:
-    qualified_name: food.demand.fact_digital_selection
-    display_name: Digital Selection
-    description: Whether Food Inc stays selected when the list is built off the shelf. This fact stores
-      a rate or flag, not a list price and not a case quantity.
-    synonyms: []
-    tags:
-    - fact
-    - demand_category
-    - food
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: food.us-east-1
-      database: FOOD
-      schema: DEMAND
-      object: FACT_DIGITAL_SELECTION
-      format: table
-  grain:
-    description: One row is one digital selection.
-    components:
-    - identity_id: digital_selection_identity
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
       dataset_columns:
-      - digital_selection_id
-      description: Identifier of the digital selection.
-  columns:
-  - name: digital_selection_id
-    description: Identifier of the digital selection.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: retailer_id
-    description: Retailer.
-  - name: category_id
-    description: Category.
-  - name: selected_rate
-    description: Selection rate in generated lists.
-  - name: in_store_activation_flag
-    description: Whether in-store activation still matters.
-  - name: retail_media_flag
-    description: Whether retail media is part of the response.
-  entity_definitions:
-  - identity_id: digital_selection_identity
-    dataset_columns:
-    - digital_selection_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: retailer_identity
-    dataset_columns:
-    - retailer_id
-    entity_universe: partial
-  - identity_id: category_identity
-    dataset_columns:
-    - category_id
-    entity_universe: partial
-- node_id: sf:food.demand.fact_seasonal_demand
-  descriptor:
-    qualified_name: food.demand.fact_seasonal_demand
-    display_name: Seasonal Demand
-    description: Seasonal demand for Food Inc. This fact stores quantity, not a list price.
-    synonyms: []
-    tags:
-    - fact
-    - demand_category
-    - food
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: food.us-east-1
-      database: FOOD
-      schema: DEMAND
-      object: FACT_SEASONAL_DEMAND
-      format: table
-  grain:
-    description: One row is one seasonal demand.
-    components:
-    - identity_id: seasonal_demand_identity
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: gis_brand_identity
       dataset_columns:
-      - seasonal_demand_id
-      description: Identifier of the seasonal demand.
-  columns:
-  - name: seasonal_demand_id
-    description: Identifier of the seasonal demand.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: occasion_id
-    description: Occasion.
-  - name: innovation_item_id
-    description: Seasonal item.
-  - name: seasonal_quantity
-    description: Seasonal quantity.
-  - name: on_slate_flag
-    description: Whether the item is on the seasonal slate.
-  entity_definitions:
-  - identity_id: seasonal_demand_identity
-    dataset_columns:
-    - seasonal_demand_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: occasion_identity
-    dataset_columns:
-    - occasion_id
-    entity_universe: partial
-  - identity_id: innovation_item_identity
-    dataset_columns:
-    - innovation_item_id
-    entity_universe: partial
-- node_id: sf:food.demand.fact_timing_shift
-  descriptor:
-    qualified_name: food.demand.fact_timing_shift
-    display_name: Timing Shift
-    description: Timing shifts in Food Inc international sales. Quantity shifted, not a price. This fact
-      stores quantity, not a list price.
-    synonyms: []
-    tags:
-    - fact
-    - demand_category
-    - food
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: food.us-east-1
-      database: FOOD
-      schema: DEMAND
-      object: FACT_TIMING_SHIFT
-      format: table
-  grain:
-    description: One row is one timing shift.
-    components:
-    - identity_id: timing_shift_identity
+      - gis_brand_id
+      description: Identifier of the gis brand.
+    - identity_id: channel_identity
       dataset_columns:
-      - timing_shift_id
-      description: Identifier of the timing shift.
+      - channel_id
+      description: Identifier of the channel.
   columns:
-  - name: timing_shift_id
-    description: Identifier of the timing shift.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: region_id
-    description: Region.
-  - name: shifted_quantity
-    description: Quantity shifted between periods.
-  - name: unwind_points
-    description: Points expected to unwind.
-  - name: incremental_timing_flag
-    description: Whether there was timing beyond the known unwind.
-  entity_definitions:
-  - identity_id: timing_shift_identity
-    dataset_columns:
-    - timing_shift_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: region_identity
-    dataset_columns:
-    - region_id
-    entity_universe: partial
-- node_id: sf:food.demand.fact_snack_volume
-  descriptor:
-    qualified_name: food.demand.fact_snack_volume
-    display_name: Snack Volume
-    description: Snack volume at Food Inc, including Totino's. This fact stores quantity, not a list price.
-    synonyms: []
-    tags:
-    - fact
-    - demand_category
-    - food
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: food.us-east-1
-      database: FOOD
-      schema: DEMAND
-      object: FACT_SNACK_VOLUME
-      format: table
-  grain:
-    description: One row is one snack volume.
-    components:
-    - identity_id: snack_volume_identity
-      dataset_columns:
-      - snack_volume_id
-      description: Identifier of the snack volume.
-  columns:
-  - name: snack_volume_id
-    description: Identifier of the snack volume.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: category_id
-    description: Category.
-  - name: brand_id
-    description: Brand.
-  - name: competitor_id
-    description: Competitor.
-  - name: volume_quantity
-    description: Snack volume.
-  - name: volume_change_rate
-    description: Snack volume change.
-  - name: high_single_digit_decline_flag
-    description: Whether the decline is high single digit.
-  - name: stable_ex_brand_flag
-    description: Whether the business is stable once a brand is excluded.
-  - name: competitor_taking_share_flag
-    description: Whether competitor snacks are taking share.
-  entity_definitions:
-  - identity_id: snack_volume_identity
-    dataset_columns:
-    - snack_volume_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: category_identity
-    dataset_columns:
-    - category_id
-    entity_universe: partial
-  - identity_id: brand_identity
-    dataset_columns:
-    - brand_id
-    entity_universe: partial
-  - identity_id: competitor_identity
-    dataset_columns:
-    - competitor_id
-    entity_universe: partial
-- node_id: sf:food.demand.fact_pet_volume
-  descriptor:
-    qualified_name: food.demand.fact_pet_volume
-    display_name: Pet Volume
-    description: Pet volume at Food Inc, including dog food and the large-dog population. This fact stores
-      quantity, not a list price.
-    synonyms: []
-    tags:
-    - fact
-    - demand_category
-    - food
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: food.us-east-1
-      database: FOOD
-      schema: DEMAND
-      object: FACT_PET_VOLUME
-      format: table
-  grain:
-    description: One row is one pet volume.
-    components:
-    - identity_id: pet_volume_identity
-      dataset_columns:
-      - pet_volume_id
-      description: Identifier of the pet volume.
-  columns:
-  - name: pet_volume_id
-    description: Identifier of the pet volume.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: category_id
-    description: Category.
-  - name: brand_id
-    description: Brand.
-  - name: consumer_cohort_id
-    description: Consumer cohort.
-  - name: volume_quantity
-    description: Pet volume.
-  - name: volume_change_rate
-    description: Pet volume change.
-  - name: cyclical_visit_flag
-    description: Whether pressure is cyclical household and vet-visit softness.
-  - name: large_dog_structural_flag
-    description: Whether pressure is the aging large-dog population.
-  - name: category_weaker_flag
-    description: Whether the broader feeding category is weaker than the core.
-  entity_definitions:
-  - identity_id: pet_volume_identity
-    dataset_columns:
-    - pet_volume_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: category_identity
-    dataset_columns:
-    - category_id
-    entity_universe: partial
-  - identity_id: brand_identity
-    dataset_columns:
-    - brand_id
-    entity_universe: partial
-  - identity_id: consumer_cohort_identity
-    dataset_columns:
-    - consumer_cohort_id
-    entity_universe: partial
-- node_id: sf:food.demand.fact_chocolate_volume
-  descriptor:
-    qualified_name: food.demand.fact_chocolate_volume
-    display_name: Chocolate Volume
-    description: Chocolate volume at Food Inc, including European chocolate. This fact stores quantity,
-      not a list price.
-    synonyms: []
-    tags:
-    - fact
-    - demand_category
-    - food
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: food.us-east-1
-      database: FOOD
-      schema: DEMAND
-      object: FACT_CHOCOLATE_VOLUME
-      format: table
-  grain:
-    description: One row is one chocolate volume.
-    components:
-    - identity_id: chocolate_volume_identity
-      dataset_columns:
-      - chocolate_volume_id
-      description: Identifier of the chocolate volume.
-  columns:
-  - name: chocolate_volume_id
-    description: Identifier of the chocolate volume.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: category_id
-    description: Category.
-  - name: region_id
-    description: Region.
-  - name: country_id
-    description: Country.
-  - name: volume_quantity
-    description: Chocolate volume.
-  - name: volume_change_rate
-    description: Chocolate volume change.
-  - name: share_growth_flag
-    description: Whether European chocolate is back to volume-share growth.
-  entity_definitions:
-  - identity_id: chocolate_volume_identity
-    dataset_columns:
-    - chocolate_volume_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: category_identity
-    dataset_columns:
-    - category_id
-    entity_universe: partial
-  - identity_id: region_identity
-    dataset_columns:
-    - region_id
-    entity_universe: partial
-  - identity_id: country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
-- node_id: sf:food.demand.fact_biscuit_volume
-  descriptor:
-    qualified_name: food.demand.fact_biscuit_volume
-    display_name: Biscuit Volume
-    description: Biscuit volume at Food Inc, including U.S. biscuits. This fact stores quantity, not a
-      list price.
-    synonyms: []
-    tags:
-    - fact
-    - demand_category
-    - food
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: food.us-east-1
-      database: FOOD
-      schema: DEMAND
-      object: FACT_BISCUIT_VOLUME
-      format: table
-  grain:
-    description: One row is one biscuit volume.
-    components:
-    - identity_id: biscuit_volume_identity
-      dataset_columns:
-      - biscuit_volume_id
-      description: Identifier of the biscuit volume.
-  columns:
-  - name: biscuit_volume_id
-    description: Identifier of the biscuit volume.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: category_id
-    description: Category.
-  - name: country_id
-    description: Country.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: gis_brand_id
+    description: Identifier of the gis brand.
   - name: channel_id
-    description: Channel.
-  - name: volume_quantity
-    description: Biscuit volume.
-  - name: volume_change_rate
-    description: Biscuit volume change.
-  - name: march_inflection_flag
-    description: Whether a March inflection showed up.
-  - name: category_down_flag
-    description: Whether category volume is down while prices rise.
+    description: Identifier of the channel.
+  - name: retail_door_count
+    description: Retail doors in doors.
   entity_definitions:
-  - identity_id: biscuit_volume_identity
-    dataset_columns:
-    - biscuit_volume_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: category_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - category_id
+    - scenario_id
     entity_universe: partial
-  - identity_id: country_identity
+  - identity_id: gis_brand_identity
     dataset_columns:
-    - country_id
+    - gis_brand_id
     entity_universe: partial
   - identity_id: channel_identity
     dataset_columns:
     - channel_id
     entity_universe: partial
-- node_id: sf:food.demand.fact_cereal_volume
+- node_id: sf:food.demand.fact_mdlz_innovation_sales_amount
   descriptor:
-    qualified_name: food.demand.fact_cereal_volume
-    display_name: Cereal Volume
-    description: Cereal volume at Food Inc. This fact stores quantity, not a list price.
+    qualified_name: food.demand.fact_mdlz_innovation_sales_amount
+    display_name: MDLZ Innovation Sales Amount
+    description: Mondelez innovation sales amount by category and innovation type.
     synonyms: []
     tags:
     - fact
     - demand_category
-    - food
+    - packaged-foods
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: food.us-east-1
       database: FOOD
       schema: DEMAND
-      object: FACT_CEREAL_VOLUME
+      object: FACT_MDLZ_INNOVATION_SALES_AMOUNT
       format: table
   grain:
-    description: One row is one cereal volume.
+    description: One row is one mdlz innovation sales amount observation for the combination of fiscal
+      quarter, scenario, mdlz category, innovation type.
     components:
-    - identity_id: cereal_volume_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - cereal_volume_id
-      description: Identifier of the cereal volume.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: mdlz_category_identity
+      dataset_columns:
+      - mdlz_category_id
+      description: Identifier of the mdlz category.
+    - identity_id: innovation_type_identity
+      dataset_columns:
+      - innovation_type_id
+      description: Identifier of the innovation type.
   columns:
-  - name: cereal_volume_id
-    description: Identifier of the cereal volume.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: category_id
-    description: Category.
-  - name: brand_id
-    description: Brand.
-  - name: volume_quantity
-    description: Cereal volume.
-  - name: acceleration_still_ahead_flag
-    description: Whether further cereal acceleration is still ahead.
-  - name: matched_other_categories_flag
-    description: Whether other categories matched the cereal architecture result.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: mdlz_category_id
+    description: Identifier of the mdlz category.
+  - name: innovation_type_id
+    description: Identifier of the innovation type.
+  - name: innovation_sales_amount
+    description: Innovation sales in dollars.
   entity_definitions:
-  - identity_id: cereal_volume_identity
-    dataset_columns:
-    - cereal_volume_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: category_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - category_id
+    - scenario_id
     entity_universe: partial
-  - identity_id: brand_identity
+  - identity_id: mdlz_category_identity
     dataset_columns:
-    - brand_id
+    - mdlz_category_id
     entity_universe: partial
-- node_id: sf:food.demand.fact_foodservice_volume
+  - identity_id: innovation_type_identity
+    dataset_columns:
+    - innovation_type_id
+    entity_universe: partial
+- node_id: sf:food.demand.fact_on_shelf_availability
   descriptor:
-    qualified_name: food.demand.fact_foodservice_volume
-    display_name: Foodservice Volume
-    description: Foodservice and bakery-flour volume at Food Inc. This fact stores quantity, not a list
-      price.
+    qualified_name: food.demand.fact_on_shelf_availability
+    display_name: On Shelf Availability
+    description: On-shelf availability in percent for a General Mills brand and channel; retail doors
+      on the distribution quantity fact share brand and channel keys.
     synonyms: []
     tags:
     - fact
     - demand_category
-    - food
+    - packaged-foods
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: food.us-east-1
       database: FOOD
       schema: DEMAND
-      object: FACT_FOODSERVICE_VOLUME
+      object: FACT_ON_SHELF_AVAILABILITY
       format: table
   grain:
-    description: One row is one foodservice volume.
+    description: One row is one on shelf availability observation for the combination of fiscal quarter,
+      scenario, gis brand, channel.
     components:
-    - identity_id: foodservice_volume_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - foodservice_volume_id
-      description: Identifier of the foodservice volume.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: gis_brand_identity
+      dataset_columns:
+      - gis_brand_id
+      description: Identifier of the gis brand.
+    - identity_id: channel_identity
+      dataset_columns:
+      - channel_id
+      description: Identifier of the channel.
   columns:
-  - name: foodservice_volume_id
-    description: Identifier of the foodservice volume.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: gis_brand_id
+    description: Identifier of the gis brand.
   - name: channel_id
-    description: Channel.
-  - name: category_id
-    description: Category.
-  - name: volume_quantity
-    description: Foodservice volume.
-  - name: flour_volume_quantity
-    description: Bakery flour volume.
-  - name: persists_flag
-    description: Whether weakness is likely to persist.
-  - name: says_about_channel_flag
-    description: Whether flour weakness describes the channel.
+    description: Identifier of the channel.
+  - name: on_shelf_availability_percent
+    description: On-shelf availability in percent.
   entity_definitions:
-  - identity_id: foodservice_volume_identity
-    dataset_columns:
-    - foodservice_volume_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: gis_brand_identity
+    dataset_columns:
+    - gis_brand_id
     entity_universe: partial
   - identity_id: channel_identity
     dataset_columns:
     - channel_id
-    entity_universe: partial
-  - identity_id: category_identity
-    dataset_columns:
-    - category_id
-    entity_universe: partial
-- node_id: sf:food.demand.fact_emerging_volume
-  descriptor:
-    qualified_name: food.demand.fact_emerging_volume
-    display_name: Emerging Volume
-    description: Emerging-market volume at Food Inc. This fact stores quantity, not a list price.
-    synonyms: []
-    tags:
-    - fact
-    - demand_category
-    - food
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: food.us-east-1
-      database: FOOD
-      schema: DEMAND
-      object: FACT_EMERGING_VOLUME
-      format: table
-  grain:
-    description: One row is one emerging volume.
-    components:
-    - identity_id: emerging_volume_identity
-      dataset_columns:
-      - emerging_volume_id
-      description: Identifier of the emerging volume.
-  columns:
-  - name: emerging_volume_id
-    description: Identifier of the emerging volume.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: region_id
-    description: Region.
-  - name: category_id
-    description: Category.
-  - name: volume_quantity
-    description: Emerging-market volume.
-  - name: growth_rate
-    description: Growth rate.
-  - name: driver_code
-    description: What is driving it.
-    value_description: volume, distribution, category
-  entity_definitions:
-  - identity_id: emerging_volume_identity
-    dataset_columns:
-    - emerging_volume_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: region_identity
-    dataset_columns:
-    - region_id
-    entity_universe: partial
-  - identity_id: category_identity
-    dataset_columns:
-    - category_id
-    entity_universe: partial
-- node_id: sf:food.demand.fact_developed_volume
-  descriptor:
-    qualified_name: food.demand.fact_developed_volume
-    display_name: Developed Volume
-    description: Developed-market volume at Food Inc. This fact stores quantity, not a list price.
-    synonyms: []
-    tags:
-    - fact
-    - demand_category
-    - food
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: food.us-east-1
-      database: FOOD
-      schema: DEMAND
-      object: FACT_DEVELOPED_VOLUME
-      format: table
-  grain:
-    description: One row is one developed volume.
-    components:
-    - identity_id: developed_volume_identity
-      dataset_columns:
-      - developed_volume_id
-      description: Identifier of the developed volume.
-  columns:
-  - name: developed_volume_id
-    description: Identifier of the developed volume.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: region_id
-    description: Region.
-  - name: country_id
-    description: Country.
-  - name: category_id
-    description: Category.
-  - name: volume_quantity
-    description: Developed-market volume.
-  - name: improving_flag
-    description: Whether developed markets are improving.
-  - name: north_america_growth_rate
-    description: North America growth rate.
-  entity_definitions:
-  - identity_id: developed_volume_identity
-    dataset_columns:
-    - developed_volume_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: region_identity
-    dataset_columns:
-    - region_id
-    entity_universe: partial
-  - identity_id: country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
-  - identity_id: category_identity
-    dataset_columns:
-    - category_id
-    entity_universe: partial
-- node_id: sf:food.demand.fact_retailer_brand_demand
-  descriptor:
-    qualified_name: food.demand.fact_retailer_brand_demand
-    display_name: Retailer Brand Demand
-    description: Retailer-brand activity Food Inc watches in chocolate. This fact stores quantity, not
-      a list price.
-    synonyms: []
-    tags:
-    - fact
-    - demand_category
-    - food
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: food.us-east-1
-      database: FOOD
-      schema: DEMAND
-      object: FACT_RETAILER_BRAND_DEMAND
-      format: table
-  grain:
-    description: One row is one retailer brand demand.
-    components:
-    - identity_id: retailer_brand_demand_identity
-      dataset_columns:
-      - retailer_brand_demand_id
-      description: Identifier of the retailer brand demand.
-  columns:
-  - name: retailer_brand_demand_id
-    description: Identifier of the retailer brand demand.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: competitor_id
-    description: Retailer brand.
-  - name: category_id
-    description: Category.
-  - name: country_id
-    description: Country.
-  - name: retailer_brand_volume_quantity
-    description: Retailer-brand volume.
-  - name: pricing_landed_flag
-    description: Whether retailer-brand pricing has landed.
-  entity_definitions:
-  - identity_id: retailer_brand_demand_identity
-    dataset_columns:
-    - retailer_brand_demand_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: competitor_identity
-    dataset_columns:
-    - competitor_id
-    entity_universe: partial
-  - identity_id: category_identity
-    dataset_columns:
-    - category_id
-    entity_universe: partial
-  - identity_id: country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
-- node_id: sf:food.demand.fact_brazil_volume
-  descriptor:
-    qualified_name: food.demand.fact_brazil_volume
-    display_name: Brazil Volume
-    description: Brazil volume and the decision context for Food Inc. Quantity, not the strategic memo.
-      This fact stores quantity, not a list price.
-    synonyms: []
-    tags:
-    - fact
-    - demand_category
-    - food
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: food.us-east-1
-      database: FOOD
-      schema: DEMAND
-      object: FACT_BRAZIL_VOLUME
-      format: table
-  grain:
-    description: One row is one brazil volume.
-    components:
-    - identity_id: brazil_volume_identity
-      dataset_columns:
-      - brazil_volume_id
-      description: Identifier of the brazil volume.
-  columns:
-  - name: brazil_volume_id
-    description: Identifier of the brazil volume.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: country_id
-    description: Country.
-  - name: category_id
-    description: Category.
-  - name: volume_quantity
-    description: Brazil volume.
-  - name: volume_change_rate
-    description: Brazil volume change.
-  - name: exit_flag
-    description: Whether the decision is to exit.
-  - name: strategic_fit_flag
-    description: Whether the business still fits.
-  entity_definitions:
-  - identity_id: brazil_volume_identity
-    dataset_columns:
-    - brazil_volume_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
-  - identity_id: category_identity
-    dataset_columns:
-    - category_id
-    entity_universe: partial
-- node_id: sf:food.demand.fact_guidance_volume
-  descriptor:
-    qualified_name: food.demand.fact_guidance_volume
-    display_name: Guidance Volume
-    description: Volume case inside a Food Inc outlook. This fact stores quantity, not a list price.
-    synonyms: []
-    tags:
-    - fact
-    - demand_category
-    - food
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: food.us-east-1
-      database: FOOD
-      schema: DEMAND
-      object: FACT_GUIDANCE_VOLUME
-      format: table
-  grain:
-    description: One row is one guidance volume.
-    components:
-    - identity_id: guidance_volume_identity
-      dataset_columns:
-      - guidance_volume_id
-      description: Identifier of the guidance volume.
-  columns:
-  - name: guidance_volume_id
-    description: Identifier of the guidance volume.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: region_id
-    description: Region.
-  - name: category_id
-    description: Category.
-  - name: volume_case_rate
-    description: Volume case in the guide.
-  - name: high_end_flag
-    description: Whether the row is the high end.
-  - name: positive_year_flag
-    description: Whether the case is positive for the year.
-  - name: swing_code
-    description: Swing factor.
-    value_description: consumption, elasticity, investment, category
-  entity_definitions:
-  - identity_id: guidance_volume_identity
-    dataset_columns:
-    - guidance_volume_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: region_identity
-    dataset_columns:
-    - region_id
-    entity_universe: partial
-  - identity_id: category_identity
-    dataset_columns:
-    - category_id
     entity_universe: partial

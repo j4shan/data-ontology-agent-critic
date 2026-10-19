@@ -1,200 +1,219 @@
-# Machinery Inc end markets and power-versus-construction mix
+# Machinery Inc end markets and power mix
 
-This slice owns the operating segment, the end market, the machine model, the power product, and the capacity, application, and installed-base facts that separate Power & Energy from Construction Industries. Dealer inventory, retail demand, price, volume, and backlog are owned outside this slice. Those identities are partial on the facts that need them and are not re-authored here.
-
-Foreign identities are referenced from this slice and are partial here. Their complete populations are the datasets below, which this slice does not author:
-
-| Identity | Column | Node |
-| --- | --- | --- |
-| `accounting_period_identity` | `accounting_period_id` | `sf:machinery.calendar.dim_accounting_period` |
-| `currency_identity` | `currency_id` | `sf:machinery.commercial.dim_currency` |
+Dealer stock is inventory on its own quantity fact, not a retail channel. Caterpillar machine and power processes and PACCAR truck, parts, and finance processes use separate facts and separate reporting-segment dimensions. Quantity, capacity, and price or margin are separate facts joined by fiscal period, scenario, and the business keys. Coverage maps each numbered question to datasets and columns that exist in the YAML and can express the distinction the question asks.
 
 ## Numbered questions
 
-### Q2 2026 (1) — Whether the 10-megawatt ramp sits inside the 2030 gigawatt target
+## Caterpillar
 
-The 10-megawatt product, the ramp gigawatts, and the inside-versus-additive flag are separate from the 2030 target gigawatts.
+### Q2 2026 (1) Caterpillar
 
-- `machinery.product.dim_power_product`: `product_code`, `product_name`
-- `machinery.power.fact_engine_capacity_ramp`: `ramp_gigawatts`, `inclusion_versus_target`, `power_product_id`, `capacity_horizon_id`
-- `machinery.power.fact_gigawatt_target`: `target_gigawatts`, `capacity_horizon_id`
-- `machinery.power.dim_capacity_horizon`: `horizon_year`
+Is the returning 10-megawatt reciprocating engine, and the 1.5 gigawatts it can ramp toward, inside the 2030 gigawatt target or additive?
 
-### Q2 2026 (3) — Construction volume after the inventory swing versus lighter power volume as capacity comes on
+- `machinery.power.fact_power_capacity_quantity`: `accounting_period_id`, `scenario_id`, `power_technology_id`, `engine_fuel_id`, `power_size_class_id`, `end_market_id`, `target_year_id`, `capacity_gigawatts`, `capacity_unit_count`
+- `machinery.power.fact_power_capacity_target`: `accounting_period_id`, `scenario_id`, `power_technology_id`, `target_year_id`, `target_gigawatts`
+- `machinery.power.fact_project_content_quantity`: `accounting_period_id`, `scenario_id`, `project_id`, `power_technology_id`, `project_content_units`
 
-Segment volume is the unit fact and carries no price. The inventory swing is dealer stock. Capacity coming online is the power ramp, not the volume fact.
+### Q2 2026 (3) Caterpillar
 
-- `machinery.commercial.fact_segment_volume`: `volume_units`, `volume_versus_expectation`, `segment_id`
-- `machinery.market.dim_segment`: `segment_code`
-- `machinery.retail.fact_inventory_swing`: `inventory_change_units`, `swing_direction`, `segment_id`
-- `machinery.power.fact_engine_capacity_ramp`: `capacity_online_units`, `capacity_still_coming_online_flag`, `segment_id`
+Why was construction volume stronger than expected after the inventory swing, while power volume was lighter even as capacity comes on?
 
-### Q2 2026 (6) — Gas reciprocating slots for 2027 and 2028 across prime, flexible, and backup
+- `machinery.commercial.fact_cat_segment_volume`: `accounting_period_id`, `scenario_id`, `cat_reporting_segment_id`, `volume_units`
+- `machinery.power.fact_power_capacity_quantity`: `accounting_period_id`, `scenario_id`, `power_technology_id`, `engine_fuel_id`, `power_size_class_id`, `end_market_id`, `target_year_id`, `capacity_gigawatts`, `capacity_unit_count`
+- `machinery.power.fact_power_capacity_target`: `accounting_period_id`, `scenario_id`, `power_technology_id`, `target_year_id`, `target_gigawatts`
 
-Open slots and the sold-out flag are by power product, application, and horizon year.
+### Q2 2026 (5) Caterpillar
 
-- `machinery.power.fact_application_slots`: `open_slots`, `sold_out_flag`, `power_product_id`, `power_application_id`, `capacity_horizon_id`
-- `machinery.product.dim_power_product`: `product_code`
-- `machinery.power.dim_power_application`: `application_code`
-- `machinery.power.dim_capacity_horizon`: `horizon_year`
+Are Power & Energy incremental margins near the high rate seen this quarter sustainable while capacity is being added?
 
-### Q2 2026 (9) — Power & Energy aftermarket today versus backlog that enters the installed base later
+- `machinery.commercial.fact_cat_segment_volume`: `accounting_period_id`, `scenario_id`, `cat_reporting_segment_id`, `volume_units`
+- `machinery.power.fact_power_capacity_quantity`: `accounting_period_id`, `scenario_id`, `power_technology_id`, `engine_fuel_id`, `power_size_class_id`, `end_market_id`, `target_year_id`, `capacity_gigawatts`, `capacity_unit_count`
+- `machinery.power.fact_power_capacity_target`: `accounting_period_id`, `scenario_id`, `power_technology_id`, `target_year_id`, `target_gigawatts`
 
-Current service amount and mix are the aftermarket fact. Backlog that delivers in 2029 and beyond is the installed-base entry, not today's service.
+### Q2 2026 (6) Caterpillar
 
-- `machinery.power.fact_aftermarket_service`: `service_amount`, `current_mix_rate`, `segment_id`, `accounting_period_id`
-- `machinery.power.fact_installed_base_entry`: `backlog_entering_base_amount`, `delivery_year_label`, `capacity_horizon_id`, `segment_id`
-- `machinery.power.dim_capacity_horizon`: `horizon_year`
-- `machinery.commercial.fact_backlog_position`: `backlog_amount`, `segment_id`
-- `machinery.market.dim_segment`: `segment_code`
+For 2027 and 2028, is gas reciprocating capacity sold out, and how is the company choosing among prime, flexible, and backup uses as backup tightens?
 
-### Q2 2026 (11) — Diesel standby redundancy by workload and by site connection
+- `machinery.power.fact_application_slot_quantity`: `accounting_period_id`, `scenario_id`, `power_technology_id`, `power_application_id`, `target_year_id`, `open_slot_count`, `booked_slot_count`
+- `machinery.power.fact_power_capacity_quantity`: `accounting_period_id`, `scenario_id`, `power_technology_id`, `engine_fuel_id`, `power_size_class_id`, `end_market_id`, `target_year_id`, `capacity_gigawatts`, `capacity_unit_count`
+- `machinery.power.fact_power_capacity_target`: `accounting_period_id`, `scenario_id`, `power_technology_id`, `target_year_id`, `target_gigawatts`
 
-Training versus inference and behind-the-meter versus grid-connected are dimensions. The redundancy requirement is the fact.
+### Q2 2026 (9) Caterpillar
 
-- `machinery.power.fact_redundancy_design`: `redundancy_requirement`, `workload_id`, `site_connection_id`, `power_product_id`, `end_market_id`
-- `machinery.power.dim_workload`: `workload_code`
-- `machinery.power.dim_site_connection`: `connection_code`
-- `machinery.product.dim_power_product`: `product_code`
-- `machinery.market.dim_end_market`: `market_code`
+How large is Power & Energy service and aftermarket today, and how does that grow as deliveries stretch into 2029 and beyond?
 
-### Q1 2026 (1) — Which large-engine end market drove capacity, and whether the ramp is smooth or a lump
+- `machinery.power.fact_aftermarket_service_revenue`: `accounting_period_id`, `scenario_id`, `cat_reporting_segment_id`, `end_market_id`, `service_revenue_amount`
+- `machinery.power.fact_installed_base_entry_quantity`: `accounting_period_id`, `scenario_id`, `power_technology_id`, `cat_reporting_segment_id`, `target_year_id`, `installed_base_entry_units`
+- `machinery.commercial.fact_cat_segment_volume`: `accounting_period_id`, `scenario_id`, `cat_reporting_segment_id`, `volume_units`
 
-The end market and the smooth-versus-lump profile are on the capacity-timing fact. Prime power and oil and gas are end-market codes.
+### Q2 2026 (11) Caterpillar
 
-- `machinery.power.fact_capacity_timing`: `ramp_profile`, `capacity_added_gigawatts`, `end_market_id`, `power_product_id`, `capacity_horizon_id`
-- `machinery.market.dim_end_market`: `market_code`, `market_name`
-- `machinery.product.dim_power_product`: `product_code`
+How does required diesel-standby redundancy differ for training versus inference data centers, and for behind-the-meter versus grid-connected sites?
 
-### Q1 2026 (3) — Large reciprocating capacity rather than more gas-turbine investment
+- `machinery.power.fact_data_center_power_demand`: `accounting_period_id`, `scenario_id`, `end_market_id`, `target_year_id`, `region_id`, `data_center_demand_gigawatts`
+- `machinery.market.fact_end_market_demand_amount`: `accounting_period_id`, `scenario_id`, `cat_reporting_segment_id`, `end_market_id`, `region_id`, `end_market_demand_amount`
+- `machinery.commercial.fact_cat_segment_volume`: `accounting_period_id`, `scenario_id`, `cat_reporting_segment_id`, `volume_units`
 
-Each product has its own investment amount and whether it was the allocation selected.
+### Q1 2026 (1) Caterpillar
 
-- `machinery.power.fact_turbine_versus_recip`: `capacity_investment_amount`, `allocation_choice`, `power_product_id`, `capacity_horizon_id`
-- `machinery.product.dim_power_product`: `product_code`, `product_name`
+Which large-engine end market drove the extra capacity, and does that capacity arrive smoothly or in a lump at the end?
 
-### Q1 2026 (4) — Whether today's capacity changes the 2030 gigawatt figure, and Power & Energy price realization
+- `machinery.power.fact_power_capacity_quantity`: `accounting_period_id`, `scenario_id`, `power_technology_id`, `engine_fuel_id`, `power_size_class_id`, `end_market_id`, `target_year_id`, `capacity_gigawatts`, `capacity_unit_count`
+- `machinery.market.fact_end_market_demand_amount`: `accounting_period_id`, `scenario_id`, `cat_reporting_segment_id`, `end_market_id`, `region_id`, `end_market_demand_amount`
+- `machinery.power.fact_power_capacity_target`: `accounting_period_id`, `scenario_id`, `power_technology_id`, `target_year_id`, `target_gigawatts`
 
-The target-changed flag is the gigawatt fact. Price realization, including the new-product mix, is the price fact and stores no volume.
+### Q1 2026 (3) Caterpillar
 
-- `machinery.power.fact_gigawatt_target`: `target_changed_flag`, `target_gigawatts`, `capacity_horizon_id`
-- `machinery.power.dim_capacity_horizon`: `horizon_year`
-- `machinery.commercial.fact_price_realization`: `price_realization_rate`, `new_product_mix_flag`, `segment_id`
-- `machinery.market.dim_segment`: `segment_code`
+Why add large-engine capacity rather than more gas-turbine investment?
 
-### Q1 2026 (5) — The tightest supplier constraint and the 2030 prime versus backup split
+- `machinery.power.fact_power_capacity_quantity`: `accounting_period_id`, `scenario_id`, `power_technology_id`, `engine_fuel_id`, `power_size_class_id`, `end_market_id`, `target_year_id`, `capacity_gigawatts`, `capacity_unit_count`
+- `machinery.power.fact_power_lead_time`: `accounting_period_id`, `scenario_id`, `power_technology_id`, `lead_time_months`
+- `machinery.power.fact_power_capacity_target`: `accounting_period_id`, `scenario_id`, `power_technology_id`, `target_year_id`, `target_gigawatts`
 
-Constraint rank names the tightest supplier. Output share by application is the prime-versus-backup split for the 2030 horizon.
+### Q1 2026 (5) Caterpillar
 
-- `machinery.power.fact_supplier_bottleneck`: `constraint_rank`, `constraint_note`, `supplier_id`, `power_product_id`, `capacity_horizon_id`
-- `machinery.power.dim_supplier`: `supplier_name`
-- `machinery.power.fact_prime_backup_split`: `output_share`, `power_application_id`, `power_product_id`, `capacity_horizon_id`
-- `machinery.power.dim_power_application`: `application_code`
-- `machinery.power.dim_capacity_horizon`: `horizon_year`
-- `machinery.product.dim_power_product`: `product_code`
+Where is the tightest constraint as suppliers ramp power-generation capacity with Caterpillar, and what share of large-engine output in 2030 is prime versus backup?
 
-### Q4 2025 (2) — Power capacity through 2026 and 2027, and overcapacity if data-center demand slows
+- `machinery.power.fact_supplier_capacity_quantity`: `accounting_period_id`, `scenario_id`, `supplier_id`, `power_technology_id`, `target_year_id`, `supplier_capacity_units`, `constrained_capacity_units`
+- `machinery.power.fact_power_capacity_quantity`: `accounting_period_id`, `scenario_id`, `power_technology_id`, `engine_fuel_id`, `power_size_class_id`, `end_market_id`, `target_year_id`, `capacity_gigawatts`, `capacity_unit_count`
+- `machinery.power.fact_power_capacity_target`: `accounting_period_id`, `scenario_id`, `power_technology_id`, `target_year_id`, `target_gigawatts`
 
-Machinery Inc's ramp by horizon year is separate from industry gigawatts and from the data-center slowdown flag.
+### Q4 2025 (2) Caterpillar
 
-- `machinery.power.fact_engine_capacity_ramp`: `ramp_gigawatts`, `capacity_horizon_id`, `capacity_online_units`
-- `machinery.power.dim_capacity_horizon`: `horizon_year`
-- `machinery.power.fact_data_center_demand`: `demand_outlook_amount`, `demand_slowdown_flag`, `end_market_id`
-- `machinery.power.fact_overcapacity_risk`: `industry_capacity_gigawatts`, `overcapacity_flag`, `capacity_horizon_id`, `end_market_id`
-- `machinery.market.dim_end_market`: `market_code`
+Where does the long-term power-capacity target stand through 2026 and 2027, and is there an overcapacity risk if data-center demand slows while everyone adds capacity?
 
-### Q4 2025 (4) — Battery storage beside reciprocating engines on one project
+- `machinery.power.fact_data_center_power_demand`: `accounting_period_id`, `scenario_id`, `end_market_id`, `target_year_id`, `region_id`, `data_center_demand_gigawatts`
+- `machinery.power.fact_power_capacity_target`: `accounting_period_id`, `scenario_id`, `power_technology_id`, `target_year_id`, `target_gigawatts`
+- `machinery.market.fact_end_market_demand_amount`: `accounting_period_id`, `scenario_id`, `cat_reporting_segment_id`, `end_market_id`, `region_id`, `end_market_demand_amount`
 
-Project content is one row per power product on the project, so battery storage and the reciprocating engine are separate amounts.
+### Q4 2025 (4) Caterpillar
 
-- `machinery.power.fact_project_content`: `content_amount`, `content_units`, `project_id`, `power_product_id`, `end_market_id`
-- `machinery.power.dim_project`: `project_name`
-- `machinery.product.dim_power_product`: `product_code`
-- `machinery.market.dim_end_market`: `market_code`
+On a large announced project, how does battery storage sit alongside reciprocating engines in the order?
 
-### Q4 2025 (5) — Backup diesel versus battery storage in prime-power designs
+- `machinery.power.fact_project_content_quantity`: `accounting_period_id`, `scenario_id`, `project_id`, `power_technology_id`, `project_content_units`
+- `machinery.power.fact_project_content_amount`: `accounting_period_id`, `scenario_id`, `project_id`, `power_technology_id`, `project_content_amount`
+- `machinery.power.fact_power_capacity_quantity`: `accounting_period_id`, `scenario_id`, `power_technology_id`, `engine_fuel_id`, `power_size_class_id`, `end_market_id`, `target_year_id`, `capacity_gigawatts`, `capacity_unit_count`
 
-Role share by companion product and horizon year shows how backup diesel and battery storage evolve for prime power.
+### Q4 2025 (5) Caterpillar
 
-- `machinery.power.fact_backup_role_evolution`: `role_share`, `power_application_id`, `power_product_id`, `capacity_horizon_id`
-- `machinery.power.dim_power_application`: `application_code`
-- `machinery.product.dim_power_product`: `product_code`
-- `machinery.power.dim_capacity_horizon`: `horizon_year`
+For prime power, how does the role of backup diesel versus battery storage evolve?
 
-### Q4 2025 (7) — Utility conversations on turbines in plant applications
+- `machinery.power.fact_application_slot_quantity`: `accounting_period_id`, `scenario_id`, `power_technology_id`, `power_application_id`, `target_year_id`, `open_slot_count`, `booked_slot_count`
+- `machinery.power.fact_project_content_quantity`: `accounting_period_id`, `scenario_id`, `project_id`, `power_technology_id`, `project_content_units`
+- `machinery.power.fact_project_content_amount`: `accounting_period_id`, `scenario_id`, `project_id`, `power_technology_id`, `project_content_amount`
 
-The utility customer, the turbine, the plant-application use case, and whether the conversation has become an order are on the conversation fact.
+### Q4 2025 (6) Caterpillar
 
-- `machinery.power.fact_utility_conversation`: `use_case_code`, `order_timing_status`, `customer_id`, `power_product_id`, `end_market_id`
-- `machinery.power.dim_customer`: `customer_name`, `customer_role`
-- `machinery.product.dim_power_product`: `product_code`
-- `machinery.market.dim_end_market`: `market_code`
+Was backlog growth inflated by a one-time pull-forward, separate from the project that lands next quarter?
 
-### Q4 2025 (8) — Engine waste heat for cooling versus combined-cycle efficiency
+- `machinery.power.fact_installed_base_entry_quantity`: `accounting_period_id`, `scenario_id`, `power_technology_id`, `cat_reporting_segment_id`, `target_year_id`, `installed_base_entry_units`
+- `machinery.power.fact_project_content_quantity`: `accounting_period_id`, `scenario_id`, `project_id`, `power_technology_id`, `project_content_units`
+- `machinery.power.fact_project_content_amount`: `accounting_period_id`, `scenario_id`, `project_id`, `power_technology_id`, `project_content_amount`
 
-Each architecture has its own efficiency index at the data-center end market.
+### Q4 2025 (7) Caterpillar
 
-- `machinery.power.fact_site_energy_comparison`: `efficiency_index`, `generation_architecture_id`, `end_market_id`, `power_product_id`
-- `machinery.power.dim_generation_architecture`: `architecture_code`, `architecture_name`
-- `machinery.market.dim_end_market`: `market_code`
+How are utility conversations tracking on using turbines in plant applications?
 
-### Q4 2025 (9) — Construction Industries replacement demand versus data-center activity
+- `machinery.power.fact_power_capacity_quantity`: `accounting_period_id`, `scenario_id`, `power_technology_id`, `engine_fuel_id`, `power_size_class_id`, `end_market_id`, `target_year_id`, `capacity_gigawatts`, `capacity_unit_count`
+- `machinery.power.fact_application_slot_quantity`: `accounting_period_id`, `scenario_id`, `power_technology_id`, `power_application_id`, `target_year_id`, `open_slot_count`, `booked_slot_count`
+- `machinery.power.fact_power_lead_time`: `accounting_period_id`, `scenario_id`, `power_technology_id`, `lead_time_months`
 
-Demand amount by driver separates replacement from data-center activity inside Construction Industries.
+### Q4 2025 (8) Caterpillar
 
-- `machinery.power.fact_construction_driver_mix`: `demand_amount`, `demand_driver_id`, `segment_id`, `end_market_id`, `accounting_period_id`
-- `machinery.market.dim_demand_driver`: `driver_code`, `driver_name`
-- `machinery.market.dim_segment`: `segment_code`
-- `machinery.market.dim_end_market`: `market_code`
+How does using engine waste heat for cooling at a data center compare with combined-cycle efficiency?
 
-### Q4 2024 (1) — Whether the data-center demand view changed as capacity was added
+- `machinery.power.fact_data_center_power_demand`: `accounting_period_id`, `scenario_id`, `end_market_id`, `target_year_id`, `region_id`, `data_center_demand_gigawatts`
+- `machinery.market.fact_end_market_demand_amount`: `accounting_period_id`, `scenario_id`, `cat_reporting_segment_id`, `end_market_id`, `region_id`, `end_market_demand_amount`
+- `machinery.power.fact_power_capacity_quantity`: `accounting_period_id`, `scenario_id`, `power_technology_id`, `engine_fuel_id`, `power_size_class_id`, `end_market_id`, `target_year_id`, `capacity_gigawatts`, `capacity_unit_count`
 
-The outlook change is the demand fact. Gigawatts being added are the capacity ramp.
+### Q4 2025 (9) Caterpillar
 
-- `machinery.power.fact_data_center_demand`: `demand_outlook_change`, `demand_outlook_amount`, `demand_slowdown_flag`
-- `machinery.power.fact_engine_capacity_ramp`: `ramp_gigawatts`, `capacity_online_units`, `capacity_horizon_id`
-- `machinery.market.dim_end_market`: `market_code`
+How much of Construction Industries demand is replacement returning to normal versus data-center activity?
 
-### Q4 2024 (4) — Solar turbine lead times and whether more factory capacity is needed
+- `machinery.market.fact_end_market_demand_amount`: `accounting_period_id`, `scenario_id`, `cat_reporting_segment_id`, `end_market_id`, `region_id`, `end_market_demand_amount`
+- `machinery.power.fact_data_center_power_demand`: `accounting_period_id`, `scenario_id`, `end_market_id`, `target_year_id`, `region_id`, `data_center_demand_gigawatts`
+- `machinery.commercial.fact_cat_segment_volume`: `accounting_period_id`, `scenario_id`, `cat_reporting_segment_id`, `volume_units`
 
-Lead time in months and the additional-roofline flag are the Solar lead-time fact. The product code selects the Solar turbine.
+### Q4 2024 (1) Caterpillar
 
-- `machinery.power.fact_solar_lead_time`: `lead_time_months`, `additional_roofline_needed_flag`, `power_product_id`, `accounting_period_id`
-- `machinery.product.dim_power_product`: `product_code`, `product_name`
+Has the view of data-center demand changed as capacity is added?
+
+- `machinery.power.fact_data_center_power_demand`: `accounting_period_id`, `scenario_id`, `end_market_id`, `target_year_id`, `region_id`, `data_center_demand_gigawatts`
+- `machinery.market.fact_end_market_demand_amount`: `accounting_period_id`, `scenario_id`, `cat_reporting_segment_id`, `end_market_id`, `region_id`, `end_market_demand_amount`
+- `machinery.power.fact_power_capacity_quantity`: `accounting_period_id`, `scenario_id`, `power_technology_id`, `engine_fuel_id`, `power_size_class_id`, `end_market_id`, `target_year_id`, `capacity_gigawatts`, `capacity_unit_count`
+
+### Q4 2024 (4) Caterpillar
+
+What are solar-turbine lead times, and is more turbine factory capacity needed?
+
+- `machinery.power.fact_power_lead_time`: `accounting_period_id`, `scenario_id`, `power_technology_id`, `lead_time_months`
+- `machinery.power.fact_power_capacity_quantity`: `accounting_period_id`, `scenario_id`, `power_technology_id`, `engine_fuel_id`, `power_size_class_id`, `end_market_id`, `target_year_id`, `capacity_gigawatts`, `capacity_unit_count`
+- `machinery.power.fact_power_capacity_target`: `accounting_period_id`, `scenario_id`, `power_technology_id`, `target_year_id`, `target_gigawatts`
+
+### Q4 2024 (7) Caterpillar
+
+How do Construction Industries revenue and margin move sequentially if first-quarter pressure is concentrated there?
+
+- `machinery.commercial.fact_cat_segment_volume`: `accounting_period_id`, `scenario_id`, `cat_reporting_segment_id`, `volume_units`
+- `machinery.power.fact_aftermarket_service_revenue`: `accounting_period_id`, `scenario_id`, `cat_reporting_segment_id`, `end_market_id`, `service_revenue_amount`
+- `machinery.market.fact_end_market_demand_amount`: `accounting_period_id`, `scenario_id`, `cat_reporting_segment_id`, `end_market_id`, `region_id`, `end_market_demand_amount`
+
+### Q4 2024 (8) Caterpillar
+
+How did Construction and Resource Industries orders change sequentially versus a strong Energy & Transportation book?
+
+- `machinery.commercial.fact_cat_segment_volume`: `accounting_period_id`, `scenario_id`, `cat_reporting_segment_id`, `volume_units`
+- `machinery.power.fact_project_content_quantity`: `accounting_period_id`, `scenario_id`, `project_id`, `power_technology_id`, `project_content_units`
+- `machinery.power.fact_project_content_amount`: `accounting_period_id`, `scenario_id`, `project_id`, `power_technology_id`, `project_content_amount`
+
+### Q4 2024 (12) Caterpillar
+
+How are Resource Industries customer conversations and early-year orders progressing after the fourth-quarter improvement?
+
+- `machinery.commercial.fact_cat_segment_volume`: `accounting_period_id`, `scenario_id`, `cat_reporting_segment_id`, `volume_units`
+- `machinery.power.fact_project_content_quantity`: `accounting_period_id`, `scenario_id`, `project_id`, `power_technology_id`, `project_content_units`
+- `machinery.power.fact_project_content_amount`: `accounting_period_id`, `scenario_id`, `project_id`, `power_technology_id`, `project_content_amount`
+
+## PACCAR
+
+### Q4 2025 (9) PACCAR
+
+Why leave the North America unit outlook unchanged after raising Europe and South America, if orders look robust?
+
+- `machinery.power.fact_project_content_quantity`: `accounting_period_id`, `scenario_id`, `project_id`, `power_technology_id`, `project_content_units`
+- `machinery.commercial.fact_cat_segment_volume`: `accounting_period_id`, `scenario_id`, `cat_reporting_segment_id`, `volume_units`
+
+### Q3 2025 (16) PACCAR
+
+Is fourth-quarter order coverage similar by region?
+
+- `machinery.power.fact_project_content_quantity`: `accounting_period_id`, `scenario_id`, `project_id`, `power_technology_id`, `project_content_units`
+- `machinery.power.fact_project_content_amount`: `accounting_period_id`, `scenario_id`, `project_id`, `power_technology_id`, `project_content_amount`
 
 ## Datasets
 
 | Qualified name | Questions served |
 | --- | --- |
-| `machinery.market.dim_segment` | Q2 2026 (3), Q2 2026 (9), Q1 2026 (4), Q4 2025 (9) |
-| `machinery.market.dim_end_market` | Q2 2026 (11), Q1 2026 (1), Q4 2025 (2), Q4 2025 (4), Q4 2025 (7), Q4 2025 (8), Q4 2025 (9), Q4 2024 (1) |
-| `machinery.market.dim_demand_driver` | Q4 2025 (9) |
-| `machinery.product.dim_product_family` | supporting population |
-| `machinery.product.dim_machine_model` | supporting population |
-| `machinery.product.dim_power_product` | Q2 2026 (1), Q2 2026 (6), Q2 2026 (11), Q1 2026 (1), Q1 2026 (3), Q1 2026 (5), Q4 2025 (4), Q4 2025 (5), Q4 2025 (7), Q4 2024 (4) |
-| `machinery.power.dim_power_application` | Q2 2026 (6), Q1 2026 (5), Q4 2025 (5) |
-| `machinery.power.dim_workload` | Q2 2026 (11) |
-| `machinery.power.dim_site_connection` | Q2 2026 (11) |
-| `machinery.power.dim_supplier` | Q1 2026 (5) |
-| `machinery.power.dim_project` | Q4 2025 (4) |
-| `machinery.power.dim_customer` | Q4 2025 (7) |
-| `machinery.power.dim_generation_architecture` | Q4 2025 (8) |
-| `machinery.power.dim_capacity_horizon` | Q2 2026 (1), Q2 2026 (6), Q2 2026 (9), Q1 2026 (4), Q1 2026 (5), Q4 2025 (2), Q4 2025 (5) |
-| `machinery.power.fact_gigawatt_target` | Q2 2026 (1), Q1 2026 (4) |
-| `machinery.power.fact_engine_capacity_ramp` | Q2 2026 (1), Q2 2026 (3), Q4 2025 (2), Q4 2024 (1) |
-| `machinery.power.fact_capacity_timing` | Q1 2026 (1) |
-| `machinery.power.fact_application_slots` | Q2 2026 (6) |
-| `machinery.power.fact_prime_backup_split` | Q1 2026 (5) |
-| `machinery.power.fact_redundancy_design` | Q2 2026 (11) |
-| `machinery.power.fact_aftermarket_service` | Q2 2026 (9) |
-| `machinery.power.fact_installed_base_entry` | Q2 2026 (9) |
-| `machinery.power.fact_project_content` | Q4 2025 (4) |
-| `machinery.power.fact_utility_conversation` | Q4 2025 (7) |
-| `machinery.power.fact_site_energy_comparison` | Q4 2025 (8) |
-| `machinery.power.fact_construction_driver_mix` | Q4 2025 (9) |
-| `machinery.power.fact_supplier_bottleneck` | Q1 2026 (5) |
-| `machinery.power.fact_data_center_demand` | Q4 2025 (2), Q4 2024 (1) |
-| `machinery.power.fact_overcapacity_risk` | Q4 2025 (2) |
-| `machinery.power.fact_turbine_versus_recip` | Q1 2026 (3) |
-| `machinery.power.fact_solar_lead_time` | Q4 2024 (4) |
-| `machinery.power.fact_backup_role_evolution` | Q4 2025 (5) |
+| `machinery.market.dim_end_market` | supporting population |
+| `machinery.market.dim_power_application` | supporting population |
+| `machinery.product.dim_power_technology` | supporting population |
+| `machinery.product.dim_power_size_class` | supporting population |
+| `machinery.product.dim_engine_fuel` | supporting population |
+| `machinery.power.dim_supplier` | supporting population |
+| `machinery.power.dim_project` | supporting population |
+| `machinery.power.dim_customer_type` | supporting population |
+| `machinery.power.dim_target_year` | supporting population |
+| `machinery.market.dim_construction_sector` | supporting population |
+| `machinery.market.dim_project_scale` | supporting population |
+| `machinery.commercial.fact_cat_segment_volume` | Q2 2026 (3), Q2 2026 (5), Q2 2026 (9), Q2 2026 (11), Q4 2025 (9), Q4 2024 (7), Q4 2024 (8), Q4 2024 (12), Q4 2025 (9) |
+| `machinery.market.fact_end_market_demand_amount` | Q2 2026 (11), Q1 2026 (1), Q4 2025 (2), Q4 2025 (8), Q4 2025 (9), Q4 2024 (1), Q4 2024 (7) |
+| `machinery.power.fact_power_capacity_quantity` | Q2 2026 (1), Q2 2026 (3), Q2 2026 (5), Q2 2026 (6), Q1 2026 (1), Q1 2026 (3), Q1 2026 (5), Q4 2025 (4), Q4 2025 (7), Q4 2025 (8), Q4 2024 (1), Q4 2024 (4) |
+| `machinery.power.fact_power_capacity_target` | Q2 2026 (1), Q2 2026 (3), Q2 2026 (5), Q2 2026 (6), Q1 2026 (1), Q1 2026 (3), Q1 2026 (5), Q4 2025 (2), Q4 2024 (4) |
+| `machinery.power.fact_application_slot_quantity` | Q2 2026 (6), Q4 2025 (5), Q4 2025 (7) |
+| `machinery.power.fact_project_content_quantity` | Q2 2026 (1), Q4 2025 (4), Q4 2025 (5), Q4 2025 (6), Q4 2024 (8), Q4 2024 (12), Q4 2025 (9), Q3 2025 (16) |
+| `machinery.power.fact_project_content_amount` | Q4 2025 (4), Q4 2025 (5), Q4 2025 (6), Q4 2024 (8), Q4 2024 (12), Q3 2025 (16) |
+| `machinery.power.fact_supplier_capacity_quantity` | Q1 2026 (5) |
+| `machinery.power.fact_data_center_power_demand` | Q2 2026 (11), Q4 2025 (2), Q4 2025 (8), Q4 2025 (9), Q4 2024 (1) |
+| `machinery.power.fact_aftermarket_service_revenue` | Q2 2026 (9), Q4 2024 (7) |
+| `machinery.power.fact_installed_base_entry_quantity` | Q2 2026 (9), Q4 2025 (6) |
+| `machinery.power.fact_power_lead_time` | Q1 2026 (3), Q4 2025 (7), Q4 2024 (4) |

@@ -1,57 +1,15 @@
 schema_version: '3'
 nodes:
-- node_id: sf:machinery.market.dim_segment
-  descriptor:
-    qualified_name: machinery.market.dim_segment
-    display_name: Segment
-    description: 'A Machinery Inc operating segment: Construction Industries, Resource Industries, Power
-      & Energy, or the Energy & Transportation name used on earlier calls.'
-    tags:
-    - dimension
-    synonyms:
-    - Construction Industries
-    - Power & Energy
-    - Resource Industries
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: machinery.us-central-1
-      database: MACHINERY
-      schema: MARKET
-      object: DIM_SEGMENT
-      format: table
-  grain:
-    description: One row is one operating segment.
-    components:
-    - identity_id: segment_identity
-      dataset_columns:
-      - segment_id
-      description: One row is one operating segment.
-  columns:
-  - name: segment_id
-    description: Identifier of the operating segment. This dataset holds the complete segment population.
-  - name: segment_code
-    description: Code of the operating segment.
-    value_description: construction_industries, resource_industries, power_and_energy, or energy_and_transportation.
-  - name: segment_name
-    description: Name of the operating segment.
-  entity_definitions:
-  - identity_id: segment_identity
-    dataset_columns:
-    - segment_id
-    entity_universe: complete
 - node_id: sf:machinery.market.dim_end_market
   descriptor:
     qualified_name: machinery.market.dim_end_market
-    display_name: End market
-    description: An end market Machinery Inc sells into, including data centers, oil and gas, mining, utilities,
-      and construction.
+    display_name: End Market
+    description: End market served by Machinery Inc.
+    synonyms: []
     tags:
     - dimension
-    synonyms:
-    - data center
-    - oil and gas
-    - mining
+    - mix
+    - construction-machinery
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
@@ -61,315 +19,188 @@ nodes:
       object: DIM_END_MARKET
       format: table
   grain:
-    description: One row is one end market.
+    description: One row is one end market, identified by end_market_id.
     components:
     - identity_id: end_market_identity
       dataset_columns:
       - end_market_id
-      description: One row is one end market.
+      description: Identifier of the end market.
   columns:
   - name: end_market_id
-    description: Identifier of the end market. This dataset holds the complete end-market population.
-  - name: market_code
-    description: Code of the end market.
-    value_description: data_center, oil_and_gas, mining, utility, construction, or prime_power.
-  - name: market_name
+    description: Identifier of the end market.
+  - name: end_market_name
     description: Name of the end market.
+  - name: end_market_code
+    description: Code of the end market.
+    value_description: construction, mining, oil_and_gas, data_center, electric_utility, agriculture,
+      forestry, marine
   entity_definitions:
   - identity_id: end_market_identity
     dataset_columns:
     - end_market_id
     entity_universe: complete
-- node_id: sf:machinery.market.dim_demand_driver
+- node_id: sf:machinery.market.dim_power_application
   descriptor:
-    qualified_name: machinery.market.dim_demand_driver
-    display_name: Demand driver
-    description: 'What is driving construction demand: replacement, data-center activity, private nonresidential,
-      residential, a major project, or rental restocking.'
+    qualified_name: machinery.market.dim_power_application
+    display_name: Power Application
+    description: Duty application for power equipment, separate from end market.
+    synonyms: []
     tags:
     - dimension
+    - mix
+    - construction-machinery
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: machinery.us-central-1
       database: MACHINERY
       schema: MARKET
-      object: DIM_DEMAND_DRIVER
-      format: table
-  grain:
-    description: One row is one demand driver.
-    components:
-    - identity_id: demand_driver_identity
-      dataset_columns:
-      - demand_driver_id
-      description: One row is one demand driver.
-  columns:
-  - name: demand_driver_id
-    description: Identifier of the demand driver. This dataset holds the complete demand-driver population.
-  - name: driver_code
-    description: Code of the demand driver.
-    value_description: replacement, data_center, private_nonresidential, residential, major_project, or
-      rental_restock.
-  - name: driver_name
-    description: Name of the demand driver.
-  entity_definitions:
-  - identity_id: demand_driver_identity
-    dataset_columns:
-    - demand_driver_id
-    entity_universe: complete
-- node_id: sf:machinery.product.dim_product_family
-  descriptor:
-    qualified_name: machinery.product.dim_product_family
-    display_name: Product family
-    description: A Cat equipment family inside one operating segment.
-    tags:
-    - dimension
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: machinery.us-central-1
-      database: MACHINERY
-      schema: PRODUCT
-      object: DIM_PRODUCT_FAMILY
-      format: table
-  grain:
-    description: One row is one product family.
-    components:
-    - identity_id: product_family_identity
-      dataset_columns:
-      - product_family_id
-      description: One row is one product family.
-  columns:
-  - name: product_family_id
-    description: Identifier of the product family. This dataset holds the complete product-family population.
-  - name: segment_id
-    description: Operating segment that owns the family.
-  - name: family_name
-    description: Name of the product family.
-  entity_definitions:
-  - identity_id: product_family_identity
-    dataset_columns:
-    - product_family_id
-    entity_universe: complete
-  - identity_id: segment_identity
-    dataset_columns:
-    - segment_id
-    entity_universe: partial
-- node_id: sf:machinery.product.dim_machine_model
-  descriptor:
-    qualified_name: machinery.product.dim_machine_model
-    display_name: Machine model
-    description: A Machinery Inc machine model sold through dealers in construction or resource industries.
-    tags:
-    - dimension
-    synonyms:
-    - machine
-    - equipment model
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: machinery.us-central-1
-      database: MACHINERY
-      schema: PRODUCT
-      object: DIM_MACHINE_MODEL
-      format: table
-  grain:
-    description: One row is one machine model.
-    components:
-    - identity_id: machine_model_identity
-      dataset_columns:
-      - machine_model_id
-      description: One row is one machine model.
-  columns:
-  - name: machine_model_id
-    description: Identifier of the machine model. This dataset holds the complete machine-model population.
-  - name: product_family_id
-    description: Product family of the model.
-  - name: segment_id
-    description: Operating segment of the model.
-  - name: model_code
-    description: Machinery Inc model code.
-  - name: model_name
-    description: Name of the machine model.
-  entity_definitions:
-  - identity_id: machine_model_identity
-    dataset_columns:
-    - machine_model_id
-    entity_universe: complete
-  - identity_id: product_family_identity
-    dataset_columns:
-    - product_family_id
-    entity_universe: partial
-  - identity_id: segment_identity
-    dataset_columns:
-    - segment_id
-    entity_universe: partial
-- node_id: sf:machinery.product.dim_power_product
-  descriptor:
-    qualified_name: machinery.product.dim_power_product
-    display_name: Power product
-    description: 'A power product: a 10-megawatt reciprocating engine, other gas or large reciprocating
-      engines, diesel standby, a gas turbine, a Solar turbine, or battery storage.'
-    tags:
-    - dimension
-    synonyms:
-    - 10-megawatt engine
-    - reciprocating engine
-    - Solar turbine
-    - battery storage
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: machinery.us-central-1
-      database: MACHINERY
-      schema: PRODUCT
-      object: DIM_POWER_PRODUCT
-      format: table
-  grain:
-    description: One row is one power product.
-    components:
-    - identity_id: power_product_identity
-      dataset_columns:
-      - power_product_id
-      description: One row is one power product.
-  columns:
-  - name: power_product_id
-    description: Identifier of the power product. This dataset holds the complete power-product population.
-  - name: segment_id
-    description: Operating segment that sells the power product.
-  - name: product_code
-    description: Code of the power product.
-    value_description: reciprocating_10mw, gas_reciprocating, large_reciprocating, diesel_standby, gas_turbine,
-      solar_turbine, or battery_storage.
-  - name: product_name
-    description: Name of the power product.
-  entity_definitions:
-  - identity_id: power_product_identity
-    dataset_columns:
-    - power_product_id
-    entity_universe: complete
-  - identity_id: segment_identity
-    dataset_columns:
-    - segment_id
-    entity_universe: partial
-- node_id: sf:machinery.power.dim_power_application
-  descriptor:
-    qualified_name: machinery.power.dim_power_application
-    display_name: Power application
-    description: 'How a power product is used: prime, flexible, or backup.'
-    tags:
-    - dimension
-    synonyms:
-    - prime power
-    - backup power
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: machinery.us-central-1
-      database: MACHINERY
-      schema: POWER
       object: DIM_POWER_APPLICATION
       format: table
   grain:
-    description: One row is one power application.
+    description: One row is one power application, identified by power_application_id.
     components:
     - identity_id: power_application_identity
       dataset_columns:
       - power_application_id
-      description: One row is one power application.
+      description: Identifier of the power application.
   columns:
   - name: power_application_id
-    description: Identifier of the power application. This dataset holds the complete power-application
-      population.
-  - name: application_code
-    description: Code of the power application.
-    value_description: prime, flexible, or backup.
-  - name: application_name
+    description: Identifier of the power application.
+  - name: power_application_name
     description: Name of the power application.
+  - name: power_application_code
+    description: Code of the power application.
+    value_description: prime, continuous, peaking, backup
   entity_definitions:
   - identity_id: power_application_identity
     dataset_columns:
     - power_application_id
     entity_universe: complete
-- node_id: sf:machinery.power.dim_workload
+- node_id: sf:machinery.product.dim_power_technology
   descriptor:
-    qualified_name: machinery.power.dim_workload
-    display_name: Workload
-    description: 'A data-center workload that changes standby design: training or inference.'
+    qualified_name: machinery.product.dim_power_technology
+    display_name: Power Technology
+    description: Power generation technology.
+    synonyms: []
     tags:
     - dimension
+    - mix
+    - construction-machinery
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: machinery.us-central-1
       database: MACHINERY
-      schema: POWER
-      object: DIM_WORKLOAD
+      schema: PRODUCT
+      object: DIM_POWER_TECHNOLOGY
       format: table
   grain:
-    description: One row is one workload.
+    description: One row is one power technology, identified by power_technology_id.
     components:
-    - identity_id: workload_identity
+    - identity_id: power_technology_identity
       dataset_columns:
-      - workload_id
-      description: One row is one workload.
+      - power_technology_id
+      description: Identifier of the power technology.
   columns:
-  - name: workload_id
-    description: Identifier of the workload. This dataset holds the complete workload population.
-  - name: workload_code
-    description: Code of the workload.
-    value_description: training or inference.
-  - name: workload_name
-    description: Name of the workload.
+  - name: power_technology_id
+    description: Identifier of the power technology.
+  - name: power_technology_name
+    description: Name of the power technology.
+  - name: power_technology_code
+    description: Code of the power technology.
+    value_description: reciprocating_engine, gas_turbine, battery_storage, hybrid_system
   entity_definitions:
-  - identity_id: workload_identity
+  - identity_id: power_technology_identity
     dataset_columns:
-    - workload_id
+    - power_technology_id
     entity_universe: complete
-- node_id: sf:machinery.power.dim_site_connection
+- node_id: sf:machinery.product.dim_power_size_class
   descriptor:
-    qualified_name: machinery.power.dim_site_connection
-    display_name: Site connection
-    description: 'How a site takes power: behind the meter or connected to the grid.'
+    qualified_name: machinery.product.dim_power_size_class
+    display_name: Power Size Class
+    description: Size class of a power product.
+    synonyms: []
     tags:
     - dimension
-    synonyms:
-    - behind the meter
+    - mix
+    - construction-machinery
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: machinery.us-central-1
       database: MACHINERY
-      schema: POWER
-      object: DIM_SITE_CONNECTION
+      schema: PRODUCT
+      object: DIM_POWER_SIZE_CLASS
       format: table
   grain:
-    description: One row is one site connection.
+    description: One row is one power size class, identified by power_size_class_id.
     components:
-    - identity_id: site_connection_identity
+    - identity_id: power_size_class_identity
       dataset_columns:
-      - site_connection_id
-      description: One row is one site connection.
+      - power_size_class_id
+      description: Identifier of the power size class.
   columns:
-  - name: site_connection_id
-    description: Identifier of the site connection. This dataset holds the complete site-connection population.
-  - name: connection_code
-    description: Code of the site connection.
-    value_description: behind_the_meter or grid_connected.
-  - name: connection_name
-    description: Name of the site connection.
+  - name: power_size_class_id
+    description: Identifier of the power size class.
+  - name: power_size_class_name
+    description: Name of the power size class.
+  - name: power_size_class_code
+    description: Code of the power size class.
+    value_description: up_to_1mw, 1mw_to_5mw, 5mw_to_15mw, over_15mw
   entity_definitions:
-  - identity_id: site_connection_identity
+  - identity_id: power_size_class_identity
     dataset_columns:
-    - site_connection_id
+    - power_size_class_id
+    entity_universe: complete
+- node_id: sf:machinery.product.dim_engine_fuel
+  descriptor:
+    qualified_name: machinery.product.dim_engine_fuel
+    display_name: Engine Fuel
+    description: Fuel used by an engine product.
+    synonyms: []
+    tags:
+    - dimension
+    - mix
+    - construction-machinery
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: machinery.us-central-1
+      database: MACHINERY
+      schema: PRODUCT
+      object: DIM_ENGINE_FUEL
+      format: table
+  grain:
+    description: One row is one engine fuel, identified by engine_fuel_id.
+    components:
+    - identity_id: engine_fuel_identity
+      dataset_columns:
+      - engine_fuel_id
+      description: Identifier of the engine fuel.
+  columns:
+  - name: engine_fuel_id
+    description: Identifier of the engine fuel.
+  - name: engine_fuel_name
+    description: Name of the engine fuel.
+  - name: engine_fuel_code
+    description: Code of the engine fuel.
+    value_description: natural_gas, diesel, dual_fuel
+  entity_definitions:
+  - identity_id: engine_fuel_identity
+    dataset_columns:
+    - engine_fuel_id
     entity_universe: complete
 - node_id: sf:machinery.power.dim_supplier
   descriptor:
     qualified_name: machinery.power.dim_supplier
     display_name: Supplier
-    description: A supplier ramping power-generation components with Machinery Inc.
+    description: Supplier of power equipment components.
+    synonyms: []
     tags:
     - dimension
+    - mix
+    - construction-machinery
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
@@ -379,15 +210,15 @@ nodes:
       object: DIM_SUPPLIER
       format: table
   grain:
-    description: One row is one supplier.
+    description: One row is one supplier, identified by supplier_id.
     components:
     - identity_id: supplier_identity
       dataset_columns:
       - supplier_id
-      description: One row is one supplier.
+      description: Identifier of the supplier.
   columns:
   - name: supplier_id
-    description: Identifier of the supplier. This dataset holds the complete supplier population.
+    description: Identifier of the supplier.
   - name: supplier_name
     description: Name of the supplier.
   entity_definitions:
@@ -399,9 +230,12 @@ nodes:
   descriptor:
     qualified_name: machinery.power.dim_project
     display_name: Project
-    description: A large power project whose order content can include both engines and battery storage.
+    description: Customer project using power equipment.
+    synonyms: []
     tags:
     - dimension
+    - mix
+    - construction-machinery
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
@@ -411,19 +245,19 @@ nodes:
       object: DIM_PROJECT
       format: table
   grain:
-    description: One row is one project.
+    description: One row is one project, identified by project_id.
     components:
     - identity_id: project_identity
       dataset_columns:
       - project_id
-      description: One row is one project.
+      description: Identifier of the project.
   columns:
   - name: project_id
-    description: Identifier of the project. This dataset holds the complete project population.
-  - name: end_market_id
-    description: End market the project serves.
+    description: Identifier of the project.
   - name: project_name
     description: Name of the project.
+  - name: end_market_id
+    description: Identifier of the end market.
   entity_definitions:
   - identity_id: project_identity
     dataset_columns:
@@ -433,1118 +267,1013 @@ nodes:
     dataset_columns:
     - end_market_id
     entity_universe: partial
-- node_id: sf:machinery.power.dim_customer
+- node_id: sf:machinery.power.dim_customer_type
   descriptor:
-    qualified_name: machinery.power.dim_customer
-    display_name: Customer
-    description: A customer Machinery Inc is in conversation with, including mining customers and utilities.
+    qualified_name: machinery.power.dim_customer_type
+    display_name: Customer Type
+    description: Type of power or mining customer.
+    synonyms: []
     tags:
     - dimension
-    synonyms:
-    - mining customer
-    - utility
+    - mix
+    - construction-machinery
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: machinery.us-central-1
       database: MACHINERY
       schema: POWER
-      object: DIM_CUSTOMER
+      object: DIM_CUSTOMER_TYPE
       format: table
   grain:
-    description: One row is one customer.
+    description: One row is one customer type, identified by customer_type_id.
     components:
-    - identity_id: customer_identity
+    - identity_id: customer_type_identity
       dataset_columns:
-      - customer_id
-      description: One row is one customer.
+      - customer_type_id
+      description: Identifier of the customer type.
   columns:
-  - name: customer_id
-    description: Identifier of the customer. This dataset holds the complete customer population.
-  - name: end_market_id
-    description: Primary end market of the customer.
-  - name: customer_name
-    description: Name of the customer.
-  - name: customer_role
-    description: Role of the customer.
-    value_description: mining, utility, or data_center_operator.
+  - name: customer_type_id
+    description: Identifier of the customer type.
+  - name: customer_type_name
+    description: Name of the customer type.
+  - name: customer_type_code
+    description: Code of the customer type.
+    value_description: mining_company, electric_utility, data_center_operator, oil_gas_producer
   entity_definitions:
-  - identity_id: customer_identity
+  - identity_id: customer_type_identity
     dataset_columns:
-    - customer_id
+    - customer_type_id
     entity_universe: complete
+- node_id: sf:machinery.power.dim_target_year
+  descriptor:
+    qualified_name: machinery.power.dim_target_year
+    display_name: Target Year
+    description: Calendar year for a capacity target or delivery horizon.
+    synonyms: []
+    tags:
+    - dimension
+    - mix
+    - construction-machinery
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: machinery.us-central-1
+      database: MACHINERY
+      schema: POWER
+      object: DIM_TARGET_YEAR
+      format: table
+  grain:
+    description: One row is one target year, identified by target_year_id.
+    components:
+    - identity_id: target_year_identity
+      dataset_columns:
+      - target_year_id
+      description: Identifier of the target year.
+  columns:
+  - name: target_year_id
+    description: Identifier of the target year.
+  - name: target_year_name
+    description: Name of the target year.
+  - name: target_year_code
+    description: Code of the target year.
+    value_description: 2026, 2027, 2028, 2029, 2030
+  entity_definitions:
+  - identity_id: target_year_identity
+    dataset_columns:
+    - target_year_id
+    entity_universe: complete
+- node_id: sf:machinery.market.dim_construction_sector
+  descriptor:
+    qualified_name: machinery.market.dim_construction_sector
+    display_name: Construction Sector
+    description: Sector of construction activity.
+    synonyms: []
+    tags:
+    - dimension
+    - mix
+    - construction-machinery
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: machinery.us-central-1
+      database: MACHINERY
+      schema: MARKET
+      object: DIM_CONSTRUCTION_SECTOR
+      format: table
+  grain:
+    description: One row is one construction sector, identified by construction_sector_id.
+    components:
+    - identity_id: construction_sector_identity
+      dataset_columns:
+      - construction_sector_id
+      description: Identifier of the construction sector.
+  columns:
+  - name: construction_sector_id
+    description: Identifier of the construction sector.
+  - name: construction_sector_name
+    description: Name of the construction sector.
+  - name: construction_sector_code
+    description: Code of the construction sector.
+    value_description: private_nonresidential, residential, public_nonresidential
+  entity_definitions:
+  - identity_id: construction_sector_identity
+    dataset_columns:
+    - construction_sector_id
+    entity_universe: complete
+- node_id: sf:machinery.market.dim_project_scale
+  descriptor:
+    qualified_name: machinery.market.dim_project_scale
+    display_name: Project Scale
+    description: Scale class of a construction project.
+    synonyms: []
+    tags:
+    - dimension
+    - mix
+    - construction-machinery
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: machinery.us-central-1
+      database: MACHINERY
+      schema: MARKET
+      object: DIM_PROJECT_SCALE
+      format: table
+  grain:
+    description: One row is one project scale, identified by project_scale_id.
+    components:
+    - identity_id: project_scale_identity
+      dataset_columns:
+      - project_scale_id
+      description: Identifier of the project scale.
+  columns:
+  - name: project_scale_id
+    description: Identifier of the project scale.
+  - name: project_scale_name
+    description: Name of the project scale.
+  - name: project_scale_code
+    description: Code of the project scale.
+    value_description: standard_project, mega_project
+  entity_definitions:
+  - identity_id: project_scale_identity
+    dataset_columns:
+    - project_scale_id
+    entity_universe: complete
+- node_id: sf:machinery.commercial.fact_cat_segment_volume
+  descriptor:
+    qualified_name: machinery.commercial.fact_cat_segment_volume
+    display_name: CAT Segment Volume
+    description: Machine volume by Caterpillar reporting segment; the denominator for segment price.
+    synonyms: []
+    tags:
+    - fact
+    - mix
+    - construction-machinery
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: machinery.us-central-1
+      database: MACHINERY
+      schema: COMMERCIAL
+      object: FACT_CAT_SEGMENT_VOLUME
+      format: table
+  grain:
+    description: One row is one cat segment volume observation for the combination of accounting period,
+      scenario, cat reporting segment.
+    components:
+    - identity_id: accounting_period_identity
+      dataset_columns:
+      - accounting_period_id
+      description: Identifier of the accounting period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: cat_reporting_segment_identity
+      dataset_columns:
+      - cat_reporting_segment_id
+      description: Identifier of the cat reporting segment.
+  columns:
+  - name: accounting_period_id
+    description: Identifier of the accounting period.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: cat_reporting_segment_id
+    description: Identifier of the cat reporting segment.
+  - name: volume_units
+    description: Machine volume in units.
+  entity_definitions:
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: cat_reporting_segment_identity
+    dataset_columns:
+    - cat_reporting_segment_id
+    entity_universe: partial
+- node_id: sf:machinery.market.fact_end_market_demand_amount
+  descriptor:
+    qualified_name: machinery.market.fact_end_market_demand_amount
+    display_name: End Market Demand Amount
+    description: Demand amount by end market.
+    synonyms: []
+    tags:
+    - fact
+    - mix
+    - construction-machinery
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: machinery.us-central-1
+      database: MACHINERY
+      schema: MARKET
+      object: FACT_END_MARKET_DEMAND_AMOUNT
+      format: table
+  grain:
+    description: One row is one end market demand amount observation for the combination of accounting
+      period, scenario, cat reporting segment, end market, region.
+    components:
+    - identity_id: accounting_period_identity
+      dataset_columns:
+      - accounting_period_id
+      description: Identifier of the accounting period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: cat_reporting_segment_identity
+      dataset_columns:
+      - cat_reporting_segment_id
+      description: Identifier of the cat reporting segment.
+    - identity_id: end_market_identity
+      dataset_columns:
+      - end_market_id
+      description: Identifier of the end market.
+    - identity_id: region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+  columns:
+  - name: accounting_period_id
+    description: Identifier of the accounting period.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: cat_reporting_segment_id
+    description: Identifier of the cat reporting segment.
+  - name: end_market_id
+    description: Identifier of the end market.
+  - name: region_id
+    description: Identifier of the region.
+  - name: end_market_demand_amount
+    description: End-market demand in dollars.
+  entity_definitions:
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: cat_reporting_segment_identity
+    dataset_columns:
+    - cat_reporting_segment_id
+    entity_universe: partial
   - identity_id: end_market_identity
     dataset_columns:
     - end_market_id
     entity_universe: partial
-- node_id: sf:machinery.power.dim_generation_architecture
-  descriptor:
-    qualified_name: machinery.power.dim_generation_architecture
-    display_name: Generation architecture
-    description: 'A site energy design: engine waste heat used for cooling, or a combined-cycle turbine.'
-    tags:
-    - dimension
-    synonyms:
-    - waste heat
-    - combined cycle
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: machinery.us-central-1
-      database: MACHINERY
-      schema: POWER
-      object: DIM_GENERATION_ARCHITECTURE
-      format: table
-  grain:
-    description: One row is one generation architecture.
-    components:
-    - identity_id: generation_architecture_identity
-      dataset_columns:
-      - generation_architecture_id
-      description: One row is one generation architecture.
-  columns:
-  - name: generation_architecture_id
-    description: Identifier of the generation architecture. This dataset holds the complete architecture
-      population.
-  - name: architecture_code
-    description: Code of the architecture.
-    value_description: waste_heat_cooling or combined_cycle.
-  - name: architecture_name
-    description: Name of the generation architecture.
-  entity_definitions:
-  - identity_id: generation_architecture_identity
+  - identity_id: region_identity
     dataset_columns:
-    - generation_architecture_id
-    entity_universe: complete
-- node_id: sf:machinery.power.dim_capacity_horizon
+    - region_id
+    entity_universe: partial
+- node_id: sf:machinery.power.fact_power_capacity_quantity
   descriptor:
-    qualified_name: machinery.power.dim_capacity_horizon
-    display_name: Capacity horizon
-    description: A year in the power-capacity plan, from the near-term ramp through the 2030 gigawatt
-      target.
-    tags:
-    - dimension
-    synonyms:
-    - 2030 target
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: machinery.us-central-1
-      database: MACHINERY
-      schema: POWER
-      object: DIM_CAPACITY_HORIZON
-      format: table
-  grain:
-    description: One row is one capacity year.
-    components:
-    - identity_id: capacity_horizon_identity
-      dataset_columns:
-      - capacity_horizon_id
-      description: One row is one capacity year.
-  columns:
-  - name: capacity_horizon_id
-    description: Identifier of the capacity horizon. This dataset holds the complete capacity-horizon
-      population.
-  - name: horizon_year
-    description: Calendar year of the horizon.
-    value_description: 2026, 2027, 2028, 2029, or 2030.
-  - name: horizon_label
-    description: Label of the capacity horizon.
-  entity_definitions:
-  - identity_id: capacity_horizon_identity
-    dataset_columns:
-    - capacity_horizon_id
-    entity_universe: complete
-- node_id: sf:machinery.power.fact_gigawatt_target
-  descriptor:
-    qualified_name: machinery.power.fact_gigawatt_target
-    display_name: Gigawatt target
-    description: The long-term power gigawatt target, and whether a capacity change revises that figure.
+    qualified_name: machinery.power.fact_power_capacity_quantity
+    display_name: Power Capacity Quantity
+    description: Power generation capacity by technology, fuel, size class, end market, and target year.
+    synonyms: []
     tags:
     - fact
+    - mix
+    - construction-machinery
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: machinery.us-central-1
       database: MACHINERY
       schema: POWER
-      object: FACT_GIGAWATT_TARGET
+      object: FACT_POWER_CAPACITY_QUANTITY
       format: table
   grain:
-    description: One row is one power product and capacity horizon.
+    description: One row is one power capacity quantity observation for the combination of accounting
+      period, scenario, power technology, engine fuel, power size class, end market, target year.
     components:
-    - identity_id: gigawatt_target_identity
+    - identity_id: accounting_period_identity
       dataset_columns:
-      - gigawatt_target_id
-      description: One row is one power product and capacity horizon.
+      - accounting_period_id
+      description: Identifier of the accounting period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: power_technology_identity
+      dataset_columns:
+      - power_technology_id
+      description: Identifier of the power technology.
+    - identity_id: engine_fuel_identity
+      dataset_columns:
+      - engine_fuel_id
+      description: Identifier of the engine fuel.
+    - identity_id: power_size_class_identity
+      dataset_columns:
+      - power_size_class_id
+      description: Identifier of the power size class.
+    - identity_id: end_market_identity
+      dataset_columns:
+      - end_market_id
+      description: Identifier of the end market.
+    - identity_id: target_year_identity
+      dataset_columns:
+      - target_year_id
+      description: Identifier of the target year.
   columns:
-  - name: gigawatt_target_id
-    description: Identifier of the gigawatt target row. This dataset holds the complete population of
-      those targets.
-  - name: power_product_id
-    description: Power product the target covers.
-  - name: capacity_horizon_id
-    description: Year of the target, including 2030.
+  - name: accounting_period_id
+    description: Identifier of the accounting period.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: power_technology_id
+    description: Identifier of the power technology.
+  - name: engine_fuel_id
+    description: Identifier of the engine fuel.
+  - name: power_size_class_id
+    description: Identifier of the power size class.
+  - name: end_market_id
+    description: Identifier of the end market.
+  - name: target_year_id
+    description: Identifier of the target year.
+  - name: capacity_gigawatts
+    description: Power capacity in gigawatts.
+  - name: capacity_unit_count
+    description: Power units in units.
+  entity_definitions:
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: power_technology_identity
+    dataset_columns:
+    - power_technology_id
+    entity_universe: partial
+  - identity_id: engine_fuel_identity
+    dataset_columns:
+    - engine_fuel_id
+    entity_universe: partial
+  - identity_id: power_size_class_identity
+    dataset_columns:
+    - power_size_class_id
+    entity_universe: partial
+  - identity_id: end_market_identity
+    dataset_columns:
+    - end_market_id
+    entity_universe: partial
+  - identity_id: target_year_identity
+    dataset_columns:
+    - target_year_id
+    entity_universe: partial
+- node_id: sf:machinery.power.fact_power_capacity_target
+  descriptor:
+    qualified_name: machinery.power.fact_power_capacity_target
+    display_name: Power Capacity Target
+    description: Long-term power capacity target by technology and target year.
+    synonyms: []
+    tags:
+    - fact
+    - mix
+    - construction-machinery
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: machinery.us-central-1
+      database: MACHINERY
+      schema: POWER
+      object: FACT_POWER_CAPACITY_TARGET
+      format: table
+  grain:
+    description: One row is one power capacity target observation for the combination of accounting period,
+      scenario, power technology, target year.
+    components:
+    - identity_id: accounting_period_identity
+      dataset_columns:
+      - accounting_period_id
+      description: Identifier of the accounting period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: power_technology_identity
+      dataset_columns:
+      - power_technology_id
+      description: Identifier of the power technology.
+    - identity_id: target_year_identity
+      dataset_columns:
+      - target_year_id
+      description: Identifier of the target year.
+  columns:
+  - name: accounting_period_id
+    description: Identifier of the accounting period.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: power_technology_id
+    description: Identifier of the power technology.
+  - name: target_year_id
+    description: Identifier of the target year.
   - name: target_gigawatts
-    description: Gigawatts in the long-term target.
-  - name: target_changed_flag
-    description: Whether today's capacity decision changes the gigawatt figure.
-    value_description: Y or N.
+    description: Target power capacity in gigawatts.
   entity_definitions:
-  - identity_id: gigawatt_target_identity
-    dataset_columns:
-    - gigawatt_target_id
-    entity_universe: complete
-  - identity_id: power_product_identity
-    dataset_columns:
-    - power_product_id
-    entity_universe: partial
-  - identity_id: capacity_horizon_identity
-    dataset_columns:
-    - capacity_horizon_id
-    entity_universe: partial
-- node_id: sf:machinery.power.fact_engine_capacity_ramp
-  descriptor:
-    qualified_name: machinery.power.fact_engine_capacity_ramp
-    display_name: Engine capacity ramp
-    description: Gigawatts being added for a power product, and whether those gigawatts sit inside the
-      2030 target or are additive.
-    tags:
-    - fact
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: machinery.us-central-1
-      database: MACHINERY
-      schema: POWER
-      object: FACT_ENGINE_CAPACITY_RAMP
-      format: table
-  grain:
-    description: One row is one power product, end market, and capacity horizon.
-    components:
-    - identity_id: engine_capacity_ramp_identity
-      dataset_columns:
-      - engine_capacity_ramp_id
-      description: One row is one power product, end market, and capacity horizon.
-  columns:
-  - name: engine_capacity_ramp_id
-    description: Identifier of the capacity-ramp row. This dataset holds the complete population of those
-      ramps.
-  - name: power_product_id
-    description: Power product being ramped, including the 10-megawatt reciprocating engine.
-  - name: end_market_id
-    description: End market the ramp serves.
-  - name: capacity_horizon_id
-    description: Year the capacity arrives.
-  - name: accounting_period_id
-    description: Accounting period the ramp was discussed.
-  - name: segment_id
-    description: Operating segment adding the capacity.
-  - name: ramp_gigawatts
-    description: Gigawatts in the ramp, including the 1.5 gigawatts a 10-megawatt program can approach.
-  - name: inclusion_versus_target
-    description: Whether the ramp is inside the 2030 target or additive to it.
-    value_description: inside or additive.
-  - name: capacity_online_units
-    description: Capacity already coming online, as distinct from gigawatts still planned.
-  - name: capacity_still_coming_online_flag
-    description: Whether more capacity is still being added.
-    value_description: Y or N.
-  entity_definitions:
-  - identity_id: engine_capacity_ramp_identity
-    dataset_columns:
-    - engine_capacity_ramp_id
-    entity_universe: complete
-  - identity_id: power_product_identity
-    dataset_columns:
-    - power_product_id
-    entity_universe: partial
-  - identity_id: end_market_identity
-    dataset_columns:
-    - end_market_id
-    entity_universe: partial
-  - identity_id: capacity_horizon_identity
-    dataset_columns:
-    - capacity_horizon_id
-    entity_universe: partial
   - identity_id: accounting_period_identity
     dataset_columns:
     - accounting_period_id
     entity_universe: partial
-  - identity_id: segment_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - segment_id
+    - scenario_id
     entity_universe: partial
-- node_id: sf:machinery.power.fact_capacity_timing
+  - identity_id: power_technology_identity
+    dataset_columns:
+    - power_technology_id
+    entity_universe: partial
+  - identity_id: target_year_identity
+    dataset_columns:
+    - target_year_id
+    entity_universe: partial
+- node_id: sf:machinery.power.fact_application_slot_quantity
   descriptor:
-    qualified_name: machinery.power.fact_capacity_timing
-    display_name: Capacity timing
-    description: Whether added large-engine capacity arrives smoothly through the horizon or in a lump,
-      and which end market drove the decision.
+    qualified_name: machinery.power.fact_application_slot_quantity
+    display_name: Application Slot Quantity
+    description: Open and booked power capacity slots by duty application.
+    synonyms: []
     tags:
     - fact
+    - mix
+    - construction-machinery
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: machinery.us-central-1
       database: MACHINERY
       schema: POWER
-      object: FACT_CAPACITY_TIMING
+      object: FACT_APPLICATION_SLOT_QUANTITY
       format: table
   grain:
-    description: One row is one power product, end market, and capacity horizon.
+    description: One row is one application slot quantity observation for the combination of accounting
+      period, scenario, power technology, power application, target year.
     components:
-    - identity_id: capacity_timing_identity
+    - identity_id: accounting_period_identity
       dataset_columns:
-      - capacity_timing_id
-      description: One row is one power product, end market, and capacity horizon.
-  columns:
-  - name: capacity_timing_id
-    description: Identifier of the capacity-timing row. This dataset holds the complete population of
-      those timings.
-  - name: power_product_id
-    description: Power product whose capacity timing is described.
-  - name: end_market_id
-    description: End market that drove the capacity, such as prime power or oil and gas.
-  - name: capacity_horizon_id
-    description: Horizon the capacity lands in.
-  - name: ramp_profile
-    description: How the capacity arrives.
-    value_description: smooth or lump.
-  - name: capacity_added_gigawatts
-    description: Gigawatts added for that end market.
-  entity_definitions:
-  - identity_id: capacity_timing_identity
-    dataset_columns:
-    - capacity_timing_id
-    entity_universe: complete
-  - identity_id: power_product_identity
-    dataset_columns:
-    - power_product_id
-    entity_universe: partial
-  - identity_id: end_market_identity
-    dataset_columns:
-    - end_market_id
-    entity_universe: partial
-  - identity_id: capacity_horizon_identity
-    dataset_columns:
-    - capacity_horizon_id
-    entity_universe: partial
-- node_id: sf:machinery.power.fact_application_slots
-  descriptor:
-    qualified_name: machinery.power.fact_application_slots
-    display_name: Application slots
-    description: Open order slots for a power product and application in a year, including whether gas
-      reciprocating capacity is sold out.
-    tags:
-    - fact
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: machinery.us-central-1
-      database: MACHINERY
-      schema: POWER
-      object: FACT_APPLICATION_SLOTS
-      format: table
-  grain:
-    description: One row is one power product, application, and capacity horizon.
-    components:
-    - identity_id: application_slot_identity
+      - accounting_period_id
+      description: Identifier of the accounting period.
+    - identity_id: scenario_identity
       dataset_columns:
-      - application_slot_id
-      description: One row is one power product, application, and capacity horizon.
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: power_technology_identity
+      dataset_columns:
+      - power_technology_id
+      description: Identifier of the power technology.
+    - identity_id: power_application_identity
+      dataset_columns:
+      - power_application_id
+      description: Identifier of the power application.
+    - identity_id: target_year_identity
+      dataset_columns:
+      - target_year_id
+      description: Identifier of the target year.
   columns:
-  - name: application_slot_id
-    description: Identifier of the application-slot row. This dataset holds the complete population of
-      those slots.
-  - name: power_product_id
-    description: Power product, including gas reciprocating engines.
+  - name: accounting_period_id
+    description: Identifier of the accounting period.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: power_technology_id
+    description: Identifier of the power technology.
   - name: power_application_id
-    description: Prime, flexible, or backup use.
-  - name: capacity_horizon_id
-    description: Year of the slots, including 2027 and 2028.
-  - name: open_slots
-    description: Slots still open for that application.
-  - name: sold_out_flag
-    description: Whether the product-year is sold out.
-    value_description: Y or N.
+    description: Identifier of the power application.
+  - name: target_year_id
+    description: Identifier of the target year.
+  - name: open_slot_count
+    description: Open capacity slots in slots.
+  - name: booked_slot_count
+    description: Booked capacity slots in slots.
   entity_definitions:
-  - identity_id: application_slot_identity
+  - identity_id: accounting_period_identity
     dataset_columns:
-    - application_slot_id
-    entity_universe: complete
-  - identity_id: power_product_identity
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
     dataset_columns:
-    - power_product_id
+    - scenario_id
+    entity_universe: partial
+  - identity_id: power_technology_identity
+    dataset_columns:
+    - power_technology_id
     entity_universe: partial
   - identity_id: power_application_identity
     dataset_columns:
     - power_application_id
     entity_universe: partial
-  - identity_id: capacity_horizon_identity
+  - identity_id: target_year_identity
     dataset_columns:
-    - capacity_horizon_id
+    - target_year_id
     entity_universe: partial
-- node_id: sf:machinery.power.fact_prime_backup_split
+- node_id: sf:machinery.power.fact_project_content_quantity
   descriptor:
-    qualified_name: machinery.power.fact_prime_backup_split
-    display_name: Prime versus backup split
-    description: The planned share of large-engine output that is prime versus backup in a horizon year,
-      including 2030.
+    qualified_name: machinery.power.fact_project_content_quantity
+    display_name: Project Content Quantity
+    description: Units of power technology on a customer project.
+    synonyms: []
     tags:
     - fact
+    - mix
+    - construction-machinery
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: machinery.us-central-1
       database: MACHINERY
       schema: POWER
-      object: FACT_PRIME_BACKUP_SPLIT
+      object: FACT_PROJECT_CONTENT_QUANTITY
       format: table
   grain:
-    description: One row is one power product, application, and capacity horizon.
+    description: One row is one project content quantity observation for the combination of accounting
+      period, scenario, project, power technology.
     components:
-    - identity_id: prime_backup_split_identity
+    - identity_id: accounting_period_identity
       dataset_columns:
-      - prime_backup_split_id
-      description: One row is one power product, application, and capacity horizon.
-  columns:
-  - name: prime_backup_split_id
-    description: Identifier of the prime-versus-backup row. This dataset holds the complete population
-      of those splits.
-  - name: power_product_id
-    description: Power product being split, including large reciprocating engines.
-  - name: power_application_id
-    description: Prime or backup application.
-  - name: capacity_horizon_id
-    description: Year of the split, including 2030.
-  - name: output_share
-    description: Share of output planned for that application.
-  entity_definitions:
-  - identity_id: prime_backup_split_identity
-    dataset_columns:
-    - prime_backup_split_id
-    entity_universe: complete
-  - identity_id: power_product_identity
-    dataset_columns:
-    - power_product_id
-    entity_universe: partial
-  - identity_id: power_application_identity
-    dataset_columns:
-    - power_application_id
-    entity_universe: partial
-  - identity_id: capacity_horizon_identity
-    dataset_columns:
-    - capacity_horizon_id
-    entity_universe: partial
-- node_id: sf:machinery.power.fact_redundancy_design
-  descriptor:
-    qualified_name: machinery.power.fact_redundancy_design
-    display_name: Redundancy design
-    description: Required diesel-standby redundancy by data-center workload and by how the site is connected.
-    tags:
-    - fact
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: machinery.us-central-1
-      database: MACHINERY
-      schema: POWER
-      object: FACT_REDUNDANCY_DESIGN
-      format: table
-  grain:
-    description: One row is one workload, site connection, and power product.
-    components:
-    - identity_id: redundancy_design_identity
+      - accounting_period_id
+      description: Identifier of the accounting period.
+    - identity_id: scenario_identity
       dataset_columns:
-      - redundancy_design_id
-      description: One row is one workload, site connection, and power product.
-  columns:
-  - name: redundancy_design_id
-    description: Identifier of the redundancy-design row. This dataset holds the complete population of
-      those designs.
-  - name: workload_id
-    description: Training or inference workload.
-  - name: site_connection_id
-    description: Behind-the-meter or grid-connected site.
-  - name: power_product_id
-    description: Power product providing redundancy, including diesel standby.
-  - name: end_market_id
-    description: End market, including data centers.
-  - name: redundancy_requirement
-    description: How much standby redundancy the design requires.
-  entity_definitions:
-  - identity_id: redundancy_design_identity
-    dataset_columns:
-    - redundancy_design_id
-    entity_universe: complete
-  - identity_id: workload_identity
-    dataset_columns:
-    - workload_id
-    entity_universe: partial
-  - identity_id: site_connection_identity
-    dataset_columns:
-    - site_connection_id
-    entity_universe: partial
-  - identity_id: power_product_identity
-    dataset_columns:
-    - power_product_id
-    entity_universe: partial
-  - identity_id: end_market_identity
-    dataset_columns:
-    - end_market_id
-    entity_universe: partial
-- node_id: sf:machinery.power.fact_aftermarket_service
-  descriptor:
-    qualified_name: machinery.power.fact_aftermarket_service
-    display_name: Aftermarket service
-    description: Power & Energy service and aftermarket revenue and its mix of the segment.
-    tags:
-    - fact
-    synonyms:
-    - aftermarket
-    - Power & Energy service
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: machinery.us-central-1
-      database: MACHINERY
-      schema: POWER
-      object: FACT_AFTERMARKET_SERVICE
-      format: table
-  grain:
-    description: One row is one segment, end market, and accounting period.
-    components:
-    - identity_id: aftermarket_service_identity
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: project_identity
       dataset_columns:
-      - aftermarket_service_id
-      description: One row is one segment, end market, and accounting period.
+      - project_id
+      description: Identifier of the project.
+    - identity_id: power_technology_identity
+      dataset_columns:
+      - power_technology_id
+      description: Identifier of the power technology.
   columns:
-  - name: aftermarket_service_id
-    description: Identifier of the aftermarket service row. This dataset holds the complete population
-      of those rows.
-  - name: segment_id
-    description: Operating segment. Power & Energy is the segment this service belongs to.
-  - name: end_market_id
-    description: End market of the installed equipment.
   - name: accounting_period_id
-    description: Accounting period of the service result.
-  - name: currency_id
-    description: Currency of the service amount.
-  - name: service_amount
-    description: Service and aftermarket revenue.
-  - name: current_mix_rate
-    description: Service share of the segment in the period.
-  entity_definitions:
-  - identity_id: aftermarket_service_identity
-    dataset_columns:
-    - aftermarket_service_id
-    entity_universe: complete
-  - identity_id: segment_identity
-    dataset_columns:
-    - segment_id
-    entity_universe: partial
-  - identity_id: end_market_identity
-    dataset_columns:
-    - end_market_id
-    entity_universe: partial
-  - identity_id: accounting_period_identity
-    dataset_columns:
-    - accounting_period_id
-    entity_universe: partial
-  - identity_id: currency_identity
-    dataset_columns:
-    - currency_id
-    entity_universe: partial
-- node_id: sf:machinery.power.fact_installed_base_entry
-  descriptor:
-    qualified_name: machinery.power.fact_installed_base_entry
-    display_name: Installed base entry
-    description: Backlog that will enter the installed base when deliveries stretch into later years,
-      including 2029 and beyond.
-    tags:
-    - fact
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: machinery.us-central-1
-      database: MACHINERY
-      schema: POWER
-      object: FACT_INSTALLED_BASE_ENTRY
-      format: table
-  grain:
-    description: One row is one power product, segment, and capacity horizon.
-    components:
-    - identity_id: installed_base_entry_identity
-      dataset_columns:
-      - installed_base_entry_id
-      description: One row is one power product, segment, and capacity horizon.
-  columns:
-  - name: installed_base_entry_id
-    description: Identifier of the installed-base entry row. This dataset holds the complete population
-      of those entries.
-  - name: segment_id
-    description: Operating segment of the future installed base.
-  - name: power_product_id
-    description: Power product that will be delivered into the base.
-  - name: capacity_horizon_id
-    description: Year the backlog is expected to deliver, including 2029.
-  - name: backlog_entering_base_amount
-    description: Backlog amount that enters the installed base in that year. This is not current dealer
-      inventory.
-  - name: delivery_year_label
-    description: Label of the delivery year the backlog stretches into.
-  entity_definitions:
-  - identity_id: installed_base_entry_identity
-    dataset_columns:
-    - installed_base_entry_id
-    entity_universe: complete
-  - identity_id: segment_identity
-    dataset_columns:
-    - segment_id
-    entity_universe: partial
-  - identity_id: power_product_identity
-    dataset_columns:
-    - power_product_id
-    entity_universe: partial
-  - identity_id: capacity_horizon_identity
-    dataset_columns:
-    - capacity_horizon_id
-    entity_universe: partial
-- node_id: sf:machinery.power.fact_project_content
-  descriptor:
-    qualified_name: machinery.power.fact_project_content
-    display_name: Project content
-    description: Battery storage and reciprocating-engine content on the same large project order.
-    tags:
-    - fact
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: machinery.us-central-1
-      database: MACHINERY
-      schema: POWER
-      object: FACT_PROJECT_CONTENT
-      format: table
-  grain:
-    description: One row is one project and power product.
-    components:
-    - identity_id: project_content_identity
-      dataset_columns:
-      - project_content_id
-      description: One row is one project and power product.
-  columns:
-  - name: project_content_id
-    description: Identifier of the project-content row. This dataset holds the complete population of
-      those rows.
+    description: Identifier of the accounting period.
+  - name: scenario_id
+    description: Identifier of the scenario.
   - name: project_id
-    description: Project the content belongs to.
-  - name: power_product_id
-    description: Battery storage or a reciprocating engine on the project.
-  - name: end_market_id
-    description: End market of the project.
-  - name: content_amount
-    description: Order amount of that product on the project.
-  - name: content_units
-    description: Units of that product on the project.
+    description: Identifier of the project.
+  - name: power_technology_id
+    description: Identifier of the power technology.
+  - name: project_content_units
+    description: Project equipment in units.
   entity_definitions:
-  - identity_id: project_content_identity
+  - identity_id: accounting_period_identity
     dataset_columns:
-    - project_content_id
-    entity_universe: complete
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
   - identity_id: project_identity
     dataset_columns:
     - project_id
     entity_universe: partial
-  - identity_id: power_product_identity
+  - identity_id: power_technology_identity
     dataset_columns:
-    - power_product_id
+    - power_technology_id
     entity_universe: partial
-  - identity_id: end_market_identity
-    dataset_columns:
-    - end_market_id
-    entity_universe: partial
-- node_id: sf:machinery.power.fact_utility_conversation
+- node_id: sf:machinery.power.fact_project_content_amount
   descriptor:
-    qualified_name: machinery.power.fact_utility_conversation
-    display_name: Utility conversation
-    description: A utility conversation about using turbines in plant applications, including whether
-      it has become an order.
+    qualified_name: machinery.power.fact_project_content_amount
+    display_name: Project Content Amount
+    description: Amount of power technology on a customer project.
+    synonyms: []
     tags:
     - fact
+    - mix
+    - construction-machinery
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: machinery.us-central-1
       database: MACHINERY
       schema: POWER
-      object: FACT_UTILITY_CONVERSATION
+      object: FACT_PROJECT_CONTENT_AMOUNT
       format: table
   grain:
-    description: One row is one customer, power product, and use case.
+    description: One row is one project content amount observation for the combination of accounting period,
+      scenario, project, power technology.
     components:
-    - identity_id: utility_conversation_identity
+    - identity_id: accounting_period_identity
       dataset_columns:
-      - utility_conversation_id
-      description: One row is one customer, power product, and use case.
-  columns:
-  - name: utility_conversation_id
-    description: Identifier of the utility conversation. This dataset holds the complete population of
-      those conversations.
-  - name: customer_id
-    description: Utility customer in the conversation.
-  - name: power_product_id
-    description: Turbine discussed for the plant application.
-  - name: end_market_id
-    description: Utility end market.
-  - name: use_case_code
-    description: Use case being discussed.
-    value_description: plant_application.
-  - name: order_timing_status
-    description: Whether the conversation has become an order, and the timing.
-    value_description: conversation, expected_order, or ordered.
-  entity_definitions:
-  - identity_id: utility_conversation_identity
-    dataset_columns:
-    - utility_conversation_id
-    entity_universe: complete
-  - identity_id: customer_identity
-    dataset_columns:
-    - customer_id
-    entity_universe: partial
-  - identity_id: power_product_identity
-    dataset_columns:
-    - power_product_id
-    entity_universe: partial
-  - identity_id: end_market_identity
-    dataset_columns:
-    - end_market_id
-    entity_universe: partial
-- node_id: sf:machinery.power.fact_site_energy_comparison
-  descriptor:
-    qualified_name: machinery.power.fact_site_energy_comparison
-    display_name: Site energy comparison
-    description: Engine waste heat used for data-center cooling, compared with combined-cycle efficiency.
-    tags:
-    - fact
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: machinery.us-central-1
-      database: MACHINERY
-      schema: POWER
-      object: FACT_SITE_ENERGY_COMPARISON
-      format: table
-  grain:
-    description: One row is one generation architecture and end market.
-    components:
-    - identity_id: site_energy_comparison_identity
+      - accounting_period_id
+      description: Identifier of the accounting period.
+    - identity_id: scenario_identity
       dataset_columns:
-      - site_energy_comparison_id
-      description: One row is one generation architecture and end market.
-  columns:
-  - name: site_energy_comparison_id
-    description: Identifier of the site-energy comparison. This dataset holds the complete population
-      of those comparisons.
-  - name: generation_architecture_id
-    description: Waste-heat cooling or combined cycle.
-  - name: end_market_id
-    description: End market, including data centers.
-  - name: power_product_id
-    description: Power product in the design.
-  - name: efficiency_index
-    description: Efficiency comparison index for the architecture. Higher is the more efficient design
-      in the comparison.
-  entity_definitions:
-  - identity_id: site_energy_comparison_identity
-    dataset_columns:
-    - site_energy_comparison_id
-    entity_universe: complete
-  - identity_id: generation_architecture_identity
-    dataset_columns:
-    - generation_architecture_id
-    entity_universe: partial
-  - identity_id: end_market_identity
-    dataset_columns:
-    - end_market_id
-    entity_universe: partial
-  - identity_id: power_product_identity
-    dataset_columns:
-    - power_product_id
-    entity_universe: partial
-- node_id: sf:machinery.power.fact_construction_driver_mix
-  descriptor:
-    qualified_name: machinery.power.fact_construction_driver_mix
-    display_name: Construction driver mix
-    description: Construction Industries demand split by driver, so replacement returning to normal can
-      be compared with data-center activity.
-    tags:
-    - fact
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: machinery.us-central-1
-      database: MACHINERY
-      schema: POWER
-      object: FACT_CONSTRUCTION_DRIVER_MIX
-      format: table
-  grain:
-    description: One row is one segment, demand driver, end market, and accounting period.
-    components:
-    - identity_id: construction_driver_mix_identity
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: project_identity
       dataset_columns:
-      - construction_driver_mix_id
-      description: One row is one segment, demand driver, end market, and accounting period.
+      - project_id
+      description: Identifier of the project.
+    - identity_id: power_technology_identity
+      dataset_columns:
+      - power_technology_id
+      description: Identifier of the power technology.
   columns:
-  - name: construction_driver_mix_id
-    description: Identifier of the construction driver mix row. This dataset holds the complete population
-      of those rows.
-  - name: segment_id
-    description: Operating segment. Construction Industries is the segment this mix explains.
-  - name: demand_driver_id
-    description: Replacement, data-center activity, or another construction driver.
-  - name: end_market_id
-    description: End market tied to the driver.
   - name: accounting_period_id
-    description: Accounting period of the mix.
-  - name: demand_amount
-    description: Demand amount attributed to the driver.
+    description: Identifier of the accounting period.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: project_id
+    description: Identifier of the project.
+  - name: power_technology_id
+    description: Identifier of the power technology.
+  - name: project_content_amount
+    description: Project equipment amount in dollars.
   entity_definitions:
-  - identity_id: construction_driver_mix_identity
-    dataset_columns:
-    - construction_driver_mix_id
-    entity_universe: complete
-  - identity_id: segment_identity
-    dataset_columns:
-    - segment_id
-    entity_universe: partial
-  - identity_id: demand_driver_identity
-    dataset_columns:
-    - demand_driver_id
-    entity_universe: partial
-  - identity_id: end_market_identity
-    dataset_columns:
-    - end_market_id
-    entity_universe: partial
   - identity_id: accounting_period_identity
     dataset_columns:
     - accounting_period_id
     entity_universe: partial
-- node_id: sf:machinery.power.fact_supplier_bottleneck
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: project_identity
+    dataset_columns:
+    - project_id
+    entity_universe: partial
+  - identity_id: power_technology_identity
+    dataset_columns:
+    - power_technology_id
+    entity_universe: partial
+- node_id: sf:machinery.power.fact_supplier_capacity_quantity
   descriptor:
-    qualified_name: machinery.power.fact_supplier_bottleneck
-    display_name: Supplier bottleneck
-    description: Where the tightest constraint sits as suppliers ramp power-generation capacity with Machinery Inc.
+    qualified_name: machinery.power.fact_supplier_capacity_quantity
+    display_name: Supplier Capacity Quantity
+    description: Supplier capacity for power components.
+    synonyms: []
     tags:
     - fact
+    - mix
+    - construction-machinery
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: machinery.us-central-1
       database: MACHINERY
       schema: POWER
-      object: FACT_SUPPLIER_BOTTLENECK
+      object: FACT_SUPPLIER_CAPACITY_QUANTITY
       format: table
   grain:
-    description: One row is one supplier, power product, and capacity horizon.
+    description: One row is one supplier capacity quantity observation for the combination of accounting
+      period, scenario, supplier, power technology, target year.
     components:
-    - identity_id: supplier_bottleneck_identity
+    - identity_id: accounting_period_identity
       dataset_columns:
-      - supplier_bottleneck_id
-      description: One row is one supplier, power product, and capacity horizon.
+      - accounting_period_id
+      description: Identifier of the accounting period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: supplier_identity
+      dataset_columns:
+      - supplier_id
+      description: Identifier of the supplier.
+    - identity_id: power_technology_identity
+      dataset_columns:
+      - power_technology_id
+      description: Identifier of the power technology.
+    - identity_id: target_year_identity
+      dataset_columns:
+      - target_year_id
+      description: Identifier of the target year.
   columns:
-  - name: supplier_bottleneck_id
-    description: Identifier of the supplier bottleneck row. This dataset holds the complete population
-      of those bottlenecks.
+  - name: accounting_period_id
+    description: Identifier of the accounting period.
+  - name: scenario_id
+    description: Identifier of the scenario.
   - name: supplier_id
-    description: Supplier that is the constraint.
-  - name: power_product_id
-    description: Power product the supplier feeds.
-  - name: capacity_horizon_id
-    description: Horizon in which the constraint binds.
-  - name: constraint_rank
-    description: Rank of the constraint. The tightest constraint is rank 1.
-  - name: constraint_note
-    description: What the supplier cannot ramp.
+    description: Identifier of the supplier.
+  - name: power_technology_id
+    description: Identifier of the power technology.
+  - name: target_year_id
+    description: Identifier of the target year.
+  - name: supplier_capacity_units
+    description: Supplier capacity in units.
+  - name: constrained_capacity_units
+    description: Constrained supplier capacity in units.
   entity_definitions:
-  - identity_id: supplier_bottleneck_identity
+  - identity_id: accounting_period_identity
     dataset_columns:
-    - supplier_bottleneck_id
-    entity_universe: complete
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
   - identity_id: supplier_identity
     dataset_columns:
     - supplier_id
     entity_universe: partial
-  - identity_id: power_product_identity
+  - identity_id: power_technology_identity
     dataset_columns:
-    - power_product_id
+    - power_technology_id
     entity_universe: partial
-  - identity_id: capacity_horizon_identity
+  - identity_id: target_year_identity
     dataset_columns:
-    - capacity_horizon_id
+    - target_year_id
     entity_universe: partial
-- node_id: sf:machinery.power.fact_data_center_demand
+- node_id: sf:machinery.power.fact_data_center_power_demand
   descriptor:
-    qualified_name: machinery.power.fact_data_center_demand
-    display_name: Data-center demand
-    description: The data-center demand outlook, including whether the view has changed as capacity is
-      added and whether a slowdown is in view.
+    qualified_name: machinery.power.fact_data_center_power_demand
+    display_name: Data Center Power Demand
+    description: Data-center power demand by target year and region.
+    synonyms: []
     tags:
     - fact
+    - mix
+    - construction-machinery
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: machinery.us-central-1
       database: MACHINERY
       schema: POWER
-      object: FACT_DATA_CENTER_DEMAND
+      object: FACT_DATA_CENTER_POWER_DEMAND
       format: table
   grain:
-    description: One row is one end market and capacity horizon.
+    description: One row is one data center power demand observation for the combination of accounting
+      period, scenario, end market, target year, region.
     components:
-    - identity_id: data_center_demand_identity
+    - identity_id: accounting_period_identity
       dataset_columns:
-      - data_center_demand_id
-      description: One row is one end market and capacity horizon.
+      - accounting_period_id
+      description: Identifier of the accounting period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: end_market_identity
+      dataset_columns:
+      - end_market_id
+      description: Identifier of the end market.
+    - identity_id: target_year_identity
+      dataset_columns:
+      - target_year_id
+      description: Identifier of the target year.
+    - identity_id: region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
   columns:
-  - name: data_center_demand_id
-    description: Identifier of the data-center demand row. This dataset holds the complete population
-      of those outlooks.
-  - name: end_market_id
-    description: Data-center end market.
-  - name: capacity_horizon_id
-    description: Horizon the outlook covers.
   - name: accounting_period_id
-    description: Accounting period of the outlook.
-  - name: demand_outlook_amount
-    description: Data-center demand outlook.
-  - name: demand_outlook_change
-    description: Change in the data-center view versus the prior outlook.
-    value_description: higher, unchanged, or lower.
-  - name: demand_slowdown_flag
-    description: Whether a slowdown in data-center demand is in the outlook.
-    value_description: Y or N.
+    description: Identifier of the accounting period.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: end_market_id
+    description: Identifier of the end market.
+  - name: target_year_id
+    description: Identifier of the target year.
+  - name: region_id
+    description: Identifier of the region.
+  - name: data_center_demand_gigawatts
+    description: Data-center power demand in gigawatts.
   entity_definitions:
-  - identity_id: data_center_demand_identity
-    dataset_columns:
-    - data_center_demand_id
-    entity_universe: complete
-  - identity_id: end_market_identity
-    dataset_columns:
-    - end_market_id
-    entity_universe: partial
-  - identity_id: capacity_horizon_identity
-    dataset_columns:
-    - capacity_horizon_id
-    entity_universe: partial
   - identity_id: accounting_period_identity
     dataset_columns:
     - accounting_period_id
     entity_universe: partial
-- node_id: sf:machinery.power.fact_overcapacity_risk
-  descriptor:
-    qualified_name: machinery.power.fact_overcapacity_risk
-    display_name: Overcapacity risk
-    description: Industry capacity being added against data-center demand, used to judge overcapacity
-      if demand slows.
-    tags:
-    - fact
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: machinery.us-central-1
-      database: MACHINERY
-      schema: POWER
-      object: FACT_OVERCAPACITY_RISK
-      format: table
-  grain:
-    description: One row is one end market and capacity horizon.
-    components:
-    - identity_id: overcapacity_risk_identity
-      dataset_columns:
-      - overcapacity_risk_id
-      description: One row is one end market and capacity horizon.
-  columns:
-  - name: overcapacity_risk_id
-    description: Identifier of the overcapacity-risk row. This dataset holds the complete population of
-      those rows.
-  - name: end_market_id
-    description: End market the industry capacity serves.
-  - name: capacity_horizon_id
-    description: Year the industry capacity arrives, including 2026 and 2027.
-  - name: industry_capacity_gigawatts
-    description: Gigawatts the industry, not only Machinery Inc, is adding.
-  - name: overcapacity_flag
-    description: Whether the added industry capacity exceeds the demand case.
-    value_description: Y or N.
-  entity_definitions:
-  - identity_id: overcapacity_risk_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - overcapacity_risk_id
-    entity_universe: complete
+    - scenario_id
+    entity_universe: partial
   - identity_id: end_market_identity
     dataset_columns:
     - end_market_id
     entity_universe: partial
-  - identity_id: capacity_horizon_identity
+  - identity_id: target_year_identity
     dataset_columns:
-    - capacity_horizon_id
+    - target_year_id
     entity_universe: partial
-- node_id: sf:machinery.power.fact_turbine_versus_recip
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:machinery.power.fact_aftermarket_service_revenue
   descriptor:
-    qualified_name: machinery.power.fact_turbine_versus_recip
-    display_name: Turbine versus reciprocating investment
-    description: Capacity investment allocated to large reciprocating engines rather than to more gas-turbine
-      investment.
+    qualified_name: machinery.power.fact_aftermarket_service_revenue
+    display_name: Aftermarket Service Revenue
+    description: Service and aftermarket revenue for power equipment.
+    synonyms: []
     tags:
     - fact
+    - mix
+    - construction-machinery
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: machinery.us-central-1
       database: MACHINERY
       schema: POWER
-      object: FACT_TURBINE_VERSUS_RECIP
+      object: FACT_AFTERMARKET_SERVICE_REVENUE
       format: table
   grain:
-    description: One row is one power product and capacity horizon.
+    description: One row is one aftermarket service revenue observation for the combination of accounting
+      period, scenario, cat reporting segment, end market.
     components:
-    - identity_id: turbine_versus_recip_identity
+    - identity_id: accounting_period_identity
       dataset_columns:
-      - turbine_versus_recip_id
-      description: One row is one power product and capacity horizon.
-  columns:
-  - name: turbine_versus_recip_id
-    description: Identifier of the allocation row. This dataset holds the complete population of those
-      allocations.
-  - name: power_product_id
-    description: Large reciprocating engines or gas turbines.
-  - name: capacity_horizon_id
-    description: Horizon the investment covers.
-  - name: capacity_investment_amount
-    description: Capacity investment directed to that product.
-  - name: allocation_choice
-    description: Whether this product is the one receiving the incremental capacity.
-    value_description: selected or not_selected.
-  entity_definitions:
-  - identity_id: turbine_versus_recip_identity
-    dataset_columns:
-    - turbine_versus_recip_id
-    entity_universe: complete
-  - identity_id: power_product_identity
-    dataset_columns:
-    - power_product_id
-    entity_universe: partial
-  - identity_id: capacity_horizon_identity
-    dataset_columns:
-    - capacity_horizon_id
-    entity_universe: partial
-- node_id: sf:machinery.power.fact_solar_lead_time
-  descriptor:
-    qualified_name: machinery.power.fact_solar_lead_time
-    display_name: Solar turbine lead time
-    description: Solar-turbine lead time and whether more turbine factory capacity is needed.
-    tags:
-    - fact
-    synonyms:
-    - Solar turbine
-    - lead time
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: machinery.us-central-1
-      database: MACHINERY
-      schema: POWER
-      object: FACT_SOLAR_LEAD_TIME
-      format: table
-  grain:
-    description: One row is one power product and accounting period.
-    components:
-    - identity_id: solar_lead_time_identity
+      - accounting_period_id
+      description: Identifier of the accounting period.
+    - identity_id: scenario_identity
       dataset_columns:
-      - solar_lead_time_id
-      description: One row is one power product and accounting period.
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: cat_reporting_segment_identity
+      dataset_columns:
+      - cat_reporting_segment_id
+      description: Identifier of the cat reporting segment.
+    - identity_id: end_market_identity
+      dataset_columns:
+      - end_market_id
+      description: Identifier of the end market.
   columns:
-  - name: solar_lead_time_id
-    description: Identifier of the Solar lead-time row. This dataset holds the complete population of
-      those rows.
-  - name: power_product_id
-    description: Solar turbine product.
   - name: accounting_period_id
-    description: Accounting period of the lead-time observation.
+    description: Identifier of the accounting period.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: cat_reporting_segment_id
+    description: Identifier of the cat reporting segment.
+  - name: end_market_id
+    description: Identifier of the end market.
+  - name: service_revenue_amount
+    description: Service and aftermarket revenue in dollars.
+  entity_definitions:
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: cat_reporting_segment_identity
+    dataset_columns:
+    - cat_reporting_segment_id
+    entity_universe: partial
+  - identity_id: end_market_identity
+    dataset_columns:
+    - end_market_id
+    entity_universe: partial
+- node_id: sf:machinery.power.fact_installed_base_entry_quantity
+  descriptor:
+    qualified_name: machinery.power.fact_installed_base_entry_quantity
+    display_name: Installed Base Entry Quantity
+    description: Backlog units scheduled to enter the installed base by target year.
+    synonyms: []
+    tags:
+    - fact
+    - mix
+    - construction-machinery
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: machinery.us-central-1
+      database: MACHINERY
+      schema: POWER
+      object: FACT_INSTALLED_BASE_ENTRY_QUANTITY
+      format: table
+  grain:
+    description: One row is one installed base entry quantity observation for the combination of accounting
+      period, scenario, power technology, cat reporting segment, target year.
+    components:
+    - identity_id: accounting_period_identity
+      dataset_columns:
+      - accounting_period_id
+      description: Identifier of the accounting period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: power_technology_identity
+      dataset_columns:
+      - power_technology_id
+      description: Identifier of the power technology.
+    - identity_id: cat_reporting_segment_identity
+      dataset_columns:
+      - cat_reporting_segment_id
+      description: Identifier of the cat reporting segment.
+    - identity_id: target_year_identity
+      dataset_columns:
+      - target_year_id
+      description: Identifier of the target year.
+  columns:
+  - name: accounting_period_id
+    description: Identifier of the accounting period.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: power_technology_id
+    description: Identifier of the power technology.
+  - name: cat_reporting_segment_id
+    description: Identifier of the cat reporting segment.
+  - name: target_year_id
+    description: Identifier of the target year.
+  - name: installed_base_entry_units
+    description: Units entering the installed base in units.
+  entity_definitions:
+  - identity_id: accounting_period_identity
+    dataset_columns:
+    - accounting_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: power_technology_identity
+    dataset_columns:
+    - power_technology_id
+    entity_universe: partial
+  - identity_id: cat_reporting_segment_identity
+    dataset_columns:
+    - cat_reporting_segment_id
+    entity_universe: partial
+  - identity_id: target_year_identity
+    dataset_columns:
+    - target_year_id
+    entity_universe: partial
+- node_id: sf:machinery.power.fact_power_lead_time
+  descriptor:
+    qualified_name: machinery.power.fact_power_lead_time
+    display_name: Power Lead Time
+    description: Lead time for power products, in months.
+    synonyms: []
+    tags:
+    - fact
+    - mix
+    - construction-machinery
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: machinery.us-central-1
+      database: MACHINERY
+      schema: POWER
+      object: FACT_POWER_LEAD_TIME
+      format: table
+  grain:
+    description: One row is one power lead time observation for the combination of accounting period,
+      scenario, power technology.
+    components:
+    - identity_id: accounting_period_identity
+      dataset_columns:
+      - accounting_period_id
+      description: Identifier of the accounting period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: power_technology_identity
+      dataset_columns:
+      - power_technology_id
+      description: Identifier of the power technology.
+  columns:
+  - name: accounting_period_id
+    description: Identifier of the accounting period.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: power_technology_id
+    description: Identifier of the power technology.
   - name: lead_time_months
-    description: Lead time of the Solar turbine, in months.
-  - name: additional_roofline_needed_flag
-    description: Whether more turbine factory capacity is needed.
-    value_description: Y or N.
+    description: Lead time in months.
   entity_definitions:
-  - identity_id: solar_lead_time_identity
-    dataset_columns:
-    - solar_lead_time_id
-    entity_universe: complete
-  - identity_id: power_product_identity
-    dataset_columns:
-    - power_product_id
-    entity_universe: partial
   - identity_id: accounting_period_identity
     dataset_columns:
     - accounting_period_id
     entity_universe: partial
-- node_id: sf:machinery.power.fact_backup_role_evolution
-  descriptor:
-    qualified_name: machinery.power.fact_backup_role_evolution
-    display_name: Backup role evolution
-    description: For prime-power designs, how the role of backup diesel versus battery storage changes
-      across horizon years.
-    tags:
-    - fact
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: machinery.us-central-1
-      database: MACHINERY
-      schema: POWER
-      object: FACT_BACKUP_ROLE_EVOLUTION
-      format: table
-  grain:
-    description: One row is one prime application, companion power product, and capacity horizon.
-    components:
-    - identity_id: backup_role_evolution_identity
-      dataset_columns:
-      - backup_role_evolution_id
-      description: One row is one prime application, companion power product, and capacity horizon.
-  columns:
-  - name: backup_role_evolution_id
-    description: Identifier of the backup-role row. This dataset holds the complete population of those
-      rows.
-  - name: power_application_id
-    description: Application the design serves. Prime is the application this evolution starts from.
-  - name: power_product_id
-    description: Backup diesel or battery storage in the design.
-  - name: capacity_horizon_id
-    description: Year the role is expected.
-  - name: end_market_id
-    description: End market of the design.
-  - name: role_share
-    description: Share of the backup role held by that product in the year.
-  entity_definitions:
-  - identity_id: backup_role_evolution_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - backup_role_evolution_id
-    entity_universe: complete
-  - identity_id: power_application_identity
-    dataset_columns:
-    - power_application_id
+    - scenario_id
     entity_universe: partial
-  - identity_id: power_product_identity
+  - identity_id: power_technology_identity
     dataset_columns:
-    - power_product_id
-    entity_universe: partial
-  - identity_id: capacity_horizon_identity
-    dataset_columns:
-    - capacity_horizon_id
-    entity_universe: partial
-  - identity_id: end_market_identity
-    dataset_columns:
-    - end_market_id
+    - power_technology_id
     entity_universe: partial

@@ -4,12 +4,12 @@ nodes:
   descriptor:
     qualified_name: chemical.time.dim_fiscal_quarter
     display_name: Fiscal Quarter
-    description: Chemical Inc fiscal quarter, the reporting period on the calls.
+    description: Fiscal quarter on the Chemical Inc earnings calendar.
     synonyms: []
     tags:
-    - dim
+    - dimension
     - end_market
-    - chemical
+    - specialty-chemicals
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
@@ -19,7 +19,7 @@ nodes:
       object: DIM_FISCAL_QUARTER
       format: table
   grain:
-    description: One row is one fiscal quarter.
+    description: One row is one fiscal quarter, identified by fiscal_quarter_id.
     components:
     - identity_id: fiscal_quarter_identity
       dataset_columns:
@@ -28,70 +28,64 @@ nodes:
   columns:
   - name: fiscal_quarter_id
     description: Identifier of the fiscal quarter.
-  - name: quarter_label
-    description: Label of the fiscal quarter.
-  - name: quarter_code
-    description: Quarter code.
-    value_description: 2025Q2, 2025Q3, 2025Q4, 2026Q1, 2026Q2, FY2026Q2, FY2026Q3, FY2026Q4, FY2027Q1
-  - name: guidance_horizon
-    description: Whether the quarter is the reported quarter or a guided horizon.
-    value_description: reported, guided_next, guided_half, guided_year
+  - name: fiscal_quarter_name
+    description: Name of the fiscal quarter.
+  - name: fiscal_quarter_code
+    description: Code of the fiscal quarter.
+    value_description: 2025Q2, 2025Q3, 2025Q4, 2026Q1, 2026Q2
   entity_definitions:
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: complete
-- node_id: sf:chemical.time.dim_calendar_day
+- node_id: sf:chemical.time.dim_scenario
   descriptor:
-    qualified_name: chemical.time.dim_calendar_day
-    display_name: Calendar Day
-    description: Calendar day used to place Chemical Inc demand, supply, and price on one time axis.
+    qualified_name: chemical.time.dim_scenario
+    display_name: Scenario
+    description: 'Reporting scenario: a reported result or a management guide for the same fiscal quarter.'
     synonyms: []
     tags:
-    - dim
+    - dimension
     - end_market
-    - chemical
+    - specialty-chemicals
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: chemical.us-east-1
       database: CHEMICAL
       schema: TIME
-      object: DIM_CALENDAR_DAY
+      object: DIM_SCENARIO
       format: table
   grain:
-    description: One row is one calendar day.
+    description: One row is one scenario, identified by scenario_id.
     components:
-    - identity_id: calendar_day_identity
+    - identity_id: scenario_identity
       dataset_columns:
-      - calendar_day_id
-      description: Identifier of the calendar day.
+      - scenario_id
+      description: Identifier of the scenario.
   columns:
-  - name: calendar_day_id
-    description: Identifier of the calendar day.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter that contains the day.
-  - name: calendar_date
-    description: Civil date of the day.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: scenario_name
+    description: Name of the scenario.
+  - name: scenario_code
+    description: Code of the scenario.
+    value_description: reported, guide
   entity_definitions:
-  - identity_id: calendar_day_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - calendar_day_id
+    - scenario_id
     entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
 - node_id: sf:chemical.geography.dim_region
   descriptor:
     qualified_name: chemical.geography.dim_region
     display_name: Region
-    description: Commercial region in which Chemical Inc sells.
+    description: Geographic region for Chemical Inc activity.
     synonyms: []
     tags:
-    - dim
+    - dimension
     - end_market
-    - chemical
+    - specialty-chemicals
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
@@ -101,7 +95,7 @@ nodes:
       object: DIM_REGION
       format: table
   grain:
-    description: One row is one region.
+    description: One row is one region, identified by region_id.
     components:
     - identity_id: region_identity
       dataset_columns:
@@ -113,7 +107,7 @@ nodes:
   - name: region_name
     description: Name of the region.
   - name: region_code
-    description: Region code.
+    description: Code of the region.
     value_description: north_america, emea, asia_pacific, latin_america, middle_east
   entity_definitions:
   - identity_id: region_identity
@@ -124,12 +118,12 @@ nodes:
   descriptor:
     qualified_name: chemical.geography.dim_country
     display_name: Country
-    description: Selling country for Chemical Inc, including the United States and EMEA markets.
+    description: Country inside a region.
     synonyms: []
     tags:
-    - dim
+    - dimension
     - end_market
-    - chemical
+    - specialty-chemicals
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
@@ -139,7 +133,7 @@ nodes:
       object: DIM_COUNTRY
       format: table
   grain:
-    description: One row is one country.
+    description: One row is one country, identified by country_id.
     components:
     - identity_id: country_identity
       dataset_columns:
@@ -148,13 +142,13 @@ nodes:
   columns:
   - name: country_id
     description: Identifier of the country.
-  - name: region_id
-    description: Region that contains the country.
   - name: country_name
     description: Name of the country.
   - name: country_code
-    description: Country code.
+    description: Code of the country.
     value_description: united_states, canada, mexico, united_kingdom, germany, china, india, brazil
+  - name: region_id
+    description: Identifier of the region.
   entity_definitions:
   - identity_id: country_identity
     dataset_columns:
@@ -164,325 +158,403 @@ nodes:
     dataset_columns:
     - region_id
     entity_universe: partial
-- node_id: sf:chemical.market.dim_business_segment
+- node_id: sf:chemical.market.dim_shw_reporting_segment
   descriptor:
-    qualified_name: chemical.market.dim_business_segment
-    display_name: Business Segment
-    description: Reporting segment Chemical Inc manages.
+    qualified_name: chemical.market.dim_shw_reporting_segment
+    display_name: SHW Reporting Segment
+    description: Sherwin-Williams reporting segment for Chemical Inc.
     synonyms: []
     tags:
-    - dim
+    - dimension
     - end_market
-    - chemical
+    - specialty-chemicals
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: chemical.us-east-1
       database: CHEMICAL
       schema: MARKET
-      object: DIM_BUSINESS_SEGMENT
+      object: DIM_SHW_REPORTING_SEGMENT
       format: table
   grain:
-    description: One row is one business segment.
+    description: One row is one shw reporting segment, identified by shw_reporting_segment_id.
     components:
-    - identity_id: business_segment_identity
+    - identity_id: shw_reporting_segment_identity
       dataset_columns:
-      - business_segment_id
-      description: Identifier of the business segment.
+      - shw_reporting_segment_id
+      description: Identifier of the shw reporting segment.
   columns:
-  - name: business_segment_id
-    description: Identifier of the business segment.
-  - name: segment_name
-    description: Name of the segment.
-  - name: segment_code
-    description: Segment code.
-    value_description: paint_stores, consumer_brands, performance_coatings, institutional, specialty,
-      global_water, light_water, heavy_water, pest_elimination, life_sciences
+  - name: shw_reporting_segment_id
+    description: Identifier of the shw reporting segment.
+  - name: shw_reporting_segment_name
+    description: Name of the shw reporting segment.
+  - name: shw_reporting_segment_code
+    description: Code of the shw reporting segment.
+    value_description: paint_stores, consumer_brands, performance_coatings
   entity_definitions:
-  - identity_id: business_segment_identity
+  - identity_id: shw_reporting_segment_identity
     dataset_columns:
-    - business_segment_id
+    - shw_reporting_segment_id
     entity_universe: complete
-- node_id: sf:chemical.market.dim_end_market
+- node_id: sf:chemical.market.dim_ecl_reporting_segment
   descriptor:
-    qualified_name: chemical.market.dim_end_market
-    display_name: End Market
-    description: End market Chemical Inc sells into.
+    qualified_name: chemical.market.dim_ecl_reporting_segment
+    display_name: ECL Reporting Segment
+    description: Ecolab reporting segment for Chemical Inc.
     synonyms: []
     tags:
-    - dim
+    - dimension
     - end_market
-    - chemical
+    - specialty-chemicals
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: chemical.us-east-1
       database: CHEMICAL
       schema: MARKET
-      object: DIM_END_MARKET
+      object: DIM_ECL_REPORTING_SEGMENT
       format: table
   grain:
-    description: One row is one end market.
+    description: One row is one ecl reporting segment, identified by ecl_reporting_segment_id.
     components:
-    - identity_id: end_market_identity
+    - identity_id: ecl_reporting_segment_identity
       dataset_columns:
-      - end_market_id
-      description: Identifier of the end market.
+      - ecl_reporting_segment_id
+      description: Identifier of the ecl reporting segment.
   columns:
-  - name: end_market_id
-    description: Identifier of the end market.
-  - name: business_segment_id
-    description: Business segment.
-  - name: end_market_name
-    description: Name of the end market.
-  - name: end_market_code
-    description: End market code.
-    value_description: residential_repaint, refinish, auto_refinish, general_industrial, coil, packaging,
-      diy, new_residential, new_commercial, emea_decorative, us_architectural, us_industrial, paper, basic_industries,
-      food_and_beverage, data_center, transportation, green_energy, mining, semiconductors, high_tech
+  - name: ecl_reporting_segment_id
+    description: Identifier of the ecl reporting segment.
+  - name: ecl_reporting_segment_name
+    description: Name of the ecl reporting segment.
+  - name: ecl_reporting_segment_code
+    description: Code of the ecl reporting segment.
+    value_description: global_industrial, global_institutional_and_specialty, global_pest_elimination,
+      other
   entity_definitions:
-  - identity_id: end_market_identity
+  - identity_id: ecl_reporting_segment_identity
     dataset_columns:
-    - end_market_id
+    - ecl_reporting_segment_id
     entity_universe: complete
-  - identity_id: business_segment_identity
-    dataset_columns:
-    - business_segment_id
-    entity_universe: partial
-- node_id: sf:chemical.market.dim_subsegment
+- node_id: sf:chemical.market.dim_shw_end_market
   descriptor:
-    qualified_name: chemical.market.dim_subsegment
-    display_name: Subsegment
-    description: Finer Chemical Inc subsegment inside a segment, including Paint Stores submarkets.
+    qualified_name: chemical.market.dim_shw_end_market
+    display_name: SHW End Market
+    description: Sherwin-Williams coatings end market.
     synonyms: []
     tags:
-    - dim
+    - dimension
     - end_market
-    - chemical
+    - specialty-chemicals
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: chemical.us-east-1
       database: CHEMICAL
       schema: MARKET
-      object: DIM_SUBSEGMENT
+      object: DIM_SHW_END_MARKET
       format: table
   grain:
-    description: One row is one subsegment.
+    description: One row is one shw end market, identified by shw_end_market_id.
     components:
-    - identity_id: subsegment_identity
+    - identity_id: shw_end_market_identity
       dataset_columns:
-      - subsegment_id
-      description: Identifier of the subsegment.
+      - shw_end_market_id
+      description: Identifier of the shw end market.
   columns:
-  - name: subsegment_id
-    description: Identifier of the subsegment.
-  - name: business_segment_id
-    description: Business segment.
-  - name: end_market_id
-    description: End market.
-  - name: subsegment_name
-    description: Name of the subsegment.
-  - name: subsegment_code
-    description: Subsegment code.
-    value_description: residential, commercial, property_maintenance, new_residential, new_commercial,
-      diy, protective, marine, coil, packaging
-  - name: confidence_code
-    description: Tone heard from that submarket.
-    value_description: confident, cautious, mixed
+  - name: shw_end_market_id
+    description: Identifier of the shw end market.
+  - name: shw_end_market_name
+    description: Name of the shw end market.
+  - name: shw_end_market_code
+    description: Code of the shw end market.
+    value_description: residential_repaint, new_residential, new_commercial, commercial_repaint, automotive_refinish,
+      general_industrial, coil, packaging, protective_and_marine
   entity_definitions:
-  - identity_id: subsegment_identity
+  - identity_id: shw_end_market_identity
     dataset_columns:
-    - subsegment_id
+    - shw_end_market_id
     entity_universe: complete
-  - identity_id: business_segment_identity
-    dataset_columns:
-    - business_segment_id
-    entity_universe: partial
-  - identity_id: end_market_identity
-    dataset_columns:
-    - end_market_id
-    entity_universe: partial
-- node_id: sf:chemical.market.dim_vertical
+- node_id: sf:chemical.market.dim_ecl_business_unit
   descriptor:
-    qualified_name: chemical.market.dim_vertical
-    display_name: Vertical
-    description: Vertical inside water and institutional demand for Chemical Inc.
+    qualified_name: chemical.market.dim_ecl_business_unit
+    display_name: ECL Business Unit
+    description: Ecolab business unit below the reporting segment.
     synonyms: []
     tags:
-    - dim
+    - dimension
     - end_market
-    - chemical
+    - specialty-chemicals
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: chemical.us-east-1
       database: CHEMICAL
       schema: MARKET
-      object: DIM_VERTICAL
+      object: DIM_ECL_BUSINESS_UNIT
       format: table
   grain:
-    description: One row is one vertical.
+    description: One row is one ecl business unit, identified by ecl_business_unit_id.
     components:
-    - identity_id: vertical_identity
+    - identity_id: ecl_business_unit_identity
       dataset_columns:
-      - vertical_id
-      description: Identifier of the vertical.
+      - ecl_business_unit_id
+      description: Identifier of the ecl business unit.
   columns:
-  - name: vertical_id
-    description: Identifier of the vertical.
-  - name: vertical_name
-    description: Name of the vertical.
-  - name: vertical_code
-    description: Vertical code.
-    value_description: transportation, green_energy, food_and_beverage, paper, mining, semiconductors,
-      data_center, heavy_industry
+  - name: ecl_business_unit_id
+    description: Identifier of the ecl business unit.
+  - name: ecl_business_unit_name
+    description: Name of the ecl business unit.
+  - name: ecl_business_unit_code
+    description: Code of the ecl business unit.
+    value_description: water, food_and_beverage, paper, downstream, institutional, specialty, pest, life_sciences,
+      high_tech
   entity_definitions:
-  - identity_id: vertical_identity
+  - identity_id: ecl_business_unit_identity
     dataset_columns:
-    - vertical_id
+    - ecl_business_unit_id
     entity_universe: complete
-- node_id: sf:chemical.customer.dim_customer
+- node_id: sf:chemical.customer.dim_customer_type
   descriptor:
-    qualified_name: chemical.customer.dim_customer
-    display_name: Customer
-    description: Customer Chemical Inc prices and serves.
+    qualified_name: chemical.customer.dim_customer_type
+    display_name: Customer Type
+    description: Type of customer served.
     synonyms: []
     tags:
-    - dim
+    - dimension
     - end_market
-    - chemical
+    - specialty-chemicals
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: chemical.us-east-1
       database: CHEMICAL
       schema: CUSTOMER
-      object: DIM_CUSTOMER
+      object: DIM_CUSTOMER_TYPE
       format: table
   grain:
-    description: One row is one customer.
+    description: One row is one customer type, identified by customer_type_id.
     components:
-    - identity_id: customer_identity
+    - identity_id: customer_type_identity
       dataset_columns:
-      - customer_id
-      description: Identifier of the customer.
+      - customer_type_id
+      description: Identifier of the customer type.
   columns:
-  - name: customer_id
-    description: Identifier of the customer.
-  - name: country_id
-    description: Country.
-  - name: customer_tier_id
-    description: Tier of the customer.
-  - name: channel_id
-    description: Channel.
-  - name: customer_name
-    description: Name of the customer.
-  - name: customer_code
-    description: Customer code used for realization tracking.
+  - name: customer_type_id
+    description: Identifier of the customer type.
+  - name: customer_type_name
+    description: Name of the customer type.
+  - name: customer_type_code
+    description: Code of the customer type.
+    value_description: professional_contractor, homeowner, industrial_operator, hospitality_operator,
+      healthcare_operator, food_processor, municipal_water_operator
   entity_definitions:
-  - identity_id: customer_identity
+  - identity_id: customer_type_identity
     dataset_columns:
-    - customer_id
+    - customer_type_id
     entity_universe: complete
-  - identity_id: country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
-  - identity_id: customer_tier_identity
-    dataset_columns:
-    - customer_tier_id
-    entity_universe: partial
-  - identity_id: channel_identity
-    dataset_columns:
-    - channel_id
-    entity_universe: partial
-- node_id: sf:chemical.customer.dim_customer_tier
+- node_id: sf:chemical.channel.dim_shw_channel
   descriptor:
-    qualified_name: chemical.customer.dim_customer_tier
-    display_name: Customer Tier
-    description: Size tier Chemical Inc uses for rollout and surcharge coverage.
+    qualified_name: chemical.channel.dim_shw_channel
+    display_name: SHW Channel
+    description: Channel for Sherwin-Williams coatings.
     synonyms: []
     tags:
-    - dim
+    - dimension
     - end_market
-    - chemical
+    - specialty-chemicals
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: chemical.us-east-1
       database: CHEMICAL
-      schema: CUSTOMER
-      object: DIM_CUSTOMER_TIER
+      schema: CHANNEL
+      object: DIM_SHW_CHANNEL
       format: table
   grain:
-    description: One row is one customer tier.
+    description: One row is one shw channel, identified by shw_channel_id.
     components:
-    - identity_id: customer_tier_identity
+    - identity_id: shw_channel_identity
       dataset_columns:
-      - customer_tier_id
-      description: Identifier of the customer tier.
+      - shw_channel_id
+      description: Identifier of the shw channel.
   columns:
-  - name: customer_tier_id
-    description: Identifier of the customer tier.
-  - name: tier_name
-    description: Name of the tier.
-  - name: tier_code
-    description: Tier code.
-    value_description: strategic, large, mid, small
+  - name: shw_channel_id
+    description: Identifier of the shw channel.
+  - name: shw_channel_name
+    description: Name of the shw channel.
+  - name: shw_channel_code
+    description: Code of the shw channel.
+    value_description: company_store, home_center, independent_retailer, direct_to_contractor
   entity_definitions:
-  - identity_id: customer_tier_identity
+  - identity_id: shw_channel_identity
     dataset_columns:
-    - customer_tier_id
+    - shw_channel_id
     entity_universe: complete
-- node_id: sf:chemical.customer.dim_channel
+- node_id: sf:chemical.channel.dim_ecl_channel
   descriptor:
-    qualified_name: chemical.customer.dim_channel
-    display_name: Channel
-    description: Route Chemical Inc uses to reach a buyer.
+    qualified_name: chemical.channel.dim_ecl_channel
+    display_name: ECL Channel
+    description: Channel for Ecolab service and products.
     synonyms: []
     tags:
-    - dim
+    - dimension
     - end_market
-    - chemical
+    - specialty-chemicals
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: chemical.us-east-1
       database: CHEMICAL
-      schema: CUSTOMER
-      object: DIM_CHANNEL
+      schema: CHANNEL
+      object: DIM_ECL_CHANNEL
       format: table
   grain:
-    description: One row is one channel.
+    description: One row is one ecl channel, identified by ecl_channel_id.
     components:
-    - identity_id: channel_identity
+    - identity_id: ecl_channel_identity
       dataset_columns:
-      - channel_id
-      description: Identifier of the channel.
+      - ecl_channel_id
+      description: Identifier of the ecl channel.
   columns:
-  - name: channel_id
-    description: Identifier of the channel.
-  - name: channel_name
-    description: Name of the channel.
-  - name: channel_code
-    description: Channel code.
-    value_description: company_store, distributor, retail, direct, digital
+  - name: ecl_channel_id
+    description: Identifier of the ecl channel.
+  - name: ecl_channel_name
+    description: Name of the ecl channel.
+  - name: ecl_channel_code
+    description: Code of the ecl channel.
+    value_description: direct_service, distributor, digital
   entity_definitions:
-  - identity_id: channel_identity
+  - identity_id: ecl_channel_identity
     dataset_columns:
-    - channel_id
+    - ecl_channel_id
+    entity_universe: complete
+- node_id: sf:chemical.product.dim_coatings_product
+  descriptor:
+    qualified_name: chemical.product.dim_coatings_product
+    display_name: Coatings Product
+    description: Sherwin-Williams coatings product family.
+    synonyms: []
+    tags:
+    - dimension
+    - end_market
+    - specialty-chemicals
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: chemical.us-east-1
+      database: CHEMICAL
+      schema: PRODUCT
+      object: DIM_COATINGS_PRODUCT
+      format: table
+  grain:
+    description: One row is one coatings product, identified by coatings_product_id.
+    components:
+    - identity_id: coatings_product_identity
+      dataset_columns:
+      - coatings_product_id
+      description: Identifier of the coatings product.
+  columns:
+  - name: coatings_product_id
+    description: Identifier of the coatings product.
+  - name: coatings_product_name
+    description: Name of the coatings product.
+  - name: coatings_product_code
+    description: Code of the coatings product.
+    value_description: architectural_coatings, industrial_coatings, automotive_refinish_coatings, packaging_coatings,
+      protective_coatings, marine_coatings
+  entity_definitions:
+  - identity_id: coatings_product_identity
+    dataset_columns:
+    - coatings_product_id
+    entity_universe: complete
+- node_id: sf:chemical.service.dim_ecl_service_type
+  descriptor:
+    qualified_name: chemical.service.dim_ecl_service_type
+    display_name: ECL Service Type
+    description: Type of Ecolab site service.
+    synonyms: []
+    tags:
+    - dimension
+    - end_market
+    - specialty-chemicals
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: chemical.us-east-1
+      database: CHEMICAL
+      schema: SERVICE
+      object: DIM_ECL_SERVICE_TYPE
+      format: table
+  grain:
+    description: One row is one ecl service type, identified by ecl_service_type_id.
+    components:
+    - identity_id: ecl_service_type_identity
+      dataset_columns:
+      - ecl_service_type_id
+      description: Identifier of the ecl service type.
+  columns:
+  - name: ecl_service_type_id
+    description: Identifier of the ecl service type.
+  - name: ecl_service_type_name
+    description: Name of the ecl service type.
+  - name: ecl_service_type_code
+    description: Code of the ecl service type.
+    value_description: water_treatment, cooling_water, boiler_water, cleaning_and_sanitizing, pest_elimination,
+      food_safety, direct_to_chip_cooling
+  entity_definitions:
+  - identity_id: ecl_service_type_identity
+    dataset_columns:
+    - ecl_service_type_id
+    entity_universe: complete
+- node_id: sf:chemical.site.dim_site_type
+  descriptor:
+    qualified_name: chemical.site.dim_site_type
+    display_name: Site Type
+    description: Type of customer site served or observed.
+    synonyms: []
+    tags:
+    - dimension
+    - end_market
+    - specialty-chemicals
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: chemical.us-east-1
+      database: CHEMICAL
+      schema: SITE
+      object: DIM_SITE_TYPE
+      format: table
+  grain:
+    description: One row is one site type, identified by site_type_id.
+    components:
+    - identity_id: site_type_identity
+      dataset_columns:
+      - site_type_id
+      description: Identifier of the site type.
+  columns:
+  - name: site_type_id
+    description: Identifier of the site type.
+  - name: site_type_name
+    description: Name of the site type.
+  - name: site_type_code
+    description: Code of the site type.
+    value_description: hotel, restaurant, hospital, food_plant, paper_mill, semiconductor_plant, data_center,
+      commercial_building, industrial_plant
+  entity_definitions:
+  - identity_id: site_type_identity
+    dataset_columns:
+    - site_type_id
     entity_universe: complete
 - node_id: sf:chemical.customer.dim_competitor
   descriptor:
     qualified_name: chemical.customer.dim_competitor
     display_name: Competitor
-    description: Competitor Chemical Inc measures share against.
+    description: Competitor class in coatings or site service.
     synonyms: []
     tags:
-    - dim
+    - dimension
     - end_market
-    - chemical
+    - specialty-chemicals
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
@@ -492,7 +564,7 @@ nodes:
       object: DIM_COMPETITOR
       format: table
   grain:
-    description: One row is one competitor.
+    description: One row is one competitor, identified by competitor_id.
     components:
     - identity_id: competitor_identity
       dataset_columns:
@@ -504,110 +576,33 @@ nodes:
   - name: competitor_name
     description: Name of the competitor.
   - name: competitor_code
-    description: Competitor code.
-    value_description: national_coatings, regional_paint, water_equipment, pest_major
+    description: Code of the competitor.
+    value_description: national_coatings, regional_coatings, water_equipment, pest_service_competitor
   entity_definitions:
   - identity_id: competitor_identity
     dataset_columns:
     - competitor_id
     entity_universe: complete
-- node_id: sf:chemical.customer.dim_demand_driver
+- node_id: sf:chemical.market.dim_weather_regime
   descriptor:
-    qualified_name: chemical.customer.dim_demand_driver
-    display_name: Demand Driver
-    description: Driver Chemical Inc cites for a volume change.
-    synonyms: []
-    tags:
-    - dim
-    - end_market
-    - chemical
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: chemical.us-east-1
-      database: CHEMICAL
-      schema: CUSTOMER
-      object: DIM_DEMAND_DRIVER
-      format: table
-  grain:
-    description: One row is one demand driver.
-    components:
-    - identity_id: demand_driver_identity
-      dataset_columns:
-      - demand_driver_id
-      description: Identifier of the demand driver.
-  columns:
-  - name: demand_driver_id
-    description: Identifier of the demand driver.
-  - name: driver_name
-    description: Name of the driver.
-  - name: driver_code
-    description: Driver code.
-    value_description: price, share, traffic, weather, mortgage, completion, regulatory, new_capacity,
-      cross_sell, mill_closure
-  entity_definitions:
-  - identity_id: demand_driver_identity
-    dataset_columns:
-    - demand_driver_id
-    entity_universe: complete
-- node_id: sf:chemical.customer.dim_order_pattern
-  descriptor:
-    qualified_name: chemical.customer.dim_order_pattern
-    display_name: Order Pattern
-    description: How a Chemical Inc customer places production orders.
-    synonyms: []
-    tags:
-    - dim
-    - end_market
-    - chemical
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: chemical.us-east-1
-      database: CHEMICAL
-      schema: CUSTOMER
-      object: DIM_ORDER_PATTERN
-      format: table
-  grain:
-    description: One row is one order pattern.
-    components:
-    - identity_id: order_pattern_identity
-      dataset_columns:
-      - order_pattern_id
-      description: Identifier of the order pattern.
-  columns:
-  - name: order_pattern_id
-    description: Identifier of the order pattern.
-  - name: pattern_name
-    description: Name of the pattern.
-  - name: pattern_code
-    description: Pattern code.
-    value_description: locked_schedule, short_cycle, prebuy, steady
-  entity_definitions:
-  - identity_id: order_pattern_identity
-    dataset_columns:
-    - order_pattern_id
-    entity_universe: complete
-- node_id: sf:chemical.customer.dim_weather_regime
-  descriptor:
-    qualified_name: chemical.customer.dim_weather_regime
+    qualified_name: chemical.market.dim_weather_regime
     display_name: Weather Regime
-    description: Weather regime affecting Chemical Inc exterior demand.
+    description: Weather regime affecting coatings demand.
     synonyms: []
     tags:
-    - dim
+    - dimension
     - end_market
-    - chemical
+    - specialty-chemicals
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: chemical.us-east-1
       database: CHEMICAL
-      schema: CUSTOMER
+      schema: MARKET
       object: DIM_WEATHER_REGIME
       format: table
   grain:
-    description: One row is one weather regime.
+    description: One row is one weather regime, identified by weather_regime_id.
     components:
     - identity_id: weather_regime_identity
       dataset_columns:
@@ -616,769 +611,675 @@ nodes:
   columns:
   - name: weather_regime_id
     description: Identifier of the weather regime.
-  - name: regime_name
-    description: Name of the regime.
-  - name: regime_code
-    description: Regime code.
+  - name: weather_regime_name
+    description: Name of the weather regime.
+  - name: weather_regime_code
+    description: Code of the weather regime.
     value_description: severe_winter, normal, mild
   entity_definitions:
   - identity_id: weather_regime_identity
     dataset_columns:
     - weather_regime_id
     entity_universe: complete
-- node_id: sf:chemical.customer.dim_macro_case
+- node_id: sf:chemical.demand.fact_shw_volume_quantity
   descriptor:
-    qualified_name: chemical.customer.dim_macro_case
-    display_name: Macro Case
-    description: Demand case embedded in a Chemical Inc guide.
-    synonyms: []
-    tags:
-    - dim
-    - end_market
-    - chemical
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: chemical.us-east-1
-      database: CHEMICAL
-      schema: CUSTOMER
-      object: DIM_MACRO_CASE
-      format: table
-  grain:
-    description: One row is one macro case.
-    components:
-    - identity_id: macro_case_identity
-      dataset_columns:
-      - macro_case_id
-      description: Identifier of the macro case.
-  columns:
-  - name: macro_case_id
-    description: Identifier of the macro case.
-  - name: case_name
-    description: Name of the case.
-  - name: case_code
-    description: Case code.
-    value_description: stable, modest_improvement, cautious, lower_for_longer, no_recovery
-  entity_definitions:
-  - identity_id: macro_case_identity
-    dataset_columns:
-    - macro_case_id
-    entity_universe: complete
-- node_id: sf:chemical.customer.dim_site_status
-  descriptor:
-    qualified_name: chemical.customer.dim_site_status
-    display_name: Site Status
-    description: Whether a customer site Chemical Inc serves is open.
-    synonyms: []
-    tags:
-    - dim
-    - end_market
-    - chemical
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: chemical.us-east-1
-      database: CHEMICAL
-      schema: CUSTOMER
-      object: DIM_SITE_STATUS
-      format: table
-  grain:
-    description: One row is one site status.
-    components:
-    - identity_id: site_status_identity
-      dataset_columns:
-      - site_status_id
-      description: Identifier of the site status.
-  columns:
-  - name: site_status_id
-    description: Identifier of the site status.
-  - name: status_name
-    description: Name of the status.
-  - name: status_code
-    description: Status code.
-    value_description: open, closed, restarted
-  entity_definitions:
-  - identity_id: site_status_identity
-    dataset_columns:
-    - site_status_id
-    entity_universe: complete
-- node_id: sf:chemical.customer.dim_cohort
-  descriptor:
-    qualified_name: chemical.customer.dim_cohort
-    display_name: Cohort
-    description: Customer cohort in a Chemical Inc program rollout.
-    synonyms: []
-    tags:
-    - dim
-    - end_market
-    - chemical
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: chemical.us-east-1
-      database: CHEMICAL
-      schema: CUSTOMER
-      object: DIM_COHORT
-      format: table
-  grain:
-    description: One row is one cohort.
-    components:
-    - identity_id: cohort_identity
-      dataset_columns:
-      - cohort_id
-      description: Identifier of the cohort.
-  columns:
-  - name: cohort_id
-    description: Identifier of the cohort.
-  - name: cohort_name
-    description: Name of the cohort.
-  - name: cohort_code
-    description: Cohort code.
-    value_description: first_wave, next_cohort, remaining
-  entity_definitions:
-  - identity_id: cohort_identity
-    dataset_columns:
-    - cohort_id
-    entity_universe: complete
-- node_id: sf:chemical.program.dim_program
-  descriptor:
-    qualified_name: chemical.program.dim_program
-    display_name: Program
-    description: Commercial program Chemical Inc runs, including One Ecolab, IQ Suite, pest intelligence,
-      and digital tools.
-    synonyms: []
-    tags:
-    - dim
-    - end_market
-    - chemical
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: chemical.us-east-1
-      database: CHEMICAL
-      schema: PROGRAM
-      object: DIM_PROGRAM
-      format: table
-  grain:
-    description: One row is one program.
-    components:
-    - identity_id: program_identity
-      dataset_columns:
-      - program_id
-      description: Identifier of the program.
-  columns:
-  - name: program_id
-    description: Identifier of the program.
-  - name: program_name
-    description: Name of the program.
-  - name: program_code
-    description: Program code.
-    value_description: one_ecolab, iq_suite, connected_traps, pest_intelligence, digital_tools, coolit,
-      ovivo
-  entity_definitions:
-  - identity_id: program_identity
-    dataset_columns:
-    - program_id
-    entity_universe: complete
-- node_id: sf:chemical.demand.fact_end_market_volume
-  descriptor:
-    qualified_name: chemical.demand.fact_end_market_volume
-    display_name: End Market Volume
-    description: Demand quantity by Chemical Inc end market. This fact stores quantities and rates, not
-      a selling price.
+    qualified_name: chemical.demand.fact_shw_volume_quantity
+    display_name: SHW Volume Quantity
+    description: Sherwin-Williams coatings sold quantity in gallons; the denominator for coatings price
+      per gallon.
     synonyms: []
     tags:
     - fact
     - end_market
-    - chemical
+    - specialty-chemicals
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: chemical.us-east-1
       database: CHEMICAL
       schema: DEMAND
-      object: FACT_END_MARKET_VOLUME
+      object: FACT_SHW_VOLUME_QUANTITY
       format: table
   grain:
-    description: One row is one end market volume.
+    description: One row is one shw volume quantity observation for the combination of fiscal quarter,
+      scenario, shw reporting segment, shw end market, coatings product, region.
     components:
-    - identity_id: end_market_volume_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - end_market_volume_id
-      description: Identifier of the end market volume.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: shw_reporting_segment_identity
+      dataset_columns:
+      - shw_reporting_segment_id
+      description: Identifier of the shw reporting segment.
+    - identity_id: shw_end_market_identity
+      dataset_columns:
+      - shw_end_market_id
+      description: Identifier of the shw end market.
+    - identity_id: coatings_product_identity
+      dataset_columns:
+      - coatings_product_id
+      description: Identifier of the coatings product.
+    - identity_id: region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
   columns:
-  - name: end_market_volume_id
-    description: Identifier of the end market volume.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: business_segment_id
-    description: Business segment.
-  - name: end_market_id
-    description: End market.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: shw_reporting_segment_id
+    description: Identifier of the shw reporting segment.
+  - name: shw_end_market_id
+    description: Identifier of the shw end market.
+  - name: coatings_product_id
+    description: Identifier of the coatings product.
+  - name: region_id
+    description: Identifier of the region.
+  - name: sold_gallons
+    description: Coatings sold in gallons.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: shw_reporting_segment_identity
+    dataset_columns:
+    - shw_reporting_segment_id
+    entity_universe: partial
+  - identity_id: shw_end_market_identity
+    dataset_columns:
+    - shw_end_market_id
+    entity_universe: partial
+  - identity_id: coatings_product_identity
+    dataset_columns:
+    - coatings_product_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:chemical.demand.fact_ecl_service_volume
+  descriptor:
+    qualified_name: chemical.demand.fact_ecl_service_volume
+    display_name: ECL Service Volume
+    description: Ecolab site service volume; the denominator for service price per visit.
+    synonyms: []
+    tags:
+    - fact
+    - end_market
+    - specialty-chemicals
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: chemical.us-east-1
+      database: CHEMICAL
+      schema: DEMAND
+      object: FACT_ECL_SERVICE_VOLUME
+      format: table
+  grain:
+    description: One row is one ecl service volume observation for the combination of fiscal quarter,
+      scenario, ecl reporting segment, ecl business unit, ecl service type, site type, region.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: ecl_reporting_segment_identity
+      dataset_columns:
+      - ecl_reporting_segment_id
+      description: Identifier of the ecl reporting segment.
+    - identity_id: ecl_business_unit_identity
+      dataset_columns:
+      - ecl_business_unit_id
+      description: Identifier of the ecl business unit.
+    - identity_id: ecl_service_type_identity
+      dataset_columns:
+      - ecl_service_type_id
+      description: Identifier of the ecl service type.
+    - identity_id: site_type_identity
+      dataset_columns:
+      - site_type_id
+      description: Identifier of the site type.
+    - identity_id: region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: ecl_reporting_segment_id
+    description: Identifier of the ecl reporting segment.
+  - name: ecl_business_unit_id
+    description: Identifier of the ecl business unit.
+  - name: ecl_service_type_id
+    description: Identifier of the ecl service type.
+  - name: site_type_id
+    description: Identifier of the site type.
+  - name: region_id
+    description: Identifier of the region.
+  - name: service_visit_count
+    description: Site service visits in visits.
+  - name: active_customer_site_count
+    description: Active customer sites in sites.
+  - name: treated_water_gallons
+    description: Water treated in gallons.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: ecl_reporting_segment_identity
+    dataset_columns:
+    - ecl_reporting_segment_id
+    entity_universe: partial
+  - identity_id: ecl_business_unit_identity
+    dataset_columns:
+    - ecl_business_unit_id
+    entity_universe: partial
+  - identity_id: ecl_service_type_identity
+    dataset_columns:
+    - ecl_service_type_id
+    entity_universe: partial
+  - identity_id: site_type_identity
+    dataset_columns:
+    - site_type_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:chemical.demand.fact_shw_sales_amount
+  descriptor:
+    qualified_name: chemical.demand.fact_shw_sales_amount
+    display_name: SHW Sales Amount
+    description: Sherwin-Williams sales amount by reporting segment and end market.
+    synonyms: []
+    tags:
+    - fact
+    - end_market
+    - specialty-chemicals
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: chemical.us-east-1
+      database: CHEMICAL
+      schema: DEMAND
+      object: FACT_SHW_SALES_AMOUNT
+      format: table
+  grain:
+    description: One row is one shw sales amount observation for the combination of fiscal quarter, scenario,
+      shw reporting segment, shw end market.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: shw_reporting_segment_identity
+      dataset_columns:
+      - shw_reporting_segment_id
+      description: Identifier of the shw reporting segment.
+    - identity_id: shw_end_market_identity
+      dataset_columns:
+      - shw_end_market_id
+      description: Identifier of the shw end market.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: shw_reporting_segment_id
+    description: Identifier of the shw reporting segment.
+  - name: shw_end_market_id
+    description: Identifier of the shw end market.
+  - name: sales_amount
+    description: Sales in dollars.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: shw_reporting_segment_identity
+    dataset_columns:
+    - shw_reporting_segment_id
+    entity_universe: partial
+  - identity_id: shw_end_market_identity
+    dataset_columns:
+    - shw_end_market_id
+    entity_universe: partial
+- node_id: sf:chemical.demand.fact_ecl_sales_amount
+  descriptor:
+    qualified_name: chemical.demand.fact_ecl_sales_amount
+    display_name: ECL Sales Amount
+    description: Ecolab sales amount by reporting segment and business unit.
+    synonyms: []
+    tags:
+    - fact
+    - end_market
+    - specialty-chemicals
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: chemical.us-east-1
+      database: CHEMICAL
+      schema: DEMAND
+      object: FACT_ECL_SALES_AMOUNT
+      format: table
+  grain:
+    description: One row is one ecl sales amount observation for the combination of fiscal quarter, scenario,
+      ecl reporting segment, ecl business unit.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: ecl_reporting_segment_identity
+      dataset_columns:
+      - ecl_reporting_segment_id
+      description: Identifier of the ecl reporting segment.
+    - identity_id: ecl_business_unit_identity
+      dataset_columns:
+      - ecl_business_unit_id
+      description: Identifier of the ecl business unit.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: ecl_reporting_segment_id
+    description: Identifier of the ecl reporting segment.
+  - name: ecl_business_unit_id
+    description: Identifier of the ecl business unit.
+  - name: sales_amount
+    description: Sales in dollars.
+  - name: organic_sales_change_percent
+    description: Organic sales change in percent.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: ecl_reporting_segment_identity
+    dataset_columns:
+    - ecl_reporting_segment_id
+    entity_universe: partial
+  - identity_id: ecl_business_unit_identity
+    dataset_columns:
+    - ecl_business_unit_id
+    entity_universe: partial
+- node_id: sf:chemical.demand.fact_industry_coatings_volume
+  descriptor:
+    qualified_name: chemical.demand.fact_industry_coatings_volume
+    display_name: Industry Coatings Volume
+    description: Industry coatings volume in gallons by end market and region.
+    synonyms: []
+    tags:
+    - fact
+    - end_market
+    - specialty-chemicals
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: chemical.us-east-1
+      database: CHEMICAL
+      schema: DEMAND
+      object: FACT_INDUSTRY_COATINGS_VOLUME
+      format: table
+  grain:
+    description: One row is one industry coatings volume observation for the combination of fiscal quarter,
+      scenario, shw end market, region.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: shw_end_market_identity
+      dataset_columns:
+      - shw_end_market_id
+      description: Identifier of the shw end market.
+    - identity_id: region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: shw_end_market_id
+    description: Identifier of the shw end market.
+  - name: region_id
+    description: Identifier of the region.
+  - name: industry_volume_gallons
+    description: Industry coatings volume in gallons.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: shw_end_market_identity
+    dataset_columns:
+    - shw_end_market_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:chemical.demand.fact_shw_market_share
+  descriptor:
+    qualified_name: chemical.demand.fact_shw_market_share
+    display_name: SHW Market Share
+    description: Sherwin-Williams share of industry coatings gallons; industry gallons on the industry
+      volume fact share end market and region keys.
+    synonyms: []
+    tags:
+    - fact
+    - end_market
+    - specialty-chemicals
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: chemical.us-east-1
+      database: CHEMICAL
+      schema: DEMAND
+      object: FACT_SHW_MARKET_SHARE
+      format: table
+  grain:
+    description: One row is one shw market share observation for the combination of fiscal quarter, scenario,
+      shw reporting segment, shw end market, region.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: shw_reporting_segment_identity
+      dataset_columns:
+      - shw_reporting_segment_id
+      description: Identifier of the shw reporting segment.
+    - identity_id: shw_end_market_identity
+      dataset_columns:
+      - shw_end_market_id
+      description: Identifier of the shw end market.
+    - identity_id: region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: shw_reporting_segment_id
+    description: Identifier of the shw reporting segment.
+  - name: shw_end_market_id
+    description: Identifier of the shw end market.
+  - name: region_id
+    description: Identifier of the region.
+  - name: market_share_percent
+    description: Share of industry gallons in percent.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: shw_reporting_segment_identity
+    dataset_columns:
+    - shw_reporting_segment_id
+    entity_universe: partial
+  - identity_id: shw_end_market_identity
+    dataset_columns:
+    - shw_end_market_id
+    entity_universe: partial
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:chemical.demand.fact_ecl_market_share
+  descriptor:
+    qualified_name: chemical.demand.fact_ecl_market_share
+    display_name: ECL Market Share
+    description: Ecolab share in a served site-service market.
+    synonyms: []
+    tags:
+    - fact
+    - end_market
+    - specialty-chemicals
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: chemical.us-east-1
+      database: CHEMICAL
+      schema: DEMAND
+      object: FACT_ECL_MARKET_SHARE
+      format: table
+  grain:
+    description: One row is one ecl market share observation for the combination of fiscal quarter, scenario,
+      ecl business unit, site type.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: ecl_business_unit_identity
+      dataset_columns:
+      - ecl_business_unit_id
+      description: Identifier of the ecl business unit.
+    - identity_id: site_type_identity
+      dataset_columns:
+      - site_type_id
+      description: Identifier of the site type.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: ecl_business_unit_id
+    description: Identifier of the ecl business unit.
+  - name: site_type_id
+    description: Identifier of the site type.
+  - name: market_share_percent
+    description: Share of served market in percent.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: ecl_business_unit_identity
+    dataset_columns:
+    - ecl_business_unit_id
+    entity_universe: partial
+  - identity_id: site_type_identity
+    dataset_columns:
+    - site_type_id
+    entity_universe: partial
+- node_id: sf:chemical.demand.fact_customer_retention_quantity
+  descriptor:
+    qualified_name: chemical.demand.fact_customer_retention_quantity
+    display_name: Customer Retention Quantity
+    description: Retained and base customers for Ecolab service.
+    synonyms: []
+    tags:
+    - fact
+    - end_market
+    - specialty-chemicals
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: chemical.us-east-1
+      database: CHEMICAL
+      schema: DEMAND
+      object: FACT_CUSTOMER_RETENTION_QUANTITY
+      format: table
+  grain:
+    description: One row is one customer retention quantity observation for the combination of fiscal
+      quarter, scenario, ecl reporting segment, customer type.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: ecl_reporting_segment_identity
+      dataset_columns:
+      - ecl_reporting_segment_id
+      description: Identifier of the ecl reporting segment.
+    - identity_id: customer_type_identity
+      dataset_columns:
+      - customer_type_id
+      description: Identifier of the customer type.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: ecl_reporting_segment_id
+    description: Identifier of the ecl reporting segment.
+  - name: customer_type_id
+    description: Identifier of the customer type.
+  - name: retained_customer_count
+    description: Retained customers in customers.
+  - name: base_customer_count
+    description: Customers in the served base in customers.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: ecl_reporting_segment_identity
+    dataset_columns:
+    - ecl_reporting_segment_id
+    entity_universe: partial
+  - identity_id: customer_type_identity
+    dataset_columns:
+    - customer_type_id
+    entity_universe: partial
+- node_id: sf:chemical.demand.fact_store_traffic_quantity
+  descriptor:
+    qualified_name: chemical.demand.fact_store_traffic_quantity
+    display_name: Store Traffic Quantity
+    description: Traffic into coatings stores.
+    synonyms: []
+    tags:
+    - fact
+    - end_market
+    - specialty-chemicals
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: chemical.us-east-1
+      database: CHEMICAL
+      schema: DEMAND
+      object: FACT_STORE_TRAFFIC_QUANTITY
+      format: table
+  grain:
+    description: One row is one store traffic quantity observation for the combination of fiscal quarter,
+      scenario, shw reporting segment, country.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: shw_reporting_segment_identity
+      dataset_columns:
+      - shw_reporting_segment_id
+      description: Identifier of the shw reporting segment.
+    - identity_id: country_identity
+      dataset_columns:
+      - country_id
+      description: Identifier of the country.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: shw_reporting_segment_id
+    description: Identifier of the shw reporting segment.
   - name: country_id
-    description: Country.
-  - name: demand_driver_id
-    description: Driver cited for the volume.
-  - name: volume_quantity
-    description: Volume quantity.
-  - name: volume_change_rate
-    description: Volume change versus the comparison period.
-  - name: run_rate_quantity
-    description: Recent run-rate volume.
-  - name: horizon_code
-    description: Horizon the row describes.
-    value_description: reported_quarter, rest_of_year, second_half, next_year
+    description: Identifier of the country.
+  - name: store_visit_count
+    description: Store visits in visits.
   entity_definitions:
-  - identity_id: end_market_volume_identity
-    dataset_columns:
-    - end_market_volume_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: business_segment_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - business_segment_id
+    - scenario_id
     entity_universe: partial
-  - identity_id: end_market_identity
+  - identity_id: shw_reporting_segment_identity
     dataset_columns:
-    - end_market_id
-    entity_universe: partial
-  - identity_id: country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
-  - identity_id: demand_driver_identity
-    dataset_columns:
-    - demand_driver_id
-    entity_universe: partial
-- node_id: sf:chemical.demand.fact_segment_volume
-  descriptor:
-    qualified_name: chemical.demand.fact_segment_volume
-    display_name: Segment Volume
-    description: Demand quantity for a Chemical Inc reporting segment. This fact stores quantities and
-      rates, not a selling price.
-    synonyms: []
-    tags:
-    - fact
-    - end_market
-    - chemical
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: chemical.us-east-1
-      database: CHEMICAL
-      schema: DEMAND
-      object: FACT_SEGMENT_VOLUME
-      format: table
-  grain:
-    description: One row is one segment volume.
-    components:
-    - identity_id: segment_volume_identity
-      dataset_columns:
-      - segment_volume_id
-      description: Identifier of the segment volume.
-  columns:
-  - name: segment_volume_id
-    description: Identifier of the segment volume.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: business_segment_id
-    description: Business segment.
-  - name: country_id
-    description: Country.
-  - name: volume_quantity
-    description: Segment volume quantity.
-  - name: volume_change_rate
-    description: Segment volume change.
-  - name: organic_volume_quantity
-    description: Organic volume after acquired brands are removed.
-  - name: sales_change_rate
-    description: Sales change rate stored as a rate, not a price.
-  entity_definitions:
-  - identity_id: segment_volume_identity
-    dataset_columns:
-    - segment_volume_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: business_segment_identity
-    dataset_columns:
-    - business_segment_id
-    entity_universe: partial
-  - identity_id: country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
-- node_id: sf:chemical.demand.fact_volume_outlook
-  descriptor:
-    qualified_name: chemical.demand.fact_volume_outlook
-    display_name: Volume Outlook
-    description: Chemical Inc volume guide versus the recent run rate. This fact stores quantities and
-      rates, not a selling price.
-    synonyms: []
-    tags:
-    - fact
-    - end_market
-    - chemical
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: chemical.us-east-1
-      database: CHEMICAL
-      schema: DEMAND
-      object: FACT_VOLUME_OUTLOOK
-      format: table
-  grain:
-    description: One row is one volume outlook.
-    components:
-    - identity_id: volume_outlook_identity
-      dataset_columns:
-      - volume_outlook_id
-      description: Identifier of the volume outlook.
-  columns:
-  - name: volume_outlook_id
-    description: Identifier of the volume outlook.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: business_segment_id
-    description: Business segment.
-  - name: end_market_id
-    description: End market.
-  - name: macro_case_id
-    description: Macro case embedded in the guide.
-  - name: guided_volume_change_rate
-    description: Guided volume change.
-  - name: prior_volume_change_rate
-    description: Volume change in the comparison period.
-  - name: market_decline_flag
-    description: Whether the rest-of-year market view is a decline.
-  - name: horizon_code
-    description: Horizon of the outlook.
-    value_description: rest_of_year, second_half, next_year, through_the_decade
-  entity_definitions:
-  - identity_id: volume_outlook_identity
-    dataset_columns:
-    - volume_outlook_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: business_segment_identity
-    dataset_columns:
-    - business_segment_id
-    entity_universe: partial
-  - identity_id: end_market_identity
-    dataset_columns:
-    - end_market_id
-    entity_universe: partial
-  - identity_id: macro_case_identity
-    dataset_columns:
-    - macro_case_id
-    entity_universe: partial
-- node_id: sf:chemical.demand.fact_order_book
-  descriptor:
-    qualified_name: chemical.demand.fact_order_book
-    display_name: Order Book
-    description: Chemical Inc customer order pattern and backlog quantity. This fact stores quantities
-      and rates, not a selling price.
-    synonyms: []
-    tags:
-    - fact
-    - end_market
-    - chemical
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: chemical.us-east-1
-      database: CHEMICAL
-      schema: DEMAND
-      object: FACT_ORDER_BOOK
-      format: table
-  grain:
-    description: One row is one order book.
-    components:
-    - identity_id: order_book_identity
-      dataset_columns:
-      - order_book_id
-      description: Identifier of the order book.
-  columns:
-  - name: order_book_id
-    description: Identifier of the order book.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: business_segment_id
-    description: Business segment.
-  - name: end_market_id
-    description: End market.
-  - name: customer_id
-    description: Customer.
-  - name: order_pattern_id
-    description: Order pattern.
-  - name: order_quantity
-    description: Order quantity.
-  - name: duration_weeks
-    description: Typical order duration in weeks.
-  - name: short_cycle_flag
-    description: Whether orders have shifted to short cycle.
-  - name: pull_forward_flag
-    description: Whether March orders were pulled forward.
-  entity_definitions:
-  - identity_id: order_book_identity
-    dataset_columns:
-    - order_book_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: business_segment_identity
-    dataset_columns:
-    - business_segment_id
-    entity_universe: partial
-  - identity_id: end_market_identity
-    dataset_columns:
-    - end_market_id
-    entity_universe: partial
-  - identity_id: customer_identity
-    dataset_columns:
-    - customer_id
-    entity_universe: partial
-  - identity_id: order_pattern_identity
-    dataset_columns:
-    - order_pattern_id
-    entity_universe: partial
-- node_id: sf:chemical.demand.fact_prebuy
-  descriptor:
-    qualified_name: chemical.demand.fact_prebuy
-    display_name: Prebuy
-    description: Customer inventory built ahead of a Chemical Inc increase. Quantity only. This fact stores
-      quantities and rates, not a selling price.
-    synonyms: []
-    tags:
-    - fact
-    - end_market
-    - chemical
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: chemical.us-east-1
-      database: CHEMICAL
-      schema: DEMAND
-      object: FACT_PREBUY
-      format: table
-  grain:
-    description: One row is one prebuy.
-    components:
-    - identity_id: prebuy_identity
-      dataset_columns:
-      - prebuy_id
-      description: Identifier of the prebuy.
-  columns:
-  - name: prebuy_id
-    description: Identifier of the prebuy.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: business_segment_id
-    description: Business segment.
-  - name: end_market_id
-    description: End market.
-  - name: customer_id
-    description: Customer.
-  - name: prebuy_quantity
-    description: Quantity pulled forward.
-  - name: prebuy_flag
-    description: Whether customers are prebuying.
-  - name: inventory_weeks
-    description: Customer weeks of inventory.
-  entity_definitions:
-  - identity_id: prebuy_identity
-    dataset_columns:
-    - prebuy_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: business_segment_identity
-    dataset_columns:
-    - business_segment_id
-    entity_universe: partial
-  - identity_id: end_market_identity
-    dataset_columns:
-    - end_market_id
-    entity_universe: partial
-  - identity_id: customer_identity
-    dataset_columns:
-    - customer_id
-    entity_universe: partial
-- node_id: sf:chemical.demand.fact_share_position
-  descriptor:
-    qualified_name: chemical.demand.fact_share_position
-    display_name: Share Position
-    description: Chemical Inc share versus the market and versus competitors. This fact stores quantities
-      and rates, not a selling price.
-    synonyms: []
-    tags:
-    - fact
-    - end_market
-    - chemical
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: chemical.us-east-1
-      database: CHEMICAL
-      schema: DEMAND
-      object: FACT_SHARE_POSITION
-      format: table
-  grain:
-    description: One row is one share position.
-    components:
-    - identity_id: share_position_identity
-      dataset_columns:
-      - share_position_id
-      description: Identifier of the share position.
-  columns:
-  - name: share_position_id
-    description: Identifier of the share position.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: business_segment_id
-    description: Business segment.
-  - name: end_market_id
-    description: End market.
-  - name: subsegment_id
-    description: Subsegment.
-  - name: country_id
-    description: Country.
-  - name: competitor_id
-    description: Competitor being compared.
-  - name: share_rate
-    description: Company share.
-  - name: share_change_rate
-    description: Share change.
-  - name: gaining_flag
-    description: Whether share is being gained.
-  - name: soft_year_pull_forward_flag
-    description: Whether a soft year pulls recovery-year gains forward.
-  entity_definitions:
-  - identity_id: share_position_identity
-    dataset_columns:
-    - share_position_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: business_segment_identity
-    dataset_columns:
-    - business_segment_id
-    entity_universe: partial
-  - identity_id: end_market_identity
-    dataset_columns:
-    - end_market_id
-    entity_universe: partial
-  - identity_id: subsegment_identity
-    dataset_columns:
-    - subsegment_id
-    entity_universe: partial
-  - identity_id: country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
-  - identity_id: competitor_identity
-    dataset_columns:
-    - competitor_id
-    entity_universe: partial
-- node_id: sf:chemical.demand.fact_industry_volume
-  descriptor:
-    qualified_name: chemical.demand.fact_industry_volume
-    display_name: Industry Volume
-    description: Industry volume Chemical Inc compares itself with, including U.S. gallons. This fact
-      stores quantities and rates, not a selling price.
-    synonyms: []
-    tags:
-    - fact
-    - end_market
-    - chemical
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: chemical.us-east-1
-      database: CHEMICAL
-      schema: DEMAND
-      object: FACT_INDUSTRY_VOLUME
-      format: table
-  grain:
-    description: One row is one industry volume.
-    components:
-    - identity_id: industry_volume_identity
-      dataset_columns:
-      - industry_volume_id
-      description: Identifier of the industry volume.
-  columns:
-  - name: industry_volume_id
-    description: Identifier of the industry volume.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: end_market_id
-    description: End market.
-  - name: subsegment_id
-    description: Subsegment.
-  - name: country_id
-    description: Country.
-  - name: industry_volume_quantity
-    description: Industry volume.
-  - name: industry_change_rate
-    description: Industry volume change.
-  - name: company_versus_industry_rate
-    description: Company volume change minus industry change.
-  - name: gallon_change_rate
-    description: Gallon change for an architectural subsegment.
-  entity_definitions:
-  - identity_id: industry_volume_identity
-    dataset_columns:
-    - industry_volume_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: end_market_identity
-    dataset_columns:
-    - end_market_id
-    entity_universe: partial
-  - identity_id: subsegment_identity
-    dataset_columns:
-    - subsegment_id
-    entity_universe: partial
-  - identity_id: country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
-- node_id: sf:chemical.demand.fact_weather_demand
-  descriptor:
-    qualified_name: chemical.demand.fact_weather_demand
-    display_name: Weather Demand
-    description: How weather changes Chemical Inc demand versus last year. This fact stores quantities
-      and rates, not a selling price.
-    synonyms: []
-    tags:
-    - fact
-    - end_market
-    - chemical
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: chemical.us-east-1
-      database: CHEMICAL
-      schema: DEMAND
-      object: FACT_WEATHER_DEMAND
-      format: table
-  grain:
-    description: One row is one weather demand.
-    components:
-    - identity_id: weather_demand_identity
-      dataset_columns:
-      - weather_demand_id
-      description: Identifier of the weather demand.
-  columns:
-  - name: weather_demand_id
-    description: Identifier of the weather demand.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: end_market_id
-    description: End market.
-  - name: country_id
-    description: Country.
-  - name: weather_regime_id
-    description: Weather regime.
-  - name: demand_change_rate
-    description: Demand change attributed to weather.
-  - name: below_last_year_flag
-    description: Whether the quarter could finish below last year.
-  - name: affected_quantity
-    description: Quantity exposed to the weather regime.
-  entity_definitions:
-  - identity_id: weather_demand_identity
-    dataset_columns:
-    - weather_demand_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: end_market_identity
-    dataset_columns:
-    - end_market_id
-    entity_universe: partial
-  - identity_id: country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
-  - identity_id: weather_regime_identity
-    dataset_columns:
-    - weather_regime_id
-    entity_universe: partial
-- node_id: sf:chemical.demand.fact_repaint_cycle
-  descriptor:
-    qualified_name: chemical.demand.fact_repaint_cycle
-    display_name: Repaint Cycle
-    description: Residential repaint timing for Chemical Inc, including contractor labor availability.
-      This fact stores a rate or flag, not a selling price and not a unit quantity.
-    synonyms: []
-    tags:
-    - fact
-    - end_market
-    - chemical
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: chemical.us-east-1
-      database: CHEMICAL
-      schema: DEMAND
-      object: FACT_REPAINT_CYCLE
-      format: table
-  grain:
-    description: One row is one repaint cycle.
-    components:
-    - identity_id: repaint_cycle_identity
-      dataset_columns:
-      - repaint_cycle_id
-      description: Identifier of the repaint cycle.
-  columns:
-  - name: repaint_cycle_id
-    description: Identifier of the repaint cycle.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: end_market_id
-    description: End market.
-  - name: country_id
-    description: Country.
-  - name: cycle_years
-    description: Expected years between repaints.
-  - name: delayed_flag
-    description: Whether the cycle is still delayed after 2021 pull-forward.
-  - name: labor_available_flag
-    description: Whether contractor labor is available.
-  - name: solid_demand_flag
-    description: Whether repaint demand is holding solid.
-  entity_definitions:
-  - identity_id: repaint_cycle_identity
-    dataset_columns:
-    - repaint_cycle_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: end_market_identity
-    dataset_columns:
-    - end_market_id
+    - shw_reporting_segment_id
     entity_universe: partial
   - identity_id: country_identity
     dataset_columns:
@@ -1388,13 +1289,12 @@ nodes:
   descriptor:
     qualified_name: chemical.demand.fact_contractor_backlog
     display_name: Contractor Backlog
-    description: Contractor backlog and visibility for Chemical Inc Paint Stores. This fact stores quantities
-      and rates, not a selling price.
+    description: Contractor backlog for coatings work.
     synonyms: []
     tags:
     - fact
     - end_market
-    - chemical
+    - specialty-chemicals
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
@@ -1404,1185 +1304,612 @@ nodes:
       object: FACT_CONTRACTOR_BACKLOG
       format: table
   grain:
-    description: One row is one contractor backlog.
+    description: One row is one contractor backlog observation for the combination of fiscal quarter,
+      scenario, shw reporting segment, shw end market, region.
     components:
-    - identity_id: contractor_backlog_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - contractor_backlog_id
-      description: Identifier of the contractor backlog.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: shw_reporting_segment_identity
+      dataset_columns:
+      - shw_reporting_segment_id
+      description: Identifier of the shw reporting segment.
+    - identity_id: shw_end_market_identity
+      dataset_columns:
+      - shw_end_market_id
+      description: Identifier of the shw end market.
+    - identity_id: region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
   columns:
-  - name: contractor_backlog_id
-    description: Identifier of the contractor backlog.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: business_segment_id
-    description: Business segment.
-  - name: subsegment_id
-    description: Subsegment.
-  - name: country_id
-    description: Country.
-  - name: backlog_weeks
-    description: Backlog weeks.
-  - name: visibility_months
-    description: Months of visibility.
-  - name: confident_location_count
-    description: Count of confident submarkets.
-  - name: cautious_location_count
-    description: Count of cautious submarkets.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: shw_reporting_segment_id
+    description: Identifier of the shw reporting segment.
+  - name: shw_end_market_id
+    description: Identifier of the shw end market.
+  - name: region_id
+    description: Identifier of the region.
+  - name: backlog_job_count
+    description: Contractor backlog jobs in jobs.
+  - name: backlog_duration_weeks
+    description: Contractor backlog duration in weeks.
   entity_definitions:
-  - identity_id: contractor_backlog_identity
-    dataset_columns:
-    - contractor_backlog_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: business_segment_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - business_segment_id
+    - scenario_id
     entity_universe: partial
-  - identity_id: subsegment_identity
+  - identity_id: shw_reporting_segment_identity
     dataset_columns:
-    - subsegment_id
+    - shw_reporting_segment_id
     entity_universe: partial
-  - identity_id: country_identity
+  - identity_id: shw_end_market_identity
     dataset_columns:
-    - country_id
+    - shw_end_market_id
     entity_universe: partial
-- node_id: sf:chemical.demand.fact_mortgage_demand
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:chemical.demand.fact_site_activity_quantity
   descriptor:
-    qualified_name: chemical.demand.fact_mortgage_demand
-    display_name: Mortgage Demand
-    description: Whether the mortgage backdrop has crossed the level that catalyzes Chemical Inc store
-      demand. The row stores the threshold flag, not a selling price and not store volume. This fact stores
-      a rate or flag, not a selling price and not a unit quantity.
+    qualified_name: chemical.demand.fact_site_activity_quantity
+    display_name: Site Activity Quantity
+    description: Customer site openings, closings, and active sites for Ecolab-served industries.
     synonyms: []
     tags:
     - fact
     - end_market
-    - chemical
+    - specialty-chemicals
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: chemical.us-east-1
       database: CHEMICAL
       schema: DEMAND
-      object: FACT_MORTGAGE_DEMAND
+      object: FACT_SITE_ACTIVITY_QUANTITY
       format: table
   grain:
-    description: One row is one mortgage demand.
+    description: One row is one site activity quantity observation for the combination of fiscal quarter,
+      scenario, ecl business unit, site type.
     components:
-    - identity_id: mortgage_demand_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - mortgage_demand_id
-      description: Identifier of the mortgage demand.
-  columns:
-  - name: mortgage_demand_id
-    description: Identifier of the mortgage demand.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: business_segment_id
-    description: Business segment.
-  - name: country_id
-    description: Country.
-  - name: threshold_crossed_flag
-    description: Whether rates are low enough to catalyze demand.
-  - name: rate_gap_to_threshold
-    description: Gap versus the rate level Chemical Inc watches.
-  - name: demand_response_flag
-    description: Whether store demand is responding.
-  entity_definitions:
-  - identity_id: mortgage_demand_identity
-    dataset_columns:
-    - mortgage_demand_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: business_segment_identity
-    dataset_columns:
-    - business_segment_id
-    entity_universe: partial
-  - identity_id: country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
-- node_id: sf:chemical.demand.fact_completion_demand
-  descriptor:
-    qualified_name: chemical.demand.fact_completion_demand
-    display_name: Completion Demand
-    description: New residential and new commercial demand versus completions for Chemical Inc. This fact
-      stores quantities and rates, not a selling price.
-    synonyms: []
-    tags:
-    - fact
-    - end_market
-    - chemical
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: chemical.us-east-1
-      database: CHEMICAL
-      schema: DEMAND
-      object: FACT_COMPLETION_DEMAND
-      format: table
-  grain:
-    description: One row is one completion demand.
-    components:
-    - identity_id: completion_demand_identity
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
       dataset_columns:
-      - completion_demand_id
-      description: Identifier of the completion demand.
-  columns:
-  - name: completion_demand_id
-    description: Identifier of the completion demand.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: end_market_id
-    description: End market.
-  - name: country_id
-    description: Country.
-  - name: completion_quantity
-    description: Completions quantity.
-  - name: demand_quantity
-    description: Demand quantity tied to those completions.
-  - name: holding_flag
-    description: Whether demand is holding rather than falling with completions.
-  - name: half_code
-    description: Half of the year.
-    value_description: first_half, second_half
-  entity_definitions:
-  - identity_id: completion_demand_identity
-    dataset_columns:
-    - completion_demand_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: end_market_identity
-    dataset_columns:
-    - end_market_id
-    entity_universe: partial
-  - identity_id: country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
-- node_id: sf:chemical.demand.fact_customer_confidence
-  descriptor:
-    qualified_name: chemical.demand.fact_customer_confidence
-    display_name: Customer Confidence
-    description: Customer confidence by Chemical Inc end market. This fact stores a rate or flag, not
-      a selling price and not a unit quantity.
-    synonyms: []
-    tags:
-    - fact
-    - end_market
-    - chemical
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: chemical.us-east-1
-      database: CHEMICAL
-      schema: DEMAND
-      object: FACT_CUSTOMER_CONFIDENCE
-      format: table
-  grain:
-    description: One row is one customer confidence.
-    components:
-    - identity_id: customer_confidence_identity
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: ecl_business_unit_identity
       dataset_columns:
-      - customer_confidence_id
-      description: Identifier of the customer confidence.
-  columns:
-  - name: customer_confidence_id
-    description: Identifier of the customer confidence.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: end_market_id
-    description: End market.
-  - name: business_segment_id
-    description: Business segment.
-  - name: country_id
-    description: Country.
-  - name: confidence_index
-    description: Confidence index.
-  - name: changed_flag
-    description: Whether confidence changed after a geopolitical event.
-  - name: cautious_flag
-    description: Whether the posture is more cautious.
-  entity_definitions:
-  - identity_id: customer_confidence_identity
-    dataset_columns:
-    - customer_confidence_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: end_market_identity
-    dataset_columns:
-    - end_market_id
-    entity_universe: partial
-  - identity_id: business_segment_identity
-    dataset_columns:
-    - business_segment_id
-    entity_universe: partial
-  - identity_id: country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
-- node_id: sf:chemical.demand.fact_customer_retention
-  descriptor:
-    qualified_name: chemical.demand.fact_customer_retention
-    display_name: Customer Retention
-    description: Customers Chemical Inc retained versus the served base. This fact stores quantities and
-      rates, not a selling price.
-    synonyms: []
-    tags:
-    - fact
-    - end_market
-    - chemical
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: chemical.us-east-1
-      database: CHEMICAL
-      schema: DEMAND
-      object: FACT_CUSTOMER_RETENTION
-      format: table
-  grain:
-    description: One row is one customer retention.
-    components:
-    - identity_id: customer_retention_identity
+      - ecl_business_unit_id
+      description: Identifier of the ecl business unit.
+    - identity_id: site_type_identity
       dataset_columns:
-      - customer_retention_id
-      description: Identifier of the customer retention.
+      - site_type_id
+      description: Identifier of the site type.
   columns:
-  - name: customer_retention_id
-    description: Identifier of the customer retention.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: business_segment_id
-    description: Business segment.
-  - name: country_id
-    description: Country.
-  - name: retained_customer_count
-    description: Retained customers.
-  - name: base_customer_count
-    description: Customers in the served base.
-  - name: retention_rate
-    description: Retention rate.
-  entity_definitions:
-  - identity_id: customer_retention_identity
-    dataset_columns:
-    - customer_retention_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: business_segment_identity
-    dataset_columns:
-    - business_segment_id
-    entity_universe: partial
-  - identity_id: country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
-- node_id: sf:chemical.demand.fact_distributor_inventory
-  descriptor:
-    qualified_name: chemical.demand.fact_distributor_inventory
-    display_name: Distributor Inventory
-    description: Distributor and customer inventory quantity affecting Chemical Inc reported volume. This
-      fact stores quantities and rates, not a selling price.
-    synonyms: []
-    tags:
-    - fact
-    - end_market
-    - chemical
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: chemical.us-east-1
-      database: CHEMICAL
-      schema: DEMAND
-      object: FACT_DISTRIBUTOR_INVENTORY
-      format: table
-  grain:
-    description: One row is one distributor inventory.
-    components:
-    - identity_id: distributor_inventory_identity
-      dataset_columns:
-      - distributor_inventory_id
-      description: Identifier of the distributor inventory.
-  columns:
-  - name: distributor_inventory_id
-    description: Identifier of the distributor inventory.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: business_segment_id
-    description: Business segment.
-  - name: channel_id
-    description: Channel.
-  - name: country_id
-    description: Country.
-  - name: inventory_quantity
-    description: Inventory quantity.
-  - name: reduction_quantity
-    description: Inventory reduction in the period.
-  - name: underlying_volume_change_rate
-    description: Volume change after the inventory reduction.
-  entity_definitions:
-  - identity_id: distributor_inventory_identity
-    dataset_columns:
-    - distributor_inventory_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: business_segment_identity
-    dataset_columns:
-    - business_segment_id
-    entity_universe: partial
-  - identity_id: channel_identity
-    dataset_columns:
-    - channel_id
-    entity_universe: partial
-  - identity_id: country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
-- node_id: sf:chemical.demand.fact_site_activity
-  descriptor:
-    qualified_name: chemical.demand.fact_site_activity
-    display_name: Site Activity
-    description: Customer sites and mill closures in Chemical Inc paper and basic industries. This fact
-      stores quantities and rates, not a selling price.
-    synonyms: []
-    tags:
-    - fact
-    - end_market
-    - chemical
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: chemical.us-east-1
-      database: CHEMICAL
-      schema: DEMAND
-      object: FACT_SITE_ACTIVITY
-      format: table
-  grain:
-    description: One row is one site activity.
-    components:
-    - identity_id: site_activity_identity
-      dataset_columns:
-      - site_activity_id
-      description: Identifier of the site activity.
-  columns:
-  - name: site_activity_id
-    description: Identifier of the site activity.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: end_market_id
-    description: End market.
-  - name: country_id
-    description: Country.
-  - name: site_status_id
-    description: Site status.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: ecl_business_unit_id
+    description: Identifier of the ecl business unit.
+  - name: site_type_id
+    description: Identifier of the site type.
   - name: open_site_count
-    description: Open sites.
+    description: Open customer sites in sites.
   - name: closed_site_count
-    description: Sites closed in the period.
-  - name: closures_stopped_flag
-    description: Whether closures have stopped.
-  - name: volume_change_rate
-    description: Volume change at those sites.
+    description: Closed customer sites in sites.
   entity_definitions:
-  - identity_id: site_activity_identity
-    dataset_columns:
-    - site_activity_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: end_market_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - end_market_id
+    - scenario_id
     entity_universe: partial
-  - identity_id: country_identity
+  - identity_id: ecl_business_unit_identity
     dataset_columns:
-    - country_id
+    - ecl_business_unit_id
     entity_universe: partial
-  - identity_id: site_status_identity
+  - identity_id: site_type_identity
     dataset_columns:
-    - site_status_id
+    - site_type_id
     entity_universe: partial
-- node_id: sf:chemical.demand.fact_organic_growth
+- node_id: sf:chemical.demand.fact_program_coverage_quantity
   descriptor:
-    qualified_name: chemical.demand.fact_organic_growth
-    display_name: Organic Growth
-    description: Chemical Inc organic growth rate. The row stores the rate and which side contributed,
-      not a unit price and not a unit quantity. This fact stores a rate or flag, not a selling price and
-      not a unit quantity.
+    qualified_name: chemical.demand.fact_program_coverage_quantity
+    display_name: Program Coverage Quantity
+    description: Customer sites covered and targeted by an Ecolab program.
     synonyms: []
     tags:
     - fact
     - end_market
-    - chemical
+    - specialty-chemicals
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: chemical.us-east-1
       database: CHEMICAL
       schema: DEMAND
-      object: FACT_ORGANIC_GROWTH
+      object: FACT_PROGRAM_COVERAGE_QUANTITY
       format: table
   grain:
-    description: One row is one organic growth.
+    description: One row is one program coverage quantity observation for the combination of fiscal quarter,
+      scenario, ecl program, ecl business unit.
     components:
-    - identity_id: organic_growth_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - organic_growth_id
-      description: Identifier of the organic growth.
-  columns:
-  - name: organic_growth_id
-    description: Identifier of the organic growth.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: business_segment_id
-    description: Business segment.
-  - name: program_id
-    description: Commercial program.
-  - name: country_id
-    description: Country.
-  - name: organic_growth_rate
-    description: Organic growth rate.
-  - name: volume_contributed_flag
-    description: Whether volume contributed.
-  - name: price_contributed_flag
-    description: Whether price contributed.
-  - name: faster_than_core_flag
-    description: Whether a program is growing faster than the core.
-  entity_definitions:
-  - identity_id: organic_growth_identity
-    dataset_columns:
-    - organic_growth_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: business_segment_identity
-    dataset_columns:
-    - business_segment_id
-    entity_universe: partial
-  - identity_id: program_identity
-    dataset_columns:
-    - program_id
-    entity_universe: partial
-  - identity_id: country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
-- node_id: sf:chemical.demand.fact_guidance_case
-  descriptor:
-    qualified_name: chemical.demand.fact_guidance_case
-    display_name: Guidance Case
-    description: Swing factors inside a Chemical Inc guide. Rates and flags only. This fact stores a rate
-      or flag, not a selling price and not a unit quantity.
-    synonyms: []
-    tags:
-    - fact
-    - end_market
-    - chemical
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: chemical.us-east-1
-      database: CHEMICAL
-      schema: DEMAND
-      object: FACT_GUIDANCE_CASE
-      format: table
-  grain:
-    description: One row is one guidance case.
-    components:
-    - identity_id: guidance_case_identity
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
       dataset_columns:
-      - guidance_case_id
-      description: Identifier of the guidance case.
-  columns:
-  - name: guidance_case_id
-    description: Identifier of the guidance case.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: business_segment_id
-    description: Business segment.
-  - name: macro_case_id
-    description: Macro case.
-  - name: demand_driver_id
-    description: Swing driver.
-  - name: high_end_flag
-    description: Whether the row is the high end of the guide.
-  - name: low_end_flag
-    description: Whether the row is the low end of the guide.
-  - name: swing_rate
-    description: Size of the swing.
-  - name: horizon_code
-    description: Horizon.
-    value_description: second_half, full_year, next_year
-  entity_definitions:
-  - identity_id: guidance_case_identity
-    dataset_columns:
-    - guidance_case_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: business_segment_identity
-    dataset_columns:
-    - business_segment_id
-    entity_universe: partial
-  - identity_id: macro_case_identity
-    dataset_columns:
-    - macro_case_id
-    entity_universe: partial
-  - identity_id: demand_driver_identity
-    dataset_columns:
-    - demand_driver_id
-    entity_universe: partial
-- node_id: sf:chemical.demand.fact_cross_sell
-  descriptor:
-    qualified_name: chemical.demand.fact_cross_sell
-    display_name: Cross Sell
-    description: Cross-sell quantity from a Chemical Inc program into the core. This fact stores quantities
-      and rates, not a selling price.
-    synonyms: []
-    tags:
-    - fact
-    - end_market
-    - chemical
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: chemical.us-east-1
-      database: CHEMICAL
-      schema: DEMAND
-      object: FACT_CROSS_SELL
-      format: table
-  grain:
-    description: One row is one cross sell.
-    components:
-    - identity_id: cross_sell_identity
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: ecl_program_identity
       dataset_columns:
-      - cross_sell_id
-      description: Identifier of the cross sell.
-  columns:
-  - name: cross_sell_id
-    description: Identifier of the cross sell.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: program_id
-    description: Commercial program.
-  - name: business_segment_id
-    description: Business segment.
-  - name: customer_id
-    description: Customer.
-  - name: cross_sell_quantity
-    description: Cross-sell quantity.
-  - name: contribution_rate
-    description: Contribution to organic growth, as a rate.
-  - name: with_core_flag
-    description: Whether the cross-sell is with core high-tech offerings.
-  entity_definitions:
-  - identity_id: cross_sell_identity
-    dataset_columns:
-    - cross_sell_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: program_identity
-    dataset_columns:
-    - program_id
-    entity_universe: partial
-  - identity_id: business_segment_identity
-    dataset_columns:
-    - business_segment_id
-    entity_universe: partial
-  - identity_id: customer_identity
-    dataset_columns:
-    - customer_id
-    entity_universe: partial
-- node_id: sf:chemical.demand.fact_program_coverage
-  descriptor:
-    qualified_name: chemical.demand.fact_program_coverage
-    display_name: Program Coverage
-    description: How far a Chemical Inc program has rolled out. This fact stores quantities and rates,
-      not a selling price.
-    synonyms: []
-    tags:
-    - fact
-    - end_market
-    - chemical
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: chemical.us-east-1
-      database: CHEMICAL
-      schema: DEMAND
-      object: FACT_PROGRAM_COVERAGE
-      format: table
-  grain:
-    description: One row is one program coverage.
-    components:
-    - identity_id: program_coverage_identity
+      - ecl_program_id
+      description: Identifier of the ecl program.
+    - identity_id: ecl_business_unit_identity
       dataset_columns:
-      - program_coverage_id
-      description: Identifier of the program coverage.
+      - ecl_business_unit_id
+      description: Identifier of the ecl business unit.
   columns:
-  - name: program_coverage_id
-    description: Identifier of the program coverage.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: program_id
-    description: Commercial program.
-  - name: cohort_id
-    description: Rollout cohort.
-  - name: customer_id
-    description: Customer.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: ecl_program_id
+    description: Identifier of the ecl program.
+  - name: ecl_business_unit_id
+    description: Identifier of the ecl business unit.
+  - name: covered_site_count
+    description: Covered customer sites in sites.
+  - name: targeted_site_count
+    description: Targeted customer sites in sites.
   - name: covered_customer_count
-    description: Customers covered.
-  - name: targeted_customer_count
-    description: Customers targeted.
-  - name: coverage_rate
-    description: Coverage rate.
-  - name: next_cohort_sales_driver_flag
-    description: Whether the next cohort is a sales driver yet.
+    description: Covered customers in customers.
   entity_definitions:
-  - identity_id: program_coverage_identity
-    dataset_columns:
-    - program_coverage_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: program_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - program_id
+    - scenario_id
     entity_universe: partial
-  - identity_id: cohort_identity
+  - identity_id: ecl_program_identity
     dataset_columns:
-    - cohort_id
+    - ecl_program_id
     entity_universe: partial
-  - identity_id: customer_identity
+  - identity_id: ecl_business_unit_identity
     dataset_columns:
-    - customer_id
+    - ecl_business_unit_id
     entity_universe: partial
-- node_id: sf:chemical.demand.fact_location_coverage
+- node_id: sf:chemical.demand.fact_cross_sell_amount
   descriptor:
-    qualified_name: chemical.demand.fact_location_coverage
-    display_name: Location Coverage
-    description: Share of Chemical Inc pest locations on a tool, and site penetration such as IQ Suite.
-      This fact stores quantities and rates, not a selling price.
+    qualified_name: chemical.demand.fact_cross_sell_amount
+    display_name: Cross Sell Amount
+    description: Cross-sell sales amount from Ecolab programs.
     synonyms: []
     tags:
     - fact
     - end_market
-    - chemical
+    - specialty-chemicals
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: chemical.us-east-1
       database: CHEMICAL
       schema: DEMAND
-      object: FACT_LOCATION_COVERAGE
+      object: FACT_CROSS_SELL_AMOUNT
       format: table
   grain:
-    description: One row is one location coverage.
+    description: One row is one cross sell amount observation for the combination of fiscal quarter, scenario,
+      ecl program, ecl business unit.
     components:
-    - identity_id: location_coverage_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - location_coverage_id
-      description: Identifier of the location coverage.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: ecl_program_identity
+      dataset_columns:
+      - ecl_program_id
+      description: Identifier of the ecl program.
+    - identity_id: ecl_business_unit_identity
+      dataset_columns:
+      - ecl_business_unit_id
+      description: Identifier of the ecl business unit.
   columns:
-  - name: location_coverage_id
-    description: Identifier of the location coverage.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: program_id
-    description: Commercial program.
-  - name: country_id
-    description: Country.
-  - name: covered_location_count
-    description: Locations covered.
-  - name: base_location_count
-    description: Locations in the base.
-  - name: coverage_rate
-    description: Coverage rate.
-  - name: expected_coverage_rate
-    description: Coverage expected in two to three years.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: ecl_program_id
+    description: Identifier of the ecl program.
+  - name: ecl_business_unit_id
+    description: Identifier of the ecl business unit.
+  - name: cross_sell_sales_amount
+    description: Cross-sell sales in dollars.
   entity_definitions:
-  - identity_id: location_coverage_identity
-    dataset_columns:
-    - location_coverage_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: program_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - program_id
+    - scenario_id
     entity_universe: partial
-  - identity_id: country_identity
+  - identity_id: ecl_program_identity
     dataset_columns:
-    - country_id
+    - ecl_program_id
     entity_universe: partial
-- node_id: sf:chemical.demand.fact_customer_traffic
+  - identity_id: ecl_business_unit_identity
+    dataset_columns:
+    - ecl_business_unit_id
+    entity_universe: partial
+- node_id: sf:chemical.demand.fact_acquired_sales_amount
   descriptor:
-    qualified_name: chemical.demand.fact_customer_traffic
-    display_name: Customer Traffic
-    description: Foot traffic at Chemical Inc institutional customers. This fact stores quantities and
-      rates, not a selling price.
+    qualified_name: chemical.demand.fact_acquired_sales_amount
+    display_name: Acquired Sales Amount
+    description: Sales amount from an acquired company by Ecolab segment.
     synonyms: []
     tags:
     - fact
     - end_market
-    - chemical
+    - specialty-chemicals
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: chemical.us-east-1
       database: CHEMICAL
       schema: DEMAND
-      object: FACT_CUSTOMER_TRAFFIC
+      object: FACT_ACQUIRED_SALES_AMOUNT
       format: table
   grain:
-    description: One row is one customer traffic.
+    description: One row is one acquired sales amount observation for the combination of fiscal quarter,
+      scenario, acquisition, ecl reporting segment.
     components:
-    - identity_id: customer_traffic_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - customer_traffic_id
-      description: Identifier of the customer traffic.
-  columns:
-  - name: customer_traffic_id
-    description: Identifier of the customer traffic.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: business_segment_id
-    description: Business segment.
-  - name: country_id
-    description: Country.
-  - name: traffic_index
-    description: Traffic index.
-  - name: weak_traffic_flag
-    description: Whether foot traffic is weak.
-  - name: visit_quantity
-    description: Visit quantity.
-  entity_definitions:
-  - identity_id: customer_traffic_identity
-    dataset_columns:
-    - customer_traffic_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: business_segment_identity
-    dataset_columns:
-    - business_segment_id
-    entity_universe: partial
-  - identity_id: country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
-- node_id: sf:chemical.demand.fact_packaging_conversion
-  descriptor:
-    qualified_name: chemical.demand.fact_packaging_conversion
-    display_name: Packaging Conversion
-    description: Regulatory conversion quantity in Chemical Inc packaging coatings. This fact stores quantities
-      and rates, not a selling price.
-    synonyms: []
-    tags:
-    - fact
-    - end_market
-    - chemical
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: chemical.us-east-1
-      database: CHEMICAL
-      schema: DEMAND
-      object: FACT_PACKAGING_CONVERSION
-      format: table
-  grain:
-    description: One row is one packaging conversion.
-    components:
-    - identity_id: packaging_conversion_identity
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
       dataset_columns:
-      - packaging_conversion_id
-      description: Identifier of the packaging conversion.
-  columns:
-  - name: packaging_conversion_id
-    description: Identifier of the packaging conversion.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: end_market_id
-    description: End market.
-  - name: country_id
-    description: Country.
-  - name: conversion_quantity
-    description: Conversion quantity.
-  - name: remaining_conversion_quantity
-    description: Conversions still left.
-  - name: outgrowth_rate
-    description: Packaging outgrowth versus the industry.
-  - name: lapped_flag
-    description: Whether the catalyst has been lapped.
-  entity_definitions:
-  - identity_id: packaging_conversion_identity
-    dataset_columns:
-    - packaging_conversion_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: end_market_identity
-    dataset_columns:
-    - end_market_id
-    entity_universe: partial
-  - identity_id: country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
-- node_id: sf:chemical.demand.fact_competitive_disruption
-  descriptor:
-    qualified_name: chemical.demand.fact_competitive_disruption
-    display_name: Competitive Disruption
-    description: Share Chemical Inc can take when a competitor is disrupted. This fact stores quantities
-      and rates, not a selling price.
-    synonyms: []
-    tags:
-    - fact
-    - end_market
-    - chemical
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: chemical.us-east-1
-      database: CHEMICAL
-      schema: DEMAND
-      object: FACT_COMPETITIVE_DISRUPTION
-      format: table
-  grain:
-    description: One row is one competitive disruption.
-    components:
-    - identity_id: competitive_disruption_identity
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: acquisition_identity
       dataset_columns:
-      - competitive_disruption_id
-      description: Identifier of the competitive disruption.
-  columns:
-  - name: competitive_disruption_id
-    description: Identifier of the competitive disruption.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: business_segment_id
-    description: Business segment.
-  - name: subsegment_id
-    description: Subsegment.
-  - name: end_market_id
-    description: End market.
-  - name: competitor_id
-    description: Disrupted competitor.
-  - name: opportunity_share_rate
-    description: Share available from the disruption.
-  - name: disruption_flag
-    description: Whether a merger or exit is disrupting the market.
-  - name: best_subsegment_flag
-    description: Whether this subsegment is the best place to take share.
-  entity_definitions:
-  - identity_id: competitive_disruption_identity
-    dataset_columns:
-    - competitive_disruption_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: business_segment_identity
-    dataset_columns:
-    - business_segment_id
-    entity_universe: partial
-  - identity_id: subsegment_identity
-    dataset_columns:
-    - subsegment_id
-    entity_universe: partial
-  - identity_id: end_market_identity
-    dataset_columns:
-    - end_market_id
-    entity_universe: partial
-  - identity_id: competitor_identity
-    dataset_columns:
-    - competitor_id
-    entity_universe: partial
-- node_id: sf:chemical.demand.fact_growth_mix
-  descriptor:
-    qualified_name: chemical.demand.fact_growth_mix
-    display_name: Growth Mix
-    description: Mix of faster Chemical Inc platforms versus the slower core. Shares and rates, not prices.
-      This fact stores a rate or flag, not a selling price and not a unit quantity.
-    synonyms: []
-    tags:
-    - fact
-    - end_market
-    - chemical
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: chemical.us-east-1
-      database: CHEMICAL
-      schema: DEMAND
-      object: FACT_GROWTH_MIX
-      format: table
-  grain:
-    description: One row is one growth mix.
-    components:
-    - identity_id: growth_mix_identity
+      - acquisition_id
+      description: Identifier of the acquisition.
+    - identity_id: ecl_reporting_segment_identity
       dataset_columns:
-      - growth_mix_id
-      description: Identifier of the growth mix.
+      - ecl_reporting_segment_id
+      description: Identifier of the ecl reporting segment.
   columns:
-  - name: growth_mix_id
-    description: Identifier of the growth mix.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: business_segment_id
-    description: Business segment.
-  - name: program_id
-    description: Commercial program.
-  - name: engine_mix_rate
-    description: Share of sales in faster platforms.
-  - name: core_mix_rate
-    description: Share of sales in the slower core.
-  - name: core_growth_rate
-    description: Growth rate of the core.
-  - name: engine_growth_rate
-    description: Growth rate of the faster platforms.
-  - name: large_enough_flag
-    description: Whether the engines are large enough to lift the core.
-  entity_definitions:
-  - identity_id: growth_mix_identity
-    dataset_columns:
-    - growth_mix_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: business_segment_identity
-    dataset_columns:
-    - business_segment_id
-    entity_universe: partial
-  - identity_id: program_identity
-    dataset_columns:
-    - program_id
-    entity_universe: partial
-- node_id: sf:chemical.demand.fact_acquired_volume
-  descriptor:
-    qualified_name: chemical.demand.fact_acquired_volume
-    display_name: Acquired Volume
-    description: Volume from a Chemical Inc acquisition versus the plan and versus the legacy base. This
-      fact stores quantities and rates, not a selling price.
-    synonyms: []
-    tags:
-    - fact
-    - end_market
-    - chemical
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: chemical.us-east-1
-      database: CHEMICAL
-      schema: DEMAND
-      object: FACT_ACQUIRED_VOLUME
-      format: table
-  grain:
-    description: One row is one acquired volume.
-    components:
-    - identity_id: acquired_volume_identity
-      dataset_columns:
-      - acquired_volume_id
-      description: Identifier of the acquired volume.
-  columns:
-  - name: acquired_volume_id
-    description: Identifier of the acquired volume.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
   - name: acquisition_id
-    description: Acquisition.
-  - name: business_segment_id
-    description: Business segment.
-  - name: acquired_quantity
-    description: Acquired volume.
-  - name: versus_plan_rate
-    description: Volume versus the acquisition plan.
-  - name: in_run_rate_flag
-    description: Whether the acquired growth is already in the run rate.
+    description: Identifier of the acquisition.
+  - name: ecl_reporting_segment_id
+    description: Identifier of the ecl reporting segment.
+  - name: acquired_sales_amount
+    description: Acquired company sales in dollars.
+  - name: acquired_sales_change_percent
+    description: Acquired company sales change in percent.
   entity_definitions:
-  - identity_id: acquired_volume_identity
-    dataset_columns:
-    - acquired_volume_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
     entity_universe: partial
   - identity_id: acquisition_identity
     dataset_columns:
     - acquisition_id
     entity_universe: partial
-  - identity_id: business_segment_identity
+  - identity_id: ecl_reporting_segment_identity
     dataset_columns:
-    - business_segment_id
+    - ecl_reporting_segment_id
     entity_universe: partial
-- node_id: sf:chemical.demand.fact_platform_volume
+- node_id: sf:chemical.demand.fact_weather_affected_volume
   descriptor:
-    qualified_name: chemical.demand.fact_platform_volume
-    display_name: Platform Volume
-    description: Volume and growth rate for a named Chemical Inc platform such as CoolIT. This fact stores
-      quantities and rates, not a selling price.
+    qualified_name: chemical.demand.fact_weather_affected_volume
+    display_name: Weather Affected Volume
+    description: Coatings volume exposed to a weather regime.
     synonyms: []
     tags:
     - fact
     - end_market
-    - chemical
+    - specialty-chemicals
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: chemical.us-east-1
       database: CHEMICAL
       schema: DEMAND
-      object: FACT_PLATFORM_VOLUME
+      object: FACT_WEATHER_AFFECTED_VOLUME
       format: table
   grain:
-    description: One row is one platform volume.
+    description: One row is one weather affected volume observation for the combination of fiscal quarter,
+      scenario, shw end market, region, weather regime.
     components:
-    - identity_id: platform_volume_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - platform_volume_id
-      description: Identifier of the platform volume.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: shw_end_market_identity
+      dataset_columns:
+      - shw_end_market_id
+      description: Identifier of the shw end market.
+    - identity_id: region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+    - identity_id: weather_regime_identity
+      dataset_columns:
+      - weather_regime_id
+      description: Identifier of the weather regime.
   columns:
-  - name: platform_volume_id
-    description: Identifier of the platform volume.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: program_id
-    description: Commercial program.
-  - name: business_segment_id
-    description: Business segment.
-  - name: volume_quantity
-    description: Platform volume.
-  - name: growth_rate
-    description: Platform growth rate.
-  - name: above_thirty_percent_flag
-    description: Whether growth is above 30 percent.
-  - name: dilution_uses_current_rate_flag
-    description: Whether dilution math uses the current growth rate.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: shw_end_market_id
+    description: Identifier of the shw end market.
+  - name: region_id
+    description: Identifier of the region.
+  - name: weather_regime_id
+    description: Identifier of the weather regime.
+  - name: weather_affected_gallons
+    description: Coatings volume exposed to weather in gallons.
   entity_definitions:
-  - identity_id: platform_volume_identity
-    dataset_columns:
-    - platform_volume_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: program_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - program_id
+    - scenario_id
     entity_universe: partial
-  - identity_id: business_segment_identity
+  - identity_id: shw_end_market_identity
     dataset_columns:
-    - business_segment_id
+    - shw_end_market_id
     entity_universe: partial
-- node_id: sf:chemical.demand.fact_water_volume
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+  - identity_id: weather_regime_identity
+    dataset_columns:
+    - weather_regime_id
+    entity_universe: partial
+- node_id: sf:chemical.demand.fact_housing_activity_quantity
   descriptor:
-    qualified_name: chemical.demand.fact_water_volume
-    display_name: Water Volume
-    description: Chemical Inc water volume by vertical. This fact stores quantities and rates, not a selling
-      price.
+    qualified_name: chemical.demand.fact_housing_activity_quantity
+    display_name: Housing Activity Quantity
+    description: Housing completions and repaint cycle timing for coatings demand.
     synonyms: []
     tags:
     - fact
     - end_market
-    - chemical
+    - specialty-chemicals
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: chemical.us-east-1
       database: CHEMICAL
       schema: DEMAND
-      object: FACT_WATER_VOLUME
+      object: FACT_HOUSING_ACTIVITY_QUANTITY
       format: table
   grain:
-    description: One row is one water volume.
+    description: One row is one housing activity quantity observation for the combination of fiscal quarter,
+      scenario, shw end market, region.
     components:
-    - identity_id: water_volume_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - water_volume_id
-      description: Identifier of the water volume.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: shw_end_market_identity
+      dataset_columns:
+      - shw_end_market_id
+      description: Identifier of the shw end market.
+    - identity_id: region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
   columns:
-  - name: water_volume_id
-    description: Identifier of the water volume.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: business_segment_id
-    description: Business segment.
-  - name: vertical_id
-    description: Vertical.
-  - name: end_market_id
-    description: End market.
-  - name: country_id
-    description: Country.
-  - name: volume_quantity
-    description: Water volume.
-  - name: volume_change_rate
-    description: Water volume change.
-  - name: high_single_digit_decline_flag
-    description: Whether the decline is high single digit.
-  - name: driver_vertical_flag
-    description: Whether this vertical is a main driver.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: shw_end_market_id
+    description: Identifier of the shw end market.
+  - name: region_id
+    description: Identifier of the region.
+  - name: housing_completion_count
+    description: Housing completions in housing units.
+  - name: repaint_cycle_years
+    description: Years between repaints in years.
   entity_definitions:
-  - identity_id: water_volume_identity
-    dataset_columns:
-    - water_volume_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: business_segment_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - business_segment_id
+    - scenario_id
     entity_universe: partial
-  - identity_id: vertical_identity
+  - identity_id: shw_end_market_identity
     dataset_columns:
-    - vertical_id
+    - shw_end_market_id
     entity_universe: partial
-  - identity_id: end_market_identity
+  - identity_id: region_identity
     dataset_columns:
-    - end_market_id
+    - region_id
     entity_universe: partial
-  - identity_id: country_identity
+- node_id: sf:chemical.demand.fact_shw_channel_inventory_quantity
+  descriptor:
+    qualified_name: chemical.demand.fact_shw_channel_inventory_quantity
+    display_name: SHW Channel Inventory Quantity
+    description: Coatings inventory held in a Sherwin-Williams channel, in gallons.
+    synonyms: []
+    tags:
+    - fact
+    - end_market
+    - specialty-chemicals
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: chemical.us-east-1
+      database: CHEMICAL
+      schema: DEMAND
+      object: FACT_SHW_CHANNEL_INVENTORY_QUANTITY
+      format: table
+  grain:
+    description: One row is one shw channel inventory quantity observation for the combination of fiscal
+      quarter, scenario, shw reporting segment, shw channel.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: shw_reporting_segment_identity
+      dataset_columns:
+      - shw_reporting_segment_id
+      description: Identifier of the shw reporting segment.
+    - identity_id: shw_channel_identity
+      dataset_columns:
+      - shw_channel_id
+      description: Identifier of the shw channel.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: shw_reporting_segment_id
+    description: Identifier of the shw reporting segment.
+  - name: shw_channel_id
+    description: Identifier of the shw channel.
+  - name: channel_inventory_gallons
+    description: Channel inventory in gallons.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
     dataset_columns:
-    - country_id
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: shw_reporting_segment_identity
+    dataset_columns:
+    - shw_reporting_segment_id
+    entity_universe: partial
+  - identity_id: shw_channel_identity
+    dataset_columns:
+    - shw_channel_id
+    entity_universe: partial
+- node_id: sf:chemical.demand.fact_ecl_distributor_inventory_quantity
+  descriptor:
+    qualified_name: chemical.demand.fact_ecl_distributor_inventory_quantity
+    display_name: ECL Distributor Inventory Quantity
+    description: Ecolab product inventory held by distributors, in service-product units.
+    synonyms: []
+    tags:
+    - fact
+    - end_market
+    - specialty-chemicals
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: chemical.us-east-1
+      database: CHEMICAL
+      schema: DEMAND
+      object: FACT_ECL_DISTRIBUTOR_INVENTORY_QUANTITY
+      format: table
+  grain:
+    description: One row is one ecl distributor inventory quantity observation for the combination of
+      fiscal quarter, scenario, ecl reporting segment, ecl channel.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: ecl_reporting_segment_identity
+      dataset_columns:
+      - ecl_reporting_segment_id
+      description: Identifier of the ecl reporting segment.
+    - identity_id: ecl_channel_identity
+      dataset_columns:
+      - ecl_channel_id
+      description: Identifier of the ecl channel.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: ecl_reporting_segment_id
+    description: Identifier of the ecl reporting segment.
+  - name: ecl_channel_id
+    description: Identifier of the ecl channel.
+  - name: distributor_inventory_units
+    description: Distributor inventory in units.
+  - name: inventory_reduction_units
+    description: Distributor inventory reduction in units.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: ecl_reporting_segment_identity
+    dataset_columns:
+    - ecl_reporting_segment_id
+    entity_universe: partial
+  - identity_id: ecl_channel_identity
+    dataset_columns:
+    - ecl_channel_id
     entity_universe: partial

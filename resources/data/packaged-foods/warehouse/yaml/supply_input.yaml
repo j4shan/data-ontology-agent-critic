@@ -4,12 +4,12 @@ nodes:
   descriptor:
     qualified_name: food.supply.dim_commodity
     display_name: Commodity
-    description: Commodity Food Inc buys, including cocoa, wheat, and fuel.
+    description: Food commodity input, separate from energy inputs.
     synonyms: []
     tags:
-    - dim
+    - dimension
     - supply_input
-    - food
+    - packaged-foods
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
@@ -19,7 +19,7 @@ nodes:
       object: DIM_COMMODITY
       format: table
   grain:
-    description: One row is one commodity.
+    description: One row is one commodity, identified by commodity_id.
     components:
     - identity_id: commodity_identity
       dataset_columns:
@@ -31,67 +31,137 @@ nodes:
   - name: commodity_name
     description: Name of the commodity.
   - name: commodity_code
-    description: Commodity code.
-    value_description: cocoa, wheat, fuel, oil_derivative, diesel, packaging
+    description: Code of the commodity.
+    value_description: cocoa, wheat, corn, sugar, dairy, edible_oils, tree_nuts
   entity_definitions:
   - identity_id: commodity_identity
     dataset_columns:
     - commodity_id
     entity_universe: complete
-- node_id: sf:food.supply.dim_origin
+- node_id: sf:food.supply.dim_sourcing_origin
   descriptor:
-    qualified_name: food.supply.dim_origin
-    display_name: Origin
-    description: Growing origin for a Food Inc commodity.
+    qualified_name: food.supply.dim_sourcing_origin
+    display_name: Sourcing Origin
+    description: Origin region for a sourced commodity.
     synonyms: []
     tags:
-    - dim
+    - dimension
     - supply_input
-    - food
+    - packaged-foods
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: food.us-east-1
       database: FOOD
       schema: SUPPLY
-      object: DIM_ORIGIN
+      object: DIM_SOURCING_ORIGIN
       format: table
   grain:
-    description: One row is one origin.
+    description: One row is one sourcing origin, identified by sourcing_origin_id.
     components:
-    - identity_id: origin_identity
+    - identity_id: sourcing_origin_identity
       dataset_columns:
-      - origin_id
-      description: Identifier of the origin.
+      - sourcing_origin_id
+      description: Identifier of the sourcing origin.
   columns:
-  - name: origin_id
-    description: Identifier of the origin.
-  - name: commodity_id
-    description: Commodity.
-  - name: origin_name
-    description: Name of the origin.
-  - name: origin_code
-    description: Origin code.
-    value_description: west_africa, new_origin, traditional
+  - name: sourcing_origin_id
+    description: Identifier of the sourcing origin.
+  - name: sourcing_origin_name
+    description: Name of the sourcing origin.
+  - name: sourcing_origin_code
+    description: Code of the sourcing origin.
+    value_description: west_africa, latin_america, southeast_asia, north_america, europe
   entity_definitions:
-  - identity_id: origin_identity
+  - identity_id: sourcing_origin_identity
     dataset_columns:
-    - origin_id
+    - sourcing_origin_id
     entity_universe: complete
-  - identity_id: commodity_identity
+- node_id: sf:food.supply.dim_hedge_tenor
+  descriptor:
+    qualified_name: food.supply.dim_hedge_tenor
+    display_name: Hedge Tenor
+    description: Tenor of a commodity hedge, separate from the commodity.
+    synonyms: []
+    tags:
+    - dimension
+    - supply_input
+    - packaged-foods
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: food.us-east-1
+      database: FOOD
+      schema: SUPPLY
+      object: DIM_HEDGE_TENOR
+      format: table
+  grain:
+    description: One row is one hedge tenor, identified by hedge_tenor_id.
+    components:
+    - identity_id: hedge_tenor_identity
+      dataset_columns:
+      - hedge_tenor_id
+      description: Identifier of the hedge tenor.
+  columns:
+  - name: hedge_tenor_id
+    description: Identifier of the hedge tenor.
+  - name: hedge_tenor_name
+    description: Name of the hedge tenor.
+  - name: hedge_tenor_code
+    description: Code of the hedge tenor.
+    value_description: near_term, medium_term, long_term
+  entity_definitions:
+  - identity_id: hedge_tenor_identity
     dataset_columns:
-    - commodity_id
-    entity_universe: partial
+    - hedge_tenor_id
+    entity_universe: complete
+- node_id: sf:food.supply.dim_energy_input
+  descriptor:
+    qualified_name: food.supply.dim_energy_input
+    display_name: Energy Input
+    description: Energy input for food manufacturing and freight, separate from food commodities.
+    synonyms: []
+    tags:
+    - dimension
+    - supply_input
+    - packaged-foods
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: food.us-east-1
+      database: FOOD
+      schema: SUPPLY
+      object: DIM_ENERGY_INPUT
+      format: table
+  grain:
+    description: One row is one energy input, identified by energy_input_id.
+    components:
+    - identity_id: energy_input_identity
+      dataset_columns:
+      - energy_input_id
+      description: Identifier of the energy input.
+  columns:
+  - name: energy_input_id
+    description: Identifier of the energy input.
+  - name: energy_input_name
+    description: Name of the energy input.
+  - name: energy_input_code
+    description: Code of the energy input.
+    value_description: diesel_fuel, natural_gas, electricity
+  entity_definitions:
+  - identity_id: energy_input_identity
+    dataset_columns:
+    - energy_input_id
+    entity_universe: complete
 - node_id: sf:food.supply.dim_plant
   descriptor:
     qualified_name: food.supply.dim_plant
     display_name: Plant
-    description: Plant Food Inc operates.
+    description: Food manufacturing plant.
     synonyms: []
     tags:
-    - dim
+    - dimension
     - supply_input
-    - food
+    - packaged-foods
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
@@ -101,7 +171,7 @@ nodes:
       object: DIM_PLANT
       format: table
   grain:
-    description: One row is one plant.
+    description: One row is one plant, identified by plant_id.
     components:
     - identity_id: plant_identity
       dataset_columns:
@@ -110,14 +180,10 @@ nodes:
   columns:
   - name: plant_id
     description: Identifier of the plant.
-  - name: country_id
-    description: Country.
-  - name: category_id
-    description: Category.
   - name: plant_name
     description: Name of the plant.
-  - name: plant_code
-    description: Plant code.
+  - name: country_id
+    description: Identifier of the country.
   entity_definitions:
   - identity_id: plant_identity
     dataset_columns:
@@ -127,269 +193,246 @@ nodes:
     dataset_columns:
     - country_id
     entity_universe: partial
-  - identity_id: category_identity
-    dataset_columns:
-    - category_id
-    entity_universe: partial
-- node_id: sf:food.supply.dim_hedge_book
+- node_id: sf:food.supply.dim_packaging_site_type
   descriptor:
-    qualified_name: food.supply.dim_hedge_book
-    display_name: Hedge Book
-    description: Hedge book Food Inc holds.
+    qualified_name: food.supply.dim_packaging_site_type
+    display_name: Packaging Site Type
+    description: Ownership type of a packaging site.
     synonyms: []
     tags:
-    - dim
+    - dimension
     - supply_input
-    - food
+    - packaged-foods
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: food.us-east-1
       database: FOOD
       schema: SUPPLY
-      object: DIM_HEDGE_BOOK
+      object: DIM_PACKAGING_SITE_TYPE
       format: table
   grain:
-    description: One row is one hedge book.
+    description: One row is one packaging site type, identified by packaging_site_type_id.
     components:
-    - identity_id: hedge_book_identity
+    - identity_id: packaging_site_type_identity
       dataset_columns:
-      - hedge_book_id
-      description: Identifier of the hedge book.
+      - packaging_site_type_id
+      description: Identifier of the packaging site type.
   columns:
-  - name: hedge_book_id
-    description: Identifier of the hedge book.
-  - name: commodity_id
-    description: Commodity covered.
-  - name: book_name
-    description: Name of the book.
-  - name: book_code
-    description: Book code.
-    value_description: cocoa, wheat, fuel, near_term, medium_term
+  - name: packaging_site_type_id
+    description: Identifier of the packaging site type.
+  - name: packaging_site_type_name
+    description: Name of the packaging site type.
+  - name: packaging_site_type_code
+    description: Code of the packaging site type.
+    value_description: internal_plant, partner_facility
   entity_definitions:
-  - identity_id: hedge_book_identity
+  - identity_id: packaging_site_type_identity
     dataset_columns:
-    - hedge_book_id
+    - packaging_site_type_id
     entity_universe: complete
+- node_id: sf:food.supply.dim_freight_mode
+  descriptor:
+    qualified_name: food.supply.dim_freight_mode
+    display_name: Freight Mode
+    description: Mode of freight transport.
+    synonyms: []
+    tags:
+    - dimension
+    - supply_input
+    - packaged-foods
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: food.us-east-1
+      database: FOOD
+      schema: SUPPLY
+      object: DIM_FREIGHT_MODE
+      format: table
+  grain:
+    description: One row is one freight mode, identified by freight_mode_id.
+    components:
+    - identity_id: freight_mode_identity
+      dataset_columns:
+      - freight_mode_id
+      description: Identifier of the freight mode.
+  columns:
+  - name: freight_mode_id
+    description: Identifier of the freight mode.
+  - name: freight_mode_name
+    description: Name of the freight mode.
+  - name: freight_mode_code
+    description: Code of the freight mode.
+    value_description: truck, rail, ocean, intermodal
+  entity_definitions:
+  - identity_id: freight_mode_identity
+    dataset_columns:
+    - freight_mode_id
+    entity_universe: complete
+- node_id: sf:food.supply.dim_gis_cost_program
+  descriptor:
+    qualified_name: food.supply.dim_gis_cost_program
+    display_name: GIS Cost Program
+    description: General Mills cost program.
+    synonyms: []
+    tags:
+    - dimension
+    - supply_input
+    - packaged-foods
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: food.us-east-1
+      database: FOOD
+      schema: SUPPLY
+      object: DIM_GIS_COST_PROGRAM
+      format: table
+  grain:
+    description: One row is one gis cost program, identified by gis_cost_program_id.
+    components:
+    - identity_id: gis_cost_program_identity
+      dataset_columns:
+      - gis_cost_program_id
+      description: Identifier of the gis cost program.
+  columns:
+  - name: gis_cost_program_id
+    description: Identifier of the gis cost program.
+  - name: gis_cost_program_name
+    description: Name of the gis cost program.
+  - name: gis_cost_program_code
+    description: Code of the gis cost program.
+    value_description: holistic_margin_management, north_america_supply_chain_modernization, prior_productivity_program
+  entity_definitions:
+  - identity_id: gis_cost_program_identity
+    dataset_columns:
+    - gis_cost_program_id
+    entity_universe: complete
+- node_id: sf:food.supply.dim_mdlz_cost_program
+  descriptor:
+    qualified_name: food.supply.dim_mdlz_cost_program
+    display_name: MDLZ Cost Program
+    description: Mondelez cost program.
+    synonyms: []
+    tags:
+    - dimension
+    - supply_input
+    - packaged-foods
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: food.us-east-1
+      database: FOOD
+      schema: SUPPLY
+      object: DIM_MDLZ_COST_PROGRAM
+      format: table
+  grain:
+    description: One row is one mdlz cost program, identified by mdlz_cost_program_id.
+    components:
+    - identity_id: mdlz_cost_program_identity
+      dataset_columns:
+      - mdlz_cost_program_id
+      description: Identifier of the mdlz cost program.
+  columns:
+  - name: mdlz_cost_program_id
+    description: Identifier of the mdlz cost program.
+  - name: mdlz_cost_program_name
+    description: Name of the mdlz cost program.
+  - name: mdlz_cost_program_code
+    description: Code of the mdlz cost program.
+    value_description: supply_chain_reinvention, overhead_reduction, prior_productivity_program
+  entity_definitions:
+  - identity_id: mdlz_cost_program_identity
+    dataset_columns:
+    - mdlz_cost_program_id
+    entity_universe: complete
+- node_id: sf:food.supply.fact_commodity_quantity_at_risk
+  descriptor:
+    qualified_name: food.supply.fact_commodity_quantity_at_risk
+    display_name: Commodity Quantity At Risk
+    description: Commodity quantity exposed to price movement in tonnes by commodity, sourcing origin,
+      and hedge tenor; cocoa and wheat have a quantity at risk, not only a cost rate.
+    synonyms: []
+    tags:
+    - fact
+    - supply_input
+    - packaged-foods
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: food.us-east-1
+      database: FOOD
+      schema: SUPPLY
+      object: FACT_COMMODITY_QUANTITY_AT_RISK
+      format: table
+  grain:
+    description: One row is one commodity quantity at risk observation for the combination of fiscal quarter,
+      scenario, commodity, sourcing origin, hedge tenor.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: commodity_identity
+      dataset_columns:
+      - commodity_id
+      description: Identifier of the commodity.
+    - identity_id: sourcing_origin_identity
+      dataset_columns:
+      - sourcing_origin_id
+      description: Identifier of the sourcing origin.
+    - identity_id: hedge_tenor_identity
+      dataset_columns:
+      - hedge_tenor_id
+      description: Identifier of the hedge tenor.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: commodity_id
+    description: Identifier of the commodity.
+  - name: sourcing_origin_id
+    description: Identifier of the sourcing origin.
+  - name: hedge_tenor_id
+    description: Identifier of the hedge tenor.
+  - name: quantity_at_risk_tonnes
+    description: Commodity quantity at risk in tonnes.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
   - identity_id: commodity_identity
     dataset_columns:
     - commodity_id
     entity_universe: partial
-- node_id: sf:food.supply.dim_capacity_asset
-  descriptor:
-    qualified_name: food.supply.dim_capacity_asset
-    display_name: Capacity Asset
-    description: Capacity asset at Food Inc, including a partner packaging facility.
-    synonyms: []
-    tags:
-    - dim
-    - supply_input
-    - food
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: food.us-east-1
-      database: FOOD
-      schema: SUPPLY
-      object: DIM_CAPACITY_ASSET
-      format: table
-  grain:
-    description: One row is one capacity asset.
-    components:
-    - identity_id: capacity_asset_identity
-      dataset_columns:
-      - capacity_asset_id
-      description: Identifier of the capacity asset.
-  columns:
-  - name: capacity_asset_id
-    description: Identifier of the capacity asset.
-  - name: plant_id
-    description: Plant.
-  - name: asset_name
-    description: Name of the asset.
-  - name: asset_code
-    description: Asset code.
-    value_description: packaging_facility, biscuit_line, cooler, plant
-  entity_definitions:
-  - identity_id: capacity_asset_identity
+  - identity_id: sourcing_origin_identity
     dataset_columns:
-    - capacity_asset_id
-    entity_universe: complete
-  - identity_id: plant_identity
-    dataset_columns:
-    - plant_id
+    - sourcing_origin_id
     entity_universe: partial
-- node_id: sf:food.supply.dim_cost_program
-  descriptor:
-    qualified_name: food.supply.dim_cost_program
-    display_name: Cost Program
-    description: Productivity or transformation program at Food Inc.
-    synonyms: []
-    tags:
-    - dim
-    - supply_input
-    - food
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: food.us-east-1
-      database: FOOD
-      schema: SUPPLY
-      object: DIM_COST_PROGRAM
-      format: table
-  grain:
-    description: One row is one cost program.
-    components:
-    - identity_id: cost_program_identity
-      dataset_columns:
-      - cost_program_id
-      description: Identifier of the cost program.
-  columns:
-  - name: cost_program_id
-    description: Identifier of the cost program.
-  - name: program_name
-    description: Name of the program.
-  - name: program_code
-    description: Program code.
-    value_description: north_america_modernization, holistic_margin, prior_productivity, transformation
-  entity_definitions:
-  - identity_id: cost_program_identity
+  - identity_id: hedge_tenor_identity
     dataset_columns:
-    - cost_program_id
-    entity_universe: complete
-- node_id: sf:food.supply.dim_freight_lane
-  descriptor:
-    qualified_name: food.supply.dim_freight_lane
-    display_name: Freight Lane
-    description: Freight lane Food Inc uses.
-    synonyms: []
-    tags:
-    - dim
-    - supply_input
-    - food
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: food.us-east-1
-      database: FOOD
-      schema: SUPPLY
-      object: DIM_FREIGHT_LANE
-      format: table
-  grain:
-    description: One row is one freight lane.
-    components:
-    - identity_id: freight_lane_identity
-      dataset_columns:
-      - freight_lane_id
-      description: Identifier of the freight lane.
-  columns:
-  - name: freight_lane_id
-    description: Identifier of the freight lane.
-  - name: lane_name
-    description: Name of the lane.
-  - name: lane_code
-    description: Lane code.
-    value_description: diesel, driver, other_freight
-  entity_definitions:
-  - identity_id: freight_lane_identity
-    dataset_columns:
-    - freight_lane_id
-    entity_universe: complete
-- node_id: sf:food.supply.dim_packaging_site
-  descriptor:
-    qualified_name: food.supply.dim_packaging_site
-    display_name: Packaging Site
-    description: Packaging site, including a partner facility, for Food Inc.
-    synonyms: []
-    tags:
-    - dim
-    - supply_input
-    - food
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: food.us-east-1
-      database: FOOD
-      schema: SUPPLY
-      object: DIM_PACKAGING_SITE
-      format: table
-  grain:
-    description: One row is one packaging site.
-    components:
-    - identity_id: packaging_site_identity
-      dataset_columns:
-      - packaging_site_id
-      description: Identifier of the packaging site.
-  columns:
-  - name: packaging_site_id
-    description: Identifier of the packaging site.
-  - name: site_name
-    description: Name of the site.
-  - name: site_code
-    description: Site code.
-    value_description: partner_facility, internal
-  - name: partner_flag
-    description: Whether the site is a partner facility.
-  entity_definitions:
-  - identity_id: packaging_site_identity
-    dataset_columns:
-    - packaging_site_id
-    entity_universe: complete
-- node_id: sf:food.supply.dim_acquisition
-  descriptor:
-    qualified_name: food.supply.dim_acquisition
-    display_name: Acquisition
-    description: Acquisition in the Food Inc pet business, including Whitebridge.
-    synonyms: []
-    tags:
-    - dim
-    - supply_input
-    - food
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: food.us-east-1
-      database: FOOD
-      schema: SUPPLY
-      object: DIM_ACQUISITION
-      format: table
-  grain:
-    description: One row is one acquisition.
-    components:
-    - identity_id: acquisition_identity
-      dataset_columns:
-      - acquisition_id
-      description: Identifier of the acquisition.
-  columns:
-  - name: acquisition_id
-    description: Identifier of the acquisition.
-  - name: category_id
-    description: Category.
-  - name: acquisition_name
-    description: Name of the acquisition.
-  - name: acquisition_code
-    description: Acquisition code.
-    value_description: whitebridge
-  entity_definitions:
-  - identity_id: acquisition_identity
-    dataset_columns:
-    - acquisition_id
-    entity_universe: complete
-  - identity_id: category_identity
-    dataset_columns:
-    - category_id
+    - hedge_tenor_id
     entity_universe: partial
 - node_id: sf:food.supply.fact_commodity_cost
   descriptor:
     qualified_name: food.supply.fact_commodity_cost
     display_name: Commodity Cost
-    description: Contracted commodity cost for Food Inc. This fact stores capacity, supply, or input cost,
-      not a list price and not consumer demand quantity.
+    description: Commodity cost per tonne; quantity at risk in tonnes on the quantity-at-risk fact shares
+      commodity and sourcing origin keys.
     synonyms: []
     tags:
     - fact
     - supply_input
-    - food
+    - packaged-foods
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
@@ -399,592 +442,610 @@ nodes:
       object: FACT_COMMODITY_COST
       format: table
   grain:
-    description: One row is one commodity cost.
+    description: One row is one commodity cost observation for the combination of fiscal quarter, scenario,
+      commodity, sourcing origin.
     components:
-    - identity_id: commodity_cost_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - commodity_cost_id
-      description: Identifier of the commodity cost.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: commodity_identity
+      dataset_columns:
+      - commodity_id
+      description: Identifier of the commodity.
+    - identity_id: sourcing_origin_identity
+      dataset_columns:
+      - sourcing_origin_id
+      description: Identifier of the sourcing origin.
   columns:
-  - name: commodity_cost_id
-    description: Identifier of the commodity cost.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
   - name: commodity_id
-    description: Commodity.
-  - name: contract_cost_amount
-    description: Contracted unit cost.
-  - name: inflation_rate
-    description: Inflation rate.
-  - name: exit_rate
-    description: Exit rate inside the guide range.
-  - name: band_code
-    description: Inflation band.
-    value_description: four_to_five, above, below
-  - name: phased_quarter_code
-    description: Quarter the cost steps.
-    value_description: q1, q2, q3, q4, second_half
+    description: Identifier of the commodity.
+  - name: sourcing_origin_id
+    description: Identifier of the sourcing origin.
+  - name: contract_cost_dollars_per_tonne
+    description: Contracted commodity cost in dollars per tonne.
+  - name: cost_inflation_percent
+    description: Commodity cost inflation in percent.
   entity_definitions:
-  - identity_id: commodity_cost_identity
-    dataset_columns:
-    - commodity_cost_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
     entity_universe: partial
   - identity_id: commodity_identity
     dataset_columns:
     - commodity_id
     entity_universe: partial
-- node_id: sf:food.supply.fact_commodity_supply
+  - identity_id: sourcing_origin_identity
+    dataset_columns:
+    - sourcing_origin_id
+    entity_universe: partial
+- node_id: sf:food.supply.fact_commodity_spot_price
   descriptor:
-    qualified_name: food.supply.fact_commodity_supply
-    display_name: Commodity Supply
-    description: Physical supply and coverage for a Food Inc commodity, separate from the unit cost. This
-      fact stores capacity, supply, or input cost, not a list price and not consumer demand quantity.
+    qualified_name: food.supply.fact_commodity_spot_price
+    display_name: Commodity Spot Price
+    description: Spot commodity price per tonne by commodity.
     synonyms: []
     tags:
     - fact
     - supply_input
-    - food
+    - packaged-foods
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: food.us-east-1
       database: FOOD
       schema: SUPPLY
-      object: FACT_COMMODITY_SUPPLY
+      object: FACT_COMMODITY_SPOT_PRICE
       format: table
   grain:
-    description: One row is one commodity supply.
+    description: One row is one commodity spot price observation for the combination of fiscal quarter,
+      scenario, commodity.
     components:
-    - identity_id: commodity_supply_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - commodity_supply_id
-      description: Identifier of the commodity supply.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: commodity_identity
+      dataset_columns:
+      - commodity_id
+      description: Identifier of the commodity.
   columns:
-  - name: commodity_supply_id
-    description: Identifier of the commodity supply.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
   - name: commodity_id
-    description: Commodity.
-  - name: origin_id
-    description: Origin.
-  - name: covered_quantity
-    description: Quantity covered.
-  - name: bought_the_dip_flag
-    description: Whether the recent dip was bought.
-  - name: locked_flag
-    description: Whether cost is largely locked.
-  - name: keeps_rising_case_flag
-    description: Whether the case assumes the commodity keeps rising.
+    description: Identifier of the commodity.
+  - name: spot_price_dollars_per_tonne
+    description: Spot commodity price in dollars per tonne.
   entity_definitions:
-  - identity_id: commodity_supply_identity
-    dataset_columns:
-    - commodity_supply_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
     entity_universe: partial
   - identity_id: commodity_identity
     dataset_columns:
     - commodity_id
     entity_universe: partial
-  - identity_id: origin_identity
-    dataset_columns:
-    - origin_id
-    entity_universe: partial
-- node_id: sf:food.supply.fact_spot_path
+- node_id: sf:food.supply.fact_commodity_inventory_quantity
   descriptor:
-    qualified_name: food.supply.fact_spot_path
-    display_name: Spot Path
-    description: Spot path Food Inc is assessing, separate from contracted cost and from selling price.
-      This fact stores capacity, supply, or input cost, not a list price and not consumer demand quantity.
+    qualified_name: food.supply.fact_commodity_inventory_quantity
+    display_name: Commodity Inventory Quantity
+    description: Commodity inventory held in tonnes.
     synonyms: []
     tags:
     - fact
     - supply_input
-    - food
+    - packaged-foods
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: food.us-east-1
       database: FOOD
       schema: SUPPLY
-      object: FACT_SPOT_PATH
+      object: FACT_COMMODITY_INVENTORY_QUANTITY
       format: table
   grain:
-    description: One row is one spot path.
+    description: One row is one commodity inventory quantity observation for the combination of fiscal
+      quarter, scenario, commodity.
     components:
-    - identity_id: spot_path_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - spot_path_id
-      description: Identifier of the spot path.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: commodity_identity
+      dataset_columns:
+      - commodity_id
+      description: Identifier of the commodity.
   columns:
-  - name: spot_path_id
-    description: Identifier of the spot path.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
   - name: commodity_id
-    description: Commodity.
-  - name: spot_cost_amount
-    description: Spot unit cost.
-  - name: fell_then_stabilized_flag
-    description: Whether the commodity fell and then stabilized.
-  - name: second_half_case_code
-    description: Second-half case.
-    value_description: down, stable, up
+    description: Identifier of the commodity.
+  - name: inventory_tonnes
+    description: Commodity inventory in tonnes.
   entity_definitions:
-  - identity_id: spot_path_identity
-    dataset_columns:
-    - spot_path_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
     entity_universe: partial
   - identity_id: commodity_identity
     dataset_columns:
     - commodity_id
     entity_universe: partial
-- node_id: sf:food.supply.fact_hedge_coverage
+- node_id: sf:food.supply.fact_hedge_quantity
   descriptor:
-    qualified_name: food.supply.fact_hedge_coverage
-    display_name: Hedge Coverage
-    description: How covered Food Inc is. This fact stores capacity, supply, or input cost, not a list
-      price and not consumer demand quantity.
+    qualified_name: food.supply.fact_hedge_quantity
+    display_name: Hedge Quantity
+    description: Hedged commodity quantity in tonnes by commodity and hedge tenor.
     synonyms: []
     tags:
     - fact
     - supply_input
-    - food
+    - packaged-foods
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: food.us-east-1
       database: FOOD
       schema: SUPPLY
-      object: FACT_HEDGE_COVERAGE
+      object: FACT_HEDGE_QUANTITY
       format: table
   grain:
-    description: One row is one hedge coverage.
+    description: One row is one hedge quantity observation for the combination of fiscal quarter, scenario,
+      commodity, hedge tenor.
     components:
-    - identity_id: hedge_coverage_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - hedge_coverage_id
-      description: Identifier of the hedge coverage.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: commodity_identity
+      dataset_columns:
+      - commodity_id
+      description: Identifier of the commodity.
+    - identity_id: hedge_tenor_identity
+      dataset_columns:
+      - hedge_tenor_id
+      description: Identifier of the hedge tenor.
   columns:
-  - name: hedge_coverage_id
-    description: Identifier of the hedge coverage.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: hedge_book_id
-    description: Hedge book.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
   - name: commodity_id
-    description: Commodity.
-  - name: coverage_rate
-    description: Share of the need that is hedged.
-  - name: unhedged_assumption_rate
-    description: Unhedged move assumed in the guide.
-  - name: with_fuel_case_rate
-    description: Inflation with elevated fuel and oil derivatives.
-  - name: without_fuel_case_rate
-    description: Inflation without that elevation.
-  - name: savings_required_rate
-    description: Savings required to offset the case.
+    description: Identifier of the commodity.
+  - name: hedge_tenor_id
+    description: Identifier of the hedge tenor.
+  - name: hedged_quantity_tonnes
+    description: Hedged commodity quantity in tonnes.
   entity_definitions:
-  - identity_id: hedge_coverage_identity
-    dataset_columns:
-    - hedge_coverage_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: hedge_book_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - hedge_book_id
+    - scenario_id
     entity_universe: partial
   - identity_id: commodity_identity
     dataset_columns:
     - commodity_id
     entity_universe: partial
-- node_id: sf:food.supply.fact_inflation_path
+  - identity_id: hedge_tenor_identity
+    dataset_columns:
+    - hedge_tenor_id
+    entity_universe: partial
+- node_id: sf:food.supply.fact_hedge_coverage_rate
   descriptor:
-    qualified_name: food.supply.fact_inflation_path
-    display_name: Inflation Path
-    description: Inflation path inside the Food Inc guide. This fact stores capacity, supply, or input
-      cost, not a list price and not consumer demand quantity.
+    qualified_name: food.supply.fact_hedge_coverage_rate
+    display_name: Hedge Coverage Rate
+    description: Hedge coverage in percent; hedged quantity in tonnes on the hedge quantity fact shares
+      commodity and hedge tenor keys.
     synonyms: []
     tags:
     - fact
     - supply_input
-    - food
+    - packaged-foods
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: food.us-east-1
       database: FOOD
       schema: SUPPLY
-      object: FACT_INFLATION_PATH
+      object: FACT_HEDGE_COVERAGE_RATE
       format: table
   grain:
-    description: One row is one inflation path.
+    description: One row is one hedge coverage rate observation for the combination of fiscal quarter,
+      scenario, commodity, hedge tenor.
     components:
-    - identity_id: inflation_path_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - inflation_path_id
-      description: Identifier of the inflation path.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: commodity_identity
+      dataset_columns:
+      - commodity_id
+      description: Identifier of the commodity.
+    - identity_id: hedge_tenor_identity
+      dataset_columns:
+      - hedge_tenor_id
+      description: Identifier of the hedge tenor.
   columns:
-  - name: inflation_path_id
-    description: Identifier of the inflation path.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: quarter_inflation_rate
-    description: Inflation in the quarter.
-  - name: rest_of_year_rate
-    description: Pace for the rest of the year.
-  - name: exit_rate
-    description: Exit rate.
-  - name: similar_three_quarters_flag
-    description: Whether the first three quarters are similar.
-  - name: fourth_quarter_step_up_flag
-    description: Whether the fourth quarter steps up.
-  - name: net_includes_refund_flag
-    description: Whether the net figure includes tariff refunds.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: commodity_id
+    description: Identifier of the commodity.
+  - name: hedge_tenor_id
+    description: Identifier of the hedge tenor.
+  - name: hedge_coverage_percent
+    description: Hedge coverage in percent.
   entity_definitions:
-  - identity_id: inflation_path_identity
-    dataset_columns:
-    - inflation_path_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-- node_id: sf:food.supply.fact_plant_capacity
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: commodity_identity
+    dataset_columns:
+    - commodity_id
+    entity_universe: partial
+  - identity_id: hedge_tenor_identity
+    dataset_columns:
+    - hedge_tenor_id
+    entity_universe: partial
+- node_id: sf:food.supply.fact_gis_plant_capacity
   descriptor:
-    qualified_name: food.supply.fact_plant_capacity
-    display_name: Plant Capacity
-    description: Plant capacity and route-to-market change at Food Inc. This fact stores capacity, supply,
-      or input cost, not a list price and not consumer demand quantity.
+    qualified_name: food.supply.fact_gis_plant_capacity
+    display_name: GIS Plant Capacity
+    description: General Mills plant capacity in cases by plant and category.
     synonyms: []
     tags:
     - fact
     - supply_input
-    - food
+    - packaged-foods
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: food.us-east-1
       database: FOOD
       schema: SUPPLY
-      object: FACT_PLANT_CAPACITY
+      object: FACT_GIS_PLANT_CAPACITY
       format: table
   grain:
-    description: One row is one plant capacity.
+    description: One row is one gis plant capacity observation for the combination of fiscal quarter,
+      scenario, plant, gis category.
     components:
-    - identity_id: plant_capacity_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - plant_capacity_id
-      description: Identifier of the plant capacity.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: plant_identity
+      dataset_columns:
+      - plant_id
+      description: Identifier of the plant.
+    - identity_id: gis_category_identity
+      dataset_columns:
+      - gis_category_id
+      description: Identifier of the gis category.
   columns:
-  - name: plant_capacity_id
-    description: Identifier of the plant capacity.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
   - name: plant_id
-    description: Plant.
-  - name: cost_program_id
-    description: Program.
-  - name: category_id
-    description: Category.
-  - name: capacity_quantity
-    description: Capacity quantity.
-  - name: modernization_flag
-    description: Whether this is the new modernization rather than earlier consolidation.
-  - name: service_already_in_place_flag
-    description: Whether service levels were already in place.
-  - name: route_change_flag
-    description: Whether route to market changes.
+    description: Identifier of the plant.
+  - name: gis_category_id
+    description: Identifier of the gis category.
+  - name: plant_capacity_case_count
+    description: Plant capacity in cases.
   entity_definitions:
-  - identity_id: plant_capacity_identity
-    dataset_columns:
-    - plant_capacity_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
     entity_universe: partial
   - identity_id: plant_identity
     dataset_columns:
     - plant_id
     entity_universe: partial
-  - identity_id: cost_program_identity
+  - identity_id: gis_category_identity
     dataset_columns:
-    - cost_program_id
+    - gis_category_id
     entity_universe: partial
-  - identity_id: category_identity
-    dataset_columns:
-    - category_id
-    entity_universe: partial
-- node_id: sf:food.supply.fact_inventory_position
+- node_id: sf:food.supply.fact_mdlz_plant_capacity
   descriptor:
-    qualified_name: food.supply.fact_inventory_position
-    display_name: Inventory Position
-    description: Commodity inventory phasing at Food Inc. A stock quantity, not a selling price. This
-      fact stores capacity, supply, or input cost, not a list price and not consumer demand quantity.
+    qualified_name: food.supply.fact_mdlz_plant_capacity
+    display_name: MDLZ Plant Capacity
+    description: Mondelez plant capacity in kilograms by plant and category.
     synonyms: []
     tags:
     - fact
     - supply_input
-    - food
+    - packaged-foods
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: food.us-east-1
       database: FOOD
       schema: SUPPLY
-      object: FACT_INVENTORY_POSITION
+      object: FACT_MDLZ_PLANT_CAPACITY
       format: table
   grain:
-    description: One row is one inventory position.
+    description: One row is one mdlz plant capacity observation for the combination of fiscal quarter,
+      scenario, plant, mdlz category.
     components:
-    - identity_id: inventory_position_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - inventory_position_id
-      description: Identifier of the inventory position.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: plant_identity
+      dataset_columns:
+      - plant_id
+      description: Identifier of the plant.
+    - identity_id: mdlz_category_identity
+      dataset_columns:
+      - mdlz_category_id
+      description: Identifier of the mdlz category.
   columns:
-  - name: inventory_position_id
-    description: Identifier of the inventory position.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: commodity_id
-    description: Commodity.
-  - name: acquisition_id
-    description: Acquisition when the row is an acquired stock.
-  - name: inventory_quantity
-    description: Inventory quantity.
-  - name: phasing_drag_smaller_flag
-    description: Whether the accounting drag was smaller than feared.
-  - name: extra_month_flag
-    description: Whether an acquisition contributed an extra month.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: plant_id
+    description: Identifier of the plant.
+  - name: mdlz_category_id
+    description: Identifier of the mdlz category.
+  - name: plant_capacity_kilograms
+    description: Plant capacity in kilograms.
   entity_definitions:
-  - identity_id: inventory_position_identity
-    dataset_columns:
-    - inventory_position_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: commodity_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - commodity_id
+    - scenario_id
     entity_universe: partial
-  - identity_id: acquisition_identity
+  - identity_id: plant_identity
     dataset_columns:
-    - acquisition_id
+    - plant_id
     entity_universe: partial
-- node_id: sf:food.supply.fact_retailer_inventory
+  - identity_id: mdlz_category_identity
+    dataset_columns:
+    - mdlz_category_id
+    entity_universe: partial
+- node_id: sf:food.supply.fact_gis_productivity_savings
   descriptor:
-    qualified_name: food.supply.fact_retailer_inventory
-    display_name: Retailer Inventory
-    description: Retailer inventory at Food Inc customers. This fact stores capacity, supply, or input
-      cost, not a list price and not consumer demand quantity.
+    qualified_name: food.supply.fact_gis_productivity_savings
+    display_name: GIS Productivity Savings
+    description: General Mills productivity savings by its own cost program.
     synonyms: []
     tags:
     - fact
     - supply_input
-    - food
+    - packaged-foods
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: food.us-east-1
       database: FOOD
       schema: SUPPLY
-      object: FACT_RETAILER_INVENTORY
+      object: FACT_GIS_PRODUCTIVITY_SAVINGS
       format: table
   grain:
-    description: One row is one retailer inventory.
+    description: One row is one gis productivity savings observation for the combination of fiscal quarter,
+      scenario, gis cost program.
     components:
-    - identity_id: retailer_inventory_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - retailer_inventory_id
-      description: Identifier of the retailer inventory.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: gis_cost_program_identity
+      dataset_columns:
+      - gis_cost_program_id
+      description: Identifier of the gis cost program.
   columns:
-  - name: retailer_inventory_id
-    description: Identifier of the retailer inventory.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: retailer_id
-    description: Retailer.
-  - name: category_id
-    description: Category.
-  - name: channel_id
-    description: Channel.
-  - name: acquisition_id
-    description: Acquisition when an extra month is in the comparison.
-  - name: inventory_quantity
-    description: Retailer inventory.
-  - name: expected_reduction_quantity
-    description: Reduction that had been expected.
-  - name: actual_reduction_quantity
-    description: Reduction retailers actually took.
-  - name: smaller_than_expected_flag
-    description: Whether the hit was smaller than expected.
-  - name: smooths_out_flag
-    description: Whether swings are expected to smooth out.
-  - name: refill_quarter_flag
-    description: Whether the next quarter refills the inventory.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: gis_cost_program_id
+    description: Identifier of the gis cost program.
+  - name: productivity_savings_amount
+    description: Productivity savings in dollars.
   entity_definitions:
-  - identity_id: retailer_inventory_identity
-    dataset_columns:
-    - retailer_inventory_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: retailer_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - retailer_id
+    - scenario_id
     entity_universe: partial
-  - identity_id: category_identity
+  - identity_id: gis_cost_program_identity
     dataset_columns:
-    - category_id
+    - gis_cost_program_id
     entity_universe: partial
-  - identity_id: channel_identity
-    dataset_columns:
-    - channel_id
-    entity_universe: partial
-  - identity_id: acquisition_identity
-    dataset_columns:
-    - acquisition_id
-    entity_universe: partial
-- node_id: sf:food.supply.fact_productivity
+- node_id: sf:food.supply.fact_mdlz_productivity_savings
   descriptor:
-    qualified_name: food.supply.fact_productivity
-    display_name: Productivity
-    description: Productivity savings at Food Inc. This fact stores capacity, supply, or input cost, not
-      a list price and not consumer demand quantity.
+    qualified_name: food.supply.fact_mdlz_productivity_savings
+    display_name: MDLZ Productivity Savings
+    description: Mondelez productivity savings by its own cost program.
     synonyms: []
     tags:
     - fact
     - supply_input
-    - food
+    - packaged-foods
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: food.us-east-1
       database: FOOD
       schema: SUPPLY
-      object: FACT_PRODUCTIVITY
+      object: FACT_MDLZ_PRODUCTIVITY_SAVINGS
       format: table
   grain:
-    description: One row is one productivity.
+    description: One row is one mdlz productivity savings observation for the combination of fiscal quarter,
+      scenario, mdlz cost program.
     components:
-    - identity_id: productivity_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - productivity_id
-      description: Identifier of the productivity.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: mdlz_cost_program_identity
+      dataset_columns:
+      - mdlz_cost_program_id
+      description: Identifier of the mdlz cost program.
   columns:
-  - name: productivity_id
-    description: Identifier of the productivity.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: cost_program_id
-    description: Cost program.
-  - name: savings_amount
-    description: Savings amount.
-  - name: remaining_amount
-    description: Savings still to come.
-  - name: offsets_inflation_flag
-    description: Whether savings are sized to inflation.
-  - name: visible_if_compete_worsens_flag
-    description: Whether more savings are visible if the cost to compete worsens.
-  - name: different_from_prior_flag
-    description: Whether the program differs from earlier productivity programs.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: mdlz_cost_program_id
+    description: Identifier of the mdlz cost program.
+  - name: productivity_savings_amount
+    description: Productivity savings in dollars.
   entity_definitions:
-  - identity_id: productivity_identity
-    dataset_columns:
-    - productivity_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: cost_program_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - cost_program_id
+    - scenario_id
     entity_universe: partial
-- node_id: sf:food.supply.fact_sga
+  - identity_id: mdlz_cost_program_identity
+    dataset_columns:
+    - mdlz_cost_program_id
+    entity_universe: partial
+- node_id: sf:food.supply.fact_freight_quantity
   descriptor:
-    qualified_name: food.supply.fact_sga
-    display_name: SG&A
-    description: SG&A at Food Inc. This fact stores capacity, supply, or input cost, not a list price
-      and not consumer demand quantity.
+    qualified_name: food.supply.fact_freight_quantity
+    display_name: Freight Quantity
+    description: Freight moved in tonnes by freight mode.
     synonyms: []
     tags:
     - fact
     - supply_input
-    - food
+    - packaged-foods
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: food.us-east-1
       database: FOOD
       schema: SUPPLY
-      object: FACT_SGA
+      object: FACT_FREIGHT_QUANTITY
       format: table
   grain:
-    description: One row is one sg&a.
+    description: One row is one freight quantity observation for the combination of fiscal quarter, scenario,
+      freight mode.
     components:
-    - identity_id: sga_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - sga_id
-      description: Identifier of the sg&a.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: freight_mode_identity
+      dataset_columns:
+      - freight_mode_id
+      description: Identifier of the freight mode.
   columns:
-  - name: sga_id
-    description: Identifier of the sg&a.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: cost_program_id
-    description: Program.
-  - name: spend_amount
-    description: SG&A spend.
-  - name: decline_is_lasting_flag
-    description: Whether this year's decline is a lasting reduction.
-  - name: returns_next_year_flag
-    description: Whether spend returns next year with reinvestment.
-  - name: multi_year_continues_flag
-    description: Whether multiyear investments continue.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: freight_mode_id
+    description: Identifier of the freight mode.
+  - name: freight_tonnes
+    description: Freight moved in tonnes.
   entity_definitions:
-  - identity_id: sga_identity
-    dataset_columns:
-    - sga_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: cost_program_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - cost_program_id
+    - scenario_id
+    entity_universe: partial
+  - identity_id: freight_mode_identity
+    dataset_columns:
+    - freight_mode_id
     entity_universe: partial
 - node_id: sf:food.supply.fact_freight_cost
   descriptor:
     qualified_name: food.supply.fact_freight_cost
     display_name: Freight Cost
-    description: Freight cost at Food Inc, including driver tightness. This fact stores capacity, supply,
-      or input cost, not a list price and not consumer demand quantity.
+    description: Freight cost amount by freight mode, with no food quantity on this cost fact.
     synonyms: []
     tags:
     - fact
     - supply_input
-    - food
+    - packaged-foods
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
@@ -994,558 +1055,276 @@ nodes:
       object: FACT_FREIGHT_COST
       format: table
   grain:
-    description: One row is one freight cost.
+    description: One row is one freight cost observation for the combination of fiscal quarter, scenario,
+      freight mode.
     components:
-    - identity_id: freight_cost_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - freight_cost_id
-      description: Identifier of the freight cost.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: freight_mode_identity
+      dataset_columns:
+      - freight_mode_id
+      description: Identifier of the freight mode.
   columns:
-  - name: freight_cost_id
-    description: Identifier of the freight cost.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: freight_lane_id
-    description: Freight lane.
-  - name: cost_amount
-    description: Freight cost.
-  - name: driver_tight_flag
-    description: Whether drivers are tight.
-  - name: beyond_diesel_flag
-    description: Whether the headwind is more than diesel.
-  - name: in_next_year_outlook_flag
-    description: Whether it is in next year's inflation.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: freight_mode_id
+    description: Identifier of the freight mode.
+  - name: freight_cost_amount
+    description: Freight cost in dollars.
   entity_definitions:
-  - identity_id: freight_cost_identity
-    dataset_columns:
-    - freight_cost_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: freight_lane_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - freight_lane_id
+    - scenario_id
     entity_universe: partial
-- node_id: sf:food.supply.fact_transformation
+  - identity_id: freight_mode_identity
+    dataset_columns:
+    - freight_mode_id
+    entity_universe: partial
+- node_id: sf:food.supply.fact_energy_cost
   descriptor:
-    qualified_name: food.supply.fact_transformation
-    display_name: Transformation
-    description: Transformation work at Food Inc and when benefits show up. This fact stores capacity,
-      supply, or input cost, not a list price and not consumer demand quantity.
+    qualified_name: food.supply.fact_energy_cost
+    display_name: Energy Cost
+    description: Energy input cost amount by energy input, separate from food commodities.
     synonyms: []
     tags:
     - fact
     - supply_input
-    - food
+    - packaged-foods
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: food.us-east-1
       database: FOOD
       schema: SUPPLY
-      object: FACT_TRANSFORMATION
+      object: FACT_ENERGY_COST
       format: table
   grain:
-    description: One row is one transformation.
+    description: One row is one energy cost observation for the combination of fiscal quarter, scenario,
+      energy input.
     components:
-    - identity_id: transformation_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - transformation_id
-      description: Identifier of the transformation.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: energy_input_identity
+      dataset_columns:
+      - energy_input_id
+      description: Identifier of the energy input.
   columns:
-  - name: transformation_id
-    description: Identifier of the transformation.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: cost_program_id
-    description: Program.
-  - name: capacity_asset_id
-    description: Asset.
-  - name: project_count
-    description: Projects underway.
-  - name: benefit_year_code
-    description: When benefits show.
-    value_description: this_year, next_year, later
-  - name: flexibility_added_flag
-    description: Whether the new facility adds flexibility.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: energy_input_id
+    description: Identifier of the energy input.
+  - name: energy_cost_amount
+    description: Energy cost in dollars.
+  - name: energy_cost_inflation_percent
+    description: Energy cost inflation in percent.
   entity_definitions:
-  - identity_id: transformation_identity
-    dataset_columns:
-    - transformation_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: cost_program_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - cost_program_id
+    - scenario_id
     entity_universe: partial
-  - identity_id: capacity_asset_identity
+  - identity_id: energy_input_identity
     dataset_columns:
-    - capacity_asset_id
+    - energy_input_id
     entity_universe: partial
-- node_id: sf:food.supply.fact_packaging_capacity
+- node_id: sf:food.supply.fact_packaging_capacity_quantity
   descriptor:
-    qualified_name: food.supply.fact_packaging_capacity
-    display_name: Packaging Capacity
-    description: Packaging capacity Food Inc added with a partner. This fact stores capacity, supply,
-      or input cost, not a list price and not consumer demand quantity.
+    qualified_name: food.supply.fact_packaging_capacity_quantity
+    display_name: Packaging Capacity Quantity
+    description: Packaging capacity by site ownership type in cases.
     synonyms: []
     tags:
     - fact
     - supply_input
-    - food
+    - packaged-foods
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: food.us-east-1
       database: FOOD
       schema: SUPPLY
-      object: FACT_PACKAGING_CAPACITY
+      object: FACT_PACKAGING_CAPACITY_QUANTITY
       format: table
   grain:
-    description: One row is one packaging capacity.
+    description: One row is one packaging capacity quantity observation for the combination of fiscal
+      quarter, scenario, packaging site type.
     components:
-    - identity_id: packaging_capacity_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - packaging_capacity_id
-      description: Identifier of the packaging capacity.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: packaging_site_type_identity
+      dataset_columns:
+      - packaging_site_type_id
+      description: Identifier of the packaging site type.
   columns:
-  - name: packaging_capacity_id
-    description: Identifier of the packaging capacity.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: packaging_site_id
-    description: Packaging site.
-  - name: capacity_asset_id
-    description: Capacity asset.
-  - name: capacity_quantity
-    description: Packaging capacity.
-  - name: partner_flag
-    description: Whether a partner facility provides it.
-  - name: flexibility_flag
-    description: Whether the facility adds flexibility.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: packaging_site_type_id
+    description: Identifier of the packaging site type.
+  - name: packaging_capacity_case_count
+    description: Packaging capacity in cases.
   entity_definitions:
-  - identity_id: packaging_capacity_identity
-    dataset_columns:
-    - packaging_capacity_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: packaging_site_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - packaging_site_id
+    - scenario_id
     entity_universe: partial
-  - identity_id: capacity_asset_identity
+  - identity_id: packaging_site_type_identity
     dataset_columns:
-    - capacity_asset_id
+    - packaging_site_type_id
     entity_universe: partial
-- node_id: sf:food.supply.fact_distribution_doors
+- node_id: sf:food.supply.fact_tariff_refund_amount
   descriptor:
-    qualified_name: food.supply.fact_distribution_doors
-    display_name: Distribution Doors
-    description: Doors and on-shelf availability for a Food Inc item. A distribution count, not consumer
-      demand. This fact stores capacity, supply, or input cost, not a list price and not consumer demand
-      quantity.
+    qualified_name: food.supply.fact_tariff_refund_amount
+    display_name: Tariff Refund Amount
+    description: Tariff refund amount at enterprise input level by commodity exposure.
     synonyms: []
     tags:
     - fact
     - supply_input
-    - food
+    - packaged-foods
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: food.us-east-1
       database: FOOD
       schema: SUPPLY
-      object: FACT_DISTRIBUTION_DOORS
+      object: FACT_TARIFF_REFUND_AMOUNT
       format: table
   grain:
-    description: One row is one distribution doors.
+    description: One row is one tariff refund amount observation for the combination of fiscal quarter,
+      scenario, commodity.
     components:
-    - identity_id: distribution_doors_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - distribution_doors_id
-      description: Identifier of the distribution doors.
-  columns:
-  - name: distribution_doors_id
-    description: Identifier of the distribution doors.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: brand_id
-    description: Brand.
-  - name: innovation_item_id
-    description: Item.
-  - name: channel_id
-    description: Channel.
-  - name: door_count
-    description: Doors.
-  - name: cooler_goal_hit_flag
-    description: Whether the cooler-distribution goal was hit.
-  - name: on_shelf_rate
-    description: On-shelf availability.
-  - name: more_doors_next_flag
-    description: Whether the next step is more doors.
-  entity_definitions:
-  - identity_id: distribution_doors_identity
-    dataset_columns:
-    - distribution_doors_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: brand_identity
-    dataset_columns:
-    - brand_id
-    entity_universe: partial
-  - identity_id: innovation_item_identity
-    dataset_columns:
-    - innovation_item_id
-    entity_universe: partial
-  - identity_id: channel_identity
-    dataset_columns:
-    - channel_id
-    entity_universe: partial
-- node_id: sf:food.supply.fact_availability
-  descriptor:
-    qualified_name: food.supply.fact_availability
-    display_name: Availability
-    description: Service and on-shelf availability after a Food Inc supply disruption. This fact stores
-      capacity, supply, or input cost, not a list price and not consumer demand quantity.
-    synonyms: []
-    tags:
-    - fact
-    - supply_input
-    - food
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: food.us-east-1
-      database: FOOD
-      schema: SUPPLY
-      object: FACT_AVAILABILITY
-      format: table
-  grain:
-    description: One row is one availability.
-    components:
-    - identity_id: availability_identity
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
       dataset_columns:
-      - availability_id
-      description: Identifier of the availability.
-  columns:
-  - name: availability_id
-    description: Identifier of the availability.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: category_id
-    description: Category.
-  - name: plant_id
-    description: Plant.
-  - name: in_stock_rate
-    description: In-stock rate.
-  - name: disruption_behind_flag
-    description: Whether the supply disruption is behind the company.
-  entity_definitions:
-  - identity_id: availability_identity
-    dataset_columns:
-    - availability_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: category_identity
-    dataset_columns:
-    - category_id
-    entity_universe: partial
-  - identity_id: plant_identity
-    dataset_columns:
-    - plant_id
-    entity_universe: partial
-- node_id: sf:food.supply.fact_origin_investment
-  descriptor:
-    qualified_name: food.supply.fact_origin_investment
-    display_name: Origin Investment
-    description: Cocoa-growing investment Food Inc is making outside traditional origins. This fact stores
-      capacity, supply, or input cost, not a list price and not consumer demand quantity.
-    synonyms: []
-    tags:
-    - fact
-    - supply_input
-    - food
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: food.us-east-1
-      database: FOOD
-      schema: SUPPLY
-      object: FACT_ORIGIN_INVESTMENT
-      format: table
-  grain:
-    description: One row is one origin investment.
-    components:
-    - identity_id: origin_investment_identity
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: commodity_identity
       dataset_columns:
-      - origin_investment_id
-      description: Identifier of the origin investment.
+      - commodity_id
+      description: Identifier of the commodity.
   columns:
-  - name: origin_investment_id
-    description: Identifier of the origin investment.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: origin_id
-    description: Origin.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
   - name: commodity_id
-    description: Commodity.
-  - name: investment_amount
-    description: Investment amount.
-  - name: ahead_of_traditional_flag
-    description: Whether new origins are progressing relative to traditional ones.
+    description: Identifier of the commodity.
+  - name: tariff_refund_amount
+    description: Tariff refunds in dollars.
   entity_definitions:
-  - identity_id: origin_investment_identity
-    dataset_columns:
-    - origin_investment_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: origin_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - origin_id
+    - scenario_id
     entity_universe: partial
   - identity_id: commodity_identity
     dataset_columns:
     - commodity_id
     entity_universe: partial
-- node_id: sf:food.supply.fact_modernization
+- node_id: sf:food.supply.fact_origin_investment_amount
   descriptor:
-    qualified_name: food.supply.fact_modernization
-    display_name: Modernization
-    description: North America biscuit supply-chain modernization at Food Inc. This fact stores capacity,
-      supply, or input cost, not a list price and not consumer demand quantity.
+    qualified_name: food.supply.fact_origin_investment_amount
+    display_name: Origin Investment Amount
+    description: Investment in commodity sourcing origins by commodity and origin.
     synonyms: []
     tags:
     - fact
     - supply_input
-    - food
+    - packaged-foods
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: food.us-east-1
       database: FOOD
       schema: SUPPLY
-      object: FACT_MODERNIZATION
+      object: FACT_ORIGIN_INVESTMENT_AMOUNT
       format: table
   grain:
-    description: One row is one modernization.
+    description: One row is one origin investment amount observation for the combination of fiscal quarter,
+      scenario, commodity, sourcing origin.
     components:
-    - identity_id: modernization_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - modernization_id
-      description: Identifier of the modernization.
-  columns:
-  - name: modernization_id
-    description: Identifier of the modernization.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: cost_program_id
-    description: Program.
-  - name: plant_id
-    description: Plant.
-  - name: category_id
-    description: Category.
-  - name: in_place_flag
-    description: Whether earlier consolidation is already in place.
-  - name: new_program_flag
-    description: Whether the current program goes beyond that consolidation.
-  - name: early_target_flag
-    description: Whether early targets exist.
-  entity_definitions:
-  - identity_id: modernization_identity
-    dataset_columns:
-    - modernization_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: cost_program_identity
-    dataset_columns:
-    - cost_program_id
-    entity_universe: partial
-  - identity_id: plant_identity
-    dataset_columns:
-    - plant_id
-    entity_universe: partial
-  - identity_id: category_identity
-    dataset_columns:
-    - category_id
-    entity_universe: partial
-- node_id: sf:food.supply.fact_acquisition_timing
-  descriptor:
-    qualified_name: food.supply.fact_acquisition_timing
-    display_name: Acquisition Timing
-    description: Extra months from a Food Inc acquisition such as Whitebridge. A calendar effect, not
-      demand. This fact stores capacity, supply, or input cost, not a list price and not consumer demand
-      quantity.
-    synonyms: []
-    tags:
-    - fact
-    - supply_input
-    - food
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: food.us-east-1
-      database: FOOD
-      schema: SUPPLY
-      object: FACT_ACQUISITION_TIMING
-      format: table
-  grain:
-    description: One row is one acquisition timing.
-    components:
-    - identity_id: acquisition_timing_identity
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
       dataset_columns:
-      - acquisition_timing_id
-      description: Identifier of the acquisition timing.
-  columns:
-  - name: acquisition_timing_id
-    description: Identifier of the acquisition timing.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: acquisition_id
-    description: Acquisition.
-  - name: extra_month_count
-    description: Extra months in the comparison.
-  - name: in_quarter_flag
-    description: Whether the extra month is in this quarter.
-  entity_definitions:
-  - identity_id: acquisition_timing_identity
-    dataset_columns:
-    - acquisition_timing_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: acquisition_identity
-    dataset_columns:
-    - acquisition_id
-    entity_universe: partial
-- node_id: sf:food.supply.fact_holistic_margin
-  descriptor:
-    qualified_name: food.supply.fact_holistic_margin
-    display_name: Holistic Margin
-    description: Holistic margin-management savings still to come at Food Inc. This fact stores capacity,
-      supply, or input cost, not a list price and not consumer demand quantity.
-    synonyms: []
-    tags:
-    - fact
-    - supply_input
-    - food
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: food.us-east-1
-      database: FOOD
-      schema: SUPPLY
-      object: FACT_HOLISTIC_MARGIN
-      format: table
-  grain:
-    description: One row is one holistic margin.
-    components:
-    - identity_id: holistic_margin_identity
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: commodity_identity
       dataset_columns:
-      - holistic_margin_id
-      description: Identifier of the holistic margin.
-  columns:
-  - name: holistic_margin_id
-    description: Identifier of the holistic margin.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: cost_program_id
-    description: Program.
-  - name: remaining_savings_amount
-    description: Savings still to come.
-  - name: third_quarter_share_rate
-    description: Share of the remaining benefit in the third quarter.
-  - name: fourth_quarter_share_rate
-    description: Share of the remaining benefit in the fourth quarter.
-  entity_definitions:
-  - identity_id: holistic_margin_identity
-    dataset_columns:
-    - holistic_margin_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: cost_program_identity
-    dataset_columns:
-    - cost_program_id
-    entity_universe: partial
-- node_id: sf:food.supply.fact_input_inflation_case
-  descriptor:
-    qualified_name: food.supply.fact_input_inflation_case
-    display_name: Input Inflation Case
-    description: Fuel and other inflation assumptions inside the Food Inc range. This fact stores capacity,
-      supply, or input cost, not a list price and not consumer demand quantity.
-    synonyms: []
-    tags:
-    - fact
-    - supply_input
-    - food
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: food.us-east-1
-      database: FOOD
-      schema: SUPPLY
-      object: FACT_INPUT_INFLATION_CASE
-      format: table
-  grain:
-    description: One row is one input inflation case.
-    components:
-    - identity_id: input_inflation_case_identity
+      - commodity_id
+      description: Identifier of the commodity.
+    - identity_id: sourcing_origin_identity
       dataset_columns:
-      - input_inflation_case_id
-      description: Identifier of the input inflation case.
+      - sourcing_origin_id
+      description: Identifier of the sourcing origin.
   columns:
-  - name: input_inflation_case_id
-    description: Identifier of the input inflation case.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
   - name: commodity_id
-    description: Commodity.
-  - name: hedge_book_id
-    description: Hedge book.
-  - name: assumed_rate
-    description: Assumed inflation.
-  - name: hedged_share_rate
-    description: Share that is hedged.
-  - name: fuel_in_range_flag
-    description: Whether fuel is inside the stated range.
+    description: Identifier of the commodity.
+  - name: sourcing_origin_id
+    description: Identifier of the sourcing origin.
+  - name: origin_investment_amount
+    description: Sourcing origin investment in dollars.
   entity_definitions:
-  - identity_id: input_inflation_case_identity
-    dataset_columns:
-    - input_inflation_case_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
     entity_universe: partial
   - identity_id: commodity_identity
     dataset_columns:
     - commodity_id
     entity_universe: partial
-  - identity_id: hedge_book_identity
+  - identity_id: sourcing_origin_identity
     dataset_columns:
-    - hedge_book_id
+    - sourcing_origin_id
     entity_universe: partial

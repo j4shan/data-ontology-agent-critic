@@ -1,271 +1,322 @@
 # Chemical Inc price and margin
 
-Price and margin owns announced price, realized price, mix, gross margin, segment margin, earnings bridges, and value capture for Chemical Inc. A price or margin row does not store unit volume. Raw-material unit cost stays on the supply cost facts.
-
-Identifiers owned by another slice are partial here. Their complete populations are not re-authored in this slice.
-
-| Identity | Column on this slice | Complete population |
-| --- | --- | --- |
-| `business_segment_identity` | `business_segment_id` | `sf:chemical.market.dim_business_segment` `business_segment_id` |
-| `fiscal_quarter_identity` | `fiscal_quarter_id` | `sf:chemical.time.dim_fiscal_quarter` `fiscal_quarter_id` |
-| `end_market_identity` | `end_market_id` | `sf:chemical.market.dim_end_market` `end_market_id` |
-| `customer_identity` | `customer_id` | `sf:chemical.customer.dim_customer` `customer_id` |
-| `country_identity` | `country_id` | `sf:chemical.geography.dim_country` `country_id` |
-| `macro_case_identity` | `macro_case_id` | `sf:chemical.customer.dim_macro_case` `macro_case_id` |
-| `acquisition_identity` | `acquisition_id` | `sf:chemical.network.dim_acquisition` `acquisition_id` |
-| `program_identity` | `program_id` | `sf:chemical.program.dim_program` `program_id` |
-| `raw_input_identity` | `raw_input_id` | `sf:chemical.supply.dim_raw_input` `raw_input_id` |
-| `competitor_identity` | `competitor_id` | `sf:chemical.customer.dim_competitor` `competitor_id` |
+Sherwin-Williams coatings are measured in gallons through company stores and plants, with its own reporting-segment dimension. Ecolab is measured as site service in visits, customer sites, and technician hours, with its own reporting-segment dimension, and is not modeled as a paint-plant operating rate. Quantity and price or margin are separate facts joined by fiscal quarter, scenario, and the business keys. Coverage maps each numbered question to datasets and columns that exist in the YAML and can express the distinction the question asks.
 
 ## Numbered questions
 
 ## Sherwin-Williams
 
-### Q1 2026 (1)
+### Q1 2026 (1) Sherwin-Williams
 
-For Sherwin-Williams, why is pricing more surgical by customer and end market than in earlier cost-inflation cycles?
+Why is pricing more surgical by customer and end market than in earlier cost-inflation cycles?
 
-- `chemical.price.fact_realized_price`: `end_market_id`, `customer_id`, `surgical_flag`, `fiscal_quarter_id`, `business_segment_id`, `country_id`, `price_action_id`
-- `chemical.price.fact_announced_price`: `end_market_id`, `sized_to_cost_flag`, `fiscal_quarter_id`, `business_segment_id`, `price_action_id`, `announced_change_rate`, `in_guide_flag`
-- `chemical.market.dim_end_market`: `end_market_name`, `end_market_code`, `business_segment_id`
-- `chemical.demand.fact_end_market_volume`: `end_market_id`, `fiscal_quarter_id`, `business_segment_id`, `country_id`, `demand_driver_id`, `volume_quantity`, `volume_change_rate`
-- `chemical.supply.fact_input_cost`: `cost_basket_id`, `contract_cost_amount`, `inflation_rate`, `fiscal_quarter_id`, `raw_input_id`, `supplier_id`, `outlook_band_code`
-- `chemical.supply.fact_spot_cost`: `spot_cost_amount`, `fiscal_quarter_id`, `raw_input_id`, `peaked_flag`, `above_contract_flag`
+- `chemical.price.fact_shw_realized_price`: `fiscal_quarter_id`, `scenario_id`, `shw_reporting_segment_id`, `coatings_product_id`, `region_id`, `realized_price_dollars_per_gallon`
+- `chemical.price.fact_shw_margin_bridge`: `fiscal_quarter_id`, `scenario_id`, `shw_reporting_segment_id`, `margin_driver_id`, `margin_effect_amount`, `margin_effect_percent`
+- `chemical.price.fact_surcharge_coverage_quantity`: `fiscal_quarter_id`, `scenario_id`, `ecl_reporting_segment_id`, `price_action_type_id`, `targeted_customer_count`, `approached_customer_count`
 
-### Q1 2026 (6)
+### Q1 2026 (4) Sherwin-Williams
 
-For Sherwin-Williams, is realization on the January price increase ahead of plan, and are those customer conversations finished?
+Is the volume-guide swing from growth to a low-single-digit decline a rest-of-year market view, and what offsets keep earnings intact?
 
-- `chemical.price.fact_announced_price`: `price_action_id`, `fiscal_quarter_id`, `business_segment_id`, `end_market_id`, `announced_change_rate`, `in_guide_flag`, `added_after_flag`
-- `chemical.price.fact_realized_price`: `customer_id`, `price_action_id`, `ahead_of_plan_flag`, `conversations_finished_flag`, `fiscal_quarter_id`, `business_segment_id`, `end_market_id`
-- `chemical.customer.dim_customer`: `customer_tier_id`, `customer_name`, `customer_code`, `country_id`, `channel_id`
-- `chemical.price.dim_price_action`: `business_segment_id`, `action_name`, `action_code`, `announced_date`
-- `chemical.time.dim_fiscal_quarter`: `quarter_label`, `quarter_code`, `guidance_horizon`
+- `chemical.price.fact_enterprise_earnings`: `fiscal_quarter_id`, `scenario_id`, `enterprise_revenue_amount`, `enterprise_earnings_amount`, `enterprise_operating_margin_percent`
+- `chemical.price.fact_shw_announced_price`: `fiscal_quarter_id`, `scenario_id`, `shw_reporting_segment_id`, `coatings_product_id`, `price_action_type_id`, `announced_price_change_percent`
+- `chemical.price.fact_shw_gross_margin`: `fiscal_quarter_id`, `scenario_id`, `shw_reporting_segment_id`, `gross_profit_amount`, `gross_margin_percent`
 
-### Q1 2026 (7)
+### Q1 2026 (5) Sherwin-Williams
 
-For Sherwin-Williams, what was first-quarter gross-margin expansion excluding Suvenil, and can gross margin rise in each quarter year over year?
+What is driving the margin improvement in Consumer Brands?
 
-- `chemical.price.fact_gross_margin`: `fiscal_quarter_id`, `gross_margin_rate`, `year_over_year_change_rate`, `flat_demand_margin_rate`, `business_segment_id`, `above_fifty_flag`, `holds_without_recovery_flag`
-- `chemical.price.fact_margin_bridge`: `fiscal_quarter_id`, `margin_driver_id`, `persists_next_quarter_flag`, `business_segment_id`, `labor_factor_id`, `effect_rate`, `effect_amount`
-- `chemical.supply.fact_integration`: `fiscal_quarter_id`, `acquisition_id`, `business_segment_id`, `action_name`, `started_flag`, `versus_base_flag`
-- `chemical.network.dim_acquisition`: `business_segment_id`, `acquisition_name`, `acquisition_code`
-- `chemical.price.fact_acquisition_margin`: `fiscal_quarter_id`, `excluded_margin_rate`, `acquisition_id`, `business_segment_id`, `drag_rate`, `dilution_rate`, `uses_original_case_flag`
-- `chemical.time.dim_fiscal_quarter`: `quarter_label`, `quarter_code`, `guidance_horizon`
+- `chemical.price.fact_shw_gross_margin`: `fiscal_quarter_id`, `scenario_id`, `shw_reporting_segment_id`, `gross_profit_amount`, `gross_margin_percent`
+- `chemical.price.fact_shw_margin_bridge`: `fiscal_quarter_id`, `scenario_id`, `shw_reporting_segment_id`, `margin_driver_id`, `margin_effect_amount`, `margin_effect_percent`
+- `chemical.price.fact_enterprise_earnings`: `fiscal_quarter_id`, `scenario_id`, `enterprise_revenue_amount`, `enterprise_earnings_amount`, `enterprise_operating_margin_percent`
 
-### Q1 2026 (9)
+### Q1 2026 (6) Sherwin-Williams
 
-For Sherwin-Williams, is the higher price in the guide only the January increase, or pricing added after early March?
+Is realization on the January price increase ahead of plan, and are those customer conversations finished?
 
-- `chemical.price.fact_realized_price`: `price_action_id`, `fiscal_quarter_id`, `business_segment_id`, `end_market_id`, `customer_id`, `country_id`, `realized_change_rate`
-- `chemical.price.fact_announced_price`: `price_action_id`, `in_guide_flag`, `added_after_flag`, `fiscal_quarter_id`, `business_segment_id`, `end_market_id`, `announced_change_rate`
-- `chemical.price.fact_price_guide`: `price_action_id`, `guided_price_change_rate`, `january_only_flag`, `net_price_tailwind_rate`, `fiscal_quarter_id`, `business_segment_id`, `macro_case_id`
-- `chemical.price.dim_price_action`: `business_segment_id`, `action_name`, `action_code`, `announced_date`
-- `chemical.time.dim_fiscal_quarter`: `quarter_label`, `quarter_code`, `guidance_horizon`
+- `chemical.price.fact_shw_realized_price`: `fiscal_quarter_id`, `scenario_id`, `shw_reporting_segment_id`, `coatings_product_id`, `region_id`, `realized_price_dollars_per_gallon`
+- `chemical.price.fact_shw_announced_price`: `fiscal_quarter_id`, `scenario_id`, `shw_reporting_segment_id`, `coatings_product_id`, `price_action_type_id`, `announced_price_change_percent`
+- `chemical.price.fact_surcharge_coverage_quantity`: `fiscal_quarter_id`, `scenario_id`, `ecl_reporting_segment_id`, `price_action_type_id`, `targeted_customer_count`, `approached_customer_count`
 
-### Q4 2025 (2)
+### Q1 2026 (7) Sherwin-Williams
 
-For Sherwin-Williams, what labor, raw-basket, and titanium-dioxide utilization assumptions sit inside the gross-margin guide?
+What was first-quarter gross-margin expansion excluding Suvenil, and can gross margin rise in each quarter year over year?
 
-- `chemical.price.fact_gross_margin`: `gross_margin_rate`, `flat_demand_margin_rate`, `fiscal_quarter_id`, `business_segment_id`, `year_over_year_change_rate`, `above_fifty_flag`, `holds_without_recovery_flag`
-- `chemical.price.fact_margin_bridge`: `margin_driver_id`, `labor_factor_id`, `fiscal_quarter_id`, `business_segment_id`, `effect_rate`, `effect_amount`, `persists_next_quarter_flag`
-- `chemical.supply.fact_manufacturing_cost`: `labor_factor_id`, `in_guide_flag`, `labor_component_amount`, `fiscal_quarter_id`, `plant_id`, `business_segment_id`, `cost_amount`
-- `chemical.price.dim_labor_factor`: `factor_name`, `factor_code`
-- `chemical.supply.fact_input_cost`: `cost_basket_id`, `fiscal_quarter_id`, `raw_input_id`, `supplier_id`, `contract_cost_amount`, `inflation_rate`, `outlook_band_code`
-- `chemical.supply.dim_raw_input`: `input_name`, `input_code`
+- `chemical.price.fact_shw_gross_margin`: `fiscal_quarter_id`, `scenario_id`, `shw_reporting_segment_id`, `gross_profit_amount`, `gross_margin_percent`
+- `chemical.price.fact_shw_margin_bridge`: `fiscal_quarter_id`, `scenario_id`, `shw_reporting_segment_id`, `margin_driver_id`, `margin_effect_amount`, `margin_effect_percent`
+- `chemical.price.fact_enterprise_earnings`: `fiscal_quarter_id`, `scenario_id`, `enterprise_revenue_amount`, `enterprise_earnings_amount`, `enterprise_operating_margin_percent`
 
-### Q4 2025 (3)
+### Q1 2026 (9) Sherwin-Williams
 
-For Sherwin-Williams, why would fourth-quarter price-mix plus the January increase not produce a larger first-quarter price-mix?
+Is the higher price in the guide only the January increase, or pricing added after early March?
 
-- `chemical.price.fact_price_mix`: `fiscal_quarter_id`, `business_segment_id`, `end_market_id`, `margin_driver_id`, `mix_effect_rate`, `unfavorable_flag`, `packaging_mix_flag`
-- `chemical.price.fact_realized_price`: `fiscal_quarter_id`, `price_action_id`, `business_segment_id`, `end_market_id`, `customer_id`, `country_id`, `realized_change_rate`
-- `chemical.price.fact_announced_price`: `fiscal_quarter_id`, `price_action_id`, `business_segment_id`, `end_market_id`, `announced_change_rate`, `in_guide_flag`, `added_after_flag`
-- `chemical.price.dim_price_action`: `business_segment_id`, `action_name`, `action_code`, `announced_date`
-- `chemical.time.dim_fiscal_quarter`: `quarter_label`, `quarter_code`, `guidance_horizon`
+- `chemical.price.fact_shw_announced_price`: `fiscal_quarter_id`, `scenario_id`, `shw_reporting_segment_id`, `coatings_product_id`, `price_action_type_id`, `announced_price_change_percent`
+- `chemical.price.fact_shw_realized_price`: `fiscal_quarter_id`, `scenario_id`, `shw_reporting_segment_id`, `coatings_product_id`, `region_id`, `realized_price_dollars_per_gallon`
+- `chemical.price.fact_enterprise_earnings`: `fiscal_quarter_id`, `scenario_id`, `enterprise_revenue_amount`, `enterprise_earnings_amount`, `enterprise_operating_margin_percent`
 
-### Q4 2025 (11)
+### Q1 2026 (16) Sherwin-Williams
 
-For Sherwin-Williams, is low-single-digit realization on the 7% increase a near-term rate or the full run rate over the next few quarters?
+What is distinctive in refinish and EMEA decorative share gains, and is price part of it?
 
-- `chemical.price.fact_realized_price`: `fiscal_quarter_id`, `price_action_id`, `realized_change_rate`, `versus_announced_rate`, `run_rate_flag`, `business_segment_id`, `end_market_id`
-- `chemical.price.fact_announced_price`: `fiscal_quarter_id`, `price_action_id`, `announced_change_rate`, `business_segment_id`, `end_market_id`, `in_guide_flag`, `added_after_flag`
-- `chemical.demand.fact_segment_volume`: `fiscal_quarter_id`, `volume_change_rate`, `sales_change_rate`, `business_segment_id`, `country_id`, `volume_quantity`, `organic_volume_quantity`
-- `chemical.market.dim_business_segment`: `segment_name`, `segment_code`
-- `chemical.supply.fact_store_network`: `fiscal_quarter_id`, `store_id`, `net_store_count`, `sales_point_from_new_stores`, `country_id`, `opening_count`, `closure_count`
-- `chemical.time.dim_fiscal_quarter`: `quarter_label`, `quarter_code`, `guidance_horizon`
+- `chemical.price.fact_competitor_coatings_price`: `fiscal_quarter_id`, `scenario_id`, `competitor_id`, `coatings_product_id`, `competitor_price_dollars_per_gallon`
+- `chemical.price.fact_surcharge_coverage_quantity`: `fiscal_quarter_id`, `scenario_id`, `ecl_reporting_segment_id`, `price_action_type_id`, `targeted_customer_count`, `approached_customer_count`
+- `chemical.price.fact_shw_realized_price`: `fiscal_quarter_id`, `scenario_id`, `shw_reporting_segment_id`, `coatings_product_id`, `region_id`, `realized_price_dollars_per_gallon`
 
-### Q4 2025 (14)
+### Q4 2025 (3) Sherwin-Williams
 
-For Sherwin-Williams, what net price tailwind is expected in 2026 versus trend pricing without a sharp cyclical recovery?
+Why would fourth-quarter price-mix plus the January increase not produce a larger first-quarter price-mix?
 
-- `chemical.price.fact_net_price`: `net_price_change_rate`, `trend_price_change_rate`, `tailwind_rate`, `fiscal_quarter_id`, `business_segment_id`
-- `chemical.price.fact_price_guide`: `price_action_id`, `guided_price_change_rate`, `net_price_tailwind_rate`, `fiscal_quarter_id`, `business_segment_id`, `macro_case_id`, `january_only_flag`
-- `chemical.demand.fact_end_market_volume`: `demand_driver_id`, `fiscal_quarter_id`, `business_segment_id`, `end_market_id`, `country_id`, `volume_quantity`, `volume_change_rate`
-- `chemical.time.dim_fiscal_quarter`: `quarter_label`, `quarter_code`, `guidance_horizon`
+- `chemical.price.fact_shw_realized_price`: `fiscal_quarter_id`, `scenario_id`, `shw_reporting_segment_id`, `coatings_product_id`, `region_id`, `realized_price_dollars_per_gallon`
+- `chemical.price.fact_shw_announced_price`: `fiscal_quarter_id`, `scenario_id`, `shw_reporting_segment_id`, `coatings_product_id`, `price_action_type_id`, `announced_price_change_percent`
+- `chemical.price.fact_shw_margin_bridge`: `fiscal_quarter_id`, `scenario_id`, `shw_reporting_segment_id`, `margin_driver_id`, `margin_effect_amount`, `margin_effect_percent`
 
-### Q3 2025 (10)
+### Q4 2025 (6) Sherwin-Williams
 
-For Sherwin-Williams, can gross margin hold at or above 50% without a material volume recovery?
+If the emphasis shifts from price to volume, why would competitors not match and erase the share gain?
 
-- `chemical.price.fact_gross_margin`: `gross_margin_rate`, `year_over_year_change_rate`, `above_fifty_flag`, `flat_demand_margin_rate`, `holds_without_recovery_flag`, `fiscal_quarter_id`, `business_segment_id`
-- `chemical.price.fact_margin_bridge`: `margin_driver_id`, `fiscal_quarter_id`, `business_segment_id`, `labor_factor_id`, `effect_rate`, `effect_amount`, `persists_next_quarter_flag`
-- `chemical.demand.fact_end_market_volume`: `volume_quantity`, `volume_change_rate`, `fiscal_quarter_id`, `business_segment_id`, `end_market_id`, `country_id`, `demand_driver_id`
-- `chemical.demand.fact_segment_volume`: `volume_quantity`, `volume_change_rate`, `organic_volume_quantity`, `fiscal_quarter_id`, `business_segment_id`, `country_id`, `sales_change_rate`
-- `chemical.price.fact_acquisition_margin`: `excluded_margin_rate`, `fiscal_quarter_id`, `acquisition_id`, `business_segment_id`, `drag_rate`, `dilution_rate`, `uses_original_case_flag`
-- `chemical.time.dim_fiscal_quarter`: `quarter_label`, `quarter_code`, `guidance_horizon`
+- `chemical.price.fact_competitor_coatings_price`: `fiscal_quarter_id`, `scenario_id`, `competitor_id`, `coatings_product_id`, `competitor_price_dollars_per_gallon`
+- `chemical.price.fact_shw_gross_margin`: `fiscal_quarter_id`, `scenario_id`, `shw_reporting_segment_id`, `gross_profit_amount`, `gross_margin_percent`
+- `chemical.price.fact_surcharge_coverage_quantity`: `fiscal_quarter_id`, `scenario_id`, `ecl_reporting_segment_id`, `price_action_type_id`, `targeted_customer_count`, `approached_customer_count`
 
-### Q3 2025 (12)
+### Q4 2025 (11) Sherwin-Williams
 
-For Sherwin-Williams, is a roughly 30% incremental margin on low-single-digit store volume a useful benchmark for other segments when demand improves?
+Is low-single-digit realization on the 7% increase a near-term rate or the full run rate over the next few quarters?
 
-- `chemical.price.fact_incremental_margin`: `business_segment_id`, `incremental_margin_rate`, `benchmark_rate`, `useful_for_other_segments_flag`, `stronger_than_peer_segment_flag`, `fiscal_quarter_id`
-- `chemical.market.dim_business_segment`: `segment_name`, `segment_code`
-- `chemical.demand.fact_segment_volume`: `business_segment_id`, `volume_quantity`, `volume_change_rate`, `organic_volume_quantity`, `fiscal_quarter_id`, `country_id`, `sales_change_rate`
-- `chemical.supply.fact_store_network`: `store_id`, `net_store_count`, `sales_point_from_new_stores`, `fiscal_quarter_id`, `country_id`, `opening_count`, `closure_count`
-- `chemical.time.dim_fiscal_quarter`: `quarter_label`, `quarter_code`, `guidance_horizon`
+- `chemical.price.fact_shw_realized_price`: `fiscal_quarter_id`, `scenario_id`, `shw_reporting_segment_id`, `coatings_product_id`, `region_id`, `realized_price_dollars_per_gallon`
+- `chemical.price.fact_shw_announced_price`: `fiscal_quarter_id`, `scenario_id`, `shw_reporting_segment_id`, `coatings_product_id`, `price_action_type_id`, `announced_price_change_percent`
+- `chemical.price.fact_enterprise_earnings`: `fiscal_quarter_id`, `scenario_id`, `enterprise_revenue_amount`, `enterprise_earnings_amount`, `enterprise_operating_margin_percent`
 
-### Q2 2025 (5)
+### Q4 2025 (13) Sherwin-Williams
 
-For Sherwin-Williams, how much of the gross-margin pressure was architectural volume, and what would the rate have been if volume were flat or up?
+What volume and price-mix are showing in DIY in the fourth quarter and in the 2026 outlook?
 
-- `chemical.price.fact_gross_margin`: `gross_margin_rate`, `year_over_year_change_rate`, `flat_demand_margin_rate`, `fiscal_quarter_id`, `business_segment_id`, `above_fifty_flag`, `holds_without_recovery_flag`
-- `chemical.price.fact_margin_bridge`: `margin_driver_id`, `effect_rate`, `fiscal_quarter_id`, `business_segment_id`, `labor_factor_id`, `effect_amount`, `persists_next_quarter_flag`
-- `chemical.demand.fact_end_market_volume`: `volume_quantity`, `volume_change_rate`, `run_rate_quantity`, `fiscal_quarter_id`, `business_segment_id`, `end_market_id`, `country_id`
-- `chemical.price.fact_operating_leverage`: `flat_demand_margin_rate`, `hurt_rate`, `fiscal_quarter_id`, `business_segment_id`, `leverage_basis_points`, `split_even_flag`
-- `chemical.price.fact_acquisition_margin`: `drag_rate`, `excluded_margin_rate`, `dilution_rate`, `fiscal_quarter_id`, `acquisition_id`, `business_segment_id`, `uses_original_case_flag`
-- `chemical.time.dim_fiscal_quarter`: `quarter_label`, `quarter_code`, `guidance_horizon`
+- `chemical.price.fact_shw_gross_margin`: `fiscal_quarter_id`, `scenario_id`, `shw_reporting_segment_id`, `gross_profit_amount`, `gross_margin_percent`
+- `chemical.price.fact_shw_margin_bridge`: `fiscal_quarter_id`, `scenario_id`, `shw_reporting_segment_id`, `margin_driver_id`, `margin_effect_amount`, `margin_effect_percent`
+- `chemical.price.fact_enterprise_earnings`: `fiscal_quarter_id`, `scenario_id`, `enterprise_revenue_amount`, `enterprise_earnings_amount`, `enterprise_operating_margin_percent`
 
-### Q2 2025 (9)
+### Q4 2025 (14) Sherwin-Williams
 
-For Sherwin-Williams, what role does price play in pursuing share and volume across end markets?
+What net price tailwind is expected in 2026 versus trend pricing without a sharp cyclical recovery?
 
-- `chemical.price.fact_realized_price`: `end_market_id`, `price_action_id`, `fiscal_quarter_id`, `business_segment_id`, `customer_id`, `country_id`, `realized_change_rate`
-- `chemical.price.fact_announced_price`: `end_market_id`, `price_action_id`, `fiscal_quarter_id`, `business_segment_id`, `announced_change_rate`, `in_guide_flag`, `added_after_flag`
-- `chemical.demand.fact_end_market_volume`: `end_market_id`, `volume_quantity`, `volume_change_rate`, `fiscal_quarter_id`, `business_segment_id`, `country_id`, `demand_driver_id`
-- `chemical.demand.fact_segment_volume`: `volume_quantity`, `volume_change_rate`, `organic_volume_quantity`, `fiscal_quarter_id`, `business_segment_id`, `country_id`, `sales_change_rate`
-- `chemical.market.dim_end_market`: `end_market_name`, `end_market_code`, `business_segment_id`
-- `chemical.time.dim_fiscal_quarter`: `quarter_label`, `quarter_code`, `guidance_horizon`
+- `chemical.price.fact_shw_realized_price`: `fiscal_quarter_id`, `scenario_id`, `shw_reporting_segment_id`, `coatings_product_id`, `region_id`, `realized_price_dollars_per_gallon`
+- `chemical.price.fact_shw_announced_price`: `fiscal_quarter_id`, `scenario_id`, `shw_reporting_segment_id`, `coatings_product_id`, `price_action_type_id`, `announced_price_change_percent`
+- `chemical.price.fact_shw_gross_margin`: `fiscal_quarter_id`, `scenario_id`, `shw_reporting_segment_id`, `gross_profit_amount`, `gross_margin_percent`
+
+### Q3 2025 (1) Sherwin-Williams
+
+How was the 7% Paint Stores price increase sized against raw materials and other costs?
+
+- `chemical.price.fact_shw_announced_price`: `fiscal_quarter_id`, `scenario_id`, `shw_reporting_segment_id`, `coatings_product_id`, `price_action_type_id`, `announced_price_change_percent`
+- `chemical.price.fact_shw_realized_price`: `fiscal_quarter_id`, `scenario_id`, `shw_reporting_segment_id`, `coatings_product_id`, `region_id`, `realized_price_dollars_per_gallon`
+- `chemical.price.fact_shw_margin_bridge`: `fiscal_quarter_id`, `scenario_id`, `shw_reporting_segment_id`, `margin_driver_id`, `margin_effect_amount`, `margin_effect_percent`
+
+### Q3 2025 (10) Sherwin-Williams
+
+Can gross margin hold at or above 50% without a material volume recovery?
+
+- `chemical.price.fact_shw_gross_margin`: `fiscal_quarter_id`, `scenario_id`, `shw_reporting_segment_id`, `gross_profit_amount`, `gross_margin_percent`
+- `chemical.price.fact_incremental_margin`: `fiscal_quarter_id`, `scenario_id`, `shw_reporting_segment_id`, `incremental_margin_percent`
+- `chemical.price.fact_shw_announced_price`: `fiscal_quarter_id`, `scenario_id`, `shw_reporting_segment_id`, `coatings_product_id`, `price_action_type_id`, `announced_price_change_percent`
+
+### Q3 2025 (11) Sherwin-Williams
+
+How much does weak volume hurt the gross-margin rate, and what volume growth yields about 100 basis points of leverage?
+
+- `chemical.price.fact_shw_gross_margin`: `fiscal_quarter_id`, `scenario_id`, `shw_reporting_segment_id`, `gross_profit_amount`, `gross_margin_percent`
+- `chemical.price.fact_enterprise_earnings`: `fiscal_quarter_id`, `scenario_id`, `enterprise_revenue_amount`, `enterprise_earnings_amount`, `enterprise_operating_margin_percent`
+- `chemical.price.fact_incremental_margin`: `fiscal_quarter_id`, `scenario_id`, `shw_reporting_segment_id`, `incremental_margin_percent`
+
+### Q3 2025 (12) Sherwin-Williams
+
+Is a roughly 30% incremental margin on low-single-digit store volume a useful benchmark for other segments when demand improves?
+
+- `chemical.price.fact_incremental_margin`: `fiscal_quarter_id`, `scenario_id`, `shw_reporting_segment_id`, `incremental_margin_percent`
+- `chemical.price.fact_shw_gross_margin`: `fiscal_quarter_id`, `scenario_id`, `shw_reporting_segment_id`, `gross_profit_amount`, `gross_margin_percent`
+- `chemical.price.fact_ecl_incremental_margin`: `fiscal_quarter_id`, `scenario_id`, `ecl_reporting_segment_id`, `incremental_margin_percent`
+
+### Q2 2025 (5) Sherwin-Williams
+
+How much of the gross-margin pressure was architectural volume, and what would the rate have been if volume were flat or up?
+
+- `chemical.price.fact_shw_gross_margin`: `fiscal_quarter_id`, `scenario_id`, `shw_reporting_segment_id`, `gross_profit_amount`, `gross_margin_percent`
+- `chemical.price.fact_incremental_margin`: `fiscal_quarter_id`, `scenario_id`, `shw_reporting_segment_id`, `incremental_margin_percent`
+- `chemical.price.fact_shw_realized_price`: `fiscal_quarter_id`, `scenario_id`, `shw_reporting_segment_id`, `coatings_product_id`, `region_id`, `realized_price_dollars_per_gallon`
 
 ## Ecolab
 
-### Q1 2026 (1)
+### Q1 2026 (1) Ecolab
 
-For Ecolab, why is gross margin expected to stabilize in the second half, and how does the energy surcharge fit that path?
+Why is gross margin expected to stabilize in the second half, and how does the energy surcharge fit that path?
 
-- `chemical.price.fact_gross_margin`: `gross_margin_rate`, `flat_demand_margin_rate`, `fiscal_quarter_id`, `business_segment_id`, `year_over_year_change_rate`, `above_fifty_flag`, `holds_without_recovery_flag`
-- `chemical.price.fact_margin_bridge`: `margin_driver_id`, `fiscal_quarter_id`, `business_segment_id`, `labor_factor_id`, `effect_rate`, `effect_amount`, `persists_next_quarter_flag`
-- `chemical.price.fact_surcharge_realization`: `surcharge_id`, `half_code`, `fiscal_quarter_id`, `customer_id`, `business_segment_id`, `realized_rate`, `approached_customer_rate`
-- `chemical.price.dim_surcharge`: `surcharge_name`, `surcharge_code`
-- `chemical.supply.fact_input_cost`: `half_code`, `fiscal_quarter_id`, `raw_input_id`, `cost_basket_id`, `supplier_id`, `contract_cost_amount`, `inflation_rate`
-- `chemical.supply.fact_spot_cost`: `fiscal_quarter_id`, `raw_input_id`, `spot_cost_amount`, `peaked_flag`, `above_contract_flag`
+- `chemical.price.fact_ecl_announced_price`: `fiscal_quarter_id`, `scenario_id`, `ecl_reporting_segment_id`, `ecl_business_unit_id`, `price_action_type_id`, `announced_price_change_percent`, `surcharge_change_percent`
+- `chemical.price.fact_surcharge_coverage_quantity`: `fiscal_quarter_id`, `scenario_id`, `ecl_reporting_segment_id`, `price_action_type_id`, `targeted_customer_count`, `approached_customer_count`
+- `chemical.price.fact_ecl_operating_margin`: `fiscal_quarter_id`, `scenario_id`, `ecl_reporting_segment_id`, `operating_income_amount`, `operating_margin_percent`
 
-### Q1 2026 (6)
+### Q1 2026 (6) Ecolab
 
-For Ecolab, what puts and takes sit between current margins and the 2027 targets in Institutional and other markets?
+What puts and takes sit between current margins and the 2027 targets in Institutional and other markets?
 
-- `chemical.price.fact_segment_margin`: `margin_driver_id`, `operating_margin_rate`, `margin_change_rate`, `target_rate`, `fiscal_quarter_id`, `business_segment_id`, `quarter_dip_flag`
-- `chemical.price.fact_margin_target`: `current_margin_rate`, `target_margin_rate`, `fiscal_quarter_id`, `business_segment_id`, `gap_rate`, `holds_in_low_demand_flag`, `straight_line_flag`
-- `chemical.demand.fact_segment_volume`: `fiscal_quarter_id`, `business_segment_id`, `country_id`, `volume_quantity`, `volume_change_rate`, `organic_volume_quantity`, `sales_change_rate`
-- `chemical.demand.fact_customer_traffic`: `fiscal_quarter_id`, `business_segment_id`, `country_id`, `traffic_index`, `weak_traffic_flag`, `visit_quantity`
-- `chemical.supply.fact_input_cost`: `fiscal_quarter_id`, `raw_input_id`, `cost_basket_id`, `supplier_id`, `contract_cost_amount`, `inflation_rate`, `outlook_band_code`
-- `chemical.supply.fact_spot_cost`: `fiscal_quarter_id`, `raw_input_id`, `spot_cost_amount`, `peaked_flag`, `above_contract_flag`
+- `chemical.price.fact_ecl_operating_margin`: `fiscal_quarter_id`, `scenario_id`, `ecl_reporting_segment_id`, `operating_income_amount`, `operating_margin_percent`
+- `chemical.price.fact_ecl_margin_bridge`: `fiscal_quarter_id`, `scenario_id`, `ecl_reporting_segment_id`, `margin_driver_id`, `margin_effect_amount`, `margin_effect_percent`
+- `chemical.price.fact_ecl_incremental_margin`: `fiscal_quarter_id`, `scenario_id`, `ecl_reporting_segment_id`, `incremental_margin_percent`
 
-### Q1 2026 (13)
+### Q1 2026 (13) Ecolab
 
-For Ecolab, is value capture rising as a percentage of the portfolio, and is it higher in the newer businesses?
+Is value capture rising as a percentage of the portfolio, and is it higher in the newer businesses?
 
-- `chemical.price.fact_realized_price`: `business_segment_id`, `fiscal_quarter_id`, `end_market_id`, `customer_id`, `country_id`, `price_action_id`, `realized_change_rate`
-- `chemical.price.fact_announced_price`: `business_segment_id`, `fiscal_quarter_id`, `end_market_id`, `price_action_id`, `announced_change_rate`, `in_guide_flag`, `added_after_flag`
-- `chemical.price.fact_value_capture`: `business_segment_id`, `value_metric_id`, `rising_flag`, `higher_in_newer_flag`, `value_case_clear_flag`, `fiscal_quarter_id`, `program_id`
-- `chemical.price.dim_value_metric`: `metric_name`, `metric_code`
-- `chemical.demand.fact_growth_mix`: `business_segment_id`, `fiscal_quarter_id`, `program_id`, `engine_mix_rate`, `core_mix_rate`, `core_growth_rate`, `engine_growth_rate`
-- `chemical.time.dim_fiscal_quarter`: `quarter_label`, `quarter_code`, `guidance_horizon`
+- `chemical.price.fact_value_delivered_amount`: `fiscal_quarter_id`, `scenario_id`, `ecl_business_unit_id`, `delivered_value_amount`, `captured_value_amount`
+- `chemical.price.fact_ecl_realized_service_price`: `fiscal_quarter_id`, `scenario_id`, `ecl_reporting_segment_id`, `ecl_business_unit_id`, `ecl_service_type_id`, `site_type_id`, `region_id`, `realized_price_dollars_per_visit`
+- `chemical.price.fact_ecl_announced_price`: `fiscal_quarter_id`, `scenario_id`, `ecl_reporting_segment_id`, `ecl_business_unit_id`, `price_action_type_id`, `announced_price_change_percent`, `surcharge_change_percent`
 
-### Q1 2026 (14)
+### Q1 2026 (14) Ecolab
 
-For Ecolab, what share of customers targeted for the energy surcharge have already been approached?
+What share of customers targeted for the energy surcharge have already been approached?
 
-- `chemical.price.fact_surcharge_realization`: `surcharge_id`, `customer_id`, `approached_customer_rate`, `fiscal_quarter_id`, `business_segment_id`, `realized_rate`, `competitor_support_flag`
-- `chemical.price.dim_surcharge`: `surcharge_name`, `surcharge_code`
-- `chemical.customer.dim_customer`: `customer_tier_id`, `customer_name`, `customer_code`, `country_id`, `channel_id`
-- `chemical.price.fact_gross_margin`: `fiscal_quarter_id`, `business_segment_id`, `gross_margin_rate`, `year_over_year_change_rate`, `above_fifty_flag`, `flat_demand_margin_rate`, `holds_without_recovery_flag`
-- `chemical.demand.fact_program_coverage`: `customer_id`, `covered_customer_count`, `targeted_customer_count`, `fiscal_quarter_id`, `program_id`, `cohort_id`, `coverage_rate`
-- `chemical.time.dim_fiscal_quarter`: `quarter_label`, `quarter_code`, `guidance_horizon`
+- `chemical.price.fact_surcharge_coverage_quantity`: `fiscal_quarter_id`, `scenario_id`, `ecl_reporting_segment_id`, `price_action_type_id`, `targeted_customer_count`, `approached_customer_count`
+- `chemical.price.fact_ecl_announced_price`: `fiscal_quarter_id`, `scenario_id`, `ecl_reporting_segment_id`, `ecl_business_unit_id`, `price_action_type_id`, `announced_price_change_percent`, `surcharge_change_percent`
+- `chemical.price.fact_ecl_realized_service_price`: `fiscal_quarter_id`, `scenario_id`, `ecl_reporting_segment_id`, `ecl_business_unit_id`, `ecl_service_type_id`, `site_type_id`, `region_id`, `realized_price_dollars_per_visit`
 
-### Q4 2025 (9)
+### Q4 2025 (3) Ecolab
 
-For Ecolab, does the 2025 tariff surcharge create a larger price contribution in the first half of 2026 than in the second half?
+Why were pest incremental margins much stronger than Life Sciences incremental margins?
 
-- `chemical.price.fact_realized_price`: `price_action_id`, `fiscal_quarter_id`, `business_segment_id`, `end_market_id`, `customer_id`, `country_id`, `realized_change_rate`
-- `chemical.price.fact_announced_price`: `price_action_id`, `fiscal_quarter_id`, `business_segment_id`, `end_market_id`, `announced_change_rate`, `in_guide_flag`, `added_after_flag`
-- `chemical.price.fact_surcharge_realization`: `surcharge_id`, `half_code`, `fiscal_quarter_id`, `customer_id`, `business_segment_id`, `realized_rate`, `approached_customer_rate`
-- `chemical.price.dim_surcharge`: `surcharge_name`, `surcharge_code`
-- `chemical.price.fact_price_guide`: `price_action_id`, `guided_price_change_rate`, `net_price_tailwind_rate`, `half_code`, `fiscal_quarter_id`, `business_segment_id`, `macro_case_id`
-- `chemical.time.dim_fiscal_quarter`: `quarter_label`, `quarter_code`, `guidance_horizon`
+- `chemical.price.fact_ecl_incremental_margin`: `fiscal_quarter_id`, `scenario_id`, `ecl_reporting_segment_id`, `incremental_margin_percent`
+- `chemical.price.fact_ecl_operating_margin`: `fiscal_quarter_id`, `scenario_id`, `ecl_reporting_segment_id`, `operating_income_amount`, `operating_margin_percent`
+- `chemical.price.fact_incremental_margin`: `fiscal_quarter_id`, `scenario_id`, `shw_reporting_segment_id`, `incremental_margin_percent`
 
-### Q3 2025 (3)
+### Q4 2025 (8) Ecolab
 
-For Ecolab, excluding the tariff surcharge, is underlying price getting easier because the value case is clearer, or harder because of price fatigue?
+What would push results to the high or low end of the 2026 guide?
 
-- `chemical.price.fact_realized_price`: `price_action_id`, `fiscal_quarter_id`, `business_segment_id`, `end_market_id`, `customer_id`, `country_id`, `realized_change_rate`
-- `chemical.price.fact_announced_price`: `price_action_id`, `fiscal_quarter_id`, `business_segment_id`, `end_market_id`, `announced_change_rate`, `in_guide_flag`, `added_after_flag`
-- `chemical.price.fact_surcharge_realization`: `surcharge_id`, `fiscal_quarter_id`, `customer_id`, `business_segment_id`, `realized_rate`, `approached_customer_rate`, `competitor_support_flag`
-- `chemical.price.dim_surcharge`: `surcharge_name`, `surcharge_code`
-- `chemical.price.fact_value_capture`: `value_metric_id`, `fatigue_flag`, `value_case_clear_flag`, `fiscal_quarter_id`, `business_segment_id`, `program_id`, `captured_rate`
-- `chemical.price.dim_value_metric`: `metric_name`, `metric_code`
+- `chemical.price.fact_enterprise_earnings`: `fiscal_quarter_id`, `scenario_id`, `enterprise_revenue_amount`, `enterprise_earnings_amount`, `enterprise_operating_margin_percent`
+- `chemical.price.fact_ecl_realized_service_price`: `fiscal_quarter_id`, `scenario_id`, `ecl_reporting_segment_id`, `ecl_business_unit_id`, `ecl_service_type_id`, `site_type_id`, `region_id`, `realized_price_dollars_per_visit`
+- `chemical.price.fact_ecl_announced_price`: `fiscal_quarter_id`, `scenario_id`, `ecl_reporting_segment_id`, `ecl_business_unit_id`, `price_action_type_id`, `announced_price_change_percent`, `surcharge_change_percent`
 
-### Q3 2025 (8)
+### Q4 2025 (9) Ecolab
 
-For Ecolab, how much of the price surcharge was realized, and does roughly 3% pricing persist for the next few quarters?
+Does the 2025 tariff surcharge create a larger price contribution in the first half of 2026 than in the second half?
 
-- `chemical.price.fact_surcharge_realization`: `fiscal_quarter_id`, `surcharge_id`, `realized_rate`, `customer_id`, `business_segment_id`, `approached_customer_rate`, `competitor_support_flag`
-- `chemical.price.dim_surcharge`: `surcharge_name`, `surcharge_code`
-- `chemical.price.fact_realized_price`: `fiscal_quarter_id`, `price_action_id`, `realized_change_rate`, `business_segment_id`, `end_market_id`, `customer_id`, `country_id`
-- `chemical.price.fact_announced_price`: `fiscal_quarter_id`, `price_action_id`, `business_segment_id`, `end_market_id`, `announced_change_rate`, `in_guide_flag`, `added_after_flag`
-- `chemical.price.fact_price_guide`: `fiscal_quarter_id`, `price_action_id`, `guided_price_change_rate`, `net_price_tailwind_rate`, `business_segment_id`, `macro_case_id`, `january_only_flag`
-- `chemical.time.dim_fiscal_quarter`: `quarter_label`, `quarter_code`, `guidance_horizon`
+- `chemical.price.fact_ecl_announced_price`: `fiscal_quarter_id`, `scenario_id`, `ecl_reporting_segment_id`, `ecl_business_unit_id`, `price_action_type_id`, `announced_price_change_percent`, `surcharge_change_percent`
+- `chemical.price.fact_surcharge_coverage_quantity`: `fiscal_quarter_id`, `scenario_id`, `ecl_reporting_segment_id`, `price_action_type_id`, `targeted_customer_count`, `approached_customer_count`
+- `chemical.price.fact_ecl_realized_service_price`: `fiscal_quarter_id`, `scenario_id`, `ecl_reporting_segment_id`, `ecl_business_unit_id`, `ecl_service_type_id`, `site_type_id`, `region_id`, `realized_price_dollars_per_visit`
 
-### Q3 2025 (13)
+### Q4 2025 (12) Ecolab
 
-For Ecolab, can low-to-mid-teens earnings growth still be reached with little volume growth, as in the prior price-led case?
+Is the Life Sciences margin setback from the capability build a multi-quarter drag or a one-quarter dip?
 
-- `chemical.price.fact_earnings_bridge`: `earnings_change_rate`, `price_led_flag`, `low_to_mid_teens_reachable_flag`, `fiscal_quarter_id`, `business_segment_id`, `margin_driver_id`, `offset_amount`
-- `chemical.price.fact_acquisition_margin`: `uses_original_case_flag`, `fiscal_quarter_id`, `acquisition_id`, `business_segment_id`, `drag_rate`, `excluded_margin_rate`, `dilution_rate`
-- `chemical.demand.fact_end_market_volume`: `volume_quantity`, `volume_change_rate`, `fiscal_quarter_id`, `business_segment_id`, `end_market_id`, `country_id`, `demand_driver_id`
-- `chemical.demand.fact_segment_volume`: `volume_quantity`, `volume_change_rate`, `organic_volume_quantity`, `fiscal_quarter_id`, `business_segment_id`, `country_id`, `sales_change_rate`
-- `chemical.price.fact_realized_price`: `price_action_id`, `fiscal_quarter_id`, `business_segment_id`, `end_market_id`, `customer_id`, `country_id`, `realized_change_rate`
-- `chemical.price.fact_announced_price`: `price_action_id`, `fiscal_quarter_id`, `business_segment_id`, `end_market_id`, `announced_change_rate`, `in_guide_flag`, `added_after_flag`
+- `chemical.price.fact_ecl_operating_margin`: `fiscal_quarter_id`, `scenario_id`, `ecl_reporting_segment_id`, `operating_income_amount`, `operating_margin_percent`
+- `chemical.price.fact_ecl_incremental_margin`: `fiscal_quarter_id`, `scenario_id`, `ecl_reporting_segment_id`, `incremental_margin_percent`
+- `chemical.price.fact_ecl_margin_bridge`: `fiscal_quarter_id`, `scenario_id`, `ecl_reporting_segment_id`, `margin_driver_id`, `margin_effect_amount`, `margin_effect_percent`
 
-### Q2 2025 (2)
+### Q3 2025 (3) Ecolab
 
-For Ecolab, why did pricing land near 2% rather than a higher rate, and what pricing is expected in the second half?
+Excluding the tariff surcharge, is underlying price getting easier because the value case is clearer, or harder because of price fatigue?
 
-- `chemical.price.fact_realized_price`: `realized_change_rate`, `versus_announced_rate`, `run_rate_flag`, `fiscal_quarter_id`, `business_segment_id`, `end_market_id`, `customer_id`
-- `chemical.price.fact_announced_price`: `announced_change_rate`, `fiscal_quarter_id`, `business_segment_id`, `end_market_id`, `price_action_id`, `in_guide_flag`, `added_after_flag`
-- `chemical.demand.fact_end_market_volume`: `volume_quantity`, `volume_change_rate`, `run_rate_quantity`, `fiscal_quarter_id`, `business_segment_id`, `end_market_id`, `country_id`
-- `chemical.demand.fact_segment_volume`: `volume_quantity`, `volume_change_rate`, `organic_volume_quantity`, `sales_change_rate`, `fiscal_quarter_id`, `business_segment_id`, `country_id`
-- `chemical.price.fact_price_guide`: `guided_price_change_rate`, `net_price_tailwind_rate`, `half_code`, `fiscal_quarter_id`, `business_segment_id`, `price_action_id`, `macro_case_id`
-- `chemical.time.dim_fiscal_quarter`: `quarter_label`, `quarter_code`, `guidance_horizon`
+- `chemical.price.fact_value_delivered_amount`: `fiscal_quarter_id`, `scenario_id`, `ecl_business_unit_id`, `delivered_value_amount`, `captured_value_amount`
+- `chemical.price.fact_ecl_announced_price`: `fiscal_quarter_id`, `scenario_id`, `ecl_reporting_segment_id`, `ecl_business_unit_id`, `price_action_type_id`, `announced_price_change_percent`, `surcharge_change_percent`
+- `chemical.price.fact_surcharge_coverage_quantity`: `fiscal_quarter_id`, `scenario_id`, `ecl_reporting_segment_id`, `price_action_type_id`, `targeted_customer_count`, `approached_customer_count`
 
-### Q2 2025 (5)
+### Q3 2025 (4) Ecolab
 
-For Ecolab, is about half of the announced U.S. surcharge still expected to be realized, and are competitors supporting it?
+How is the water top line flowing through segment margin, split across the businesses inside water?
 
-- `chemical.price.fact_surcharge_realization`: `surcharge_id`, `realized_rate`, `competitor_support_flag`, `half_code`, `fiscal_quarter_id`, `customer_id`, `business_segment_id`
-- `chemical.price.dim_surcharge`: `surcharge_name`, `surcharge_code`
-- `chemical.price.fact_competitor_price`: `competitor_id`, `competitor_change_rate`, `fiscal_quarter_id`, `business_segment_id`, `end_market_id`, `can_match_flag`, `price_part_of_share_flag`
-- `chemical.customer.dim_competitor`: `competitor_name`, `competitor_code`
-- `chemical.demand.fact_share_position`: `competitor_id`, `fiscal_quarter_id`, `business_segment_id`, `end_market_id`, `subsegment_id`, `country_id`, `share_rate`
-- `chemical.time.dim_fiscal_quarter`: `quarter_label`, `quarter_code`, `guidance_horizon`
+- `chemical.price.fact_ecl_incremental_margin`: `fiscal_quarter_id`, `scenario_id`, `ecl_reporting_segment_id`, `incremental_margin_percent`
+- `chemical.price.fact_incremental_margin`: `fiscal_quarter_id`, `scenario_id`, `shw_reporting_segment_id`, `incremental_margin_percent`
+- `chemical.price.fact_ecl_realized_service_price`: `fiscal_quarter_id`, `scenario_id`, `ecl_reporting_segment_id`, `ecl_business_unit_id`, `ecl_service_type_id`, `site_type_id`, `region_id`, `realized_price_dollars_per_visit`
 
-### Q2 2025 (7)
+### Q3 2025 (6) Ecolab
 
-For Ecolab, does confidence in the operating-margin target hold if volume stays near 1% inside roughly 3% organic growth?
+As pest and Life Sciences lap growth investments, is SG&A leverage a straight line to the 2027 targets or another step-up in spend?
 
-- `chemical.price.fact_segment_margin`: `margin_driver_id`, `operating_margin_rate`, `margin_change_rate`, `target_rate`, `fiscal_quarter_id`, `business_segment_id`, `quarter_dip_flag`
-- `chemical.price.fact_margin_target`: `current_margin_rate`, `target_margin_rate`, `fiscal_quarter_id`, `business_segment_id`, `gap_rate`, `holds_in_low_demand_flag`, `straight_line_flag`
-- `chemical.demand.fact_end_market_volume`: `volume_quantity`, `volume_change_rate`, `fiscal_quarter_id`, `business_segment_id`, `end_market_id`, `country_id`, `demand_driver_id`
-- `chemical.demand.fact_segment_volume`: `volume_quantity`, `volume_change_rate`, `organic_volume_quantity`, `fiscal_quarter_id`, `business_segment_id`, `country_id`, `sales_change_rate`
-- `chemical.demand.fact_organic_growth`: `organic_growth_rate`, `volume_contributed_flag`, `fiscal_quarter_id`, `business_segment_id`, `program_id`, `country_id`, `price_contributed_flag`
-- `chemical.demand.fact_cross_sell`: `fiscal_quarter_id`, `program_id`, `business_segment_id`, `customer_id`, `cross_sell_quantity`, `contribution_rate`, `with_core_flag`
+- `chemical.price.fact_ecl_operating_margin`: `fiscal_quarter_id`, `scenario_id`, `ecl_reporting_segment_id`, `operating_income_amount`, `operating_margin_percent`
+- `chemical.price.fact_ecl_incremental_margin`: `fiscal_quarter_id`, `scenario_id`, `ecl_reporting_segment_id`, `incremental_margin_percent`
+- `chemical.price.fact_ecl_margin_bridge`: `fiscal_quarter_id`, `scenario_id`, `ecl_reporting_segment_id`, `margin_driver_id`, `margin_effect_amount`, `margin_effect_percent`
+
+### Q3 2025 (8) Ecolab
+
+How much of the price surcharge was realized, and does roughly 3% pricing persist for the next few quarters?
+
+- `chemical.price.fact_ecl_realized_service_price`: `fiscal_quarter_id`, `scenario_id`, `ecl_reporting_segment_id`, `ecl_business_unit_id`, `ecl_service_type_id`, `site_type_id`, `region_id`, `realized_price_dollars_per_visit`
+- `chemical.price.fact_ecl_announced_price`: `fiscal_quarter_id`, `scenario_id`, `ecl_reporting_segment_id`, `ecl_business_unit_id`, `price_action_type_id`, `announced_price_change_percent`, `surcharge_change_percent`
+- `chemical.price.fact_surcharge_coverage_quantity`: `fiscal_quarter_id`, `scenario_id`, `ecl_reporting_segment_id`, `price_action_type_id`, `targeted_customer_count`, `approached_customer_count`
+
+### Q3 2025 (13) Ecolab
+
+Can low-to-mid-teens earnings growth still be reached with little volume growth, as in the prior price-led case?
+
+- `chemical.price.fact_enterprise_earnings`: `fiscal_quarter_id`, `scenario_id`, `enterprise_revenue_amount`, `enterprise_earnings_amount`, `enterprise_operating_margin_percent`
+- `chemical.price.fact_ecl_margin_bridge`: `fiscal_quarter_id`, `scenario_id`, `ecl_reporting_segment_id`, `margin_driver_id`, `margin_effect_amount`, `margin_effect_percent`
+- `chemical.price.fact_incremental_margin`: `fiscal_quarter_id`, `scenario_id`, `shw_reporting_segment_id`, `incremental_margin_percent`
+
+### Q2 2025 (1) Ecolab
+
+What puts and takes kept the second-half outlook from moving up after an in-line quarter?
+
+- `chemical.price.fact_enterprise_earnings`: `fiscal_quarter_id`, `scenario_id`, `enterprise_revenue_amount`, `enterprise_earnings_amount`, `enterprise_operating_margin_percent`
+- `chemical.price.fact_ecl_realized_service_price`: `fiscal_quarter_id`, `scenario_id`, `ecl_reporting_segment_id`, `ecl_business_unit_id`, `ecl_service_type_id`, `site_type_id`, `region_id`, `realized_price_dollars_per_visit`
+- `chemical.price.fact_ecl_announced_price`: `fiscal_quarter_id`, `scenario_id`, `ecl_reporting_segment_id`, `ecl_business_unit_id`, `price_action_type_id`, `announced_price_change_percent`, `surcharge_change_percent`
+
+### Q2 2025 (2) Ecolab
+
+Why did pricing land near 2% rather than a higher rate, and what pricing is expected in the second half?
+
+- `chemical.price.fact_ecl_realized_service_price`: `fiscal_quarter_id`, `scenario_id`, `ecl_reporting_segment_id`, `ecl_business_unit_id`, `ecl_service_type_id`, `site_type_id`, `region_id`, `realized_price_dollars_per_visit`
+- `chemical.price.fact_ecl_announced_price`: `fiscal_quarter_id`, `scenario_id`, `ecl_reporting_segment_id`, `ecl_business_unit_id`, `price_action_type_id`, `announced_price_change_percent`, `surcharge_change_percent`
+- `chemical.price.fact_ecl_operating_margin`: `fiscal_quarter_id`, `scenario_id`, `ecl_reporting_segment_id`, `operating_income_amount`, `operating_margin_percent`
+
+### Q2 2025 (5) Ecolab
+
+Is about half of the announced U.S. surcharge still expected to be realized, and are competitors supporting it?
+
+- `chemical.price.fact_ecl_announced_price`: `fiscal_quarter_id`, `scenario_id`, `ecl_reporting_segment_id`, `ecl_business_unit_id`, `price_action_type_id`, `announced_price_change_percent`, `surcharge_change_percent`
+- `chemical.price.fact_ecl_realized_service_price`: `fiscal_quarter_id`, `scenario_id`, `ecl_reporting_segment_id`, `ecl_business_unit_id`, `ecl_service_type_id`, `site_type_id`, `region_id`, `realized_price_dollars_per_visit`
+- `chemical.price.fact_surcharge_coverage_quantity`: `fiscal_quarter_id`, `scenario_id`, `ecl_reporting_segment_id`, `price_action_type_id`, `targeted_customer_count`, `approached_customer_count`
+
+### Q2 2025 (6) Ecolab
+
+What is pulling Institutional and Life Sciences margins up despite a sluggish macro and growth spend?
+
+- `chemical.price.fact_ecl_operating_margin`: `fiscal_quarter_id`, `scenario_id`, `ecl_reporting_segment_id`, `operating_income_amount`, `operating_margin_percent`
+- `chemical.price.fact_ecl_margin_bridge`: `fiscal_quarter_id`, `scenario_id`, `ecl_reporting_segment_id`, `margin_driver_id`, `margin_effect_amount`, `margin_effect_percent`
+- `chemical.price.fact_ecl_incremental_margin`: `fiscal_quarter_id`, `scenario_id`, `ecl_reporting_segment_id`, `incremental_margin_percent`
+
+### Q2 2025 (7) Ecolab
+
+Does confidence in the operating-margin target hold if volume stays near 1% inside roughly 3% organic growth?
+
+- `chemical.price.fact_ecl_operating_margin`: `fiscal_quarter_id`, `scenario_id`, `ecl_reporting_segment_id`, `operating_income_amount`, `operating_margin_percent`
+- `chemical.price.fact_enterprise_earnings`: `fiscal_quarter_id`, `scenario_id`, `enterprise_revenue_amount`, `enterprise_earnings_amount`, `enterprise_operating_margin_percent`
+- `chemical.price.fact_ecl_margin_bridge`: `fiscal_quarter_id`, `scenario_id`, `ecl_reporting_segment_id`, `margin_driver_id`, `margin_effect_amount`, `margin_effect_percent`
+
+### Q2 2025 (9) Ecolab
+
+What is driving the expected sequential drop in Life Sciences margin from nearly 20% back toward the mid-teens?
+
+- `chemical.price.fact_ecl_operating_margin`: `fiscal_quarter_id`, `scenario_id`, `ecl_reporting_segment_id`, `operating_income_amount`, `operating_margin_percent`
+- `chemical.price.fact_ecl_incremental_margin`: `fiscal_quarter_id`, `scenario_id`, `ecl_reporting_segment_id`, `incremental_margin_percent`
+- `chemical.price.fact_ecl_margin_bridge`: `fiscal_quarter_id`, `scenario_id`, `ecl_reporting_segment_id`, `margin_driver_id`, `margin_effect_amount`, `margin_effect_percent`
+
+## Datasets
+
+| Qualified name | Questions served |
+| --- | --- |
+| `chemical.price.dim_coating_raw_input` | supporting population |
+| `chemical.price.dim_ecl_raw_input` | supporting population |
+| `chemical.price.dim_price_action_type` | supporting population |
+| `chemical.price.dim_currency` | supporting population |
+| `chemical.price.dim_margin_driver` | supporting population |
+| `chemical.program.dim_ecl_program` | supporting population |
+| `chemical.price.fact_shw_realized_price` | Q1 2026 (1), Q1 2026 (6), Q1 2026 (9), Q1 2026 (16), Q4 2025 (3), Q4 2025 (11), Q4 2025 (14), Q3 2025 (1), Q2 2025 (5) |
+| `chemical.price.fact_ecl_realized_service_price` | Q1 2026 (13), Q1 2026 (14), Q4 2025 (8), Q4 2025 (9), Q3 2025 (4), Q3 2025 (8), Q2 2025 (1), Q2 2025 (2), Q2 2025 (5) |
+| `chemical.price.fact_shw_announced_price` | Q1 2026 (4), Q1 2026 (6), Q1 2026 (9), Q4 2025 (3), Q4 2025 (11), Q4 2025 (14), Q3 2025 (1), Q3 2025 (10) |
+| `chemical.price.fact_ecl_announced_price` | Q1 2026 (1), Q1 2026 (13), Q1 2026 (14), Q4 2025 (8), Q4 2025 (9), Q3 2025 (3), Q3 2025 (8), Q2 2025 (1), Q2 2025 (2), Q2 2025 (5) |
+| `chemical.price.fact_surcharge_coverage_quantity` | Q1 2026 (1), Q1 2026 (6), Q1 2026 (16), Q4 2025 (6), Q1 2026 (1), Q1 2026 (14), Q4 2025 (9), Q3 2025 (3), Q3 2025 (8), Q2 2025 (5) |
+| `chemical.price.fact_shw_gross_margin` | Q1 2026 (4), Q1 2026 (5), Q1 2026 (7), Q4 2025 (6), Q4 2025 (13), Q4 2025 (14), Q3 2025 (10), Q3 2025 (11), Q3 2025 (12), Q2 2025 (5) |
+| `chemical.price.fact_ecl_operating_margin` | Q1 2026 (1), Q1 2026 (6), Q4 2025 (3), Q4 2025 (12), Q3 2025 (6), Q2 2025 (2), Q2 2025 (6), Q2 2025 (7), Q2 2025 (9) |
+| `chemical.price.fact_shw_margin_bridge` | Q1 2026 (1), Q1 2026 (5), Q1 2026 (7), Q4 2025 (3), Q4 2025 (13), Q3 2025 (1) |
+| `chemical.price.fact_ecl_margin_bridge` | Q1 2026 (6), Q4 2025 (12), Q3 2025 (6), Q3 2025 (13), Q2 2025 (6), Q2 2025 (7), Q2 2025 (9) |
+| `chemical.price.fact_enterprise_earnings` | Q1 2026 (4), Q1 2026 (5), Q1 2026 (7), Q1 2026 (9), Q4 2025 (11), Q4 2025 (13), Q3 2025 (11), Q4 2025 (8), Q3 2025 (13), Q2 2025 (1), Q2 2025 (7) |
+| `chemical.price.fact_value_delivered_amount` | Q1 2026 (13), Q3 2025 (3) |
+| `chemical.price.fact_competitor_coatings_price` | Q1 2026 (16), Q4 2025 (6) |
+| `chemical.price.fact_incremental_margin` | Q3 2025 (10), Q3 2025 (11), Q3 2025 (12), Q2 2025 (5), Q4 2025 (3), Q3 2025 (4), Q3 2025 (13) |
+| `chemical.price.fact_ecl_incremental_margin` | Q3 2025 (12), Q1 2026 (6), Q4 2025 (3), Q4 2025 (12), Q3 2025 (4), Q3 2025 (6), Q2 2025 (6), Q2 2025 (9) |

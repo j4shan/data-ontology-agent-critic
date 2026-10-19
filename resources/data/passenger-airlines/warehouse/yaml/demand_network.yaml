@@ -4,12 +4,12 @@ nodes:
   descriptor:
     qualified_name: airline.time.dim_fiscal_quarter
     display_name: Fiscal Quarter
-    description: Airline Inc fiscal quarter, the reporting period on the calls.
+    description: Fiscal quarter on the Airline Inc earnings calendar.
     synonyms: []
     tags:
-    - dim
+    - dimension
     - demand_network
-    - airline
+    - passenger-airlines
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
@@ -19,7 +19,7 @@ nodes:
       object: DIM_FISCAL_QUARTER
       format: table
   grain:
-    description: One row is one fiscal quarter.
+    description: One row is one fiscal quarter, identified by fiscal_quarter_id.
     components:
     - identity_id: fiscal_quarter_identity
       dataset_columns:
@@ -28,246 +28,64 @@ nodes:
   columns:
   - name: fiscal_quarter_id
     description: Identifier of the fiscal quarter.
-  - name: quarter_label
-    description: Label of the fiscal quarter.
-  - name: quarter_code
-    description: Quarter code.
+  - name: fiscal_quarter_name
+    description: Name of the fiscal quarter.
+  - name: fiscal_quarter_code
+    description: Code of the fiscal quarter.
     value_description: 2024Q3, 2024Q4, 2025Q1, 2025Q2, 2025Q3, 2025Q4, 2026Q1, 2026Q2
-  - name: guidance_horizon
-    description: Whether the quarter is reported or guided.
-    value_description: reported, guided_next, guided_half, guided_year
   entity_definitions:
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: complete
-- node_id: sf:airline.time.dim_calendar_day
+- node_id: sf:airline.time.dim_scenario
   descriptor:
-    qualified_name: airline.time.dim_calendar_day
-    display_name: Calendar Day
-    description: Calendar day for Airline Inc bookings and flying.
+    qualified_name: airline.time.dim_scenario
+    display_name: Scenario
+    description: 'Reporting scenario: a reported result or a management guide for the same fiscal quarter.'
     synonyms: []
     tags:
-    - dim
+    - dimension
     - demand_network
-    - airline
+    - passenger-airlines
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: airline.us-central-1
       database: AIRLINE
       schema: TIME
-      object: DIM_CALENDAR_DAY
+      object: DIM_SCENARIO
       format: table
   grain:
-    description: One row is one calendar day.
+    description: One row is one scenario, identified by scenario_id.
     components:
-    - identity_id: calendar_day_identity
+    - identity_id: scenario_identity
       dataset_columns:
-      - calendar_day_id
-      description: Identifier of the calendar day.
+      - scenario_id
+      description: Identifier of the scenario.
   columns:
-  - name: calendar_day_id
-    description: Identifier of the calendar day.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter that contains the day.
-  - name: calendar_date
-    description: Civil date of the day.
-  - name: season_code
-    description: Season containing the day.
-    value_description: peak_summer, shoulder, holiday, off_peak
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: scenario_name
+    description: Name of the scenario.
+  - name: scenario_code
+    description: Code of the scenario.
+    value_description: reported, guide
   entity_definitions:
-  - identity_id: calendar_day_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - calendar_day_id
+    - scenario_id
     entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-- node_id: sf:airline.geography.dim_region
-  descriptor:
-    qualified_name: airline.geography.dim_region
-    display_name: Region
-    description: Region Airline Inc reports.
-    synonyms: []
-    tags:
-    - dim
-    - demand_network
-    - airline
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: airline.us-central-1
-      database: AIRLINE
-      schema: GEOGRAPHY
-      object: DIM_REGION
-      format: table
-  grain:
-    description: One row is one region.
-    components:
-    - identity_id: region_identity
-      dataset_columns:
-      - region_id
-      description: Identifier of the region.
-  columns:
-  - name: region_id
-    description: Identifier of the region.
-  - name: region_name
-    description: Name of the region.
-  - name: region_code
-    description: Region code.
-    value_description: domestic, atlantic, pacific, latin_america, middle_east, asia, europe
-  entity_definitions:
-  - identity_id: region_identity
-    dataset_columns:
-    - region_id
-    entity_universe: complete
-- node_id: sf:airline.geography.dim_country
-  descriptor:
-    qualified_name: airline.geography.dim_country
-    display_name: Country
-    description: Country Airline Inc serves.
-    synonyms: []
-    tags:
-    - dim
-    - demand_network
-    - airline
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: airline.us-central-1
-      database: AIRLINE
-      schema: GEOGRAPHY
-      object: DIM_COUNTRY
-      format: table
-  grain:
-    description: One row is one country.
-    components:
-    - identity_id: country_identity
-      dataset_columns:
-      - country_id
-      description: Identifier of the country.
-  columns:
-  - name: country_id
-    description: Identifier of the country.
-  - name: region_id
-    description: Region that contains the country.
-  - name: country_name
-    description: Name of the country.
-  - name: country_code
-    description: Country code.
-    value_description: united_states, china, japan, united_kingdom, germany, brazil, mexico
-  entity_definitions:
-  - identity_id: country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: complete
-  - identity_id: region_identity
-    dataset_columns:
-    - region_id
-    entity_universe: partial
-- node_id: sf:airline.geography.dim_city
-  descriptor:
-    qualified_name: airline.geography.dim_city
-    display_name: City
-    description: City Airline Inc flies, including Austin, Chicago, and Newark.
-    synonyms: []
-    tags:
-    - dim
-    - demand_network
-    - airline
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: airline.us-central-1
-      database: AIRLINE
-      schema: GEOGRAPHY
-      object: DIM_CITY
-      format: table
-  grain:
-    description: One row is one city.
-    components:
-    - identity_id: city_identity
-      dataset_columns:
-      - city_id
-      description: Identifier of the city.
-  columns:
-  - name: city_id
-    description: Identifier of the city.
-  - name: country_id
-    description: Country.
-  - name: city_name
-    description: Name of the city.
-  - name: city_code
-    description: City code.
-    value_description: austin, chicago, newark, new_york, los_angeles, atlanta, denver
-  - name: city_role_code
-    description: Role of the city.
-    value_description: hub, focus_city, non_hub, coastal, interior, mid_continent
-  entity_definitions:
-  - identity_id: city_identity
-    dataset_columns:
-    - city_id
-    entity_universe: complete
-  - identity_id: country_identity
-    dataset_columns:
-    - country_id
-    entity_universe: partial
-- node_id: sf:airline.geography.dim_hub
-  descriptor:
-    qualified_name: airline.geography.dim_hub
-    display_name: Hub
-    description: Hub Airline Inc operates.
-    synonyms: []
-    tags:
-    - dim
-    - demand_network
-    - airline
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: airline.us-central-1
-      database: AIRLINE
-      schema: GEOGRAPHY
-      object: DIM_HUB
-      format: table
-  grain:
-    description: One row is one hub.
-    components:
-    - identity_id: hub_identity
-      dataset_columns:
-      - hub_id
-      description: Identifier of the hub.
-  columns:
-  - name: hub_id
-    description: Identifier of the hub.
-  - name: city_id
-    description: City.
-  - name: hub_name
-    description: Name of the hub.
-  - name: hub_code
-    description: Hub code.
-    value_description: coastal, interior, chicago_ohare, newark, mid_continent, europe, austin
-  entity_definitions:
-  - identity_id: hub_identity
-    dataset_columns:
-    - hub_id
-    entity_universe: complete
-  - identity_id: city_identity
-    dataset_columns:
-    - city_id
-    entity_universe: partial
 - node_id: sf:airline.geography.dim_geographic_entity
   descriptor:
     qualified_name: airline.geography.dim_geographic_entity
     display_name: Geographic Entity
-    description: Geographic entity Airline Inc uses for demand and unit revenue.
+    description: Airline reporting geographic entity.
     synonyms: []
     tags:
-    - dim
+    - dimension
     - demand_network
-    - airline
+    - passenger-airlines
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
@@ -277,7 +95,7 @@ nodes:
       object: DIM_GEOGRAPHIC_ENTITY
       format: table
   grain:
-    description: One row is one geographic entity.
+    description: One row is one geographic entity, identified by geographic_entity_id.
     components:
     - identity_id: geographic_entity_identity
       dataset_columns:
@@ -286,32 +104,180 @@ nodes:
   columns:
   - name: geographic_entity_id
     description: Identifier of the geographic entity.
-  - name: region_id
-    description: Region of the entity.
-  - name: entity_name
-    description: Name of the entity.
-  - name: entity_code
-    description: Entity code.
-    value_description: domestic, atlantic, pacific, latin_america, transatlantic, international, system
+  - name: geographic_entity_name
+    description: Name of the geographic entity.
+  - name: geographic_entity_code
+    description: Code of the geographic entity.
+    value_description: domestic, atlantic, pacific, latin_america
   entity_definitions:
   - identity_id: geographic_entity_identity
     dataset_columns:
     - geographic_entity_id
     entity_universe: complete
-  - identity_id: region_identity
+- node_id: sf:airline.geography.dim_city
+  descriptor:
+    qualified_name: airline.geography.dim_city
+    display_name: City
+    description: City served by Airline Inc.
+    synonyms: []
+    tags:
+    - dimension
+    - demand_network
+    - passenger-airlines
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: airline.us-central-1
+      database: AIRLINE
+      schema: GEOGRAPHY
+      object: DIM_CITY
+      format: table
+  grain:
+    description: One row is one city, identified by city_id.
+    components:
+    - identity_id: city_identity
+      dataset_columns:
+      - city_id
+      description: Identifier of the city.
+  columns:
+  - name: city_id
+    description: Identifier of the city.
+  - name: city_name
+    description: Name of the city.
+  - name: city_code
+    description: Code of the city.
+    value_description: atlanta, chicago, new_york, los_angeles, denver, houston, newark, austin, seattle,
+      san_francisco
+  entity_definitions:
+  - identity_id: city_identity
     dataset_columns:
-    - region_id
-    entity_universe: partial
+    - city_id
+    entity_universe: complete
+- node_id: sf:airline.geography.dim_hub
+  descriptor:
+    qualified_name: airline.geography.dim_hub
+    display_name: Hub
+    description: Airline hub airport city.
+    synonyms: []
+    tags:
+    - dimension
+    - demand_network
+    - passenger-airlines
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: airline.us-central-1
+      database: AIRLINE
+      schema: GEOGRAPHY
+      object: DIM_HUB
+      format: table
+  grain:
+    description: One row is one hub, identified by hub_id.
+    components:
+    - identity_id: hub_identity
+      dataset_columns:
+      - hub_id
+      description: Identifier of the hub.
+  columns:
+  - name: hub_id
+    description: Identifier of the hub.
+  - name: hub_name
+    description: Name of the hub.
+  - name: hub_code
+    description: Code of the hub.
+    value_description: atlanta, detroit, minneapolis, salt_lake_city, los_angeles, seattle, new_york_jfk,
+      chicago_ohare, denver, houston, newark, san_francisco, washington_dulles
+  entity_definitions:
+  - identity_id: hub_identity
+    dataset_columns:
+    - hub_id
+    entity_universe: complete
+- node_id: sf:airline.geography.dim_origin_airport
+  descriptor:
+    qualified_name: airline.geography.dim_origin_airport
+    display_name: Origin Airport
+    description: Origin airport of a route.
+    synonyms: []
+    tags:
+    - dimension
+    - demand_network
+    - passenger-airlines
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: airline.us-central-1
+      database: AIRLINE
+      schema: GEOGRAPHY
+      object: DIM_ORIGIN_AIRPORT
+      format: table
+  grain:
+    description: One row is one origin airport, identified by origin_airport_id.
+    components:
+    - identity_id: origin_airport_identity
+      dataset_columns:
+      - origin_airport_id
+      description: Identifier of the origin airport.
+  columns:
+  - name: origin_airport_id
+    description: Identifier of the origin airport.
+  - name: origin_airport_name
+    description: Name of the origin airport.
+  - name: origin_airport_code
+    description: Code of the origin airport.
+    value_description: atl, ord, ewr, lax, jfk, sfo, mia, dfw
+  entity_definitions:
+  - identity_id: origin_airport_identity
+    dataset_columns:
+    - origin_airport_id
+    entity_universe: complete
+- node_id: sf:airline.geography.dim_destination_airport
+  descriptor:
+    qualified_name: airline.geography.dim_destination_airport
+    display_name: Destination Airport
+    description: Destination airport of a route.
+    synonyms: []
+    tags:
+    - dimension
+    - demand_network
+    - passenger-airlines
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: airline.us-central-1
+      database: AIRLINE
+      schema: GEOGRAPHY
+      object: DIM_DESTINATION_AIRPORT
+      format: table
+  grain:
+    description: One row is one destination airport, identified by destination_airport_id.
+    components:
+    - identity_id: destination_airport_identity
+      dataset_columns:
+      - destination_airport_id
+      description: Identifier of the destination airport.
+  columns:
+  - name: destination_airport_id
+    description: Identifier of the destination airport.
+  - name: destination_airport_name
+    description: Name of the destination airport.
+  - name: destination_airport_code
+    description: Code of the destination airport.
+    value_description: atl, ord, ewr, lax, den, jfk, sfo, lhr, nrt, gru
+  entity_definitions:
+  - identity_id: destination_airport_identity
+    dataset_columns:
+    - destination_airport_id
+    entity_universe: complete
 - node_id: sf:airline.geography.dim_route
   descriptor:
     qualified_name: airline.geography.dim_route
     display_name: Route
-    description: Route Airline Inc flies.
+    description: Route with an origin airport and a destination airport.
     synonyms: []
     tags:
-    - dim
+    - dimension
     - demand_network
-    - airline
+    - passenger-airlines
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
@@ -321,7 +287,7 @@ nodes:
       object: DIM_ROUTE
       format: table
   grain:
-    description: One row is one route.
+    description: One row is one route, identified by route_id.
     components:
     - identity_id: route_identity
       dataset_columns:
@@ -330,43 +296,35 @@ nodes:
   columns:
   - name: route_id
     description: Identifier of the route.
-  - name: geographic_entity_id
-    description: Geographic entity.
-  - name: hub_id
-    description: Hub.
   - name: route_name
     description: Name of the route.
-  - name: route_code
-    description: Route code.
-  - name: international_flag
-    description: Whether the route is international.
-  - name: long_haul_flag
-    description: Whether the route is long haul.
-  - name: new_flag
-    description: Whether the route is new.
+  - name: origin_airport_id
+    description: Identifier of the origin airport.
+  - name: destination_airport_id
+    description: Identifier of the destination airport.
   entity_definitions:
   - identity_id: route_identity
     dataset_columns:
     - route_id
     entity_universe: complete
-  - identity_id: geographic_entity_identity
+  - identity_id: origin_airport_identity
     dataset_columns:
-    - geographic_entity_id
+    - origin_airport_id
     entity_universe: partial
-  - identity_id: hub_identity
+  - identity_id: destination_airport_identity
     dataset_columns:
-    - hub_id
+    - destination_airport_id
     entity_universe: partial
 - node_id: sf:airline.customer.dim_cabin
   descriptor:
     qualified_name: airline.customer.dim_cabin
     display_name: Cabin
-    description: Cabin Airline Inc sells.
+    description: Physical cabin on the aircraft.
     synonyms: []
     tags:
-    - dim
+    - dimension
     - demand_network
-    - airline
+    - passenger-airlines
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
@@ -376,7 +334,7 @@ nodes:
       object: DIM_CABIN
       format: table
   grain:
-    description: One row is one cabin.
+    description: One row is one cabin, identified by cabin_id.
     components:
     - identity_id: cabin_identity
       dataset_columns:
@@ -388,99 +346,99 @@ nodes:
   - name: cabin_name
     description: Name of the cabin.
   - name: cabin_code
-    description: Cabin code.
-    value_description: premium, main, basic_economy, premium_leisure
+    description: Code of the cabin.
+    value_description: first, premium_economy, main_cabin
   entity_definitions:
   - identity_id: cabin_identity
     dataset_columns:
     - cabin_id
     entity_universe: complete
-- node_id: sf:airline.customer.dim_customer_segment
+- node_id: sf:airline.customer.dim_fare_product
   descriptor:
-    qualified_name: airline.customer.dim_customer_segment
-    display_name: Customer Segment
-    description: Customer segment Airline Inc tracks.
+    qualified_name: airline.customer.dim_fare_product
+    display_name: Fare Product
+    description: Fare product sold to a passenger.
     synonyms: []
     tags:
-    - dim
+    - dimension
     - demand_network
-    - airline
+    - passenger-airlines
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: airline.us-central-1
       database: AIRLINE
       schema: CUSTOMER
-      object: DIM_CUSTOMER_SEGMENT
+      object: DIM_FARE_PRODUCT
       format: table
   grain:
-    description: One row is one customer segment.
+    description: One row is one fare product, identified by fare_product_id.
     components:
-    - identity_id: customer_segment_identity
+    - identity_id: fare_product_identity
       dataset_columns:
-      - customer_segment_id
-      description: Identifier of the customer segment.
+      - fare_product_id
+      description: Identifier of the fare product.
   columns:
-  - name: customer_segment_id
-    description: Identifier of the customer segment.
-  - name: segment_name
-    description: Name of the segment.
-  - name: segment_code
-    description: Segment code.
-    value_description: corporate, leisure, premium_corporate, higher_income, brand_loyal, basic_economy
+  - name: fare_product_id
+    description: Identifier of the fare product.
+  - name: fare_product_name
+    description: Name of the fare product.
+  - name: fare_product_code
+    description: Code of the fare product.
+    value_description: basic_economy, standard_economy, refundable_economy, premium_bundle
   entity_definitions:
-  - identity_id: customer_segment_identity
+  - identity_id: fare_product_identity
     dataset_columns:
-    - customer_segment_id
+    - fare_product_id
     entity_universe: complete
-- node_id: sf:airline.customer.dim_age_cohort
+- node_id: sf:airline.customer.dim_traveler_type
   descriptor:
-    qualified_name: airline.customer.dim_age_cohort
-    display_name: Age Cohort
-    description: Traveler age cohort for Airline Inc.
+    qualified_name: airline.customer.dim_traveler_type
+    display_name: Traveler Type
+    description: Purpose type of a traveler.
     synonyms: []
     tags:
-    - dim
+    - dimension
     - demand_network
-    - airline
+    - passenger-airlines
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: airline.us-central-1
       database: AIRLINE
       schema: CUSTOMER
-      object: DIM_AGE_COHORT
+      object: DIM_TRAVELER_TYPE
       format: table
   grain:
-    description: One row is one age cohort.
+    description: One row is one traveler type, identified by traveler_type_id.
     components:
-    - identity_id: age_cohort_identity
+    - identity_id: traveler_type_identity
       dataset_columns:
-      - age_cohort_id
-      description: Identifier of the age cohort.
+      - traveler_type_id
+      description: Identifier of the traveler type.
   columns:
-  - name: age_cohort_id
-    description: Identifier of the age cohort.
-  - name: cohort_name
-    description: Name of the cohort.
-  - name: cohort_code
-    description: Cohort code.
-    value_description: younger, older
+  - name: traveler_type_id
+    description: Identifier of the traveler type.
+  - name: traveler_type_name
+    description: Name of the traveler type.
+  - name: traveler_type_code
+    description: Code of the traveler type.
+    value_description: business, leisure, government, visiting_friends_relatives
   entity_definitions:
-  - identity_id: age_cohort_identity
+  - identity_id: traveler_type_identity
     dataset_columns:
-    - age_cohort_id
+    - traveler_type_id
     entity_universe: complete
 - node_id: sf:airline.customer.dim_industry_vertical
   descriptor:
     qualified_name: airline.customer.dim_industry_vertical
     display_name: Industry Vertical
-    description: Corporate industry vertical Airline Inc serves.
+    description: Industry of a corporate travel customer.
     synonyms: []
     tags:
-    - dim
+    - dimension
     - demand_network
-    - airline
+    - passenger-airlines
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
@@ -490,7 +448,7 @@ nodes:
       object: DIM_INDUSTRY_VERTICAL
       format: table
   grain:
-    description: One row is one industry vertical.
+    description: One row is one industry vertical, identified by industry_vertical_id.
     components:
     - identity_id: industry_vertical_identity
       dataset_columns:
@@ -499,102 +457,64 @@ nodes:
   columns:
   - name: industry_vertical_id
     description: Identifier of the industry vertical.
-  - name: vertical_name
-    description: Name of the vertical.
-  - name: vertical_code
-    description: Vertical code.
-    value_description: finance, technology, industrial, energy, other
+  - name: industry_vertical_name
+    description: Name of the industry vertical.
+  - name: industry_vertical_code
+    description: Code of the industry vertical.
+    value_description: finance, technology, industrial, energy, healthcare, other
   entity_definitions:
   - identity_id: industry_vertical_identity
     dataset_columns:
     - industry_vertical_id
     entity_universe: complete
-- node_id: sf:airline.customer.dim_loyalty_program
+- node_id: sf:airline.customer.dim_age_cohort
   descriptor:
-    qualified_name: airline.customer.dim_loyalty_program
-    display_name: Loyalty Program
-    description: Loyalty program Airline Inc operates, including SkyMiles and co-brand cards.
+    qualified_name: airline.customer.dim_age_cohort
+    display_name: Age Cohort
+    description: Age cohort of a traveler.
     synonyms: []
     tags:
-    - dim
+    - dimension
     - demand_network
-    - airline
+    - passenger-airlines
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: airline.us-central-1
       database: AIRLINE
       schema: CUSTOMER
-      object: DIM_LOYALTY_PROGRAM
+      object: DIM_AGE_COHORT
       format: table
   grain:
-    description: One row is one loyalty program.
+    description: One row is one age cohort, identified by age_cohort_id.
     components:
-    - identity_id: loyalty_program_identity
+    - identity_id: age_cohort_identity
       dataset_columns:
-      - loyalty_program_id
-      description: Identifier of the loyalty program.
+      - age_cohort_id
+      description: Identifier of the age cohort.
   columns:
-  - name: loyalty_program_id
-    description: Identifier of the loyalty program.
-  - name: program_name
-    description: Name of the program.
-  - name: program_code
-    description: Program code.
-    value_description: skymiles, cobrand, mileage_program
+  - name: age_cohort_id
+    description: Identifier of the age cohort.
+  - name: age_cohort_name
+    description: Name of the age cohort.
+  - name: age_cohort_code
+    description: Code of the age cohort.
+    value_description: younger, older
   entity_definitions:
-  - identity_id: loyalty_program_identity
+  - identity_id: age_cohort_identity
     dataset_columns:
-    - loyalty_program_id
-    entity_universe: complete
-- node_id: sf:airline.customer.dim_partner
-  descriptor:
-    qualified_name: airline.customer.dim_partner
-    display_name: Partner
-    description: Partner Airline Inc flies or monetizes with, including Star Alliance and card partners.
-    synonyms: []
-    tags:
-    - dim
-    - demand_network
-    - airline
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: airline.us-central-1
-      database: AIRLINE
-      schema: CUSTOMER
-      object: DIM_PARTNER
-      format: table
-  grain:
-    description: One row is one partner.
-    components:
-    - identity_id: partner_identity
-      dataset_columns:
-      - partner_id
-      description: Identifier of the partner.
-  columns:
-  - name: partner_id
-    description: Identifier of the partner.
-  - name: partner_name
-    description: Name of the partner.
-  - name: partner_code
-    description: Partner code.
-    value_description: star_alliance, card_bank, foreign_carrier, sky_partner
-  entity_definitions:
-  - identity_id: partner_identity
-    dataset_columns:
-    - partner_id
+    - age_cohort_id
     entity_universe: complete
 - node_id: sf:airline.customer.dim_competitor
   descriptor:
     qualified_name: airline.customer.dim_competitor
     display_name: Competitor
-    description: Competitor Airline Inc compares with.
+    description: Competitor carrier class.
     synonyms: []
     tags:
-    - dim
+    - dimension
     - demand_network
-    - airline
+    - passenger-airlines
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
@@ -604,7 +524,7 @@ nodes:
       object: DIM_COMPETITOR
       format: table
   grain:
-    description: One row is one competitor.
+    description: One row is one competitor, identified by competitor_id.
     components:
     - identity_id: competitor_identity
       dataset_columns:
@@ -616,8 +536,8 @@ nodes:
   - name: competitor_name
     description: Name of the competitor.
   - name: competitor_code
-    description: Competitor code.
-    value_description: low_cost, leisure_carrier, foreign_carrier, middle_east_carrier, network_peer
+    description: Code of the competitor.
+    value_description: low_cost_carrier, leisure_carrier, foreign_carrier, middle_east_carrier, network_peer
   entity_definitions:
   - identity_id: competitor_identity
     dataset_columns:
@@ -627,12 +547,12 @@ nodes:
   descriptor:
     qualified_name: airline.customer.dim_event
     display_name: Event
-    description: Event that moves Airline Inc demand.
+    description: Event affecting demand or operations.
     synonyms: []
     tags:
-    - dim
+    - dimension
     - demand_network
-    - airline
+    - passenger-airlines
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
@@ -642,7 +562,7 @@ nodes:
       object: DIM_EVENT
       format: table
   grain:
-    description: One row is one event.
+    description: One row is one event, identified by event_id.
     components:
     - identity_id: event_identity
       dataset_columns:
@@ -654,9 +574,9 @@ nodes:
   - name: event_name
     description: Name of the event.
   - name: event_code
-    description: Event code.
-    value_description: election, world_cup, government_shutdown, middle_east_disruption, newark_disruption,
-      anti_tourism
+    description: Code of the event.
+    value_description: election, world_cup, government_shutdown, middle_east_disruption, airport_disruption,
+      anti_tourism_movement
   entity_definitions:
   - identity_id: event_identity
     dataset_columns:
@@ -666,12 +586,12 @@ nodes:
   descriptor:
     qualified_name: airline.customer.dim_booking_window
     display_name: Booking Window
-    description: How far ahead an Airline Inc booking is made.
+    description: Booking window before departure.
     synonyms: []
     tags:
-    - dim
+    - dimension
     - demand_network
-    - airline
+    - passenger-airlines
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
@@ -681,7 +601,7 @@ nodes:
       object: DIM_BOOKING_WINDOW
       format: table
   grain:
-    description: One row is one booking window.
+    description: One row is one booking window, identified by booking_window_id.
     components:
     - identity_id: booking_window_identity
       dataset_columns:
@@ -690,71 +610,330 @@ nodes:
   columns:
   - name: booking_window_id
     description: Identifier of the booking window.
-  - name: window_name
-    description: Name of the window.
-  - name: window_code
-    description: Window code.
-    value_description: close_in, advanced, holiday, shoulder
+  - name: booking_window_name
+    description: Name of the booking window.
+  - name: booking_window_code
+    description: Code of the booking window.
+    value_description: close_in, advance, holiday, shoulder_season
   entity_definitions:
   - identity_id: booking_window_identity
     dataset_columns:
     - booking_window_id
     entity_universe: complete
-- node_id: sf:airline.demand.fact_booking_demand
+- node_id: sf:airline.supply.fact_available_seat_miles
   descriptor:
-    qualified_name: airline.demand.fact_booking_demand
-    display_name: Booking Demand
-    description: Bookings on the Airline Inc book. This fact stores passenger or booking quantity, not
-      a fare.
+    qualified_name: airline.supply.fact_available_seat_miles
+    display_name: Available Seat Miles
+    description: Capacity as available seat-miles by geographic entity, route, cabin, and aircraft model.
     synonyms: []
     tags:
     - fact
     - demand_network
-    - airline
+    - passenger-airlines
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: airline.us-central-1
+      database: AIRLINE
+      schema: SUPPLY
+      object: FACT_AVAILABLE_SEAT_MILES
+      format: table
+  grain:
+    description: One row is one available seat miles observation for the combination of fiscal quarter,
+      scenario, geographic entity, route, cabin, aircraft model.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: geographic_entity_identity
+      dataset_columns:
+      - geographic_entity_id
+      description: Identifier of the geographic entity.
+    - identity_id: route_identity
+      dataset_columns:
+      - route_id
+      description: Identifier of the route.
+    - identity_id: cabin_identity
+      dataset_columns:
+      - cabin_id
+      description: Identifier of the cabin.
+    - identity_id: aircraft_model_identity
+      dataset_columns:
+      - aircraft_model_id
+      description: Identifier of the aircraft model.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: geographic_entity_id
+    description: Identifier of the geographic entity.
+  - name: route_id
+    description: Identifier of the route.
+  - name: cabin_id
+    description: Identifier of the cabin.
+  - name: aircraft_model_id
+    description: Identifier of the aircraft model.
+  - name: available_seat_miles
+    description: Available seat-miles in seat-miles.
+  - name: seat_count
+    description: Seats operated in seats.
+  - name: departure_count
+    description: Departures in departures.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: geographic_entity_identity
+    dataset_columns:
+    - geographic_entity_id
+    entity_universe: partial
+  - identity_id: route_identity
+    dataset_columns:
+    - route_id
+    entity_universe: partial
+  - identity_id: cabin_identity
+    dataset_columns:
+    - cabin_id
+    entity_universe: partial
+  - identity_id: aircraft_model_identity
+    dataset_columns:
+    - aircraft_model_id
+    entity_universe: partial
+- node_id: sf:airline.demand.fact_revenue_passenger_miles
+  descriptor:
+    qualified_name: airline.demand.fact_revenue_passenger_miles
+    display_name: Revenue Passenger Miles
+    description: Traffic as revenue passenger-miles by geographic entity, cabin, and traveler type.
+    synonyms: []
+    tags:
+    - fact
+    - demand_network
+    - passenger-airlines
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: airline.us-central-1
       database: AIRLINE
       schema: DEMAND
-      object: FACT_BOOKING_DEMAND
+      object: FACT_REVENUE_PASSENGER_MILES
       format: table
   grain:
-    description: One row is one booking demand.
+    description: One row is one revenue passenger miles observation for the combination of fiscal quarter,
+      scenario, geographic entity, cabin, traveler type.
     components:
-    - identity_id: booking_demand_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - booking_demand_id
-      description: Identifier of the booking demand.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: geographic_entity_identity
+      dataset_columns:
+      - geographic_entity_id
+      description: Identifier of the geographic entity.
+    - identity_id: cabin_identity
+      dataset_columns:
+      - cabin_id
+      description: Identifier of the cabin.
+    - identity_id: traveler_type_identity
+      dataset_columns:
+      - traveler_type_id
+      description: Identifier of the traveler type.
   columns:
-  - name: booking_demand_id
-    description: Identifier of the booking demand.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
   - name: geographic_entity_id
-    description: Geographic entity.
+    description: Identifier of the geographic entity.
   - name: cabin_id
-    description: Cabin.
-  - name: customer_segment_id
-    description: Customer segment.
+    description: Identifier of the cabin.
+  - name: traveler_type_id
+    description: Identifier of the traveler type.
+  - name: revenue_passenger_miles
+    description: Revenue passenger-miles in passenger-miles.
+  - name: passenger_count
+    description: Passengers carried in passengers.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: geographic_entity_identity
+    dataset_columns:
+    - geographic_entity_id
+    entity_universe: partial
+  - identity_id: cabin_identity
+    dataset_columns:
+    - cabin_id
+    entity_universe: partial
+  - identity_id: traveler_type_identity
+    dataset_columns:
+    - traveler_type_id
+    entity_universe: partial
+- node_id: sf:airline.demand.fact_passenger_quantity
+  descriptor:
+    qualified_name: airline.demand.fact_passenger_quantity
+    display_name: Passenger Quantity
+    description: Passengers by geographic entity, cabin, and fare product; the denominator for fare per
+      passenger.
+    synonyms: []
+    tags:
+    - fact
+    - demand_network
+    - passenger-airlines
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: airline.us-central-1
+      database: AIRLINE
+      schema: DEMAND
+      object: FACT_PASSENGER_QUANTITY
+      format: table
+  grain:
+    description: One row is one passenger quantity observation for the combination of fiscal quarter,
+      scenario, geographic entity, cabin, fare product.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: geographic_entity_identity
+      dataset_columns:
+      - geographic_entity_id
+      description: Identifier of the geographic entity.
+    - identity_id: cabin_identity
+      dataset_columns:
+      - cabin_id
+      description: Identifier of the cabin.
+    - identity_id: fare_product_identity
+      dataset_columns:
+      - fare_product_id
+      description: Identifier of the fare product.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: geographic_entity_id
+    description: Identifier of the geographic entity.
+  - name: cabin_id
+    description: Identifier of the cabin.
+  - name: fare_product_id
+    description: Identifier of the fare product.
+  - name: passenger_count
+    description: Passengers in passengers.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: geographic_entity_identity
+    dataset_columns:
+    - geographic_entity_id
+    entity_universe: partial
+  - identity_id: cabin_identity
+    dataset_columns:
+    - cabin_id
+    entity_universe: partial
+  - identity_id: fare_product_identity
+    dataset_columns:
+    - fare_product_id
+    entity_universe: partial
+- node_id: sf:airline.demand.fact_booking_quantity
+  descriptor:
+    qualified_name: airline.demand.fact_booking_quantity
+    display_name: Booking Quantity
+    description: Bookings by geographic entity, cabin, fare product, and booking window.
+    synonyms: []
+    tags:
+    - fact
+    - demand_network
+    - passenger-airlines
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: airline.us-central-1
+      database: AIRLINE
+      schema: DEMAND
+      object: FACT_BOOKING_QUANTITY
+      format: table
+  grain:
+    description: One row is one booking quantity observation for the combination of fiscal quarter, scenario,
+      geographic entity, cabin, fare product, booking window.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: geographic_entity_identity
+      dataset_columns:
+      - geographic_entity_id
+      description: Identifier of the geographic entity.
+    - identity_id: cabin_identity
+      dataset_columns:
+      - cabin_id
+      description: Identifier of the cabin.
+    - identity_id: fare_product_identity
+      dataset_columns:
+      - fare_product_id
+      description: Identifier of the fare product.
+    - identity_id: booking_window_identity
+      dataset_columns:
+      - booking_window_id
+      description: Identifier of the booking window.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: geographic_entity_id
+    description: Identifier of the geographic entity.
+  - name: cabin_id
+    description: Identifier of the cabin.
+  - name: fare_product_id
+    description: Identifier of the fare product.
   - name: booking_window_id
-    description: Booking window.
+    description: Identifier of the booking window.
   - name: booking_count
-    description: Booking count.
-  - name: on_books_flag
-    description: Whether the outlook is already on the books.
-  - name: versus_january_flag
-    description: Whether bookings are back to the January level.
-  - name: curve_normalized_flag
-    description: Whether the booking curve has normalized.
+    description: Bookings in bookings.
   entity_definitions:
-  - identity_id: booking_demand_identity
-    dataset_columns:
-    - booking_demand_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
     entity_universe: partial
   - identity_id: geographic_entity_identity
     dataset_columns:
@@ -764,214 +943,83 @@ nodes:
     dataset_columns:
     - cabin_id
     entity_universe: partial
-  - identity_id: customer_segment_identity
+  - identity_id: fare_product_identity
     dataset_columns:
-    - customer_segment_id
+    - fare_product_id
     entity_universe: partial
   - identity_id: booking_window_identity
     dataset_columns:
     - booking_window_id
     entity_universe: partial
-- node_id: sf:airline.demand.fact_traffic_demand
+- node_id: sf:airline.demand.fact_corporate_traffic
   descriptor:
-    qualified_name: airline.demand.fact_traffic_demand
-    display_name: Traffic Demand
-    description: Passengers Airline Inc carries. A count, not a fare. This fact stores passenger or booking
-      quantity, not a fare.
+    qualified_name: airline.demand.fact_corporate_traffic
+    display_name: Corporate Traffic
+    description: Corporate traffic by geographic entity, industry vertical, and hub.
     synonyms: []
     tags:
     - fact
     - demand_network
-    - airline
+    - passenger-airlines
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: airline.us-central-1
       database: AIRLINE
       schema: DEMAND
-      object: FACT_TRAFFIC_DEMAND
+      object: FACT_CORPORATE_TRAFFIC
       format: table
   grain:
-    description: One row is one traffic demand.
+    description: One row is one corporate traffic observation for the combination of fiscal quarter, scenario,
+      geographic entity, industry vertical, hub.
     components:
-    - identity_id: traffic_demand_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - traffic_demand_id
-      description: Identifier of the traffic demand.
-  columns:
-  - name: traffic_demand_id
-    description: Identifier of the traffic demand.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: geographic_entity_id
-    description: Geographic entity.
-  - name: cabin_id
-    description: Cabin.
-  - name: customer_segment_id
-    description: Customer segment.
-  - name: passenger_count
-    description: Passenger count.
-  - name: traffic_change_rate
-    description: Traffic change.
-  - name: strength_from_bookings_flag
-    description: Whether strength is more bookings rather than accepted fares.
-  entity_definitions:
-  - identity_id: traffic_demand_identity
-    dataset_columns:
-    - traffic_demand_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: geographic_entity_identity
-    dataset_columns:
-    - geographic_entity_id
-    entity_universe: partial
-  - identity_id: cabin_identity
-    dataset_columns:
-    - cabin_id
-    entity_universe: partial
-  - identity_id: customer_segment_identity
-    dataset_columns:
-    - customer_segment_id
-    entity_universe: partial
-- node_id: sf:airline.demand.fact_cabin_demand
-  descriptor:
-    qualified_name: airline.demand.fact_cabin_demand
-    display_name: Cabin Demand
-    description: Demand by Airline Inc cabin. This fact stores passenger or booking quantity, not a fare.
-    synonyms: []
-    tags:
-    - fact
-    - demand_network
-    - airline
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: airline.us-central-1
-      database: AIRLINE
-      schema: DEMAND
-      object: FACT_CABIN_DEMAND
-      format: table
-  grain:
-    description: One row is one cabin demand.
-    components:
-    - identity_id: cabin_demand_identity
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
       dataset_columns:
-      - cabin_demand_id
-      description: Identifier of the cabin demand.
-  columns:
-  - name: cabin_demand_id
-    description: Identifier of the cabin demand.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: cabin_id
-    description: Cabin.
-  - name: geographic_entity_id
-    description: Geographic entity.
-  - name: customer_segment_id
-    description: Customer segment.
-  - name: passenger_count
-    description: Passengers in the cabin.
-  - name: demand_change_rate
-    description: Demand change for the cabin.
-  - name: holding_if_inelastic_flag
-    description: Whether demand holds in a high-fare scenario.
-  - name: positive_flag
-    description: Whether the cabin has turned positive.
-  entity_definitions:
-  - identity_id: cabin_demand_identity
-    dataset_columns:
-    - cabin_demand_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: cabin_identity
-    dataset_columns:
-    - cabin_id
-    entity_universe: partial
-  - identity_id: geographic_entity_identity
-    dataset_columns:
-    - geographic_entity_id
-    entity_universe: partial
-  - identity_id: customer_segment_identity
-    dataset_columns:
-    - customer_segment_id
-    entity_universe: partial
-- node_id: sf:airline.demand.fact_corporate_demand
-  descriptor:
-    qualified_name: airline.demand.fact_corporate_demand
-    display_name: Corporate Demand
-    description: Corporate travel demand at Airline Inc. This fact stores passenger or booking quantity,
-      not a fare.
-    synonyms: []
-    tags:
-    - fact
-    - demand_network
-    - airline
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: airline.us-central-1
-      database: AIRLINE
-      schema: DEMAND
-      object: FACT_CORPORATE_DEMAND
-      format: table
-  grain:
-    description: One row is one corporate demand.
-    components:
-    - identity_id: corporate_demand_identity
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: geographic_entity_identity
       dataset_columns:
-      - corporate_demand_id
-      description: Identifier of the corporate demand.
+      - geographic_entity_id
+      description: Identifier of the geographic entity.
+    - identity_id: industry_vertical_identity
+      dataset_columns:
+      - industry_vertical_id
+      description: Identifier of the industry vertical.
+    - identity_id: hub_identity
+      dataset_columns:
+      - hub_id
+      description: Identifier of the hub.
   columns:
-  - name: corporate_demand_id
-    description: Identifier of the corporate demand.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: customer_segment_id
-    description: Customer segment.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
   - name: geographic_entity_id
-    description: Geographic entity.
-  - name: city_id
-    description: City.
+    description: Identifier of the geographic entity.
   - name: industry_vertical_id
-    description: Industry vertical.
+    description: Identifier of the industry vertical.
   - name: hub_id
-    description: Hub.
+    description: Identifier of the hub.
+  - name: corporate_revenue_passenger_miles
+    description: Corporate revenue passenger-miles in passenger-miles.
   - name: corporate_passenger_count
-    description: Corporate passengers.
-  - name: recovered_flag
-    description: Whether corporate travel has recovered once the outage comparison is excluded.
-  - name: short_of_target_flag
-    description: Whether share is still short of the target.
-  - name: acceleration_flag
-    description: Whether summer corporate demand is accelerating.
-  - name: back_to_turn_of_year_flag
-    description: Whether bookings are back to the turn-of-year level.
+    description: Corporate passengers in passengers.
   entity_definitions:
-  - identity_id: corporate_demand_identity
-    dataset_columns:
-    - corporate_demand_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: customer_segment_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - customer_segment_id
+    - scenario_id
     entity_universe: partial
   - identity_id: geographic_entity_identity
     dataset_columns:
     - geographic_entity_id
-    entity_universe: partial
-  - identity_id: city_identity
-    dataset_columns:
-    - city_id
     entity_universe: partial
   - identity_id: industry_vertical_identity
     dataset_columns:
@@ -981,147 +1029,149 @@ nodes:
     dataset_columns:
     - hub_id
     entity_universe: partial
-- node_id: sf:airline.demand.fact_leisure_demand
+- node_id: sf:airline.demand.fact_loyalty_traffic_delta
   descriptor:
-    qualified_name: airline.demand.fact_leisure_demand
-    display_name: Leisure Demand
-    description: Leisure demand at Airline Inc. This fact stores passenger or booking quantity, not a
-      fare.
+    qualified_name: airline.demand.fact_loyalty_traffic_delta
+    display_name: SkyMiles Traffic
+    description: SkyMiles member traffic, kept separate from MileagePlus.
     synonyms: []
     tags:
     - fact
     - demand_network
-    - airline
+    - passenger-airlines
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: airline.us-central-1
       database: AIRLINE
       schema: DEMAND
-      object: FACT_LEISURE_DEMAND
+      object: FACT_LOYALTY_TRAFFIC_DELTA
       format: table
   grain:
-    description: One row is one leisure demand.
+    description: One row is one skymiles traffic observation for the combination of fiscal quarter, scenario,
+      skymiles tier, geographic entity.
     components:
-    - identity_id: leisure_demand_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - leisure_demand_id
-      description: Identifier of the leisure demand.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: skymiles_tier_identity
+      dataset_columns:
+      - skymiles_tier_id
+      description: Identifier of the skymiles tier.
+    - identity_id: geographic_entity_identity
+      dataset_columns:
+      - geographic_entity_id
+      description: Identifier of the geographic entity.
   columns:
-  - name: leisure_demand_id
-    description: Identifier of the leisure demand.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: skymiles_tier_id
+    description: Identifier of the skymiles tier.
   - name: geographic_entity_id
-    description: Geographic entity.
-  - name: city_id
-    description: City.
-  - name: customer_segment_id
-    description: Customer segment.
-  - name: leisure_passenger_count
-    description: Leisure passengers.
-  - name: point_to_point_flag
-    description: Whether the market is point-to-point leisure.
-  - name: domestic_trend_rate
-    description: Demand change.
+    description: Identifier of the geographic entity.
+  - name: member_revenue_passenger_miles
+    description: SkyMiles member revenue passenger-miles in passenger-miles.
   entity_definitions:
-  - identity_id: leisure_demand_identity
-    dataset_columns:
-    - leisure_demand_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: skymiles_tier_identity
+    dataset_columns:
+    - skymiles_tier_id
     entity_universe: partial
   - identity_id: geographic_entity_identity
     dataset_columns:
     - geographic_entity_id
     entity_universe: partial
-  - identity_id: city_identity
-    dataset_columns:
-    - city_id
-    entity_universe: partial
-  - identity_id: customer_segment_identity
-    dataset_columns:
-    - customer_segment_id
-    entity_universe: partial
-- node_id: sf:airline.demand.fact_segment_mix
+- node_id: sf:airline.demand.fact_loyalty_traffic_united
   descriptor:
-    qualified_name: airline.demand.fact_segment_mix
-    display_name: Segment Mix
-    description: Mix of Airline Inc demand across customer types. Shares, not fares. This fact stores
-      a rate or flag, not a fare and not a passenger count.
+    qualified_name: airline.demand.fact_loyalty_traffic_united
+    display_name: MileagePlus Traffic
+    description: MileagePlus member traffic, kept separate from SkyMiles.
     synonyms: []
     tags:
     - fact
     - demand_network
-    - airline
+    - passenger-airlines
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: airline.us-central-1
       database: AIRLINE
       schema: DEMAND
-      object: FACT_SEGMENT_MIX
+      object: FACT_LOYALTY_TRAFFIC_UNITED
       format: table
   grain:
-    description: One row is one segment mix.
+    description: One row is one mileageplus traffic observation for the combination of fiscal quarter,
+      scenario, mileageplus tier, geographic entity.
     components:
-    - identity_id: segment_mix_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - segment_mix_id
-      description: Identifier of the segment mix.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: mileageplus_tier_identity
+      dataset_columns:
+      - mileageplus_tier_id
+      description: Identifier of the mileageplus tier.
+    - identity_id: geographic_entity_identity
+      dataset_columns:
+      - geographic_entity_id
+      description: Identifier of the geographic entity.
   columns:
-  - name: segment_mix_id
-    description: Identifier of the segment mix.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: customer_segment_id
-    description: Customer segment.
-  - name: cabin_id
-    description: Cabin.
-  - name: loyalty_program_id
-    description: Loyalty program.
-  - name: mix_rate
-    description: Share of demand in the segment.
-  - name: premium_over_main_flag
-    description: Whether premium has overtaken the main cabin.
-  - name: crossover_year_code
-    description: Year the crossover was expected.
-    value_description: 2026, 2027, later
-  - name: behavior_change_flag
-    description: Whether the shift is loyalty-member behavior.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: mileageplus_tier_id
+    description: Identifier of the mileageplus tier.
+  - name: geographic_entity_id
+    description: Identifier of the geographic entity.
+  - name: member_revenue_passenger_miles
+    description: MileagePlus member revenue passenger-miles in passenger-miles.
   entity_definitions:
-  - identity_id: segment_mix_identity
-    dataset_columns:
-    - segment_mix_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: customer_segment_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - customer_segment_id
+    - scenario_id
     entity_universe: partial
-  - identity_id: cabin_identity
+  - identity_id: mileageplus_tier_identity
     dataset_columns:
-    - cabin_id
+    - mileageplus_tier_id
     entity_universe: partial
-  - identity_id: loyalty_program_identity
+  - identity_id: geographic_entity_identity
     dataset_columns:
-    - loyalty_program_id
+    - geographic_entity_id
     entity_universe: partial
 - node_id: sf:airline.demand.fact_share_position
   descriptor:
     qualified_name: airline.demand.fact_share_position
     display_name: Share Position
-    description: Share Airline Inc holds. This fact stores passenger or booking quantity, not a fare.
+    description: Passenger share by geographic entity, hub, and competitor; industry traffic is on its
+      own quantity fact.
     synonyms: []
     tags:
     - fact
     - demand_network
-    - airline
+    - passenger-airlines
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
@@ -1131,45 +1181,50 @@ nodes:
       object: FACT_SHARE_POSITION
       format: table
   grain:
-    description: One row is one share position.
+    description: One row is one share position observation for the combination of fiscal quarter, scenario,
+      geographic entity, hub, competitor.
     components:
-    - identity_id: share_position_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - share_position_id
-      description: Identifier of the share position.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: geographic_entity_identity
+      dataset_columns:
+      - geographic_entity_id
+      description: Identifier of the geographic entity.
+    - identity_id: hub_identity
+      dataset_columns:
+      - hub_id
+      description: Identifier of the hub.
+    - identity_id: competitor_identity
+      dataset_columns:
+      - competitor_id
+      description: Identifier of the competitor.
   columns:
-  - name: share_position_id
-    description: Identifier of the share position.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
   - name: geographic_entity_id
-    description: Geographic entity.
+    description: Identifier of the geographic entity.
   - name: hub_id
-    description: Hub.
-  - name: city_id
-    description: City.
+    description: Identifier of the hub.
   - name: competitor_id
-    description: Competitor.
-  - name: customer_segment_id
-    description: Customer segment.
-  - name: share_rate
-    description: Share.
-  - name: loyal_share_rate
-    description: Brand-loyal share.
-  - name: opportunity_flag
-    description: Whether a structural share opportunity is open.
-  - name: versus_coastal_rate
-    description: Share versus coastal hubs.
-  - name: gap_to_target_rate
-    description: Gap versus the share Airline Inc expects.
+    description: Identifier of the competitor.
+  - name: passenger_share_percent
+    description: Share of passengers in percent.
   entity_definitions:
-  - identity_id: share_position_identity
-    dataset_columns:
-    - share_position_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
     entity_universe: partial
   - identity_id: geographic_entity_identity
     dataset_columns:
@@ -1179,210 +1234,133 @@ nodes:
     dataset_columns:
     - hub_id
     entity_universe: partial
-  - identity_id: city_identity
-    dataset_columns:
-    - city_id
-    entity_universe: partial
   - identity_id: competitor_identity
     dataset_columns:
     - competitor_id
     entity_universe: partial
-  - identity_id: customer_segment_identity
-    dataset_columns:
-    - customer_segment_id
-    entity_universe: partial
-- node_id: sf:airline.demand.fact_booking_curve
+- node_id: sf:airline.demand.fact_industry_traffic_quantity
   descriptor:
-    qualified_name: airline.demand.fact_booking_curve
-    display_name: Booking Curve
-    description: Shape of the Airline Inc booking curve. This fact stores passenger or booking quantity,
-      not a fare.
+    qualified_name: airline.demand.fact_industry_traffic_quantity
+    display_name: Industry Traffic Quantity
+    description: Industry traffic by geographic entity and competitor in passenger-miles.
     synonyms: []
     tags:
     - fact
     - demand_network
-    - airline
+    - passenger-airlines
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: airline.us-central-1
       database: AIRLINE
       schema: DEMAND
-      object: FACT_BOOKING_CURVE
+      object: FACT_INDUSTRY_TRAFFIC_QUANTITY
       format: table
   grain:
-    description: One row is one booking curve.
+    description: One row is one industry traffic quantity observation for the combination of fiscal quarter,
+      scenario, geographic entity, competitor.
     components:
-    - identity_id: booking_curve_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - booking_curve_id
-      description: Identifier of the booking curve.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: geographic_entity_identity
+      dataset_columns:
+      - geographic_entity_id
+      description: Identifier of the geographic entity.
+    - identity_id: competitor_identity
+      dataset_columns:
+      - competitor_id
+      description: Identifier of the competitor.
   columns:
-  - name: booking_curve_id
-    description: Identifier of the booking curve.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
   - name: geographic_entity_id
-    description: Geographic entity.
-  - name: booking_window_id
-    description: Booking window.
+    description: Identifier of the geographic entity.
   - name: competitor_id
-    description: Competitor.
-  - name: days_before_departure
-    description: Days before departure for the booked cohort.
-  - name: booked_share_rate
-    description: Share of the period already booked.
-  - name: close_in_weak_flag
-    description: Whether close-in corporate was weak.
-  - name: holiday_curve_flag
-    description: Whether the row is the holiday curve.
-  - name: shorter_at_discounters_flag
-    description: Whether discount carriers have a shorter window.
+    description: Identifier of the competitor.
+  - name: industry_revenue_passenger_miles
+    description: Industry revenue passenger-miles in passenger-miles.
   entity_definitions:
-  - identity_id: booking_curve_identity
-    dataset_columns:
-    - booking_curve_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
   - identity_id: geographic_entity_identity
     dataset_columns:
     - geographic_entity_id
-    entity_universe: partial
-  - identity_id: booking_window_identity
-    dataset_columns:
-    - booking_window_id
     entity_universe: partial
   - identity_id: competitor_identity
     dataset_columns:
     - competitor_id
     entity_universe: partial
-- node_id: sf:airline.demand.fact_passenger_flow
+- node_id: sf:airline.demand.fact_event_traffic
   descriptor:
-    qualified_name: airline.demand.fact_passenger_flow
-    display_name: Passenger Flow
-    description: Passenger flows Airline Inc could capture, including flows on foreign carriers. This
-      fact stores passenger or booking quantity, not a fare.
+    qualified_name: airline.demand.fact_event_traffic
+    display_name: Event Traffic
+    description: Traffic affected by an event, in passenger-miles.
     synonyms: []
     tags:
     - fact
     - demand_network
-    - airline
+    - passenger-airlines
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: airline.us-central-1
       database: AIRLINE
       schema: DEMAND
-      object: FACT_PASSENGER_FLOW
+      object: FACT_EVENT_TRAFFIC
       format: table
   grain:
-    description: One row is one passenger flow.
+    description: One row is one event traffic observation for the combination of fiscal quarter, scenario,
+      event, geographic entity.
     components:
-    - identity_id: passenger_flow_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - passenger_flow_id
-      description: Identifier of the passenger flow.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: event_identity
+      dataset_columns:
+      - event_id
+      description: Identifier of the event.
+    - identity_id: geographic_entity_identity
+      dataset_columns:
+      - geographic_entity_id
+      description: Identifier of the geographic entity.
   columns:
-  - name: passenger_flow_id
-    description: Identifier of the passenger flow.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: route_id
-    description: Route.
-  - name: geographic_entity_id
-    description: Geographic entity.
-  - name: partner_id
-    description: Partner.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
   - name: event_id
-    description: Event.
-  - name: flow_passenger_count
-    description: Passengers in the flow.
-  - name: foreign_carrier_flag
-    description: Whether the flow currently flies a foreign carrier.
-  - name: reroute_flag
-    description: Whether long-haul flows are avoiding the Middle East.
-  - name: anti_tourism_effect_flag
-    description: Whether anti-tourism is changing the flow.
+    description: Identifier of the event.
+  - name: geographic_entity_id
+    description: Identifier of the geographic entity.
+  - name: event_revenue_passenger_miles
+    description: Event-affected revenue passenger-miles in passenger-miles.
   entity_definitions:
-  - identity_id: passenger_flow_identity
-    dataset_columns:
-    - passenger_flow_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: route_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - route_id
-    entity_universe: partial
-  - identity_id: geographic_entity_identity
-    dataset_columns:
-    - geographic_entity_id
-    entity_universe: partial
-  - identity_id: partner_identity
-    dataset_columns:
-    - partner_id
-    entity_universe: partial
-  - identity_id: event_identity
-    dataset_columns:
-    - event_id
-    entity_universe: partial
-- node_id: sf:airline.demand.fact_event_demand
-  descriptor:
-    qualified_name: airline.demand.fact_event_demand
-    display_name: Event Demand
-    description: Demand Airline Inc attributes to an event. This fact stores passenger or booking quantity,
-      not a fare.
-    synonyms: []
-    tags:
-    - fact
-    - demand_network
-    - airline
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: airline.us-central-1
-      database: AIRLINE
-      schema: DEMAND
-      object: FACT_EVENT_DEMAND
-      format: table
-  grain:
-    description: One row is one event demand.
-    components:
-    - identity_id: event_demand_identity
-      dataset_columns:
-      - event_demand_id
-      description: Identifier of the event demand.
-  columns:
-  - name: event_demand_id
-    description: Identifier of the event demand.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: event_id
-    description: Event.
-  - name: geographic_entity_id
-    description: Geographic entity.
-  - name: event_passenger_count
-    description: Passengers attributed to the event.
-  - name: in_guide_flag
-    description: Whether the event is already in the guide.
-  - name: separated_from_trend_flag
-    description: Whether the event is separated from the underlying trend.
-  - name: tailwind_size_code
-    description: Size of the tailwind.
-    value_description: none, modest, large
-  entity_definitions:
-  - identity_id: event_demand_identity
-    dataset_columns:
-    - event_demand_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
+    - scenario_id
     entity_universe: partial
   - identity_id: event_identity
     dataset_columns:
@@ -1392,662 +1370,138 @@ nodes:
     dataset_columns:
     - geographic_entity_id
     entity_universe: partial
-- node_id: sf:airline.demand.fact_cohort_demand
+- node_id: sf:airline.demand.fact_cargo_ton_miles
   descriptor:
-    qualified_name: airline.demand.fact_cohort_demand
-    display_name: Cohort Demand
-    description: Airline Inc demand by age cohort and trip purpose. This fact stores passenger or booking
-      quantity, not a fare.
+    qualified_name: airline.demand.fact_cargo_ton_miles
+    display_name: Cargo Ton Miles
+    description: Cargo traffic as ton-miles by cargo type and geographic entity; cargo is a measure here,
+      not a flag.
     synonyms: []
     tags:
     - fact
     - demand_network
-    - airline
+    - passenger-airlines
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: airline.us-central-1
       database: AIRLINE
       schema: DEMAND
-      object: FACT_COHORT_DEMAND
+      object: FACT_CARGO_TON_MILES
       format: table
   grain:
-    description: One row is one cohort demand.
+    description: One row is one cargo ton miles observation for the combination of fiscal quarter, scenario,
+      cargo type, geographic entity.
     components:
-    - identity_id: cohort_demand_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - cohort_demand_id
-      description: Identifier of the cohort demand.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: cargo_type_identity
+      dataset_columns:
+      - cargo_type_id
+      description: Identifier of the cargo type.
+    - identity_id: geographic_entity_identity
+      dataset_columns:
+      - geographic_entity_id
+      description: Identifier of the geographic entity.
   columns:
-  - name: cohort_demand_id
-    description: Identifier of the cohort demand.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: cargo_type_id
+    description: Identifier of the cargo type.
+  - name: geographic_entity_id
+    description: Identifier of the geographic entity.
+  - name: cargo_ton_miles
+    description: Cargo ton-miles in ton-miles.
+  - name: cargo_weight_tons
+    description: Cargo weight in tons.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: cargo_type_identity
+    dataset_columns:
+    - cargo_type_id
+    entity_universe: partial
+  - identity_id: geographic_entity_identity
+    dataset_columns:
+    - geographic_entity_id
+    entity_universe: partial
+- node_id: sf:airline.demand.fact_cohort_traffic
+  descriptor:
+    qualified_name: airline.demand.fact_cohort_traffic
+    display_name: Cohort Traffic
+    description: Traffic by age cohort and traveler type in passenger-miles.
+    synonyms: []
+    tags:
+    - fact
+    - demand_network
+    - passenger-airlines
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: airline.us-central-1
+      database: AIRLINE
+      schema: DEMAND
+      object: FACT_COHORT_TRAFFIC
+      format: table
+  grain:
+    description: One row is one cohort traffic observation for the combination of fiscal quarter, scenario,
+      age cohort, traveler type.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: age_cohort_identity
+      dataset_columns:
+      - age_cohort_id
+      description: Identifier of the age cohort.
+    - identity_id: traveler_type_identity
+      dataset_columns:
+      - traveler_type_id
+      description: Identifier of the traveler type.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
   - name: age_cohort_id
-    description: Age cohort.
-  - name: customer_segment_id
-    description: Customer segment.
-  - name: passenger_count
-    description: Passengers in the cohort.
-  - name: business_flag
-    description: Whether the row is business rather than leisure.
+    description: Identifier of the age cohort.
+  - name: traveler_type_id
+    description: Identifier of the traveler type.
+  - name: cohort_revenue_passenger_miles
+    description: Cohort revenue passenger-miles in passenger-miles.
   entity_definitions:
-  - identity_id: cohort_demand_identity
-    dataset_columns:
-    - cohort_demand_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
     entity_universe: partial
   - identity_id: age_cohort_identity
     dataset_columns:
     - age_cohort_id
     entity_universe: partial
-  - identity_id: customer_segment_identity
+  - identity_id: traveler_type_identity
     dataset_columns:
-    - customer_segment_id
-    entity_universe: partial
-- node_id: sf:airline.demand.fact_income_demand
-  descriptor:
-    qualified_name: airline.demand.fact_income_demand
-    display_name: Income Demand
-    description: How much Airline Inc domestic improvement sits with higher-income customers. This fact
-      stores a rate or flag, not a fare and not a passenger count.
-    synonyms: []
-    tags:
-    - fact
-    - demand_network
-    - airline
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: airline.us-central-1
-      database: AIRLINE
-      schema: DEMAND
-      object: FACT_INCOME_DEMAND
-      format: table
-  grain:
-    description: One row is one income demand.
-    components:
-    - identity_id: income_demand_identity
-      dataset_columns:
-      - income_demand_id
-      description: Identifier of the income demand.
-  columns:
-  - name: income_demand_id
-    description: Identifier of the income demand.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: customer_segment_id
-    description: Customer segment.
-  - name: geographic_entity_id
-    description: Geographic entity.
-  - name: higher_income_share_rate
-    description: Share of demand from higher-income customers.
-  - name: unique_to_income_flag
-    description: Whether the improvement is unique to that exposure.
-  entity_definitions:
-  - identity_id: income_demand_identity
-    dataset_columns:
-    - income_demand_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: customer_segment_identity
-    dataset_columns:
-    - customer_segment_id
-    entity_universe: partial
-  - identity_id: geographic_entity_identity
-    dataset_columns:
-    - geographic_entity_id
-    entity_universe: partial
-- node_id: sf:airline.demand.fact_shoulder_demand
-  descriptor:
-    qualified_name: airline.demand.fact_shoulder_demand
-    display_name: Shoulder Demand
-    description: Shoulder-season Airline Inc demand, including Transatlantic. This fact stores passenger
-      or booking quantity, not a fare.
-    synonyms: []
-    tags:
-    - fact
-    - demand_network
-    - airline
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: airline.us-central-1
-      database: AIRLINE
-      schema: DEMAND
-      object: FACT_SHOULDER_DEMAND
-      format: table
-  grain:
-    description: One row is one shoulder demand.
-    components:
-    - identity_id: shoulder_demand_identity
-      dataset_columns:
-      - shoulder_demand_id
-      description: Identifier of the shoulder demand.
-  columns:
-  - name: shoulder_demand_id
-    description: Identifier of the shoulder demand.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: geographic_entity_id
-    description: Geographic entity.
-  - name: booking_window_id
-    description: Booking window.
-  - name: passenger_count
-    description: Shoulder passengers.
-  - name: holding_without_currency_flag
-    description: Whether strength holds without the currency tailwind.
-  - name: season_code
-    description: Season.
-    value_description: shoulder, peak, off_peak
-  entity_definitions:
-  - identity_id: shoulder_demand_identity
-    dataset_columns:
-    - shoulder_demand_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: geographic_entity_identity
-    dataset_columns:
-    - geographic_entity_id
-    entity_universe: partial
-  - identity_id: booking_window_identity
-    dataset_columns:
-    - booking_window_id
-    entity_universe: partial
-- node_id: sf:airline.demand.fact_disruption_demand
-  descriptor:
-    qualified_name: airline.demand.fact_disruption_demand
-    display_name: Disruption Demand
-    description: Demand at an Airline Inc city during a disruption such as Newark. This fact stores passenger
-      or booking quantity, not a fare.
-    synonyms: []
-    tags:
-    - fact
-    - demand_network
-    - airline
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: airline.us-central-1
-      database: AIRLINE
-      schema: DEMAND
-      object: FACT_DISRUPTION_DEMAND
-      format: table
-  grain:
-    description: One row is one disruption demand.
-    components:
-    - identity_id: disruption_demand_identity
-      dataset_columns:
-      - disruption_demand_id
-      description: Identifier of the disruption demand.
-  columns:
-  - name: disruption_demand_id
-    description: Identifier of the disruption demand.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: city_id
-    description: City.
-  - name: event_id
-    description: Disruption.
-  - name: geographic_entity_id
-    description: Geographic entity.
-  - name: passenger_count
-    description: Passengers.
-  - name: recovered_flag
-    description: Whether demand is back.
-  - name: system_share_of_improvement_rate
-    description: Share of the booking improvement that is this city.
-  entity_definitions:
-  - identity_id: disruption_demand_identity
-    dataset_columns:
-    - disruption_demand_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: city_identity
-    dataset_columns:
-    - city_id
-    entity_universe: partial
-  - identity_id: event_identity
-    dataset_columns:
-    - event_id
-    entity_universe: partial
-  - identity_id: geographic_entity_identity
-    dataset_columns:
-    - geographic_entity_id
-    entity_universe: partial
-- node_id: sf:airline.demand.fact_close_in_demand
-  descriptor:
-    qualified_name: airline.demand.fact_close_in_demand
-    display_name: Close In Demand
-    description: Close-in Airline Inc bookings used for network planning. This fact stores passenger or
-      booking quantity, not a fare.
-    synonyms: []
-    tags:
-    - fact
-    - demand_network
-    - airline
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: airline.us-central-1
-      database: AIRLINE
-      schema: DEMAND
-      object: FACT_CLOSE_IN_DEMAND
-      format: table
-  grain:
-    description: One row is one close in demand.
-    components:
-    - identity_id: close_in_demand_identity
-      dataset_columns:
-      - close_in_demand_id
-      description: Identifier of the close in demand.
-  columns:
-  - name: close_in_demand_id
-    description: Identifier of the close in demand.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: geographic_entity_id
-    description: Geographic entity.
-  - name: cabin_id
-    description: Cabin.
-  - name: booking_window_id
-    description: Booking window.
-  - name: close_in_passenger_count
-    description: Close-in passengers.
-  - name: weak_last_year_flag
-    description: Whether last year was weak close-in.
-  - name: premium_close_in_flag
-    description: Whether close-in premium is improving.
-  entity_definitions:
-  - identity_id: close_in_demand_identity
-    dataset_columns:
-    - close_in_demand_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: geographic_entity_identity
-    dataset_columns:
-    - geographic_entity_id
-    entity_universe: partial
-  - identity_id: cabin_identity
-    dataset_columns:
-    - cabin_id
-    entity_universe: partial
-  - identity_id: booking_window_identity
-    dataset_columns:
-    - booking_window_id
-    entity_universe: partial
-- node_id: sf:airline.demand.fact_basic_economy_demand
-  descriptor:
-    qualified_name: airline.demand.fact_basic_economy_demand
-    display_name: Basic Economy Demand
-    description: Basic-economy passenger demand at Airline Inc. Not seat inventory. This fact stores passenger
-      or booking quantity, not a fare.
-    synonyms: []
-    tags:
-    - fact
-    - demand_network
-    - airline
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: airline.us-central-1
-      database: AIRLINE
-      schema: DEMAND
-      object: FACT_BASIC_ECONOMY_DEMAND
-      format: table
-  grain:
-    description: One row is one basic economy demand.
-    components:
-    - identity_id: basic_economy_demand_identity
-      dataset_columns:
-      - basic_economy_demand_id
-      description: Identifier of the basic economy demand.
-  columns:
-  - name: basic_economy_demand_id
-    description: Identifier of the basic economy demand.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: cabin_id
-    description: Cabin.
-  - name: customer_segment_id
-    description: Customer segment.
-  - name: passenger_count
-    description: Basic-economy passengers.
-  - name: can_serve_corporate_without_cut_flag
-    description: Whether corporate can be served without cutting this demand.
-  entity_definitions:
-  - identity_id: basic_economy_demand_identity
-    dataset_columns:
-    - basic_economy_demand_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: cabin_identity
-    dataset_columns:
-    - cabin_id
-    entity_universe: partial
-  - identity_id: customer_segment_identity
-    dataset_columns:
-    - customer_segment_id
-    entity_universe: partial
-- node_id: sf:airline.demand.fact_hub_demand
-  descriptor:
-    qualified_name: airline.demand.fact_hub_demand
-    display_name: Hub Demand
-    description: Airline Inc demand in hubs versus other city roles. This fact stores passenger or booking
-      quantity, not a fare.
-    synonyms: []
-    tags:
-    - fact
-    - demand_network
-    - airline
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: airline.us-central-1
-      database: AIRLINE
-      schema: DEMAND
-      object: FACT_HUB_DEMAND
-      format: table
-  grain:
-    description: One row is one hub demand.
-    components:
-    - identity_id: hub_demand_identity
-      dataset_columns:
-      - hub_demand_id
-      description: Identifier of the hub demand.
-  columns:
-  - name: hub_demand_id
-    description: Identifier of the hub demand.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: hub_id
-    description: Hub.
-  - name: city_id
-    description: City.
-  - name: geographic_entity_id
-    description: Geographic entity.
-  - name: passenger_count
-    description: Passengers.
-  - name: hub_versus_leisure_gap_rate
-    description: Demand gap between hubs and leisure point-to-point.
-  - name: non_hub_dilutive_flag
-    description: Whether non-hub flying is dilutive.
-  entity_definitions:
-  - identity_id: hub_demand_identity
-    dataset_columns:
-    - hub_demand_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: hub_identity
-    dataset_columns:
-    - hub_id
-    entity_universe: partial
-  - identity_id: city_identity
-    dataset_columns:
-    - city_id
-    entity_universe: partial
-  - identity_id: geographic_entity_identity
-    dataset_columns:
-    - geographic_entity_id
-    entity_universe: partial
-- node_id: sf:airline.demand.fact_international_demand
-  descriptor:
-    qualified_name: airline.demand.fact_international_demand
-    display_name: International Demand
-    description: International passenger demand at Airline Inc. This fact stores passenger or booking
-      quantity, not a fare.
-    synonyms: []
-    tags:
-    - fact
-    - demand_network
-    - airline
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: airline.us-central-1
-      database: AIRLINE
-      schema: DEMAND
-      object: FACT_INTERNATIONAL_DEMAND
-      format: table
-  grain:
-    description: One row is one international demand.
-    components:
-    - identity_id: international_demand_identity
-      dataset_columns:
-      - international_demand_id
-      description: Identifier of the international demand.
-  columns:
-  - name: international_demand_id
-    description: Identifier of the international demand.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: geographic_entity_id
-    description: Geographic entity.
-  - name: cabin_id
-    description: Cabin.
-  - name: route_id
-    description: Route.
-  - name: passenger_count
-    description: International passengers.
-  - name: premium_mix_rate
-    description: Share of international passengers in premium.
-  - name: main_mix_rate
-    description: Share of international passengers in the main cabin.
-  entity_definitions:
-  - identity_id: international_demand_identity
-    dataset_columns:
-    - international_demand_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: geographic_entity_identity
-    dataset_columns:
-    - geographic_entity_id
-    entity_universe: partial
-  - identity_id: cabin_identity
-    dataset_columns:
-    - cabin_id
-    entity_universe: partial
-  - identity_id: route_identity
-    dataset_columns:
-    - route_id
-    entity_universe: partial
-- node_id: sf:airline.demand.fact_domestic_demand
-  descriptor:
-    qualified_name: airline.demand.fact_domestic_demand
-    display_name: Domestic Demand
-    description: Domestic passenger demand at Airline Inc. This fact stores passenger or booking quantity,
-      not a fare.
-    synonyms: []
-    tags:
-    - fact
-    - demand_network
-    - airline
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: airline.us-central-1
-      database: AIRLINE
-      schema: DEMAND
-      object: FACT_DOMESTIC_DEMAND
-      format: table
-  grain:
-    description: One row is one domestic demand.
-    components:
-    - identity_id: domestic_demand_identity
-      dataset_columns:
-      - domestic_demand_id
-      description: Identifier of the domestic demand.
-  columns:
-  - name: domestic_demand_id
-    description: Identifier of the domestic demand.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: geographic_entity_id
-    description: Geographic entity.
-  - name: hub_id
-    description: Hub.
-  - name: passenger_count
-    description: Domestic passengers.
-  - name: sequential_improvement_flag
-    description: Whether the sequential improvement is mostly domestic.
-  - name: best_geography_flag
-    description: Whether domestic is the best geography.
-  entity_definitions:
-  - identity_id: domestic_demand_identity
-    dataset_columns:
-    - domestic_demand_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: geographic_entity_identity
-    dataset_columns:
-    - geographic_entity_id
-    entity_universe: partial
-  - identity_id: hub_identity
-    dataset_columns:
-    - hub_id
-    entity_universe: partial
-- node_id: sf:airline.demand.fact_elasticity_response
-  descriptor:
-    qualified_name: airline.demand.fact_elasticity_response
-    display_name: Elasticity Response
-    description: Where Airline Inc demand responded to higher fares. A response flag, not the fare. This
-      fact stores a rate or flag, not a fare and not a passenger count.
-    synonyms: []
-    tags:
-    - fact
-    - demand_network
-    - airline
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: airline.us-central-1
-      database: AIRLINE
-      schema: DEMAND
-      object: FACT_ELASTICITY_RESPONSE
-      format: table
-  grain:
-    description: One row is one elasticity response.
-    components:
-    - identity_id: elasticity_response_identity
-      dataset_columns:
-      - elasticity_response_id
-      description: Identifier of the elasticity response.
-  columns:
-  - name: elasticity_response_id
-    description: Identifier of the elasticity response.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: geographic_entity_id
-    description: Geographic entity.
-  - name: cabin_id
-    description: Cabin.
-  - name: customer_segment_id
-    description: Customer segment.
-  - name: elastic_flag
-    description: Whether demand was elastic.
-  - name: response_rate
-    description: Demand response rate.
-  - name: different_from_last_shock_flag
-    description: Whether this response differs from the prior shock.
-  entity_definitions:
-  - identity_id: elasticity_response_identity
-    dataset_columns:
-    - elasticity_response_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: geographic_entity_identity
-    dataset_columns:
-    - geographic_entity_id
-    entity_universe: partial
-  - identity_id: cabin_identity
-    dataset_columns:
-    - cabin_id
-    entity_universe: partial
-  - identity_id: customer_segment_identity
-    dataset_columns:
-    - customer_segment_id
-    entity_universe: partial
-- node_id: sf:airline.demand.fact_industry_context
-  descriptor:
-    qualified_name: airline.demand.fact_industry_context
-    display_name: Industry Context
-    description: Industry demand context Airline Inc uses, including GDP comparison. Rates, not fares.
-      This fact stores a rate or flag, not a fare and not a passenger count.
-    synonyms: []
-    tags:
-    - fact
-    - demand_network
-    - airline
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: airline.us-central-1
-      database: AIRLINE
-      schema: DEMAND
-      object: FACT_INDUSTRY_CONTEXT
-      format: table
-  grain:
-    description: One row is one industry context.
-    components:
-    - identity_id: industry_context_identity
-      dataset_columns:
-      - industry_context_id
-      description: Identifier of the industry context.
-  columns:
-  - name: industry_context_id
-    description: Identifier of the industry context.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: geographic_entity_id
-    description: Geographic entity.
-  - name: industry_growth_rate
-    description: Industry growth rate.
-  - name: versus_gdp_rate
-    description: Growth versus the economy.
-  - name: above_pre_pandemic_flag
-    description: Whether the relationship exceeds the pre-pandemic pattern.
-  - name: flat_versus_economy_flag
-    description: Whether industry revenue was flat versus the economy.
-  entity_definitions:
-  - identity_id: industry_context_identity
-    dataset_columns:
-    - industry_context_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: geographic_entity_identity
-    dataset_columns:
-    - geographic_entity_id
+    - traveler_type_id
     entity_universe: partial

@@ -170,7 +170,7 @@ share an entity chain rather than a single KPI.
 
 Each industry directory keeps one schema version 3 warehouse, owned by a naive industry name. These seventeen warehouses are the current test suite. Question paraphrases stay in `{ticker}/questions.md`. `references.md` in the industry directory names the companies and earnings calls, without links.
 
-Size is the dataset, relationship, and logical-identity counts in each `warehouse/MODEL.md`. The models built before the four-checkpoint plan were written by Grok 4.7. Muse Wonder has rebuilt Checkpoint A and, from that same review, Health Plan Inc, Beverage Inc, and Automaker Inc. The other eight pre-checkpoint models are still the Grok 4.7 files until their rebuild lands. Checkpoints B, C, and D do not have a model yet.
+Size is the dataset, relationship, and logical-identity counts in each `warehouse/MODEL.md`. The models built before the four-checkpoint plan were written by Grok 4.7. Muse Wonder has rebuilt Checkpoint A and, from that same review, Machinery Inc, Chemical Inc, Airline Inc, Food Inc, Health Plan Inc, Beverage Inc, and Automaker Inc. Burger Inc, Colocation Inc, Device Inc, and Surgical Supply Inc are still the Grok 4.7 files until their rebuild lands. Checkpoints B, C, and D do not have a model yet.
 
 | Owner | Industry | Catalog | Datasets | Relationships | Identities | Agent |
 | --- | --- | --- | ---: | ---: | ---: | --- |
@@ -178,10 +178,10 @@ Size is the dataset, relationship, and logical-identity counts in each `warehous
 | Colocation Inc | Data center REITs | `data-center-reits/warehouse/` | 67 | 162 | 67 | Grok 4.7 |
 | Device Inc | Technology hardware | `technology-hardware/warehouse/` | 78 | 180 | 78 | Grok 4.7 |
 | Surgical Supply Inc | Health care equipment | `health-care-equipment/warehouse/` | 74 | 200 | 74 | Grok 4.7 |
-| Machinery Inc | Construction machinery | `construction-machinery/warehouse/` | 74 | 177 | 74 | Grok 4.7 |
-| Chemical Inc | Specialty chemicals | `specialty-chemicals/warehouse/` | 103 | 247 | 103 | Grok 4.7 |
-| Airline Inc | Passenger airlines | `passenger-airlines/warehouse/` | 97 | 213 | 97 | Grok 4.7 |
-| Food Inc | Packaged foods | `packaged-foods/warehouse/` | 94 | 235 | 94 | Grok 4.7 |
+| Machinery Inc | Construction machinery | `construction-machinery/warehouse/` | 91 | 252 | 35 | Muse Wonder |
+| Chemical Inc | Specialty chemicals | `specialty-chemicals/warehouse/` | 82 | 213 | 30 | Muse Wonder |
+| Airline Inc | Passenger airlines | `passenger-airlines/warehouse/` | 78 | 182 | 31 | Muse Wonder |
+| Food Inc | Packaged foods | `packaged-foods/warehouse/` | 81 | 206 | 30 | Muse Wonder |
 | Health Plan Inc | Managed care | `managed-care/warehouse/` | 89 | 202 | 41 | Muse Wonder |
 | Beverage Inc | Soft drinks | `soft-drinks/warehouse/` | 82 | 226 | 33 | Muse Wonder |
 | Automaker Inc | Automobile manufacturers | `automobile-manufacturers/warehouse/` | 93 | 234 | 36 | Muse Wonder |

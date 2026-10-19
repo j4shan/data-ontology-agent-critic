@@ -2,22 +2,18 @@
 
 Loadable intermediary schema version 3. The builder input is `directory-manifest.yaml` beside `yaml/`.
 
-The catalog was assembled from subject slices that were written separately: network demand, price and yield, fleet and supply. Question-to-column notes for network demand stay in `demand_network/coverage.md`. Question-to-column notes for price and yield stay in `price_yield/coverage.md`. Question-to-column notes for fleet and supply stay in `supply_fleet/coverage.md`.
+The catalog was assembled from 3 subject slices that were written separately. Question-to-column notes stay in `demand_network/coverage.md`, `price_yield/coverage.md`, `supply_fleet/coverage.md`.
 
 | | |
 | --- | ---: |
-| Datasets | 97 |
-| Relationships | 213 |
-| Logical identities | 97 |
+| Datasets | 78 |
+| Relationships | 182 |
+| Logical identities | 31 |
 
 Snowflake database `AIRLINE`, account `airline.us-central-1`. Node ids use the `sf:` prefix. Qualified names start with `airline.`.
 
 ## What the model covers
 
-Network demand owns geographic entities, cabins, customers, and bookings for Airline Inc. Passenger counts, share, and booking curves are demand facts. They store quantities and rates, not a fare and not a seat price.
+Capacity is available seat-miles, traffic is revenue passenger-miles, and yield and unit cost use those denominators through shared geographic, cabin, and traveler keys. A route carries an origin airport and a destination airport. Cargo and maintenance are revenue and traffic measures, SkyMiles and MileagePlus stay in separate facts, and enterprise earnings are grained at enterprise level, not at a hub. Every fact grain is the natural combination of fiscal period, scenario, and the business keys named in its grain description; a surrogate column is never the grain. The scenario dimension carries `reported` and `guide`, so the same fiscal period can be both a reported result and a later guide. No column is an analyst-conclusion flag; operational classifications are dimension codes, and measure descriptions name their unit.
 
-Price and yield owns fares, bag fees, unit revenue, cabin and geographic margin, fuel recapture, and loyalty economics for Airline Inc. A price row does not store passenger quantity or seat quantity. Fuel gallons and unit cost stay on the supply facts.
-
-Fleet and supply owns aircraft, capacity, fuel availability, maintenance shops, staffing, and unit cost for Airline Inc. Capacity and input cost are supply facts. They are not the fare file and they do not store booked passenger quantity.
-
-A graph build of this directory reports 97 datasets, 213 relationships, no unknown claims, and no contradictory edges.
+A graph build of this directory reports 78 datasets, 182 relationships, no unknown claims, and no contradictory edges.

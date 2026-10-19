@@ -1,80 +1,140 @@
 # Machinery Inc dealer inventory and retail demand
 
-This slice owns the dealer, the sales region, retail demand, sales to users, dealer inventory, rental-fleet plans, and construction demand outside mega-projects and rental restocking. Segments, machine models, power products, end markets, accounting periods, price, and backlog are owned outside this slice. A column that belongs to another slice is a partial identity and is not re-authored here.
-
-Foreign identities are referenced from this slice and are partial here. Their complete populations are the datasets below, which this slice does not author:
-
-| Identity | Column | Node |
-| --- | --- | --- |
-| `accounting_period_identity` | `accounting_period_id` | `sf:machinery.calendar.dim_accounting_period` |
-| `currency_identity` | `currency_id` | `sf:machinery.commercial.dim_currency` |
-| `demand_driver_identity` | `demand_driver_id` | `sf:machinery.market.dim_demand_driver` |
-| `machine_model_identity` | `machine_model_id` | `sf:machinery.product.dim_machine_model` |
-| `segment_identity` | `segment_id` | `sf:machinery.market.dim_segment` |
+Dealer stock is inventory on its own quantity fact, not a retail channel. Caterpillar machine and power processes and PACCAR truck, parts, and finance processes use separate facts and separate reporting-segment dimensions. Quantity, capacity, and price or margin are separate facts joined by fiscal period, scenario, and the business keys. Coverage maps each numbered question to datasets and columns that exist in the YAML and can express the distinction the question asks.
 
 ## Numbered questions
 
-### Q2 2026 (2) — Full-year sales to end users, and whether production matches retail demand
+## Caterpillar
 
-Sales to users after a strong first half are on the outlook fact. Production is matched to retail demand on its own fact, and dealer inventory stays a third fact.
+### Q2 2026 (2) Caterpillar
 
-- `machinery.retail.fact_user_sales_outlook`: `first_half_sales_to_users_amount`, `full_year_sales_to_users_amount`, `sales_to_users_outlook_amount`, `accounting_period_id`
-- `machinery.retail.fact_production_versus_retail`: `production_units`, `retail_demand_units`, `build_to_retail_flag`, `segment_id`
-- `machinery.retail.fact_retail_demand`: `retail_demand_units`, `retail_demand_amount`, `expected_direction`
-- `machinery.retail.fact_dealer_inventory`: `on_hand_units`, `inventory_change_units`, `dealer_id`
+What full-year sales to end users are expected after a strong first half, and will production match retail demand?
 
-### Q2 2026 (7) — Construction Industries deliveries to end users versus rental fleets
+- `machinery.retail.fact_retail_sales_quantity`: `accounting_period_id`, `scenario_id`, `dealer_id`, `cat_reporting_segment_id`, `region_id`, `end_user_type_id`, `retail_sales_units`
+- `machinery.retail.fact_sales_to_users_amount`: `accounting_period_id`, `scenario_id`, `region_id`, `cat_reporting_segment_id`, `sales_to_users_amount`
+- `machinery.retail.fact_delivery_quantity`: `accounting_period_id`, `scenario_id`, `cat_reporting_segment_id`, `end_market_id`, `delivery_recipient_id`, `delivery_units`
 
-Deliveries are split by sales channel. Major-project loading is its own unit count on the same row. The channel code distinguishes end users from rental fleets.
+### Q2 2026 (7) Caterpillar
 
-- `machinery.retail.fact_delivery_split`: `delivery_units`, `major_project_units`, `sales_channel_id`, `segment_id`, `demand_driver_id`
-- `machinery.retail.dim_sales_channel`: `channel_code`, `channel_name`
-- `machinery.market.dim_segment`: `segment_code`
-- `machinery.market.dim_demand_driver`: `driver_code`
+How do Construction Industries deliveries split between end users and rental fleets, including major-project loading?
 
-### Q2 2026 (8) — Private nonresidential and residential construction outside mega-projects and rental
+- `machinery.retail.fact_delivery_quantity`: `accounting_period_id`, `scenario_id`, `cat_reporting_segment_id`, `end_market_id`, `delivery_recipient_id`, `delivery_units`
+- `machinery.retail.fact_retail_sales_quantity`: `accounting_period_id`, `scenario_id`, `dealer_id`, `cat_reporting_segment_id`, `region_id`, `end_user_type_id`, `retail_sales_units`
+- `machinery.market.fact_construction_activity_amount`: `accounting_period_id`, `scenario_id`, `construction_sector_id`, `project_scale_id`, `region_id`, `construction_demand_amount`
 
-The ex-mega fact keeps private nonresidential and residential demand with the major-project and rental-restock exclusions flagged.
+### Q2 2026 (8) Caterpillar
 
-- `machinery.retail.fact_construction_ex_mega`: `demand_amount`, `excludes_major_project_flag`, `excludes_rental_restock_flag`, `demand_driver_id`, `segment_id`
-- `machinery.market.dim_demand_driver`: `driver_code`, `driver_name`
-- `machinery.market.dim_segment`: `segment_code`
+Outside mega-projects and rental loading, what is happening in private nonresidential and residential construction?
 
-### Q2 2026 (12) — Cat Rental fleet mix versus alliance products and national rental companies
+- `machinery.market.fact_construction_activity_amount`: `accounting_period_id`, `scenario_id`, `construction_sector_id`, `project_scale_id`, `region_id`, `construction_demand_amount`
+- `machinery.retail.fact_delivery_quantity`: `accounting_period_id`, `scenario_id`, `cat_reporting_segment_id`, `end_market_id`, `delivery_recipient_id`, `delivery_units`
+- `machinery.retail.fact_rental_fleet_quantity`: `accounting_period_id`, `scenario_id`, `rental_operator_id`, `equipment_source_id`, `region_id`, `planned_fleet_units`
 
-The fleet plan is units and mix share by equipment origin and rental peer, so Cat equipment at Cat Rental can be compared with alliance products and with national rental fleets.
+### Q2 2026 (12) Caterpillar
 
-- `machinery.retail.fact_rental_fleet_plan`: `planned_units`, `mix_share`, `dealer_id`, `rental_peer_id`, `equipment_origin_id`
-- `machinery.retail.dim_rental_peer`: `peer_code`, `peer_name`
-- `machinery.retail.dim_equipment_origin`: `origin_code`, `origin_name`
+As dealers plan to expand Cat Rental, how should the mix of Cat equipment versus alliance products evolve versus national rental companies?
 
-### Q4 2024 (2) — North American construction dealer inventories after last year's destock
+- `machinery.retail.fact_rental_fleet_quantity`: `accounting_period_id`, `scenario_id`, `rental_operator_id`, `equipment_source_id`, `region_id`, `planned_fleet_units`
+- `machinery.retail.fact_dealer_inventory_quantity`: `accounting_period_id`, `scenario_id`, `dealer_id`, `dealer_location_id`, `machine_model_id`, `cat_reporting_segment_id`, `region_id`, `on_hand_units`, `inventory_change_units`
+- `machinery.retail.fact_dealer_stock_value`: `accounting_period_id`, `scenario_id`, `dealer_id`, `cat_reporting_segment_id`, `region_id`, `dealer_stock_amount`
 
-Expected user-sales direction and whether a further destock is required sit on the North America stock fact. Prior-year destock units stay on dealer inventory so the new reduction is not the same number as last year's.
+### Q4 2024 (2) Caterpillar
 
-- `machinery.retail.fact_north_america_stock`: `expected_user_sales_direction`, `further_destock_flag`, `on_hand_units`, `region_id`, `segment_id`
-- `machinery.organization.dim_region`: `region_code`
-- `machinery.market.dim_segment`: `segment_code`
-- `machinery.retail.fact_dealer_inventory`: `prior_year_destock_units`, `inventory_change_units`, `destock_flag`, `on_hand_units`
-- `machinery.retail.fact_retail_demand`: `expected_direction`, `retail_demand_units`
+With North American construction users expected down, do machine dealer inventories need to fall further after last year's destock?
+
+- `machinery.retail.fact_dealer_inventory_quantity`: `accounting_period_id`, `scenario_id`, `dealer_id`, `dealer_location_id`, `machine_model_id`, `cat_reporting_segment_id`, `region_id`, `on_hand_units`, `inventory_change_units`
+- `machinery.retail.fact_dealer_stock_value`: `accounting_period_id`, `scenario_id`, `dealer_id`, `cat_reporting_segment_id`, `region_id`, `dealer_stock_amount`
+- `machinery.retail.fact_retail_sales_quantity`: `accounting_period_id`, `scenario_id`, `dealer_id`, `cat_reporting_segment_id`, `region_id`, `end_user_type_id`, `retail_sales_units`
+
+## PACCAR
+
+### Q4 2025 (1) PACCAR
+
+What improves margin from the fourth quarter to the first despite flat deliveries?
+
+- `machinery.retail.fact_delivery_quantity`: `accounting_period_id`, `scenario_id`, `cat_reporting_segment_id`, `end_market_id`, `delivery_recipient_id`, `delivery_units`
+- `machinery.retail.fact_retail_sales_quantity`: `accounting_period_id`, `scenario_id`, `dealer_id`, `cat_reporting_segment_id`, `region_id`, `end_user_type_id`, `retail_sales_units`
+
+### Q4 2025 (2) PACCAR
+
+When do the recent orders turn into production?
+
+- `machinery.retail.fact_factory_production_quantity`: `accounting_period_id`, `scenario_id`, `cat_reporting_segment_id`, `machine_model_id`, `production_units`, `factory_shipment_units`
+- `machinery.retail.fact_retail_sales_quantity`: `accounting_period_id`, `scenario_id`, `dealer_id`, `cat_reporting_segment_id`, `region_id`, `end_user_type_id`, `retail_sales_units`
+
+### Q4 2025 (14) PACCAR
+
+If demand improves, where would the supply chain fail to ramp?
+
+- `machinery.retail.fact_retail_sales_quantity`: `accounting_period_id`, `scenario_id`, `dealer_id`, `cat_reporting_segment_id`, `region_id`, `end_user_type_id`, `retail_sales_units`
+- `machinery.market.fact_construction_activity_amount`: `accounting_period_id`, `scenario_id`, `construction_sector_id`, `project_scale_id`, `region_id`, `construction_demand_amount`
+
+### Q4 2025 (19) PACCAR
+
+How much of the improved customer confidence is the freight environment versus clarity on the emissions rule?
+
+- `machinery.retail.fact_service_contract_quantity`: `accounting_period_id`, `scenario_id`, `cat_reporting_segment_id`, `end_user_type_id`, `service_contract_count`
+- `machinery.retail.fact_retail_sales_quantity`: `accounting_period_id`, `scenario_id`, `dealer_id`, `cat_reporting_segment_id`, `region_id`, `end_user_type_id`, `retail_sales_units`
+
+### Q3 2025 (3) PACCAR
+
+What are customers saying that supports the North American growth outlook, including bonus depreciation?
+
+- `machinery.retail.fact_service_contract_quantity`: `accounting_period_id`, `scenario_id`, `cat_reporting_segment_id`, `end_user_type_id`, `service_contract_count`
+- `machinery.retail.fact_sales_to_users_amount`: `accounting_period_id`, `scenario_id`, `region_id`, `cat_reporting_segment_id`, `sales_to_users_amount`
+
+### Q3 2025 (6) PACCAR
+
+Is the result a clear cost advantage for U.S. production, or only an even field with peers?
+
+- `machinery.retail.fact_factory_production_quantity`: `accounting_period_id`, `scenario_id`, `cat_reporting_segment_id`, `machine_model_id`, `production_units`, `factory_shipment_units`
+- `machinery.retail.fact_installed_base_quantity`: `accounting_period_id`, `scenario_id`, `cat_reporting_segment_id`, `machine_model_id`, `region_id`, `installed_base_units`, `active_installed_units`
+
+### Q3 2025 (7) PACCAR
+
+How large a tariff headwind is in the fourth-quarter outlook as rebates ramp?
+
+- `machinery.retail.fact_sales_to_users_amount`: `accounting_period_id`, `scenario_id`, `region_id`, `cat_reporting_segment_id`, `sales_to_users_amount`
+- `machinery.retail.fact_retail_sales_quantity`: `accounting_period_id`, `scenario_id`, `dealer_id`, `cat_reporting_segment_id`, `region_id`, `end_user_type_id`, `retail_sales_units`
+
+### Q3 2025 (10) PACCAR
+
+Are customers talking about incremental share since the tariff announcement, and how does that affect the Denton and Chillicothe plans?
+
+- `machinery.retail.fact_rental_fleet_quantity`: `accounting_period_id`, `scenario_id`, `rental_operator_id`, `equipment_source_id`, `region_id`, `planned_fleet_units`
+- `machinery.retail.fact_service_contract_quantity`: `accounting_period_id`, `scenario_id`, `cat_reporting_segment_id`, `end_user_type_id`, `service_contract_count`
+
+### Q3 2025 (17) PACCAR
+
+If the emissions rule is unchanged, do customers say prebuying starts in the first half or the second half?
+
+- `machinery.retail.fact_sales_to_users_amount`: `accounting_period_id`, `scenario_id`, `region_id`, `cat_reporting_segment_id`, `sales_to_users_amount`
+- `machinery.retail.fact_service_contract_quantity`: `accounting_period_id`, `scenario_id`, `cat_reporting_segment_id`, `end_user_type_id`, `service_contract_count`
 
 ## Datasets
 
 | Qualified name | Questions served |
 | --- | --- |
-| `machinery.organization.dim_region` | Q4 2024 (2) |
+| `machinery.time.dim_accounting_period` | supporting population |
+| `machinery.time.dim_scenario` | supporting population |
+| `machinery.organization.dim_region` | supporting population |
 | `machinery.organization.dim_country` | supporting population |
 | `machinery.dealer.dim_dealer` | supporting population |
 | `machinery.dealer.dim_dealer_location` | supporting population |
-| `machinery.retail.dim_sales_channel` | Q2 2026 (7) |
-| `machinery.retail.dim_rental_peer` | Q2 2026 (12) |
-| `machinery.retail.dim_equipment_origin` | Q2 2026 (12) |
-| `machinery.retail.fact_dealer_inventory` | Q2 2026 (2), Q4 2024 (2) |
-| `machinery.retail.fact_retail_demand` | Q2 2026 (2), Q4 2024 (2) |
-| `machinery.retail.fact_production_versus_retail` | Q2 2026 (2) |
-| `machinery.retail.fact_user_sales_outlook` | Q2 2026 (2) |
-| `machinery.retail.fact_delivery_split` | Q2 2026 (7) |
-| `machinery.retail.fact_construction_ex_mega` | Q2 2026 (8) |
-| `machinery.retail.fact_rental_fleet_plan` | Q2 2026 (12) |
-| `machinery.retail.fact_north_america_stock` | Q4 2024 (2) |
-| `machinery.retail.fact_inventory_swing` | supporting population |
+| `machinery.market.dim_cat_reporting_segment` | supporting population |
+| `machinery.market.dim_paccar_reporting_segment` | supporting population |
+| `machinery.product.dim_machine_model` | supporting population |
+| `machinery.retail.dim_end_user_type` | supporting population |
+| `machinery.retail.dim_delivery_recipient` | supporting population |
+| `machinery.retail.dim_equipment_source` | supporting population |
+| `machinery.retail.dim_rental_operator` | supporting population |
+| `machinery.retail.fact_dealer_inventory_quantity` | Q2 2026 (12), Q4 2024 (2) |
+| `machinery.retail.fact_dealer_stock_value` | Q2 2026 (12), Q4 2024 (2) |
+| `machinery.retail.fact_retail_sales_quantity` | Q2 2026 (2), Q2 2026 (7), Q4 2024 (2), Q4 2025 (1), Q4 2025 (2), Q4 2025 (14), Q4 2025 (19), Q3 2025 (7) |
+| `machinery.retail.fact_factory_production_quantity` | Q4 2025 (2), Q3 2025 (6) |
+| `machinery.retail.fact_sales_to_users_amount` | Q2 2026 (2), Q3 2025 (3), Q3 2025 (7), Q3 2025 (17) |
+| `machinery.retail.fact_delivery_quantity` | Q2 2026 (2), Q2 2026 (7), Q2 2026 (8), Q4 2025 (1) |
+| `machinery.market.fact_construction_activity_amount` | Q2 2026 (7), Q2 2026 (8), Q4 2025 (14) |
+| `machinery.retail.fact_rental_fleet_quantity` | Q2 2026 (8), Q2 2026 (12), Q3 2025 (10) |
+| `machinery.retail.fact_installed_base_quantity` | Q3 2025 (6) |
+| `machinery.retail.fact_service_contract_quantity` | Q4 2025 (19), Q3 2025 (3), Q3 2025 (10), Q3 2025 (17) |

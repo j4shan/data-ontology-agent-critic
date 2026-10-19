@@ -1,59 +1,243 @@
 schema_version: '3'
 nodes:
-- node_id: sf:airline.price.dim_fare_product
+- node_id: sf:airline.loyalty.dim_skymiles_tier
   descriptor:
-    qualified_name: airline.price.dim_fare_product
-    display_name: Fare Product
-    description: Fare product Airline Inc files.
+    qualified_name: airline.loyalty.dim_skymiles_tier
+    display_name: SkyMiles Tier
+    description: Delta SkyMiles membership tier, kept separate from MileagePlus.
     synonyms: []
     tags:
-    - dim
+    - dimension
     - price_yield
-    - airline
+    - passenger-airlines
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: airline.us-central-1
       database: AIRLINE
-      schema: PRICE
-      object: DIM_FARE_PRODUCT
+      schema: LOYALTY
+      object: DIM_SKYMILES_TIER
       format: table
   grain:
-    description: One row is one fare product.
+    description: One row is one skymiles tier, identified by skymiles_tier_id.
     components:
-    - identity_id: fare_product_identity
+    - identity_id: skymiles_tier_identity
       dataset_columns:
-      - fare_product_id
-      description: Identifier of the fare product.
+      - skymiles_tier_id
+      description: Identifier of the skymiles tier.
   columns:
-  - name: fare_product_id
-    description: Identifier of the fare product.
-  - name: cabin_id
-    description: Cabin.
-  - name: product_name
-    description: Name of the fare product.
-  - name: product_code
-    description: Product code.
-    value_description: main, premium, basic, corporate, domestic, international
+  - name: skymiles_tier_id
+    description: Identifier of the skymiles tier.
+  - name: skymiles_tier_name
+    description: Name of the skymiles tier.
+  - name: skymiles_tier_code
+    description: Code of the skymiles tier.
+    value_description: general_member, silver, gold, platinum, diamond
   entity_definitions:
-  - identity_id: fare_product_identity
+  - identity_id: skymiles_tier_identity
     dataset_columns:
-    - fare_product_id
+    - skymiles_tier_id
     entity_universe: complete
-  - identity_id: cabin_identity
+- node_id: sf:airline.loyalty.dim_mileageplus_tier
+  descriptor:
+    qualified_name: airline.loyalty.dim_mileageplus_tier
+    display_name: MileagePlus Tier
+    description: United MileagePlus membership tier, kept separate from SkyMiles.
+    synonyms: []
+    tags:
+    - dimension
+    - price_yield
+    - passenger-airlines
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: airline.us-central-1
+      database: AIRLINE
+      schema: LOYALTY
+      object: DIM_MILEAGEPLUS_TIER
+      format: table
+  grain:
+    description: One row is one mileageplus tier, identified by mileageplus_tier_id.
+    components:
+    - identity_id: mileageplus_tier_identity
+      dataset_columns:
+      - mileageplus_tier_id
+      description: Identifier of the mileageplus tier.
+  columns:
+  - name: mileageplus_tier_id
+    description: Identifier of the mileageplus tier.
+  - name: mileageplus_tier_name
+    description: Name of the mileageplus tier.
+  - name: mileageplus_tier_code
+    description: Code of the mileageplus tier.
+    value_description: general_member, premier_silver, premier_gold, premier_platinum, premier_1k
+  entity_definitions:
+  - identity_id: mileageplus_tier_identity
     dataset_columns:
-    - cabin_id
-    entity_universe: partial
+    - mileageplus_tier_id
+    entity_universe: complete
+- node_id: sf:airline.loyalty.dim_delta_card_program
+  descriptor:
+    qualified_name: airline.loyalty.dim_delta_card_program
+    display_name: Delta Card Program
+    description: Delta co-brand card program.
+    synonyms: []
+    tags:
+    - dimension
+    - price_yield
+    - passenger-airlines
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: airline.us-central-1
+      database: AIRLINE
+      schema: LOYALTY
+      object: DIM_DELTA_CARD_PROGRAM
+      format: table
+  grain:
+    description: One row is one delta card program, identified by delta_card_program_id.
+    components:
+    - identity_id: delta_card_program_identity
+      dataset_columns:
+      - delta_card_program_id
+      description: Identifier of the delta card program.
+  columns:
+  - name: delta_card_program_id
+    description: Identifier of the delta card program.
+  - name: delta_card_program_name
+    description: Name of the delta card program.
+  - name: delta_card_program_code
+    description: Code of the delta card program.
+    value_description: skymiles_gold_card, skymiles_platinum_card, skymiles_reserve_card
+  entity_definitions:
+  - identity_id: delta_card_program_identity
+    dataset_columns:
+    - delta_card_program_id
+    entity_universe: complete
+- node_id: sf:airline.loyalty.dim_united_card_program
+  descriptor:
+    qualified_name: airline.loyalty.dim_united_card_program
+    display_name: United Card Program
+    description: United co-brand card program.
+    synonyms: []
+    tags:
+    - dimension
+    - price_yield
+    - passenger-airlines
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: airline.us-central-1
+      database: AIRLINE
+      schema: LOYALTY
+      object: DIM_UNITED_CARD_PROGRAM
+      format: table
+  grain:
+    description: One row is one united card program, identified by united_card_program_id.
+    components:
+    - identity_id: united_card_program_identity
+      dataset_columns:
+      - united_card_program_id
+      description: Identifier of the united card program.
+  columns:
+  - name: united_card_program_id
+    description: Identifier of the united card program.
+  - name: united_card_program_name
+    description: Name of the united card program.
+  - name: united_card_program_code
+    description: Code of the united card program.
+    value_description: mileageplus_explorer_card, mileageplus_club_card, mileageplus_business_card
+  entity_definitions:
+  - identity_id: united_card_program_identity
+    dataset_columns:
+    - united_card_program_id
+    entity_universe: complete
+- node_id: sf:airline.loyalty.dim_skyteam_partner
+  descriptor:
+    qualified_name: airline.loyalty.dim_skyteam_partner
+    display_name: SkyTeam Partner
+    description: Delta SkyTeam alliance partner class.
+    synonyms: []
+    tags:
+    - dimension
+    - price_yield
+    - passenger-airlines
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: airline.us-central-1
+      database: AIRLINE
+      schema: LOYALTY
+      object: DIM_SKYTEAM_PARTNER
+      format: table
+  grain:
+    description: One row is one skyteam partner, identified by skyteam_partner_id.
+    components:
+    - identity_id: skyteam_partner_identity
+      dataset_columns:
+      - skyteam_partner_id
+      description: Identifier of the skyteam partner.
+  columns:
+  - name: skyteam_partner_id
+    description: Identifier of the skyteam partner.
+  - name: skyteam_partner_name
+    description: Name of the skyteam partner.
+  - name: skyteam_partner_code
+    description: Code of the skyteam partner.
+    value_description: european_partner, asian_partner, latin_american_partner, card_bank_partner
+  entity_definitions:
+  - identity_id: skyteam_partner_identity
+    dataset_columns:
+    - skyteam_partner_id
+    entity_universe: complete
+- node_id: sf:airline.loyalty.dim_star_alliance_partner
+  descriptor:
+    qualified_name: airline.loyalty.dim_star_alliance_partner
+    display_name: Star Alliance Partner
+    description: United Star Alliance partner class.
+    synonyms: []
+    tags:
+    - dimension
+    - price_yield
+    - passenger-airlines
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: airline.us-central-1
+      database: AIRLINE
+      schema: LOYALTY
+      object: DIM_STAR_ALLIANCE_PARTNER
+      format: table
+  grain:
+    description: One row is one star alliance partner, identified by star_alliance_partner_id.
+    components:
+    - identity_id: star_alliance_partner_identity
+      dataset_columns:
+      - star_alliance_partner_id
+      description: Identifier of the star alliance partner.
+  columns:
+  - name: star_alliance_partner_id
+    description: Identifier of the star alliance partner.
+  - name: star_alliance_partner_name
+    description: Name of the star alliance partner.
+  - name: star_alliance_partner_code
+    description: Code of the star alliance partner.
+    value_description: european_partner, asian_partner, latin_american_partner, card_bank_partner
+  entity_definitions:
+  - identity_id: star_alliance_partner_identity
+    dataset_columns:
+    - star_alliance_partner_id
+    entity_universe: complete
 - node_id: sf:airline.price.dim_fee_type
   descriptor:
     qualified_name: airline.price.dim_fee_type
     display_name: Fee Type
-    description: Ancillary fee Airline Inc charges.
+    description: Ancillary fee type.
     synonyms: []
     tags:
-    - dim
+    - dimension
     - price_yield
-    - airline
+    - passenger-airlines
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
@@ -63,7 +247,7 @@ nodes:
       object: DIM_FEE_TYPE
       format: table
   grain:
-    description: One row is one fee type.
+    description: One row is one fee type, identified by fee_type_id.
     components:
     - identity_id: fee_type_identity
       dataset_columns:
@@ -72,110 +256,26 @@ nodes:
   columns:
   - name: fee_type_id
     description: Identifier of the fee type.
-  - name: fee_name
-    description: Name of the fee.
-  - name: fee_code
-    description: Fee code.
-    value_description: bag, seat, change
+  - name: fee_type_name
+    description: Name of the fee type.
+  - name: fee_type_code
+    description: Code of the fee type.
+    value_description: checked_bag, seat_selection, ticket_change, extra_legroom_seat
   entity_definitions:
   - identity_id: fee_type_identity
     dataset_columns:
     - fee_type_id
     entity_universe: complete
-- node_id: sf:airline.price.dim_merchandising_offer
-  descriptor:
-    qualified_name: airline.price.dim_merchandising_offer
-    display_name: Merchandising Offer
-    description: Merchandising offer Airline Inc uses with corporate clients.
-    synonyms: []
-    tags:
-    - dim
-    - price_yield
-    - airline
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: airline.us-central-1
-      database: AIRLINE
-      schema: PRICE
-      object: DIM_MERCHANDISING_OFFER
-      format: table
-  grain:
-    description: One row is one merchandising offer.
-    components:
-    - identity_id: merchandising_offer_identity
-      dataset_columns:
-      - merchandising_offer_id
-      description: Identifier of the merchandising offer.
-  columns:
-  - name: merchandising_offer_id
-    description: Identifier of the merchandising offer.
-  - name: offer_name
-    description: Name of the offer.
-  - name: offer_code
-    description: Offer code.
-    value_description: corporate_bundle, premium_upsell, loyalty_offer
-  entity_definitions:
-  - identity_id: merchandising_offer_identity
-    dataset_columns:
-    - merchandising_offer_id
-    entity_universe: complete
-- node_id: sf:airline.price.dim_card_program
-  descriptor:
-    qualified_name: airline.price.dim_card_program
-    display_name: Card Program
-    description: Co-brand card program at Airline Inc.
-    synonyms: []
-    tags:
-    - dim
-    - price_yield
-    - airline
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: airline.us-central-1
-      database: AIRLINE
-      schema: PRICE
-      object: DIM_CARD_PROGRAM
-      format: table
-  grain:
-    description: One row is one card program.
-    components:
-    - identity_id: card_program_identity
-      dataset_columns:
-      - card_program_id
-      description: Identifier of the card program.
-  columns:
-  - name: card_program_id
-    description: Identifier of the card program.
-  - name: loyalty_program_id
-    description: Loyalty program the card monetizes.
-  - name: card_name
-    description: Name of the card program.
-  - name: card_code
-    description: Card code.
-    value_description: cobrand, premium_card
-  - name: rules_change_flag
-    description: Whether card-program rules are changing.
-  entity_definitions:
-  - identity_id: card_program_identity
-    dataset_columns:
-    - card_program_id
-    entity_universe: complete
-  - identity_id: loyalty_program_identity
-    dataset_columns:
-    - loyalty_program_id
-    entity_universe: partial
 - node_id: sf:airline.price.dim_currency
   descriptor:
     qualified_name: airline.price.dim_currency
     display_name: Currency
-    description: Currency in an Airline Inc comparison.
+    description: Currency of an amount.
     synonyms: []
     tags:
-    - dim
+    - dimension
     - price_yield
-    - airline
+    - passenger-airlines
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
@@ -185,7 +285,7 @@ nodes:
       object: DIM_CURRENCY
       format: table
   grain:
-    description: One row is one currency.
+    description: One row is one currency, identified by currency_id.
     components:
     - identity_id: currency_identity
       dataset_columns:
@@ -197,70 +297,71 @@ nodes:
   - name: currency_name
     description: Name of the currency.
   - name: currency_code
-    description: Currency code.
-    value_description: usd, eur, local
+    description: Code of the currency.
+    value_description: usd, eur, local_currency
   entity_definitions:
   - identity_id: currency_identity
     dataset_columns:
     - currency_id
     entity_universe: complete
-- node_id: sf:airline.price.fact_fare
+- node_id: sf:airline.price.fact_passenger_revenue
   descriptor:
-    qualified_name: airline.price.fact_fare
-    display_name: Fare
-    description: Fare Airline Inc charges. This fact stores price, yield, or margin, not a passenger or
-      seat quantity.
+    qualified_name: airline.price.fact_passenger_revenue
+    display_name: Passenger Revenue
+    description: Passenger revenue amount by geographic entity and cabin, with no passenger quantity on
+      this fact.
     synonyms: []
     tags:
     - fact
     - price_yield
-    - airline
+    - passenger-airlines
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: airline.us-central-1
       database: AIRLINE
       schema: PRICE
-      object: FACT_FARE
+      object: FACT_PASSENGER_REVENUE
       format: table
   grain:
-    description: One row is one fare.
+    description: One row is one passenger revenue observation for the combination of fiscal quarter, scenario,
+      geographic entity, cabin.
     components:
-    - identity_id: fare_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - fare_id
-      description: Identifier of the fare.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: geographic_entity_identity
+      dataset_columns:
+      - geographic_entity_id
+      description: Identifier of the geographic entity.
+    - identity_id: cabin_identity
+      dataset_columns:
+      - cabin_id
+      description: Identifier of the cabin.
   columns:
-  - name: fare_id
-    description: Identifier of the fare.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: fare_product_id
-    description: Fare product.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
   - name: geographic_entity_id
-    description: Geographic entity.
+    description: Identifier of the geographic entity.
   - name: cabin_id
-    description: Cabin.
-  - name: fare_amount
-    description: Fare amount.
-  - name: fare_change_rate
-    description: Fare change.
-  - name: higher_flag
-    description: Whether fares are higher.
-  - name: domestic_international_gap_rate
-    description: Gap between domestic and international increases.
+    description: Identifier of the cabin.
+  - name: passenger_revenue_amount
+    description: Passenger revenue in dollars.
   entity_definitions:
-  - identity_id: fare_identity
-    dataset_columns:
-    - fare_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: fare_product_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - fare_product_id
+    - scenario_id
     entity_universe: partial
   - identity_id: geographic_entity_identity
     dataset_columns:
@@ -270,75 +371,96 @@ nodes:
     dataset_columns:
     - cabin_id
     entity_universe: partial
-- node_id: sf:airline.price.fact_ancillary_fee
+- node_id: sf:airline.price.fact_yield
   descriptor:
-    qualified_name: airline.price.fact_ancillary_fee
-    display_name: Ancillary Fee
-    description: Bag and other fees at Airline Inc. This fact stores price, yield, or margin, not a passenger
-      or seat quantity.
+    qualified_name: airline.price.fact_yield
+    display_name: Yield
+    description: Passenger yield per revenue passenger-mile; revenue passenger-miles on the traffic fact
+      share geographic entity, cabin, and traveler type keys.
     synonyms: []
     tags:
     - fact
     - price_yield
-    - airline
+    - passenger-airlines
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: airline.us-central-1
       database: AIRLINE
       schema: PRICE
-      object: FACT_ANCILLARY_FEE
+      object: FACT_YIELD
       format: table
   grain:
-    description: One row is one ancillary fee.
+    description: One row is one yield observation for the combination of fiscal quarter, scenario, geographic
+      entity, cabin, traveler type.
     components:
-    - identity_id: ancillary_fee_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - ancillary_fee_id
-      description: Identifier of the ancillary fee.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: geographic_entity_identity
+      dataset_columns:
+      - geographic_entity_id
+      description: Identifier of the geographic entity.
+    - identity_id: cabin_identity
+      dataset_columns:
+      - cabin_id
+      description: Identifier of the cabin.
+    - identity_id: traveler_type_identity
+      dataset_columns:
+      - traveler_type_id
+      description: Identifier of the traveler type.
   columns:
-  - name: ancillary_fee_id
-    description: Identifier of the ancillary fee.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: fee_type_id
-    description: Fee type.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
   - name: geographic_entity_id
-    description: Geographic entity.
-  - name: fee_amount
-    description: Fee amount.
-  - name: fee_change_rate
-    description: Fee change.
-  - name: in_outlook_flag
-    description: Whether the outlook assumes a later fee acceleration.
+    description: Identifier of the geographic entity.
+  - name: cabin_id
+    description: Identifier of the cabin.
+  - name: traveler_type_id
+    description: Identifier of the traveler type.
+  - name: yield_cents_per_passenger_mile
+    description: Yield in cents per revenue passenger-mile.
+  - name: yield_change_percent
+    description: Yield change in percent.
   entity_definitions:
-  - identity_id: ancillary_fee_identity
-    dataset_columns:
-    - ancillary_fee_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: fee_type_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - fee_type_id
+    - scenario_id
     entity_universe: partial
   - identity_id: geographic_entity_identity
     dataset_columns:
     - geographic_entity_id
     entity_universe: partial
+  - identity_id: cabin_identity
+    dataset_columns:
+    - cabin_id
+    entity_universe: partial
+  - identity_id: traveler_type_identity
+    dataset_columns:
+    - traveler_type_id
+    entity_universe: partial
 - node_id: sf:airline.price.fact_unit_revenue
   descriptor:
     qualified_name: airline.price.fact_unit_revenue
     display_name: Unit Revenue
-    description: Unit revenue for Airline Inc. This fact stores price, yield, or margin, not a passenger
-      or seat quantity.
+    description: Unit revenue per available seat-mile; available seat-miles on the capacity fact share
+      the geographic entity key.
     synonyms: []
     tags:
     - fact
     - price_yield
-    - airline
+    - passenger-airlines
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
@@ -348,43 +470,109 @@ nodes:
       object: FACT_UNIT_REVENUE
       format: table
   grain:
-    description: One row is one unit revenue.
+    description: One row is one unit revenue observation for the combination of fiscal quarter, scenario,
+      geographic entity.
     components:
-    - identity_id: unit_revenue_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - unit_revenue_id
-      description: Identifier of the unit revenue.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: geographic_entity_identity
+      dataset_columns:
+      - geographic_entity_id
+      description: Identifier of the geographic entity.
   columns:
-  - name: unit_revenue_id
-    description: Identifier of the unit revenue.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
   - name: geographic_entity_id
-    description: Geographic entity.
-  - name: cabin_id
-    description: Cabin.
-  - name: route_id
-    description: Route.
-  - name: unit_revenue_amount
-    description: Unit revenue.
-  - name: unit_revenue_change_rate
-    description: Unit revenue change.
-  - name: pass_through_flag
-    description: Whether higher costs are passing through.
-  - name: intra_quarter_change_rate
-    description: Change through the quarter.
-  - name: path_to_flat_rate
-    description: Change still required to get back to flat.
-  - name: sequential_step_rate
-    description: Sequential unit-revenue step.
+    description: Identifier of the geographic entity.
+  - name: revenue_cents_per_seat_mile
+    description: Unit revenue in cents per available seat-mile.
+  - name: unit_revenue_change_percent
+    description: Unit revenue change in percent.
   entity_definitions:
-  - identity_id: unit_revenue_identity
-    dataset_columns:
-    - unit_revenue_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: geographic_entity_identity
+    dataset_columns:
+    - geographic_entity_id
+    entity_universe: partial
+- node_id: sf:airline.price.fact_fare_price
+  descriptor:
+    qualified_name: airline.price.fact_fare_price
+    display_name: Fare Price
+    description: Average fare per passenger; passengers on the passenger quantity fact share geographic
+      entity, cabin, and fare product keys.
+    synonyms: []
+    tags:
+    - fact
+    - price_yield
+    - passenger-airlines
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: airline.us-central-1
+      database: AIRLINE
+      schema: PRICE
+      object: FACT_FARE_PRICE
+      format: table
+  grain:
+    description: One row is one fare price observation for the combination of fiscal quarter, scenario,
+      geographic entity, cabin, fare product.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: geographic_entity_identity
+      dataset_columns:
+      - geographic_entity_id
+      description: Identifier of the geographic entity.
+    - identity_id: cabin_identity
+      dataset_columns:
+      - cabin_id
+      description: Identifier of the cabin.
+    - identity_id: fare_product_identity
+      dataset_columns:
+      - fare_product_id
+      description: Identifier of the fare product.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: geographic_entity_id
+    description: Identifier of the geographic entity.
+  - name: cabin_id
+    description: Identifier of the cabin.
+  - name: fare_product_id
+    description: Identifier of the fare product.
+  - name: average_fare_dollars_per_passenger
+    description: Average fare in dollars per passenger.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
     entity_universe: partial
   - identity_id: geographic_entity_identity
     dataset_columns:
@@ -394,130 +582,204 @@ nodes:
     dataset_columns:
     - cabin_id
     entity_universe: partial
-  - identity_id: route_identity
+  - identity_id: fare_product_identity
     dataset_columns:
-    - route_id
+    - fare_product_id
     entity_universe: partial
-- node_id: sf:airline.price.fact_yield_result
+- node_id: sf:airline.price.fact_ancillary_revenue
   descriptor:
-    qualified_name: airline.price.fact_yield_result
-    display_name: Yield
-    description: Yield for Airline Inc, including Pacific excluding China and premium leisure versus corporate.
-      This fact stores price, yield, or margin, not a passenger or seat quantity.
+    qualified_name: airline.price.fact_ancillary_revenue
+    display_name: Ancillary Revenue
+    description: Ancillary revenue amount by fee type and geographic entity.
     synonyms: []
     tags:
     - fact
     - price_yield
-    - airline
+    - passenger-airlines
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: airline.us-central-1
       database: AIRLINE
       schema: PRICE
-      object: FACT_YIELD_RESULT
+      object: FACT_ANCILLARY_REVENUE
       format: table
   grain:
-    description: One row is one yield.
+    description: One row is one ancillary revenue observation for the combination of fiscal quarter, scenario,
+      fee type, geographic entity.
     components:
-    - identity_id: yield_result_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - yield_result_id
-      description: Identifier of the yield.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: fee_type_identity
+      dataset_columns:
+      - fee_type_id
+      description: Identifier of the fee type.
+    - identity_id: geographic_entity_identity
+      dataset_columns:
+      - geographic_entity_id
+      description: Identifier of the geographic entity.
   columns:
-  - name: yield_result_id
-    description: Identifier of the yield.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: fee_type_id
+    description: Identifier of the fee type.
   - name: geographic_entity_id
-    description: Geographic entity.
-  - name: cabin_id
-    description: Cabin.
-  - name: customer_segment_id
-    description: Customer segment.
-  - name: yield_amount
-    description: Yield.
-  - name: yield_change_rate
-    description: Yield change.
-  - name: excluding_china_flag
-    description: Whether China is excluded.
-  - name: leisure_above_corporate_flag
-    description: Whether premium leisure yield exceeds some corporate yields.
-  - name: lasting_flag
-    description: Whether the relationship looks lasting.
+    description: Identifier of the geographic entity.
+  - name: ancillary_revenue_amount
+    description: Ancillary revenue in dollars.
   entity_definitions:
-  - identity_id: yield_result_identity
-    dataset_columns:
-    - yield_result_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: fee_type_identity
+    dataset_columns:
+    - fee_type_id
     entity_universe: partial
   - identity_id: geographic_entity_identity
     dataset_columns:
     - geographic_entity_id
     entity_universe: partial
-  - identity_id: cabin_identity
-    dataset_columns:
-    - cabin_id
-    entity_universe: partial
-  - identity_id: customer_segment_identity
-    dataset_columns:
-    - customer_segment_id
-    entity_universe: partial
-- node_id: sf:airline.price.fact_fuel_recapture
+- node_id: sf:airline.price.fact_baggage_quantity
   descriptor:
-    qualified_name: airline.price.fact_fuel_recapture
-    display_name: Fuel Recapture
-    description: Share of fuel cost Airline Inc recaptures in the fare. Not gallons and not the rack cost.
-      This fact stores price, yield, or margin, not a passenger or seat quantity.
+    qualified_name: airline.price.fact_baggage_quantity
+    display_name: Baggage Quantity
+    description: Checked bags by fee type and geographic entity; the denominator for bag fee per bag.
     synonyms: []
     tags:
     - fact
     - price_yield
-    - airline
+    - passenger-airlines
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: airline.us-central-1
       database: AIRLINE
       schema: PRICE
-      object: FACT_FUEL_RECAPTURE
+      object: FACT_BAGGAGE_QUANTITY
       format: table
   grain:
-    description: One row is one fuel recapture.
+    description: One row is one baggage quantity observation for the combination of fiscal quarter, scenario,
+      fee type, geographic entity.
     components:
-    - identity_id: fuel_recapture_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - fuel_recapture_id
-      description: Identifier of the fuel recapture.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: fee_type_identity
+      dataset_columns:
+      - fee_type_id
+      description: Identifier of the fee type.
+    - identity_id: geographic_entity_identity
+      dataset_columns:
+      - geographic_entity_id
+      description: Identifier of the geographic entity.
   columns:
-  - name: fuel_recapture_id
-    description: Identifier of the fuel recapture.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: fee_type_id
+    description: Identifier of the fee type.
   - name: geographic_entity_id
-    description: Geographic entity.
-  - name: recapture_rate
-    description: Recapture rate.
-  - name: accelerating_flag
-    description: Whether recapture is accelerating.
-  - name: full_recapture_flag
-    description: Whether full recapture is supported.
-  - name: requires_competitor_cuts_flag
-    description: Whether full recapture needs competitors to cut capacity.
-  - name: lag_versus_history_code
-    description: Lag versus the old multi-quarter pattern.
-    value_description: faster, similar, slower
+    description: Identifier of the geographic entity.
+  - name: checked_bag_count
+    description: Checked bags in bags.
   entity_definitions:
-  - identity_id: fuel_recapture_identity
-    dataset_columns:
-    - fuel_recapture_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: fee_type_identity
+    dataset_columns:
+    - fee_type_id
+    entity_universe: partial
+  - identity_id: geographic_entity_identity
+    dataset_columns:
+    - geographic_entity_id
+    entity_universe: partial
+- node_id: sf:airline.price.fact_ancillary_price
+  descriptor:
+    qualified_name: airline.price.fact_ancillary_price
+    display_name: Ancillary Price
+    description: Ancillary price per checked bag or fee unit; checked bags on the baggage quantity fact
+      share fee type and geographic entity keys.
+    synonyms: []
+    tags:
+    - fact
+    - price_yield
+    - passenger-airlines
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: airline.us-central-1
+      database: AIRLINE
+      schema: PRICE
+      object: FACT_ANCILLARY_PRICE
+      format: table
+  grain:
+    description: One row is one ancillary price observation for the combination of fiscal quarter, scenario,
+      fee type, geographic entity.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: fee_type_identity
+      dataset_columns:
+      - fee_type_id
+      description: Identifier of the fee type.
+    - identity_id: geographic_entity_identity
+      dataset_columns:
+      - geographic_entity_id
+      description: Identifier of the geographic entity.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: fee_type_id
+    description: Identifier of the fee type.
+  - name: geographic_entity_id
+    description: Identifier of the geographic entity.
+  - name: fee_dollars_per_bag
+    description: Fee in dollars per bag.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: fee_type_identity
+    dataset_columns:
+    - fee_type_id
     entity_universe: partial
   - identity_id: geographic_entity_identity
     dataset_columns:
@@ -527,13 +789,12 @@ nodes:
   descriptor:
     qualified_name: airline.price.fact_cabin_margin
     display_name: Cabin Margin
-    description: Margin by Airline Inc cabin. This fact stores price, yield, or margin, not a passenger
-      or seat quantity.
+    description: Margin by physical cabin and geographic entity, with no passenger quantity.
     synonyms: []
     tags:
     - fact
     - price_yield
-    - airline
+    - passenger-airlines
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
@@ -543,35 +804,46 @@ nodes:
       object: FACT_CABIN_MARGIN
       format: table
   grain:
-    description: One row is one cabin margin.
+    description: One row is one cabin margin observation for the combination of fiscal quarter, scenario,
+      cabin, geographic entity.
     components:
-    - identity_id: cabin_margin_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - cabin_margin_id
-      description: Identifier of the cabin margin.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: cabin_identity
+      dataset_columns:
+      - cabin_id
+      description: Identifier of the cabin.
+    - identity_id: geographic_entity_identity
+      dataset_columns:
+      - geographic_entity_id
+      description: Identifier of the geographic entity.
   columns:
-  - name: cabin_margin_id
-    description: Identifier of the cabin margin.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
   - name: cabin_id
-    description: Cabin.
+    description: Identifier of the cabin.
   - name: geographic_entity_id
-    description: Geographic entity.
-  - name: margin_rate
-    description: Cabin margin rate.
-  - name: gap_to_premium_rate
-    description: Gap between main and premium margin.
-  - name: would_close_if_supply_cut_flag
-    description: Whether a step cut in main supply would close the gap.
+    description: Identifier of the geographic entity.
+  - name: cabin_margin_percent
+    description: Cabin margin in percent.
+  - name: cabin_profit_amount
+    description: Cabin profit in dollars.
   entity_definitions:
-  - identity_id: cabin_margin_identity
-    dataset_columns:
-    - cabin_margin_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
     entity_universe: partial
   - identity_id: cabin_identity
     dataset_columns:
@@ -585,13 +857,12 @@ nodes:
   descriptor:
     qualified_name: airline.price.fact_geographic_margin
     display_name: Geographic Margin
-    description: Margin by Airline Inc geography. This fact stores price, yield, or margin, not a passenger
-      or seat quantity.
+    description: Margin by reporting geographic entity, not by a single hub.
     synonyms: []
     tags:
     - fact
     - price_yield
-    - airline
+    - passenger-airlines
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
@@ -601,35 +872,40 @@ nodes:
       object: FACT_GEOGRAPHIC_MARGIN
       format: table
   grain:
-    description: One row is one geographic margin.
+    description: One row is one geographic margin observation for the combination of fiscal quarter, scenario,
+      geographic entity.
     components:
-    - identity_id: geographic_margin_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - geographic_margin_id
-      description: Identifier of the geographic margin.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: geographic_entity_identity
+      dataset_columns:
+      - geographic_entity_id
+      description: Identifier of the geographic entity.
   columns:
-  - name: geographic_margin_id
-    description: Identifier of the geographic margin.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
   - name: geographic_entity_id
-    description: Geographic entity.
-  - name: margin_rate
-    description: Geographic margin rate.
-  - name: contribution_to_long_term_rate
-    description: Contribution to the long-term margin expansion.
-  - name: premium_versus_main_mix_rate
-    description: Premium versus main mix inside the geography.
-  - name: in_company_control_flag
-    description: Whether next-year improvement is in the company's control.
+    description: Identifier of the geographic entity.
+  - name: geographic_margin_percent
+    description: Geographic margin in percent.
+  - name: geographic_profit_amount
+    description: Geographic profit in dollars.
   entity_definitions:
-  - identity_id: geographic_margin_identity
-    dataset_columns:
-    - geographic_margin_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
     entity_universe: partial
   - identity_id: geographic_entity_identity
     dataset_columns:
@@ -639,13 +915,12 @@ nodes:
   descriptor:
     qualified_name: airline.price.fact_route_margin
     display_name: Route Margin
-    description: Margin on an Airline Inc route versus its geography. This fact stores price, yield, or
-      margin, not a passenger or seat quantity.
+    description: Margin on a route with origin and destination airports.
     synonyms: []
     tags:
     - fact
     - price_yield
-    - airline
+    - passenger-airlines
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
@@ -655,35 +930,44 @@ nodes:
       object: FACT_ROUTE_MARGIN
       format: table
   grain:
-    description: One row is one route margin.
+    description: One row is one route margin observation for the combination of fiscal quarter, scenario,
+      route, geographic entity.
     components:
-    - identity_id: route_margin_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - route_margin_id
-      description: Identifier of the route margin.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: route_identity
+      dataset_columns:
+      - route_id
+      description: Identifier of the route.
+    - identity_id: geographic_entity_identity
+      dataset_columns:
+      - geographic_entity_id
+      description: Identifier of the geographic entity.
   columns:
-  - name: route_margin_id
-    description: Identifier of the route margin.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
   - name: route_id
-    description: Route.
+    description: Identifier of the route.
   - name: geographic_entity_id
-    description: Geographic entity.
-  - name: margin_rate
-    description: Route margin rate.
-  - name: premium_to_geography_flag
-    description: Whether the route opens at a premium to its geography.
-  - name: premium_lasts_quarters
-    description: Quarters the premium is expected to last.
+    description: Identifier of the geographic entity.
+  - name: route_margin_percent
+    description: Route margin in percent.
   entity_definitions:
-  - identity_id: route_margin_identity
-    dataset_columns:
-    - route_margin_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
     entity_universe: partial
   - identity_id: route_identity
     dataset_columns:
@@ -693,690 +977,587 @@ nodes:
     dataset_columns:
     - geographic_entity_id
     entity_universe: partial
-- node_id: sf:airline.price.fact_system_margin
+- node_id: sf:airline.price.fact_enterprise_earnings
   descriptor:
-    qualified_name: airline.price.fact_system_margin
-    display_name: System Margin
-    description: System margin at an Airline Inc hub under a fuel case. This fact stores price, yield,
-      or margin, not a passenger or seat quantity.
+    qualified_name: airline.price.fact_enterprise_earnings
+    display_name: Enterprise Earnings
+    description: Airline Inc enterprise earnings and revenue at enterprise level; not assigned to a hub.
     synonyms: []
     tags:
     - fact
     - price_yield
-    - airline
+    - passenger-airlines
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: airline.us-central-1
       database: AIRLINE
       schema: PRICE
-      object: FACT_SYSTEM_MARGIN
+      object: FACT_ENTERPRISE_EARNINGS
       format: table
   grain:
-    description: One row is one system margin.
+    description: One row is one enterprise earnings observation for the combination of fiscal quarter,
+      scenario.
     components:
-    - identity_id: system_margin_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - system_margin_id
-      description: Identifier of the system margin.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
   columns:
-  - name: system_margin_id
-    description: Identifier of the system margin.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: hub_id
-    description: Hub.
-  - name: geographic_entity_id
-    description: Geographic entity.
-  - name: margin_rate
-    description: System margin rate.
-  - name: run_for_system_flag
-    description: Whether the hub is run for system profit.
-  - name: annual_improvement_rate
-    description: Annual margin improvement.
-  - name: from_price_rate
-    description: Portion of the improvement from price.
-  - name: from_cost_rate
-    description: Portion of the improvement from cost.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: enterprise_revenue_amount
+    description: Enterprise revenue in dollars.
+  - name: enterprise_earnings_amount
+    description: Enterprise earnings in dollars.
+  - name: enterprise_operating_margin_percent
+    description: Enterprise operating margin in percent.
   entity_definitions:
-  - identity_id: system_margin_identity
-    dataset_columns:
-    - system_margin_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: hub_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - hub_id
+    - scenario_id
+    entity_universe: partial
+- node_id: sf:airline.price.fact_skymiles_economics
+  descriptor:
+    qualified_name: airline.price.fact_skymiles_economics
+    display_name: SkyMiles Economics
+    description: Delta SkyMiles loyalty economics, kept separate from MileagePlus.
+    synonyms: []
+    tags:
+    - fact
+    - price_yield
+    - passenger-airlines
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: airline.us-central-1
+      database: AIRLINE
+      schema: PRICE
+      object: FACT_SKYMILES_ECONOMICS
+      format: table
+  grain:
+    description: One row is one skymiles economics observation for the combination of fiscal quarter,
+      scenario, skymiles tier, delta card program.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: skymiles_tier_identity
+      dataset_columns:
+      - skymiles_tier_id
+      description: Identifier of the skymiles tier.
+    - identity_id: delta_card_program_identity
+      dataset_columns:
+      - delta_card_program_id
+      description: Identifier of the delta card program.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: skymiles_tier_id
+    description: Identifier of the skymiles tier.
+  - name: delta_card_program_id
+    description: Identifier of the delta card program.
+  - name: loyalty_revenue_amount
+    description: SkyMiles loyalty revenue in dollars.
+  - name: cobrand_spend_amount
+    description: SkyMiles co-brand card spend in dollars.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: skymiles_tier_identity
+    dataset_columns:
+    - skymiles_tier_id
+    entity_universe: partial
+  - identity_id: delta_card_program_identity
+    dataset_columns:
+    - delta_card_program_id
+    entity_universe: partial
+- node_id: sf:airline.price.fact_mileageplus_economics
+  descriptor:
+    qualified_name: airline.price.fact_mileageplus_economics
+    display_name: MileagePlus Economics
+    description: United MileagePlus loyalty economics, kept separate from SkyMiles.
+    synonyms: []
+    tags:
+    - fact
+    - price_yield
+    - passenger-airlines
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: airline.us-central-1
+      database: AIRLINE
+      schema: PRICE
+      object: FACT_MILEAGEPLUS_ECONOMICS
+      format: table
+  grain:
+    description: One row is one mileageplus economics observation for the combination of fiscal quarter,
+      scenario, mileageplus tier, united card program.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: mileageplus_tier_identity
+      dataset_columns:
+      - mileageplus_tier_id
+      description: Identifier of the mileageplus tier.
+    - identity_id: united_card_program_identity
+      dataset_columns:
+      - united_card_program_id
+      description: Identifier of the united card program.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: mileageplus_tier_id
+    description: Identifier of the mileageplus tier.
+  - name: united_card_program_id
+    description: Identifier of the united card program.
+  - name: loyalty_revenue_amount
+    description: MileagePlus loyalty revenue in dollars.
+  - name: cobrand_spend_amount
+    description: MileagePlus co-brand card spend in dollars.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: mileageplus_tier_identity
+    dataset_columns:
+    - mileageplus_tier_id
+    entity_universe: partial
+  - identity_id: united_card_program_identity
+    dataset_columns:
+    - united_card_program_id
+    entity_universe: partial
+- node_id: sf:airline.price.fact_skymiles_miles_quantity
+  descriptor:
+    qualified_name: airline.price.fact_skymiles_miles_quantity
+    display_name: SkyMiles Miles Quantity
+    description: SkyMiles miles earned and redeemed in miles.
+    synonyms: []
+    tags:
+    - fact
+    - price_yield
+    - passenger-airlines
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: airline.us-central-1
+      database: AIRLINE
+      schema: PRICE
+      object: FACT_SKYMILES_MILES_QUANTITY
+      format: table
+  grain:
+    description: One row is one skymiles miles quantity observation for the combination of fiscal quarter,
+      scenario, skymiles tier.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: skymiles_tier_identity
+      dataset_columns:
+      - skymiles_tier_id
+      description: Identifier of the skymiles tier.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: skymiles_tier_id
+    description: Identifier of the skymiles tier.
+  - name: miles_earned_count
+    description: Miles earned in miles.
+  - name: miles_redeemed_count
+    description: Miles redeemed in miles.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: skymiles_tier_identity
+    dataset_columns:
+    - skymiles_tier_id
+    entity_universe: partial
+- node_id: sf:airline.price.fact_mileageplus_miles_quantity
+  descriptor:
+    qualified_name: airline.price.fact_mileageplus_miles_quantity
+    display_name: MileagePlus Miles Quantity
+    description: MileagePlus miles earned and redeemed in miles.
+    synonyms: []
+    tags:
+    - fact
+    - price_yield
+    - passenger-airlines
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: airline.us-central-1
+      database: AIRLINE
+      schema: PRICE
+      object: FACT_MILEAGEPLUS_MILES_QUANTITY
+      format: table
+  grain:
+    description: One row is one mileageplus miles quantity observation for the combination of fiscal quarter,
+      scenario, mileageplus tier.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: mileageplus_tier_identity
+      dataset_columns:
+      - mileageplus_tier_id
+      description: Identifier of the mileageplus tier.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: mileageplus_tier_id
+    description: Identifier of the mileageplus tier.
+  - name: miles_earned_count
+    description: Miles earned in miles.
+  - name: miles_redeemed_count
+    description: Miles redeemed in miles.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: mileageplus_tier_identity
+    dataset_columns:
+    - mileageplus_tier_id
+    entity_universe: partial
+- node_id: sf:airline.price.fact_fuel_recapture_rate
+  descriptor:
+    qualified_name: airline.price.fact_fuel_recapture_rate
+    display_name: Fuel Recapture Rate
+    description: Share of higher fuel cost recaptured in fares by geographic entity, in percent.
+    synonyms: []
+    tags:
+    - fact
+    - price_yield
+    - passenger-airlines
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: airline.us-central-1
+      database: AIRLINE
+      schema: PRICE
+      object: FACT_FUEL_RECAPTURE_RATE
+      format: table
+  grain:
+    description: One row is one fuel recapture rate observation for the combination of fiscal quarter,
+      scenario, geographic entity.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: geographic_entity_identity
+      dataset_columns:
+      - geographic_entity_id
+      description: Identifier of the geographic entity.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: geographic_entity_id
+    description: Identifier of the geographic entity.
+  - name: fuel_recapture_percent
+    description: Fuel cost recaptured in percent.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
     entity_universe: partial
   - identity_id: geographic_entity_identity
     dataset_columns:
     - geographic_entity_id
     entity_universe: partial
-- node_id: sf:airline.price.fact_revenue_premium
+- node_id: sf:airline.price.fact_cargo_revenue
   descriptor:
-    qualified_name: airline.price.fact_revenue_premium
-    display_name: Revenue Premium
-    description: Revenue premium Airline Inc holds versus leisure carriers. This fact stores price, yield,
-      or margin, not a passenger or seat quantity.
+    qualified_name: airline.price.fact_cargo_revenue
+    display_name: Cargo Revenue
+    description: Cargo revenue amount by cargo type; cargo ton-miles are on the cargo traffic fact.
     synonyms: []
     tags:
     - fact
     - price_yield
-    - airline
+    - passenger-airlines
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: airline.us-central-1
       database: AIRLINE
       schema: PRICE
-      object: FACT_REVENUE_PREMIUM
+      object: FACT_CARGO_REVENUE
       format: table
   grain:
-    description: One row is one revenue premium.
+    description: One row is one cargo revenue observation for the combination of fiscal quarter, scenario,
+      cargo type, geographic entity.
     components:
-    - identity_id: revenue_premium_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - revenue_premium_id
-      description: Identifier of the revenue premium.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: cargo_type_identity
+      dataset_columns:
+      - cargo_type_id
+      description: Identifier of the cargo type.
+    - identity_id: geographic_entity_identity
+      dataset_columns:
+      - geographic_entity_id
+      description: Identifier of the geographic entity.
   columns:
-  - name: revenue_premium_id
-    description: Identifier of the revenue premium.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: competitor_id
-    description: Competitor.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: cargo_type_id
+    description: Identifier of the cargo type.
   - name: geographic_entity_id
-    description: Geographic entity.
-  - name: premium_rate
-    description: Revenue premium rate.
-  - name: depth_available_rate
-    description: How deep the premium can go.
-  - name: competitor_product_change_flag
-    description: Whether leisure carriers are changing product.
+    description: Identifier of the geographic entity.
+  - name: cargo_revenue_amount
+    description: Cargo revenue in dollars.
   entity_definitions:
-  - identity_id: revenue_premium_identity
-    dataset_columns:
-    - revenue_premium_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: competitor_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - competitor_id
+    - scenario_id
+    entity_universe: partial
+  - identity_id: cargo_type_identity
+    dataset_columns:
+    - cargo_type_id
     entity_universe: partial
   - identity_id: geographic_entity_identity
     dataset_columns:
     - geographic_entity_id
     entity_universe: partial
-- node_id: sf:airline.price.fact_cobrand_economics
+- node_id: sf:airline.price.fact_maintenance_revenue
   descriptor:
-    qualified_name: airline.price.fact_cobrand_economics
-    display_name: Cobrand Economics
-    description: Co-brand and loyalty monetization at Airline Inc. This fact stores price, yield, or margin,
-      not a passenger or seat quantity.
+    qualified_name: airline.price.fact_maintenance_revenue
+    display_name: Maintenance Revenue
+    description: Third-party maintenance revenue by maintenance type and provider; maintenance is a measure
+      here, not a flag.
     synonyms: []
     tags:
     - fact
     - price_yield
-    - airline
+    - passenger-airlines
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: airline.us-central-1
       database: AIRLINE
       schema: PRICE
-      object: FACT_COBRAND_ECONOMICS
+      object: FACT_MAINTENANCE_REVENUE
       format: table
   grain:
-    description: One row is one cobrand economics.
+    description: One row is one maintenance revenue observation for the combination of fiscal quarter,
+      scenario, maintenance type, maintenance provider.
     components:
-    - identity_id: cobrand_economics_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - cobrand_economics_id
-      description: Identifier of the cobrand economics.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: maintenance_type_identity
+      dataset_columns:
+      - maintenance_type_id
+      description: Identifier of the maintenance type.
+    - identity_id: maintenance_provider_identity
+      dataset_columns:
+      - maintenance_provider_id
+      description: Identifier of the maintenance provider.
   columns:
-  - name: cobrand_economics_id
-    description: Identifier of the cobrand economics.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: card_program_id
-    description: Card program.
-  - name: loyalty_program_id
-    description: Loyalty program.
-  - name: partner_id
-    description: Partner.
-  - name: spend_growth_rate
-    description: Co-brand spend growth.
-  - name: sustainable_flag
-    description: Whether the growth is sustainable into next year.
-  - name: partner_economics_amount
-    description: Economics from a partnership.
-  - name: enhancement_without_renegotiation_flag
-    description: Whether a near-term enhancement avoids a contract renegotiation.
-  - name: rules_response_code
-    description: Response available if card rules change.
-    value_description: program_change, benefit_shift, none
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: maintenance_type_id
+    description: Identifier of the maintenance type.
+  - name: maintenance_provider_id
+    description: Identifier of the maintenance provider.
+  - name: maintenance_revenue_amount
+    description: Maintenance revenue in dollars.
   entity_definitions:
-  - identity_id: cobrand_economics_identity
-    dataset_columns:
-    - cobrand_economics_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: card_program_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - card_program_id
+    - scenario_id
     entity_universe: partial
-  - identity_id: loyalty_program_identity
+  - identity_id: maintenance_type_identity
     dataset_columns:
-    - loyalty_program_id
+    - maintenance_type_id
     entity_universe: partial
-  - identity_id: partner_identity
+  - identity_id: maintenance_provider_identity
     dataset_columns:
-    - partner_id
+    - maintenance_provider_id
     entity_universe: partial
-- node_id: sf:airline.price.fact_cash_position
+- node_id: sf:airline.price.fact_air_traffic_liability
   descriptor:
-    qualified_name: airline.price.fact_cash_position
-    display_name: Cash Position
-    description: Operating cash flow and working capital at Airline Inc. Cash, not a fare and not a passenger
-      count. This fact stores price, yield, or margin, not a passenger or seat quantity.
+    qualified_name: airline.price.fact_air_traffic_liability
+    display_name: Air Traffic Liability
+    description: Air traffic liability at enterprise level.
     synonyms: []
     tags:
     - fact
     - price_yield
-    - airline
+    - passenger-airlines
   accessor:
     schema_id: accessor.snowflake.v1
     properties:
       account: airline.us-central-1
       database: AIRLINE
       schema: PRICE
-      object: FACT_CASH_POSITION
+      object: FACT_AIR_TRAFFIC_LIABILITY
       format: table
   grain:
-    description: One row is one cash position.
+    description: One row is one air traffic liability observation for the combination of fiscal quarter,
+      scenario.
     components:
-    - identity_id: cash_position_identity
+    - identity_id: fiscal_quarter_identity
       dataset_columns:
-      - cash_position_id
-      description: Identifier of the cash position.
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
   columns:
-  - name: cash_position_id
-    description: Identifier of the cash position.
   - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: geographic_entity_id
-    description: Geographic entity.
-  - name: cash_flow_amount
-    description: Operating cash flow.
-  - name: improvement_from_curve_rate
-    description: Share of the improvement from the booking curve.
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: air_traffic_liability_amount
+    description: Air traffic liability in dollars.
+  entity_definitions:
+  - identity_id: fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+- node_id: sf:airline.price.fact_cash_flow
+  descriptor:
+    qualified_name: airline.price.fact_cash_flow
+    display_name: Cash Flow
+    description: Operating cash flow at enterprise level.
+    synonyms: []
+    tags:
+    - fact
+    - price_yield
+    - passenger-airlines
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: airline.us-central-1
+      database: AIRLINE
+      schema: PRICE
+      object: FACT_CASH_FLOW
+      format: table
+  grain:
+    description: One row is one cash flow observation for the combination of fiscal quarter, scenario.
+    components:
+    - identity_id: fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: operating_cash_flow_amount
+    description: Operating cash flow in dollars.
   - name: working_capital_amount
-    description: Working capital tied to bookings.
+    description: Working capital in dollars.
   entity_definitions:
-  - identity_id: cash_position_identity
-    dataset_columns:
-    - cash_position_id
-    entity_universe: complete
   - identity_id: fiscal_quarter_identity
     dataset_columns:
     - fiscal_quarter_id
     entity_universe: partial
-  - identity_id: geographic_entity_identity
+  - identity_id: scenario_identity
     dataset_columns:
-    - geographic_entity_id
-    entity_universe: partial
-- node_id: sf:airline.price.fact_traffic_liability
-  descriptor:
-    qualified_name: airline.price.fact_traffic_liability
-    display_name: Traffic Liability
-    description: Air traffic liability at Airline Inc. This fact stores price, yield, or margin, not a
-      passenger or seat quantity.
-    synonyms: []
-    tags:
-    - fact
-    - price_yield
-    - airline
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: airline.us-central-1
-      database: AIRLINE
-      schema: PRICE
-      object: FACT_TRAFFIC_LIABILITY
-      format: table
-  grain:
-    description: One row is one traffic liability.
-    components:
-    - identity_id: traffic_liability_identity
-      dataset_columns:
-      - traffic_liability_id
-      description: Identifier of the traffic liability.
-  columns:
-  - name: traffic_liability_id
-    description: Identifier of the traffic liability.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: liability_amount
-    description: Liability amount.
-  - name: seasonal_drop_rate
-    description: Seasonal drop versus the usual pattern.
-  - name: from_pricing_flag
-    description: Whether the smaller drop reflects pricing.
-  - name: from_longer_curve_flag
-    description: Whether the smaller drop reflects a longer booking curve.
-  entity_definitions:
-  - identity_id: traffic_liability_identity
-    dataset_columns:
-    - traffic_liability_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-- node_id: sf:airline.price.fact_earnings_path
-  descriptor:
-    qualified_name: airline.price.fact_earnings_path
-    display_name: Earnings Path
-    description: Earnings path and seasonality for Airline Inc. This fact stores price, yield, or margin,
-      not a passenger or seat quantity.
-    synonyms: []
-    tags:
-    - fact
-    - price_yield
-    - airline
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: airline.us-central-1
-      database: AIRLINE
-      schema: PRICE
-      object: FACT_EARNINGS_PATH
-      format: table
-  grain:
-    description: One row is one earnings path.
-    components:
-    - identity_id: earnings_path_identity
-      dataset_columns:
-      - earnings_path_id
-      description: Identifier of the earnings path.
-  columns:
-  - name: earnings_path_id
-    description: Identifier of the earnings path.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: geographic_entity_id
-    description: Geographic entity.
-  - name: earnings_amount
-    description: Earnings amount.
-  - name: matches_prior_quarter_flag
-    description: Whether the quarter matches the prior quarter.
-  - name: new_seasonality_flag
-    description: Whether that match is a new seasonality.
-  - name: under_earned_flag
-    description: Whether the prior quarter under-earned.
-  - name: neutral_to_capacity_flag
-    description: Whether capacity is being managed to earnings neutrality.
-  entity_definitions:
-  - identity_id: earnings_path_identity
-    dataset_columns:
-    - earnings_path_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: geographic_entity_identity
-    dataset_columns:
-    - geographic_entity_id
-    entity_universe: partial
-- node_id: sf:airline.price.fact_margin_bridge
-  descriptor:
-    qualified_name: airline.price.fact_margin_bridge
-    display_name: Margin Bridge
-    description: One commercial driver of Airline Inc margin, including merchandising, fleet, and loyalty.
-      This fact stores price, yield, or margin, not a passenger or seat quantity.
-    synonyms: []
-    tags:
-    - fact
-    - price_yield
-    - airline
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: airline.us-central-1
-      database: AIRLINE
-      schema: PRICE
-      object: FACT_MARGIN_BRIDGE
-      format: table
-  grain:
-    description: One row is one margin bridge.
-    components:
-    - identity_id: margin_bridge_identity
-      dataset_columns:
-      - margin_bridge_id
-      description: Identifier of the margin bridge.
-  columns:
-  - name: margin_bridge_id
-    description: Identifier of the margin bridge.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: geographic_entity_id
-    description: Geographic entity.
-  - name: merchandising_offer_id
-    description: Merchandising offer when the initiative is merchandising.
-  - name: effect_rate
-    description: Effect on the margin rate.
-  - name: initiative_code
-    description: Initiative.
-    value_description: merchandising, fleet, loyalty, price, cost
-  - name: long_term_flag
-    description: Whether the uplift is the longer-term case.
-  entity_definitions:
-  - identity_id: margin_bridge_identity
-    dataset_columns:
-    - margin_bridge_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: geographic_entity_identity
-    dataset_columns:
-    - geographic_entity_id
-    entity_universe: partial
-  - identity_id: merchandising_offer_identity
-    dataset_columns:
-    - merchandising_offer_id
-    entity_universe: partial
-- node_id: sf:airline.price.fact_advanced_yield
-  descriptor:
-    qualified_name: airline.price.fact_advanced_yield
-    display_name: Advanced Yield
-    description: Advanced booked yield at Airline Inc. This fact stores price, yield, or margin, not a
-      passenger or seat quantity.
-    synonyms: []
-    tags:
-    - fact
-    - price_yield
-    - airline
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: airline.us-central-1
-      database: AIRLINE
-      schema: PRICE
-      object: FACT_ADVANCED_YIELD
-      format: table
-  grain:
-    description: One row is one advanced yield.
-    components:
-    - identity_id: advanced_yield_identity
-      dataset_columns:
-      - advanced_yield_id
-      description: Identifier of the advanced yield.
-  columns:
-  - name: advanced_yield_id
-    description: Identifier of the advanced yield.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: geographic_entity_id
-    description: Geographic entity.
-  - name: booking_window_id
-    description: Booking window.
-  - name: advanced_yield_amount
-    description: Advanced yield.
-  - name: head_start_rate
-    description: Head start versus last year.
-  - name: atlantic_flag
-    description: Whether the row includes the Atlantic.
-  entity_definitions:
-  - identity_id: advanced_yield_identity
-    dataset_columns:
-    - advanced_yield_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: geographic_entity_identity
-    dataset_columns:
-    - geographic_entity_id
-    entity_universe: partial
-  - identity_id: booking_window_identity
-    dataset_columns:
-    - booking_window_id
-    entity_universe: partial
-- node_id: sf:airline.price.fact_price_action
-  descriptor:
-    qualified_name: airline.price.fact_price_action
-    display_name: Price Action
-    description: Price increase Airline Inc took, domestic versus international. This fact stores price,
-      yield, or margin, not a passenger or seat quantity.
-    synonyms: []
-    tags:
-    - fact
-    - price_yield
-    - airline
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: airline.us-central-1
-      database: AIRLINE
-      schema: PRICE
-      object: FACT_PRICE_ACTION
-      format: table
-  grain:
-    description: One row is one price action.
-    components:
-    - identity_id: price_action_identity
-      dataset_columns:
-      - price_action_id
-      description: Identifier of the price action.
-  columns:
-  - name: price_action_id
-    description: Identifier of the price action.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: geographic_entity_id
-    description: Geographic entity.
-  - name: fare_product_id
-    description: Fare product.
-  - name: increase_rate
-    description: Price increase.
-  - name: domestic_flag
-    description: Whether the action is domestic.
-  - name: international_flag
-    description: Whether the action is international.
-  - name: different_flag
-    description: Whether domestic and international actions differed.
-  entity_definitions:
-  - identity_id: price_action_identity
-    dataset_columns:
-    - price_action_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: geographic_entity_identity
-    dataset_columns:
-    - geographic_entity_id
-    entity_universe: partial
-  - identity_id: fare_product_identity
-    dataset_columns:
-    - fare_product_id
-    entity_universe: partial
-- node_id: sf:airline.price.fact_partnership_margin
-  descriptor:
-    qualified_name: airline.price.fact_partnership_margin
-    display_name: Partnership Margin
-    description: How a partner arrangement changes the Airline Inc margin view. This fact stores price,
-      yield, or margin, not a passenger or seat quantity.
-    synonyms: []
-    tags:
-    - fact
-    - price_yield
-    - airline
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: airline.us-central-1
-      database: AIRLINE
-      schema: PRICE
-      object: FACT_PARTNERSHIP_MARGIN
-      format: table
-  grain:
-    description: One row is one partnership margin.
-    components:
-    - identity_id: partnership_margin_identity
-      dataset_columns:
-      - partnership_margin_id
-      description: Identifier of the partnership margin.
-  columns:
-  - name: partnership_margin_id
-    description: Identifier of the partnership margin.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: partner_id
-    description: Partner.
-  - name: geographic_entity_id
-    description: Geographic entity.
-  - name: margin_rate
-    description: Margin rate with the partner.
-  - name: longer_term_change_rate
-    description: Change in the longer-term margin view.
-  - name: europe_hub_fit_flag
-    description: Whether a European hub fits with the alliance.
-  entity_definitions:
-  - identity_id: partnership_margin_identity
-    dataset_columns:
-    - partnership_margin_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: partner_identity
-    dataset_columns:
-    - partner_id
-    entity_universe: partial
-  - identity_id: geographic_entity_identity
-    dataset_columns:
-    - geographic_entity_id
-    entity_universe: partial
-- node_id: sf:airline.price.fact_non_ticket_revenue
-  descriptor:
-    qualified_name: airline.price.fact_non_ticket_revenue
-    display_name: Non Ticket Revenue
-    description: Maintenance and cargo revenue at Airline Inc. Revenue amount, not shop capacity and not
-      passengers. This fact stores price, yield, or margin, not a passenger or seat quantity.
-    synonyms: []
-    tags:
-    - fact
-    - price_yield
-    - airline
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: airline.us-central-1
-      database: AIRLINE
-      schema: PRICE
-      object: FACT_NON_TICKET_REVENUE
-      format: table
-  grain:
-    description: One row is one non ticket revenue.
-    components:
-    - identity_id: non_ticket_revenue_identity
-      dataset_columns:
-      - non_ticket_revenue_id
-      description: Identifier of the non ticket revenue.
-  columns:
-  - name: non_ticket_revenue_id
-    description: Identifier of the non ticket revenue.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: revenue_amount
-    description: Non-ticket revenue.
-  - name: growth_rate
-    description: Growth rate.
-  - name: sustainable_flag
-    description: Whether the strength lasts into the next quarter.
-  - name: maintenance_flag
-    description: Whether the row is maintenance revenue.
-  - name: cargo_flag
-    description: Whether the row is cargo revenue.
-  entity_definitions:
-  - identity_id: non_ticket_revenue_identity
-    dataset_columns:
-    - non_ticket_revenue_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-- node_id: sf:airline.price.fact_outlook_case
-  descriptor:
-    qualified_name: airline.price.fact_outlook_case
-    display_name: Outlook Case
-    description: What changed in an Airline Inc outlook case. This fact stores price, yield, or margin,
-      not a passenger or seat quantity.
-    synonyms: []
-    tags:
-    - fact
-    - price_yield
-    - airline
-  accessor:
-    schema_id: accessor.snowflake.v1
-    properties:
-      account: airline.us-central-1
-      database: AIRLINE
-      schema: PRICE
-      object: FACT_OUTLOOK_CASE
-      format: table
-  grain:
-    description: One row is one outlook case.
-    components:
-    - identity_id: outlook_case_identity
-      dataset_columns:
-      - outlook_case_id
-      description: Identifier of the outlook case.
-  columns:
-  - name: outlook_case_id
-    description: Identifier of the outlook case.
-  - name: fiscal_quarter_id
-    description: Fiscal quarter of the row.
-  - name: geographic_entity_id
-    description: Geographic entity.
-  - name: case_code
-    description: Case.
-    value_description: stable, lower_second_half, conservative, upside
-  - name: changed_flag
-    description: Whether the case moved.
-  - name: driver_code
-    description: What moved it.
-    value_description: newark, demand, fuel, shutdown
-  - name: upside_cabin_code
-    description: Cabin that could beat the conservative case.
-    value_description: main, premium
-  entity_definitions:
-  - identity_id: outlook_case_identity
-    dataset_columns:
-    - outlook_case_id
-    entity_universe: complete
-  - identity_id: fiscal_quarter_identity
-    dataset_columns:
-    - fiscal_quarter_id
-    entity_universe: partial
-  - identity_id: geographic_entity_identity
-    dataset_columns:
-    - geographic_entity_id
+    - scenario_id
     entity_universe: partial
