@@ -1,0 +1,2050 @@
+schema_version: '3'
+nodes:
+- node_id: sf:app.adoption.dim_fiscal_quarter
+  descriptor:
+    qualified_name: app.adoption.dim_fiscal_quarter
+    display_name: Fiscal Quarter
+    description: Fiscal quarter in which the owner reports results.
+    synonyms: []
+    tags:
+    - dimension
+    - adoption
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ADOPTION
+      object: DIM_FISCAL_QUARTER
+      format: table
+  grain:
+    description: One row is one fiscal quarter.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: fiscal_quarter_code
+    description: Fiscal Quarter code.
+    value_description: 2024Q3, 2024Q4, 2025Q1, 2025Q2, 2025Q3, 2025Q4, 2026Q1, 2026Q2
+  - name: fiscal_quarter_name
+    description: Fiscal Quarter name.
+  - name: fiscal_year
+    description: Fiscal year number.
+  - name: quarter_number
+    description: Quarter number within the fiscal year.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: complete
+- node_id: sf:app.adoption.dim_scenario
+  descriptor:
+    qualified_name: app.adoption.dim_scenario
+    display_name: Scenario
+    description: Reporting scenario for a row. The same fiscal quarter can be a reported
+      result and a later guide.
+    synonyms: []
+    tags:
+    - dimension
+    - adoption
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ADOPTION
+      object: DIM_SCENARIO
+      format: table
+  grain:
+    description: One row is one scenario.
+    components:
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+  columns:
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: scenario_code
+    description: Scenario code.
+    value_description: reported, guide
+  - name: scenario_name
+    description: Scenario name.
+  entity_definitions:
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: complete
+- node_id: sf:app.adoption.dim_calendar_month
+  descriptor:
+    qualified_name: app.adoption.dim_calendar_month
+    display_name: Calendar Month
+    description: Calendar month inside a fiscal quarter.
+    synonyms: []
+    tags:
+    - dimension
+    - adoption
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ADOPTION
+      object: DIM_CALENDAR_MONTH
+      format: table
+  grain:
+    description: One row is one calendar month.
+    components:
+    - identity_id: dim_calendar_month_identity
+      dataset_columns:
+      - calendar_month_id
+      description: Identifier of the calendar month.
+  columns:
+  - name: calendar_month_id
+    description: Identifier of the calendar month.
+  - name: calendar_month_code
+    description: Calendar Month code.
+    value_description: january, february, march, april, may, june, july, august, september,
+      october, november, december
+  - name: calendar_month_name
+    description: Calendar Month name.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  entity_definitions:
+  - identity_id: dim_calendar_month_identity
+    dataset_columns:
+    - calendar_month_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+- node_id: sf:app.adoption.dim_region
+  descriptor:
+    qualified_name: app.adoption.dim_region
+    display_name: Region
+    description: Geographic region.
+    synonyms: []
+    tags:
+    - dimension
+    - adoption
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ADOPTION
+      object: DIM_REGION
+      format: table
+  grain:
+    description: One row is one region.
+    components:
+    - identity_id: dim_region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+  columns:
+  - name: region_id
+    description: Identifier of the region.
+  - name: region_code
+    description: Region code.
+    value_description: north_america, europe, asia_pacific, latin_america, middle_east_africa
+  - name: region_name
+    description: Region name.
+  entity_definitions:
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: complete
+- node_id: sf:app.adoption.dim_salesforce_cloud
+  descriptor:
+    qualified_name: app.adoption.dim_salesforce_cloud
+    display_name: Salesforce Cloud
+    description: Salesforce cloud axis.
+    synonyms: []
+    tags:
+    - dimension
+    - adoption
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ADOPTION
+      object: DIM_SALESFORCE_CLOUD
+      format: table
+  grain:
+    description: One row is one salesforce cloud.
+    components:
+    - identity_id: dim_salesforce_cloud_identity
+      dataset_columns:
+      - salesforce_cloud_id
+      description: Identifier of the salesforce cloud.
+  columns:
+  - name: salesforce_cloud_id
+    description: Identifier of the salesforce cloud.
+  - name: salesforce_cloud_code
+    description: Salesforce Cloud code.
+    value_description: sales_cloud, service_cloud, slack, marketing_cloud, commerce_cloud,
+      mulesoft_integration, tableau_analytics
+  - name: salesforce_cloud_name
+    description: Salesforce Cloud name.
+  entity_definitions:
+  - identity_id: dim_salesforce_cloud_identity
+    dataset_columns:
+    - salesforce_cloud_id
+    entity_universe: complete
+- node_id: sf:app.adoption.dim_agentforce_product
+  descriptor:
+    qualified_name: app.adoption.dim_agentforce_product
+    display_name: Agentforce and Data Product
+    description: Agentforce, Data Cloud and related AI product axis, separate from
+      the core Salesforce clouds.
+    synonyms: []
+    tags:
+    - dimension
+    - adoption
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ADOPTION
+      object: DIM_AGENTFORCE_PRODUCT
+      format: table
+  grain:
+    description: One row is one agentforce and data product.
+    components:
+    - identity_id: dim_agentforce_product_identity
+      dataset_columns:
+      - agentforce_product_id
+      description: Identifier of the agentforce and data product.
+  columns:
+  - name: agentforce_product_id
+    description: Identifier of the agentforce and data product.
+  - name: agentforce_product_code
+    description: Agentforce and Data Product code.
+    value_description: agentforce_sales, agentforce_service, agentforce_slack, data_cloud,
+      headless_crm, claude_based_agentforce, informatica_data_management
+  - name: agentforce_product_name
+    description: Agentforce and Data Product name.
+  entity_definitions:
+  - identity_id: dim_agentforce_product_identity
+    dataset_columns:
+    - agentforce_product_id
+    entity_universe: complete
+- node_id: sf:app.adoption.dim_oracle_business
+  descriptor:
+    qualified_name: app.adoption.dim_oracle_business
+    display_name: Oracle Business
+    description: Oracle business axis. Database, cloud infrastructure and applications
+      are Oracle activities, not Salesforce clouds.
+    synonyms: []
+    tags:
+    - dimension
+    - adoption
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ADOPTION
+      object: DIM_ORACLE_BUSINESS
+      format: table
+  grain:
+    description: One row is one oracle business.
+    components:
+    - identity_id: dim_oracle_business_identity
+      dataset_columns:
+      - oracle_business_id
+      description: Identifier of the oracle business.
+  columns:
+  - name: oracle_business_id
+    description: Identifier of the oracle business.
+  - name: oracle_business_code
+    description: Oracle Business code.
+    value_description: oci_cloud_infrastructure, oracle_database_business, oracle_applications_business,
+      cloud_license_and_support, hardware_systems, oracle_services
+  - name: oracle_business_name
+    description: Oracle Business name.
+  entity_definitions:
+  - identity_id: dim_oracle_business_identity
+    dataset_columns:
+    - oracle_business_id
+    entity_universe: complete
+- node_id: sf:app.adoption.dim_oracle_cloud_venue
+  descriptor:
+    qualified_name: app.adoption.dim_oracle_cloud_venue
+    display_name: Oracle Cloud Venue
+    description: Venue where Oracle database or cloud is deployed.
+    synonyms: []
+    tags:
+    - dimension
+    - adoption
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ADOPTION
+      object: DIM_ORACLE_CLOUD_VENUE
+      format: table
+  grain:
+    description: One row is one oracle cloud venue.
+    components:
+    - identity_id: dim_oracle_cloud_venue_identity
+      dataset_columns:
+      - oracle_cloud_venue_id
+      description: Identifier of the oracle cloud venue.
+  columns:
+  - name: oracle_cloud_venue_id
+    description: Identifier of the oracle cloud venue.
+  - name: oracle_cloud_venue_code
+    description: Oracle Cloud Venue code.
+    value_description: oci, azure_interconnect, aws_interconnect, google_cloud_interconnect,
+      dedicated_region, alloy, sovereign_cloud
+  - name: oracle_cloud_venue_name
+    description: Oracle Cloud Venue name.
+  entity_definitions:
+  - identity_id: dim_oracle_cloud_venue_identity
+    dataset_columns:
+    - oracle_cloud_venue_id
+    entity_universe: complete
+- node_id: sf:app.adoption.dim_deployment_stage
+  descriptor:
+    qualified_name: app.adoption.dim_deployment_stage
+    display_name: Deployment Stage
+    description: AI deployment stage axis. Pilot and paid production can be compared
+      on this axis.
+    synonyms: []
+    tags:
+    - dimension
+    - adoption
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ADOPTION
+      object: DIM_DEPLOYMENT_STAGE
+      format: table
+  grain:
+    description: One row is one deployment stage.
+    components:
+    - identity_id: dim_deployment_stage_identity
+      dataset_columns:
+      - deployment_stage_id
+      description: Identifier of the deployment stage.
+  columns:
+  - name: deployment_stage_id
+    description: Identifier of the deployment stage.
+  - name: deployment_stage_code
+    description: Deployment Stage code.
+    value_description: pilot, paid_production, scaled_production, evaluation
+  - name: deployment_stage_name
+    description: Deployment Stage name.
+  entity_definitions:
+  - identity_id: dim_deployment_stage_identity
+    dataset_columns:
+    - deployment_stage_id
+    entity_universe: complete
+- node_id: sf:app.adoption.dim_customer_segment
+  descriptor:
+    qualified_name: app.adoption.dim_customer_segment
+    display_name: Customer Segment
+    description: Customer segment.
+    synonyms: []
+    tags:
+    - dimension
+    - adoption
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ADOPTION
+      object: DIM_CUSTOMER_SEGMENT
+      format: table
+  grain:
+    description: One row is one customer segment.
+    components:
+    - identity_id: dim_customer_segment_identity
+      dataset_columns:
+      - customer_segment_id
+      description: Identifier of the customer segment.
+  columns:
+  - name: customer_segment_id
+    description: Identifier of the customer segment.
+  - name: customer_segment_code
+    description: Customer Segment code.
+    value_description: enterprise, large_enterprise, mid_market, small_business, public_sector,
+      ai_lab, sovereign_buyer
+  - name: customer_segment_name
+    description: Customer Segment name.
+  entity_definitions:
+  - identity_id: dim_customer_segment_identity
+    dataset_columns:
+    - customer_segment_id
+    entity_universe: complete
+- node_id: sf:app.adoption.dim_buyer_industry
+  descriptor:
+    qualified_name: app.adoption.dim_buyer_industry
+    display_name: Buyer Industry
+    description: Buyer industry vertical.
+    synonyms: []
+    tags:
+    - dimension
+    - adoption
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ADOPTION
+      object: DIM_BUYER_INDUSTRY
+      format: table
+  grain:
+    description: One row is one buyer industry.
+    components:
+    - identity_id: dim_buyer_industry_identity
+      dataset_columns:
+      - buyer_industry_id
+      description: Identifier of the buyer industry.
+  columns:
+  - name: buyer_industry_id
+    description: Identifier of the buyer industry.
+  - name: buyer_industry_code
+    description: Buyer Industry code.
+    value_description: financial_services, healthcare, retail, manufacturing, public_sector_industry,
+      technology, communications
+  - name: buyer_industry_name
+    description: Buyer Industry name.
+  entity_definitions:
+  - identity_id: dim_buyer_industry_identity
+    dataset_columns:
+    - buyer_industry_id
+    entity_universe: complete
+- node_id: sf:app.adoption.dim_sales_channel
+  descriptor:
+    qualified_name: app.adoption.dim_sales_channel
+    display_name: Sales Channel
+    description: Route to market, including joint partner selling.
+    synonyms: []
+    tags:
+    - dimension
+    - adoption
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ADOPTION
+      object: DIM_SALES_CHANNEL
+      format: table
+  grain:
+    description: One row is one sales channel.
+    components:
+    - identity_id: dim_sales_channel_identity
+      dataset_columns:
+      - sales_channel_id
+      description: Identifier of the sales channel.
+  columns:
+  - name: sales_channel_id
+    description: Identifier of the sales channel.
+  - name: sales_channel_code
+    description: Sales Channel code.
+    value_description: direct_field, partner_reseller, joint_partner_sale, self_service,
+      marketplace_channel
+  - name: sales_channel_name
+    description: Sales Channel name.
+  entity_definitions:
+  - identity_id: dim_sales_channel_identity
+    dataset_columns:
+    - sales_channel_id
+    entity_universe: complete
+- node_id: sf:app.adoption.dim_partner_type
+  descriptor:
+    qualified_name: app.adoption.dim_partner_type
+    display_name: Partner Type
+    description: Partner type, including frontier model providers and hyperscalers.
+    synonyms: []
+    tags:
+    - dimension
+    - adoption
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ADOPTION
+      object: DIM_PARTNER_TYPE
+      format: table
+  grain:
+    description: One row is one partner type.
+    components:
+    - identity_id: dim_partner_type_identity
+      dataset_columns:
+      - partner_type_id
+      description: Identifier of the partner type.
+  columns:
+  - name: partner_type_id
+    description: Identifier of the partner type.
+  - name: partner_type_code
+    description: Partner Type code.
+    value_description: frontier_model_provider, systems_integrator, hyperscaler, independent_software_vendor,
+      chip_provider
+  - name: partner_type_name
+    description: Partner Type name.
+  entity_definitions:
+  - identity_id: dim_partner_type_identity
+    dataset_columns:
+    - partner_type_id
+    entity_universe: complete
+- node_id: sf:app.adoption.dim_deal_structure
+  descriptor:
+    qualified_name: app.adoption.dim_deal_structure
+    display_name: Deal Structure
+    description: Commercial deal structure for cloud capacity.
+    synonyms: []
+    tags:
+    - dimension
+    - adoption
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ADOPTION
+      object: DIM_DEAL_STRUCTURE
+      format: table
+  grain:
+    description: One row is one deal structure.
+    components:
+    - identity_id: dim_deal_structure_identity
+      dataset_columns:
+      - deal_structure_id
+      description: Identifier of the deal structure.
+  columns:
+  - name: deal_structure_id
+    description: Identifier of the deal structure.
+  - name: deal_structure_code
+    description: Deal Structure code.
+    value_description: prepaid_gpu, bring_your_own_chip, bring_your_own_hardware,
+      gpu_included, subscription_license, consumption_credit, enterprise_license_agreement_deal
+  - name: deal_structure_name
+    description: Deal Structure name.
+  entity_definitions:
+  - identity_id: dim_deal_structure_identity
+    dataset_columns:
+    - deal_structure_id
+    entity_universe: complete
+- node_id: sf:app.adoption.dim_contract_type
+  descriptor:
+    qualified_name: app.adoption.dim_contract_type
+    display_name: Contract Type
+    description: Contract type.
+    synonyms: []
+    tags:
+    - dimension
+    - adoption
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ADOPTION
+      object: DIM_CONTRACT_TYPE
+      format: table
+  grain:
+    description: One row is one contract type.
+    components:
+    - identity_id: dim_contract_type_identity
+      dataset_columns:
+      - contract_type_id
+      description: Identifier of the contract type.
+  columns:
+  - name: contract_type_id
+    description: Identifier of the contract type.
+  - name: contract_type_code
+    description: Contract Type code.
+    value_description: enterprise_license_agreement, subscription_contract, consumption_contract,
+      long_term_capacity_contract, spot_capacity_contract
+  - name: contract_type_name
+    description: Contract Type name.
+  entity_definitions:
+  - identity_id: dim_contract_type_identity
+    dataset_columns:
+    - contract_type_id
+    entity_universe: complete
+- node_id: sf:app.adoption.dim_pricing_model
+  descriptor:
+    qualified_name: app.adoption.dim_pricing_model
+    display_name: Pricing Model
+    description: Pricing model axis. Seat, token, work-unit and outcome pricing are
+      different models on this axis.
+    synonyms: []
+    tags:
+    - dimension
+    - adoption
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ADOPTION
+      object: DIM_PRICING_MODEL
+      format: table
+  grain:
+    description: One row is one pricing model.
+    components:
+    - identity_id: dim_pricing_model_identity
+      dataset_columns:
+      - pricing_model_id
+      description: Identifier of the pricing model.
+  columns:
+  - name: pricing_model_id
+    description: Identifier of the pricing model.
+  - name: pricing_model_code
+    description: Pricing Model code.
+    value_description: seat_based, consumption_token, agentic_work_unit, outcome_based,
+      platform_license, database_license
+  - name: pricing_model_name
+    description: Pricing Model name.
+  entity_definitions:
+  - identity_id: dim_pricing_model_identity
+    dataset_columns:
+    - pricing_model_id
+    entity_universe: complete
+- node_id: sf:app.adoption.dim_competitor
+  descriptor:
+    qualified_name: app.adoption.dim_competitor
+    display_name: Competitor
+    description: Competing approach or provider type.
+    synonyms: []
+    tags:
+    - dimension
+    - adoption
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ADOPTION
+      object: DIM_COMPETITOR
+      format: table
+  grain:
+    description: One row is one competitor.
+    components:
+    - identity_id: dim_competitor_identity
+      dataset_columns:
+      - competitor_id
+      description: Identifier of the competitor.
+  columns:
+  - name: competitor_id
+    description: Identifier of the competitor.
+  - name: competitor_code
+    description: Competitor code.
+    value_description: hyperscaler_cloud, crm_competitor, in_house_build, database_competitor,
+      frontier_model_platform
+  - name: competitor_name
+    description: Competitor name.
+  entity_definitions:
+  - identity_id: dim_competitor_identity
+    dataset_columns:
+    - competitor_id
+    entity_universe: complete
+- node_id: sf:app.adoption.dim_oracle_product
+  descriptor:
+    qualified_name: app.adoption.dim_oracle_product
+    display_name: Oracle Product
+    description: Oracle product line axis.
+    synonyms: []
+    tags:
+    - dimension
+    - adoption
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ADOPTION
+      object: DIM_ORACLE_PRODUCT
+      format: table
+  grain:
+    description: One row is one oracle product.
+    components:
+    - identity_id: dim_oracle_product_identity
+      dataset_columns:
+      - oracle_product_id
+      description: Identifier of the oracle product.
+  columns:
+  - name: oracle_product_id
+    description: Identifier of the oracle product.
+  - name: oracle_product_code
+    description: Oracle Product code.
+    value_description: fusion_applications, netsuite_applications, industry_applications,
+      database_software, middleware
+  - name: oracle_product_name
+    description: Oracle Product name.
+  entity_definitions:
+  - identity_id: dim_oracle_product_identity
+    dataset_columns:
+    - oracle_product_id
+    entity_universe: complete
+- node_id: sf:app.adoption.dim_ai_workload
+  descriptor:
+    qualified_name: app.adoption.dim_ai_workload
+    display_name: AI Workload
+    description: AI workload type.
+    synonyms: []
+    tags:
+    - dimension
+    - adoption
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ADOPTION
+      object: DIM_AI_WORKLOAD
+      format: table
+  grain:
+    description: One row is one ai workload.
+    components:
+    - identity_id: dim_ai_workload_identity
+      dataset_columns:
+      - ai_workload_id
+      description: Identifier of the ai workload.
+  columns:
+  - name: ai_workload_id
+    description: Identifier of the ai workload.
+  - name: ai_workload_code
+    description: AI Workload code.
+    value_description: training, inference, private_model_training, agentic_execution,
+      data_processing
+  - name: ai_workload_name
+    description: AI Workload name.
+  entity_definitions:
+  - identity_id: dim_ai_workload_identity
+    dataset_columns:
+    - ai_workload_id
+    entity_universe: complete
+- node_id: sf:app.adoption.fact_subscription_seats
+  descriptor:
+    qualified_name: app.adoption.fact_subscription_seats
+    display_name: Subscription Seats
+    description: CRM subscription seat and active-user quantity by Salesforce cloud.
+      Stores quantity in seats and users.
+    synonyms: []
+    tags:
+    - fact
+    - adoption
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ADOPTION
+      object: FACT_SUBSCRIPTION_SEATS
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, salesforce
+      cloud, customer segment, buyer industry.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_salesforce_cloud_identity
+      dataset_columns:
+      - salesforce_cloud_id
+      description: Identifier of the salesforce cloud.
+    - identity_id: dim_customer_segment_identity
+      dataset_columns:
+      - customer_segment_id
+      description: Identifier of the customer segment.
+    - identity_id: dim_buyer_industry_identity
+      dataset_columns:
+      - buyer_industry_id
+      description: Identifier of the buyer industry.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: salesforce_cloud_id
+    description: Identifier of the related salesforce cloud.
+  - name: customer_segment_id
+    description: Identifier of the related customer segment.
+  - name: buyer_industry_id
+    description: Identifier of the related buyer industry.
+  - name: seat_count
+    description: Seat quantity in seats.
+  - name: active_user_count
+    description: Active user quantity in users.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_salesforce_cloud_identity
+    dataset_columns:
+    - salesforce_cloud_id
+    entity_universe: partial
+  - identity_id: dim_customer_segment_identity
+    dataset_columns:
+    - customer_segment_id
+    entity_universe: partial
+  - identity_id: dim_buyer_industry_identity
+    dataset_columns:
+    - buyer_industry_id
+    entity_universe: partial
+- node_id: sf:app.adoption.fact_agentforce_usage
+  descriptor:
+    qualified_name: app.adoption.fact_agentforce_usage
+    display_name: Agentforce Usage
+    description: Token and agentic work-unit consumption quantity by Agentforce product
+      and deployment stage. Stores quantity in tokens and work units; ARR dollars
+      are in economics.
+    synonyms: []
+    tags:
+    - fact
+    - adoption
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ADOPTION
+      object: FACT_AGENTFORCE_USAGE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, agentforce
+      and data product, deployment stage, customer segment.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_agentforce_product_identity
+      dataset_columns:
+      - agentforce_product_id
+      description: Identifier of the agentforce and data product.
+    - identity_id: dim_deployment_stage_identity
+      dataset_columns:
+      - deployment_stage_id
+      description: Identifier of the deployment stage.
+    - identity_id: dim_customer_segment_identity
+      dataset_columns:
+      - customer_segment_id
+      description: Identifier of the customer segment.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: agentforce_product_id
+    description: Identifier of the related agentforce and data product.
+  - name: deployment_stage_id
+    description: Identifier of the related deployment stage.
+  - name: customer_segment_id
+    description: Identifier of the related customer segment.
+  - name: token_consumption_count
+    description: Token quantity in tokens.
+  - name: agentic_work_unit_count
+    description: Agentic work quantity in work units.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_agentforce_product_identity
+    dataset_columns:
+    - agentforce_product_id
+    entity_universe: partial
+  - identity_id: dim_deployment_stage_identity
+    dataset_columns:
+    - deployment_stage_id
+    entity_universe: partial
+  - identity_id: dim_customer_segment_identity
+    dataset_columns:
+    - customer_segment_id
+    entity_universe: partial
+- node_id: sf:app.adoption.fact_data_cloud_usage
+  descriptor:
+    qualified_name: app.adoption.fact_data_cloud_usage
+    display_name: Data Cloud Usage
+    description: Data credit and record-processing quantity. Stores quantity in credits
+      and records.
+    synonyms: []
+    tags:
+    - fact
+    - adoption
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ADOPTION
+      object: FACT_DATA_CLOUD_USAGE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, agentforce
+      and data product, pricing model.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_agentforce_product_identity
+      dataset_columns:
+      - agentforce_product_id
+      description: Identifier of the agentforce and data product.
+    - identity_id: dim_pricing_model_identity
+      dataset_columns:
+      - pricing_model_id
+      description: Identifier of the pricing model.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: agentforce_product_id
+    description: Identifier of the related agentforce and data product.
+  - name: pricing_model_id
+    description: Identifier of the related pricing model.
+  - name: data_credit_consumption_count
+    description: Data credit quantity in credits.
+  - name: record_processed_count
+    description: Record quantity in records.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_agentforce_product_identity
+    dataset_columns:
+    - agentforce_product_id
+    entity_universe: partial
+  - identity_id: dim_pricing_model_identity
+    dataset_columns:
+    - pricing_model_id
+    entity_universe: partial
+- node_id: sf:app.adoption.fact_oracle_database_usage
+  descriptor:
+    qualified_name: app.adoption.fact_oracle_database_usage
+    display_name: Oracle Database Usage
+    description: Oracle Database instance and consumption quantity by product and
+      venue, separate from AI infrastructure surge rows on oci_consumption. Stores
+      quantity in instances and consumption units.
+    synonyms: []
+    tags:
+    - fact
+    - adoption
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ADOPTION
+      object: FACT_ORACLE_DATABASE_USAGE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, oracle product,
+      oracle cloud venue.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_oracle_product_identity
+      dataset_columns:
+      - oracle_product_id
+      description: Identifier of the oracle product.
+    - identity_id: dim_oracle_cloud_venue_identity
+      dataset_columns:
+      - oracle_cloud_venue_id
+      description: Identifier of the oracle cloud venue.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: oracle_product_id
+    description: Identifier of the related oracle product.
+  - name: oracle_cloud_venue_id
+    description: Identifier of the related oracle cloud venue.
+  - name: database_instance_count
+    description: Database instance quantity in instances.
+  - name: database_consumption_unit_count
+    description: Database consumption in consumption units.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_oracle_product_identity
+    dataset_columns:
+    - oracle_product_id
+    entity_universe: partial
+  - identity_id: dim_oracle_cloud_venue_identity
+    dataset_columns:
+    - oracle_cloud_venue_id
+    entity_universe: partial
+- node_id: sf:app.adoption.fact_oci_consumption
+  descriptor:
+    qualified_name: app.adoption.fact_oci_consumption
+    display_name: OCI Consumption
+    description: OCI consumption quantity by Oracle business, capacity type and workload.
+      Stores quantity in consumption units and GPU hours.
+    synonyms: []
+    tags:
+    - fact
+    - adoption
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ADOPTION
+      object: FACT_OCI_CONSUMPTION
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, oracle business,
+      capacity type, ai workload.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_oracle_business_identity
+      dataset_columns:
+      - oracle_business_id
+      description: Identifier of the oracle business.
+    - identity_id: dim_capacity_type_identity
+      dataset_columns:
+      - capacity_type_id
+      description: Identifier of the capacity type.
+    - identity_id: dim_ai_workload_identity
+      dataset_columns:
+      - ai_workload_id
+      description: Identifier of the ai workload.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: oracle_business_id
+    description: Identifier of the related oracle business.
+  - name: capacity_type_id
+    description: Identifier of the related capacity type.
+  - name: ai_workload_id
+    description: Identifier of the related ai workload.
+  - name: oci_consumption_unit_count
+    description: OCI consumption in consumption units.
+  - name: gpu_hour_count
+    description: GPU quantity in GPU hours.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_oracle_business_identity
+    dataset_columns:
+    - oracle_business_id
+    entity_universe: partial
+  - identity_id: dim_capacity_type_identity
+    dataset_columns:
+    - capacity_type_id
+    entity_universe: partial
+  - identity_id: dim_ai_workload_identity
+    dataset_columns:
+    - ai_workload_id
+    entity_universe: partial
+- node_id: sf:app.adoption.fact_customer_adoption
+  descriptor:
+    qualified_name: app.adoption.fact_customer_adoption
+    display_name: Customer Adoption
+    description: Active and production customer quantity by Salesforce cloud and deployment
+      stage. Stores quantity in customers.
+    synonyms: []
+    tags:
+    - fact
+    - adoption
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ADOPTION
+      object: FACT_CUSTOMER_ADOPTION
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, salesforce
+      cloud, deployment stage, customer segment.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_salesforce_cloud_identity
+      dataset_columns:
+      - salesforce_cloud_id
+      description: Identifier of the salesforce cloud.
+    - identity_id: dim_deployment_stage_identity
+      dataset_columns:
+      - deployment_stage_id
+      description: Identifier of the deployment stage.
+    - identity_id: dim_customer_segment_identity
+      dataset_columns:
+      - customer_segment_id
+      description: Identifier of the customer segment.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: salesforce_cloud_id
+    description: Identifier of the related salesforce cloud.
+  - name: deployment_stage_id
+    description: Identifier of the related deployment stage.
+  - name: customer_segment_id
+    description: Identifier of the related customer segment.
+  - name: active_customer_count
+    description: Active customer quantity in customers.
+  - name: production_customer_count
+    description: Production customer quantity in customers.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_salesforce_cloud_identity
+    dataset_columns:
+    - salesforce_cloud_id
+    entity_universe: partial
+  - identity_id: dim_deployment_stage_identity
+    dataset_columns:
+    - deployment_stage_id
+    entity_universe: partial
+  - identity_id: dim_customer_segment_identity
+    dataset_columns:
+    - customer_segment_id
+    entity_universe: partial
+- node_id: sf:app.adoption.fact_installed_base
+  descriptor:
+    qualified_name: app.adoption.fact_installed_base
+    display_name: Installed Base
+    description: Installed customer and account quantity by Salesforce cloud and buyer
+      industry. Stores quantity in customers and accounts.
+    synonyms: []
+    tags:
+    - fact
+    - adoption
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ADOPTION
+      object: FACT_INSTALLED_BASE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, salesforce
+      cloud, buyer industry.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_salesforce_cloud_identity
+      dataset_columns:
+      - salesforce_cloud_id
+      description: Identifier of the salesforce cloud.
+    - identity_id: dim_buyer_industry_identity
+      dataset_columns:
+      - buyer_industry_id
+      description: Identifier of the buyer industry.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: salesforce_cloud_id
+    description: Identifier of the related salesforce cloud.
+  - name: buyer_industry_id
+    description: Identifier of the related buyer industry.
+  - name: installed_customer_count
+    description: Installed customer quantity in customers.
+  - name: account_count
+    description: Account quantity in accounts.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_salesforce_cloud_identity
+    dataset_columns:
+    - salesforce_cloud_id
+    entity_universe: partial
+  - identity_id: dim_buyer_industry_identity
+    dataset_columns:
+    - buyer_industry_id
+    entity_universe: partial
+- node_id: sf:app.adoption.fact_sales_pipeline
+  descriptor:
+    qualified_name: app.adoption.fact_sales_pipeline
+    display_name: Sales Pipeline
+    description: Pipeline opportunity and lead quantity by channel and Salesforce
+      cloud. Stores quantity in opportunities and leads.
+    synonyms: []
+    tags:
+    - fact
+    - adoption
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ADOPTION
+      object: FACT_SALES_PIPELINE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, sales channel,
+      salesforce cloud, region.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_sales_channel_identity
+      dataset_columns:
+      - sales_channel_id
+      description: Identifier of the sales channel.
+    - identity_id: dim_salesforce_cloud_identity
+      dataset_columns:
+      - salesforce_cloud_id
+      description: Identifier of the salesforce cloud.
+    - identity_id: dim_region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: sales_channel_id
+    description: Identifier of the related sales channel.
+  - name: salesforce_cloud_id
+    description: Identifier of the related salesforce cloud.
+  - name: region_id
+    description: Identifier of the related region.
+  - name: pipeline_opportunity_count
+    description: Pipeline quantity in opportunities.
+  - name: lead_count
+    description: Lead quantity in leads.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_sales_channel_identity
+    dataset_columns:
+    - sales_channel_id
+    entity_universe: partial
+  - identity_id: dim_salesforce_cloud_identity
+    dataset_columns:
+    - salesforce_cloud_id
+    entity_universe: partial
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:app.adoption.fact_oracle_pipeline
+  descriptor:
+    qualified_name: app.adoption.fact_oracle_pipeline
+    display_name: Oracle Pipeline
+    description: Oracle pipeline opportunity quantity by business, deal structure
+      and customer segment. Stores quantity in opportunities.
+    synonyms: []
+    tags:
+    - fact
+    - adoption
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ADOPTION
+      object: FACT_ORACLE_PIPELINE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, oracle business,
+      deal structure, customer segment.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_oracle_business_identity
+      dataset_columns:
+      - oracle_business_id
+      description: Identifier of the oracle business.
+    - identity_id: dim_deal_structure_identity
+      dataset_columns:
+      - deal_structure_id
+      description: Identifier of the deal structure.
+    - identity_id: dim_customer_segment_identity
+      dataset_columns:
+      - customer_segment_id
+      description: Identifier of the customer segment.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: oracle_business_id
+    description: Identifier of the related oracle business.
+  - name: deal_structure_id
+    description: Identifier of the related deal structure.
+  - name: customer_segment_id
+    description: Identifier of the related customer segment.
+  - name: oracle_pipeline_opportunity_count
+    description: Oracle pipeline quantity in opportunities.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_oracle_business_identity
+    dataset_columns:
+    - oracle_business_id
+    entity_universe: partial
+  - identity_id: dim_deal_structure_identity
+    dataset_columns:
+    - deal_structure_id
+    entity_universe: partial
+  - identity_id: dim_customer_segment_identity
+    dataset_columns:
+    - customer_segment_id
+    entity_universe: partial
+- node_id: sf:app.adoption.fact_booking_quantity
+  descriptor:
+    qualified_name: app.adoption.fact_booking_quantity
+    display_name: Booking Quantity
+    description: Booking and deal quantity by Salesforce cloud and channel. Stores
+      quantity in bookings and deals.
+    synonyms: []
+    tags:
+    - fact
+    - adoption
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ADOPTION
+      object: FACT_BOOKING_QUANTITY
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, salesforce
+      cloud, sales channel.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_salesforce_cloud_identity
+      dataset_columns:
+      - salesforce_cloud_id
+      description: Identifier of the salesforce cloud.
+    - identity_id: dim_sales_channel_identity
+      dataset_columns:
+      - sales_channel_id
+      description: Identifier of the sales channel.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: salesforce_cloud_id
+    description: Identifier of the related salesforce cloud.
+  - name: sales_channel_id
+    description: Identifier of the related sales channel.
+  - name: booking_count
+    description: Booking quantity in bookings.
+  - name: deal_count
+    description: Deal quantity in deals.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_salesforce_cloud_identity
+    dataset_columns:
+    - salesforce_cloud_id
+    entity_universe: partial
+  - identity_id: dim_sales_channel_identity
+    dataset_columns:
+    - sales_channel_id
+    entity_universe: partial
+- node_id: sf:app.adoption.fact_oracle_booking_quantity
+  descriptor:
+    qualified_name: app.adoption.fact_oracle_booking_quantity
+    display_name: Oracle Booking Quantity
+    description: Oracle booking quantity by business and contract type. Stores quantity
+      in bookings.
+    synonyms: []
+    tags:
+    - fact
+    - adoption
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ADOPTION
+      object: FACT_ORACLE_BOOKING_QUANTITY
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, oracle business,
+      contract type.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_oracle_business_identity
+      dataset_columns:
+      - oracle_business_id
+      description: Identifier of the oracle business.
+    - identity_id: dim_contract_type_identity
+      dataset_columns:
+      - contract_type_id
+      description: Identifier of the contract type.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: oracle_business_id
+    description: Identifier of the related oracle business.
+  - name: contract_type_id
+    description: Identifier of the related contract type.
+  - name: oracle_booking_count
+    description: Oracle booking quantity in bookings.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_oracle_business_identity
+    dataset_columns:
+    - oracle_business_id
+    entity_universe: partial
+  - identity_id: dim_contract_type_identity
+    dataset_columns:
+    - contract_type_id
+    entity_universe: partial
+- node_id: sf:app.adoption.fact_slack_adoption
+  descriptor:
+    qualified_name: app.adoption.fact_slack_adoption
+    display_name: Slack Adoption
+    description: Slack active-user and message quantity by customer segment and industry.
+      Stores quantity in users and messages.
+    synonyms: []
+    tags:
+    - fact
+    - adoption
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ADOPTION
+      object: FACT_SLACK_ADOPTION
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, customer
+      segment, buyer industry.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_customer_segment_identity
+      dataset_columns:
+      - customer_segment_id
+      description: Identifier of the customer segment.
+    - identity_id: dim_buyer_industry_identity
+      dataset_columns:
+      - buyer_industry_id
+      description: Identifier of the buyer industry.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: customer_segment_id
+    description: Identifier of the related customer segment.
+  - name: buyer_industry_id
+    description: Identifier of the related buyer industry.
+  - name: active_slack_user_count
+    description: Slack user quantity in users.
+  - name: slack_message_count
+    description: Slack message quantity in messages.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_customer_segment_identity
+    dataset_columns:
+    - customer_segment_id
+    entity_universe: partial
+  - identity_id: dim_buyer_industry_identity
+    dataset_columns:
+    - buyer_industry_id
+    entity_universe: partial
+- node_id: sf:app.adoption.fact_application_wins
+  descriptor:
+    qualified_name: app.adoption.fact_application_wins
+    display_name: Application Wins
+    description: Oracle application customer-win and renewal quantity by product and
+      customer segment. Stores quantity in wins and renewals.
+    synonyms: []
+    tags:
+    - fact
+    - adoption
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ADOPTION
+      object: FACT_APPLICATION_WINS
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, oracle product,
+      customer segment.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_oracle_product_identity
+      dataset_columns:
+      - oracle_product_id
+      description: Identifier of the oracle product.
+    - identity_id: dim_customer_segment_identity
+      dataset_columns:
+      - customer_segment_id
+      description: Identifier of the customer segment.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: oracle_product_id
+    description: Identifier of the related oracle product.
+  - name: customer_segment_id
+    description: Identifier of the related customer segment.
+  - name: customer_win_count
+    description: Win quantity in wins.
+  - name: renewal_count
+    description: Renewal quantity in renewals.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_oracle_product_identity
+    dataset_columns:
+    - oracle_product_id
+    entity_universe: partial
+  - identity_id: dim_customer_segment_identity
+    dataset_columns:
+    - customer_segment_id
+    entity_universe: partial
+- node_id: sf:app.adoption.fact_renewal_quantity
+  descriptor:
+    qualified_name: app.adoption.fact_renewal_quantity
+    display_name: Renewal Quantity
+    description: Renewal and attrition account quantity by Salesforce cloud. Stores
+      quantity in accounts.
+    synonyms: []
+    tags:
+    - fact
+    - adoption
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ADOPTION
+      object: FACT_RENEWAL_QUANTITY
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, salesforce
+      cloud, customer segment.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_salesforce_cloud_identity
+      dataset_columns:
+      - salesforce_cloud_id
+      description: Identifier of the salesforce cloud.
+    - identity_id: dim_customer_segment_identity
+      dataset_columns:
+      - customer_segment_id
+      description: Identifier of the customer segment.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: salesforce_cloud_id
+    description: Identifier of the related salesforce cloud.
+  - name: customer_segment_id
+    description: Identifier of the related customer segment.
+  - name: renewal_account_count
+    description: Renewal quantity in accounts.
+  - name: attrition_account_count
+    description: Attrition quantity in accounts.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_salesforce_cloud_identity
+    dataset_columns:
+    - salesforce_cloud_id
+    entity_universe: partial
+  - identity_id: dim_customer_segment_identity
+    dataset_columns:
+    - customer_segment_id
+    entity_universe: partial
+- node_id: sf:app.adoption.fact_cross_sell_quantity
+  descriptor:
+    qualified_name: app.adoption.fact_cross_sell_quantity
+    display_name: Cross-sell Quantity
+    description: Cross-sell deal and multi-cloud account quantity. Stores quantity
+      in deals and accounts.
+    synonyms: []
+    tags:
+    - fact
+    - adoption
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ADOPTION
+      object: FACT_CROSS_SELL_QUANTITY
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, salesforce
+      cloud, agentforce and data product.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_salesforce_cloud_identity
+      dataset_columns:
+      - salesforce_cloud_id
+      description: Identifier of the salesforce cloud.
+    - identity_id: dim_agentforce_product_identity
+      dataset_columns:
+      - agentforce_product_id
+      description: Identifier of the agentforce and data product.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: salesforce_cloud_id
+    description: Identifier of the related salesforce cloud.
+  - name: agentforce_product_id
+    description: Identifier of the related agentforce and data product.
+  - name: cross_sell_deal_count
+    description: Cross-sell quantity in deals.
+  - name: multi_cloud_account_count
+    description: Multi-cloud quantity in accounts.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_salesforce_cloud_identity
+    dataset_columns:
+    - salesforce_cloud_id
+    entity_universe: partial
+  - identity_id: dim_agentforce_product_identity
+    dataset_columns:
+    - agentforce_product_id
+    entity_universe: partial
+- node_id: sf:app.adoption.fact_ai_data_platform_usage
+  descriptor:
+    qualified_name: app.adoption.fact_ai_data_platform_usage
+    display_name: AI Data Platform Usage
+    description: AI query and private-model training quantity by Agentforce product
+      and workload. Stores quantity in queries and training jobs.
+    synonyms: []
+    tags:
+    - fact
+    - adoption
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ADOPTION
+      object: FACT_AI_DATA_PLATFORM_USAGE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, agentforce
+      and data product, ai workload.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_agentforce_product_identity
+      dataset_columns:
+      - agentforce_product_id
+      description: Identifier of the agentforce and data product.
+    - identity_id: dim_ai_workload_identity
+      dataset_columns:
+      - ai_workload_id
+      description: Identifier of the ai workload.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: agentforce_product_id
+    description: Identifier of the related agentforce and data product.
+  - name: ai_workload_id
+    description: Identifier of the related ai workload.
+  - name: ai_query_count
+    description: AI query quantity in queries.
+  - name: private_model_training_count
+    description: Training quantity in training jobs.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_agentforce_product_identity
+    dataset_columns:
+    - agentforce_product_id
+    entity_universe: partial
+  - identity_id: dim_ai_workload_identity
+    dataset_columns:
+    - ai_workload_id
+    entity_universe: partial
+- node_id: sf:app.adoption.fact_credit_refill_activity
+  descriptor:
+    qualified_name: app.adoption.fact_credit_refill_activity
+    display_name: Credit Refill Activity
+    description: Token credit refill quantity by Agentforce product and deployment
+      stage. Stores quantity in refills.
+    synonyms: []
+    tags:
+    - fact
+    - adoption
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ADOPTION
+      object: FACT_CREDIT_REFILL_ACTIVITY
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, agentforce
+      and data product, deployment stage.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_agentforce_product_identity
+      dataset_columns:
+      - agentforce_product_id
+      description: Identifier of the agentforce and data product.
+    - identity_id: dim_deployment_stage_identity
+      dataset_columns:
+      - deployment_stage_id
+      description: Identifier of the deployment stage.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: agentforce_product_id
+    description: Identifier of the related agentforce and data product.
+  - name: deployment_stage_id
+    description: Identifier of the related deployment stage.
+  - name: credit_refill_count
+    description: Refill quantity in refills.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_agentforce_product_identity
+    dataset_columns:
+    - agentforce_product_id
+    entity_universe: partial
+  - identity_id: dim_deployment_stage_identity
+    dataset_columns:
+    - deployment_stage_id
+    entity_universe: partial
+- node_id: sf:app.adoption.fact_competitor_displacement
+  descriptor:
+    qualified_name: app.adoption.fact_competitor_displacement
+    display_name: Competitor Displacement
+    description: Accounts evaluating in-house or competitor displacement by competitor
+      type and Salesforce cloud. Stores quantity in accounts.
+    synonyms: []
+    tags:
+    - fact
+    - adoption
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: ADOPTION
+      object: FACT_COMPETITOR_DISPLACEMENT
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, competitor,
+      salesforce cloud.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_competitor_identity
+      dataset_columns:
+      - competitor_id
+      description: Identifier of the competitor.
+    - identity_id: dim_salesforce_cloud_identity
+      dataset_columns:
+      - salesforce_cloud_id
+      description: Identifier of the salesforce cloud.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: competitor_id
+    description: Identifier of the related competitor.
+  - name: salesforce_cloud_id
+    description: Identifier of the related salesforce cloud.
+  - name: displacement_evaluation_count
+    description: Displacement evaluation quantity in accounts.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_competitor_identity
+    dataset_columns:
+    - competitor_id
+    entity_universe: partial
+  - identity_id: dim_salesforce_cloud_identity
+    dataset_columns:
+    - salesforce_cloud_id
+    entity_universe: partial

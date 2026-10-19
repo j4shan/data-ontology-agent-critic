@@ -1,0 +1,1566 @@
+schema_version: '3'
+nodes:
+- node_id: sf:broker.price.dim_revenue_line
+  descriptor:
+    qualified_name: broker.price.dim_revenue_line
+    display_name: Revenue Line
+    description: Line of revenue earned.
+    synonyms: []
+    tags:
+    - dim
+    - price
+    - broker
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: broker.us-east-1
+      database: BROKER
+      schema: PRICE
+      object: DIM_REVENUE_LINE
+      format: table
+  grain:
+    description: One row is one revenue line.
+    components:
+    - identity_id: dim_revenue_line_identity
+      dataset_columns:
+      - revenue_line_id
+      description: Identifier of the revenue line.
+  columns:
+  - name: revenue_line_id
+    description: Identifier of the revenue line.
+  - name: revenue_line_code
+    description: Revenue Line code.
+    value_description: advisory_fees, underwriting_fees, ficc_revenue, equities_revenue, asset_management_fees, wealth_fees,
+      net_interest_income
+  - name: revenue_line_name
+    description: Revenue Line name.
+  entity_definitions:
+  - identity_id: dim_revenue_line_identity
+    dataset_columns:
+    - revenue_line_id
+    entity_universe: complete
+- node_id: sf:broker.price.dim_cost_bucket
+  descriptor:
+    qualified_name: broker.price.dim_cost_bucket
+    display_name: Cost Bucket
+    description: Bucket of operating cost.
+    synonyms: []
+    tags:
+    - dim
+    - price
+    - broker
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: broker.us-east-1
+      database: BROKER
+      schema: PRICE
+      object: DIM_COST_BUCKET
+      format: table
+  grain:
+    description: One row is one cost bucket.
+    components:
+    - identity_id: dim_cost_bucket_identity
+      dataset_columns:
+      - cost_bucket_id
+      description: Identifier of the cost bucket.
+  columns:
+  - name: cost_bucket_id
+    description: Identifier of the cost bucket.
+  - name: cost_bucket_code
+    description: Cost Bucket code.
+    value_description: compensation, technology, occupancy, professional_fees, market_data, other_noninterest
+  - name: cost_bucket_name
+    description: Cost Bucket name.
+  entity_definitions:
+  - identity_id: dim_cost_bucket_identity
+    dataset_columns:
+    - cost_bucket_id
+    entity_universe: complete
+- node_id: sf:broker.price.dim_fee_arrangement
+  descriptor:
+    qualified_name: broker.price.dim_fee_arrangement
+    display_name: Fee Arrangement
+    description: How a fee is charged.
+    synonyms: []
+    tags:
+    - dim
+    - price
+    - broker
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: broker.us-east-1
+      database: BROKER
+      schema: PRICE
+      object: DIM_FEE_ARRANGEMENT
+      format: table
+  grain:
+    description: One row is one fee arrangement.
+    components:
+    - identity_id: dim_fee_arrangement_identity
+      dataset_columns:
+      - fee_arrangement_id
+      description: Identifier of the fee arrangement.
+  columns:
+  - name: fee_arrangement_id
+    description: Identifier of the fee arrangement.
+  - name: fee_arrangement_code
+    description: Fee Arrangement code.
+    value_description: retainer, success_fee, spread, commission, management_fee, performance_fee
+  - name: fee_arrangement_name
+    description: Fee Arrangement name.
+  entity_definitions:
+  - identity_id: dim_fee_arrangement_identity
+    dataset_columns:
+    - fee_arrangement_id
+    entity_universe: complete
+- node_id: sf:broker.price.dim_currency
+  descriptor:
+    qualified_name: broker.price.dim_currency
+    display_name: Currency
+    description: Currency of a reported amount.
+    synonyms: []
+    tags:
+    - dim
+    - price
+    - broker
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: broker.us-east-1
+      database: BROKER
+      schema: PRICE
+      object: DIM_CURRENCY
+      format: table
+  grain:
+    description: One row is one currency.
+    components:
+    - identity_id: dim_currency_identity
+      dataset_columns:
+      - currency_id
+      description: Identifier of the currency.
+  columns:
+  - name: currency_id
+    description: Identifier of the currency.
+  - name: currency_code
+    description: Currency code.
+    value_description: usd, eur, gbp, jpy, aud
+  - name: currency_name
+    description: Currency name.
+  entity_definitions:
+  - identity_id: dim_currency_identity
+    dataset_columns:
+    - currency_id
+    entity_universe: complete
+- node_id: sf:broker.price.fact_advisory_revenue
+  descriptor:
+    qualified_name: broker.price.fact_advisory_revenue
+    display_name: Advisory Revenue
+    description: Advisory fees earned. Stores fees in dollars. Stores no deal count.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - broker
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: broker.us-east-1
+      database: BROKER
+      schema: PRICE
+      object: FACT_ADVISORY_REVENUE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, deal type, advisory sector, geography, fee arrangement.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_deal_type_identity
+      dataset_columns:
+      - deal_type_id
+      description: Identifier of the deal type.
+    - identity_id: dim_advisory_sector_identity
+      dataset_columns:
+      - advisory_sector_id
+      description: Identifier of the advisory sector.
+    - identity_id: dim_geography_identity
+      dataset_columns:
+      - geography_id
+      description: Identifier of the geography.
+    - identity_id: dim_fee_arrangement_identity
+      dataset_columns:
+      - fee_arrangement_id
+      description: Identifier of the fee arrangement.
+  columns:
+  - name: advisory_revenue_record_id
+    description: Surrogate record identifier for this advisory revenue row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: deal_type_id
+    description: Identifier of the related deal type.
+  - name: advisory_sector_id
+    description: Identifier of the related advisory sector.
+  - name: geography_id
+    description: Identifier of the related geography.
+  - name: fee_arrangement_id
+    description: Identifier of the related fee arrangement.
+  - name: advisory_fee_amount
+    description: Advisory fees in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_deal_type_identity
+    dataset_columns:
+    - deal_type_id
+    entity_universe: partial
+  - identity_id: dim_advisory_sector_identity
+    dataset_columns:
+    - advisory_sector_id
+    entity_universe: partial
+  - identity_id: dim_geography_identity
+    dataset_columns:
+    - geography_id
+    entity_universe: partial
+  - identity_id: dim_fee_arrangement_identity
+    dataset_columns:
+    - fee_arrangement_id
+    entity_universe: partial
+- node_id: sf:broker.price.fact_underwriting_revenue
+  descriptor:
+    qualified_name: broker.price.fact_underwriting_revenue
+    display_name: Underwriting Revenue
+    description: Underwriting fees earned. Stores fees in dollars. Stores no issued principal.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - broker
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: broker.us-east-1
+      database: BROKER
+      schema: PRICE
+      object: FACT_UNDERWRITING_REVENUE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, issuance type, advisory sector, geography.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_issuance_type_identity
+      dataset_columns:
+      - issuance_type_id
+      description: Identifier of the issuance type.
+    - identity_id: dim_advisory_sector_identity
+      dataset_columns:
+      - advisory_sector_id
+      description: Identifier of the advisory sector.
+    - identity_id: dim_geography_identity
+      dataset_columns:
+      - geography_id
+      description: Identifier of the geography.
+  columns:
+  - name: underwriting_revenue_record_id
+    description: Surrogate record identifier for this underwriting revenue row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: issuance_type_id
+    description: Identifier of the related issuance type.
+  - name: advisory_sector_id
+    description: Identifier of the related advisory sector.
+  - name: geography_id
+    description: Identifier of the related geography.
+  - name: underwriting_fee_amount
+    description: Underwriting fees in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_issuance_type_identity
+    dataset_columns:
+    - issuance_type_id
+    entity_universe: partial
+  - identity_id: dim_advisory_sector_identity
+    dataset_columns:
+    - advisory_sector_id
+    entity_universe: partial
+  - identity_id: dim_geography_identity
+    dataset_columns:
+    - geography_id
+    entity_universe: partial
+- node_id: sf:broker.price.fact_ficc_revenue
+  descriptor:
+    qualified_name: broker.price.fact_ficc_revenue
+    display_name: FICC Revenue
+    description: FICC intermediation and financing revenue. Stores revenue in dollars. Stores no trade count.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - broker
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: broker.us-east-1
+      database: BROKER
+      schema: PRICE
+      object: FACT_FICC_REVENUE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, product desk, trading activity, geography.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_product_desk_identity
+      dataset_columns:
+      - product_desk_id
+      description: Identifier of the product desk.
+    - identity_id: dim_trading_activity_identity
+      dataset_columns:
+      - trading_activity_id
+      description: Identifier of the trading activity.
+    - identity_id: dim_geography_identity
+      dataset_columns:
+      - geography_id
+      description: Identifier of the geography.
+  columns:
+  - name: ficc_revenue_record_id
+    description: Surrogate record identifier for this ficc revenue row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: product_desk_id
+    description: Identifier of the related product desk.
+  - name: trading_activity_id
+    description: Identifier of the related trading activity.
+  - name: geography_id
+    description: Identifier of the related geography.
+  - name: ficc_revenue_amount
+    description: FICC revenue in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_product_desk_identity
+    dataset_columns:
+    - product_desk_id
+    entity_universe: partial
+  - identity_id: dim_trading_activity_identity
+    dataset_columns:
+    - trading_activity_id
+    entity_universe: partial
+  - identity_id: dim_geography_identity
+    dataset_columns:
+    - geography_id
+    entity_universe: partial
+- node_id: sf:broker.price.fact_equities_revenue
+  descriptor:
+    qualified_name: broker.price.fact_equities_revenue
+    display_name: Equities Revenue
+    description: Equities intermediation and financing revenue. Stores revenue in dollars. Stores no share volume.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - broker
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: broker.us-east-1
+      database: BROKER
+      schema: PRICE
+      object: FACT_EQUITIES_REVENUE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, product desk, trading activity, geography, client
+      type.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_product_desk_identity
+      dataset_columns:
+      - product_desk_id
+      description: Identifier of the product desk.
+    - identity_id: dim_trading_activity_identity
+      dataset_columns:
+      - trading_activity_id
+      description: Identifier of the trading activity.
+    - identity_id: dim_geography_identity
+      dataset_columns:
+      - geography_id
+      description: Identifier of the geography.
+    - identity_id: dim_client_type_identity
+      dataset_columns:
+      - client_type_id
+      description: Identifier of the client type.
+  columns:
+  - name: equities_revenue_record_id
+    description: Surrogate record identifier for this equities revenue row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: product_desk_id
+    description: Identifier of the related product desk.
+  - name: trading_activity_id
+    description: Identifier of the related trading activity.
+  - name: geography_id
+    description: Identifier of the related geography.
+  - name: client_type_id
+    description: Identifier of the related client type.
+  - name: equities_revenue_amount
+    description: Equities revenue in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_product_desk_identity
+    dataset_columns:
+    - product_desk_id
+    entity_universe: partial
+  - identity_id: dim_trading_activity_identity
+    dataset_columns:
+    - trading_activity_id
+    entity_universe: partial
+  - identity_id: dim_geography_identity
+    dataset_columns:
+    - geography_id
+    entity_universe: partial
+  - identity_id: dim_client_type_identity
+    dataset_columns:
+    - client_type_id
+    entity_universe: partial
+- node_id: sf:broker.price.fact_financing_revenue
+  descriptor:
+    qualified_name: broker.price.fact_financing_revenue
+    display_name: Financing Revenue
+    description: Financing revenue and spread by loan type. Stores revenue in dollars and spread in basis points. Stores no
+      loan balance.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - broker
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: broker.us-east-1
+      database: BROKER
+      schema: PRICE
+      object: FACT_FINANCING_REVENUE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, loan type, client type.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_loan_type_identity
+      dataset_columns:
+      - loan_type_id
+      description: Identifier of the loan type.
+    - identity_id: dim_client_type_identity
+      dataset_columns:
+      - client_type_id
+      description: Identifier of the client type.
+  columns:
+  - name: financing_revenue_record_id
+    description: Surrogate record identifier for this financing revenue row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: loan_type_id
+    description: Identifier of the related loan type.
+  - name: client_type_id
+    description: Identifier of the related client type.
+  - name: financing_revenue_amount
+    description: Financing revenue in dollars.
+  - name: financing_spread_basis_points
+    description: Financing spread in basis points.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_loan_type_identity
+    dataset_columns:
+    - loan_type_id
+    entity_universe: partial
+  - identity_id: dim_client_type_identity
+    dataset_columns:
+    - client_type_id
+    entity_universe: partial
+- node_id: sf:broker.price.fact_wealth_revenue
+  descriptor:
+    qualified_name: broker.price.fact_wealth_revenue
+    display_name: Wealth Revenue
+    description: Wealth fees and net interest income by channel. Stores revenue in dollars. Stores no asset flow.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - broker
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: broker.us-east-1
+      database: BROKER
+      schema: PRICE
+      object: FACT_WEALTH_REVENUE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, wealth channel, asset class.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_wealth_channel_identity
+      dataset_columns:
+      - wealth_channel_id
+      description: Identifier of the wealth channel.
+    - identity_id: dim_asset_class_identity
+      dataset_columns:
+      - asset_class_id
+      description: Identifier of the asset class.
+  columns:
+  - name: wealth_revenue_record_id
+    description: Surrogate record identifier for this wealth revenue row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: wealth_channel_id
+    description: Identifier of the related wealth channel.
+  - name: asset_class_id
+    description: Identifier of the related asset class.
+  - name: wealth_fee_amount
+    description: Wealth fees in dollars.
+  - name: wealth_net_interest_income_amount
+    description: Wealth net interest income in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_wealth_channel_identity
+    dataset_columns:
+    - wealth_channel_id
+    entity_universe: partial
+  - identity_id: dim_asset_class_identity
+    dataset_columns:
+    - asset_class_id
+    entity_universe: partial
+- node_id: sf:broker.price.fact_asset_management_revenue
+  descriptor:
+    qualified_name: broker.price.fact_asset_management_revenue
+    display_name: Asset Management Revenue
+    description: Management and performance fees by asset class. Stores fees in dollars. Stores no assets under management
+      quantity.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - broker
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: broker.us-east-1
+      database: BROKER
+      schema: PRICE
+      object: FACT_ASSET_MANAGEMENT_REVENUE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, asset class, fee arrangement.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_asset_class_identity
+      dataset_columns:
+      - asset_class_id
+      description: Identifier of the asset class.
+    - identity_id: dim_fee_arrangement_identity
+      dataset_columns:
+      - fee_arrangement_id
+      description: Identifier of the fee arrangement.
+  columns:
+  - name: asset_management_revenue_record_id
+    description: Surrogate record identifier for this asset management revenue row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: asset_class_id
+    description: Identifier of the related asset class.
+  - name: fee_arrangement_id
+    description: Identifier of the related fee arrangement.
+  - name: management_fee_amount
+    description: Management fees in dollars.
+  - name: performance_fee_amount
+    description: Performance fees in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_asset_class_identity
+    dataset_columns:
+    - asset_class_id
+    entity_universe: partial
+  - identity_id: dim_fee_arrangement_identity
+    dataset_columns:
+    - fee_arrangement_id
+    entity_universe: partial
+- node_id: sf:broker.price.fact_attached_revenue
+  descriptor:
+    qualified_name: broker.price.fact_attached_revenue
+    display_name: Attached Revenue
+    description: Financing, risk-management and execution revenue attached to advisory mandates. Stores revenue in dollars.
+      Stores no deal count.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - broker
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: broker.us-east-1
+      database: BROKER
+      schema: PRICE
+      object: FACT_ATTACHED_REVENUE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, deal type, revenue line.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_deal_type_identity
+      dataset_columns:
+      - deal_type_id
+      description: Identifier of the deal type.
+    - identity_id: dim_revenue_line_identity
+      dataset_columns:
+      - revenue_line_id
+      description: Identifier of the revenue line.
+  columns:
+  - name: attached_revenue_record_id
+    description: Surrogate record identifier for this attached revenue row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: deal_type_id
+    description: Identifier of the related deal type.
+  - name: revenue_line_id
+    description: Identifier of the related revenue line.
+  - name: attached_revenue_amount
+    description: Attached revenue following an advisory mandate in dollars.
+  - name: advisory_fee_amount
+    description: Advisory fees for the same mandates in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_deal_type_identity
+    dataset_columns:
+    - deal_type_id
+    entity_universe: partial
+  - identity_id: dim_revenue_line_identity
+    dataset_columns:
+    - revenue_line_id
+    entity_universe: partial
+- node_id: sf:broker.price.fact_enterprise_results
+  descriptor:
+    qualified_name: broker.price.fact_enterprise_results
+    display_name: Enterprise Results
+    description: Enterprise and reporting-unit results. Stores revenue, income and earnings in dollars. Grained only at fiscal
+      quarter, scenario and reporting unit.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - broker
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: broker.us-east-1
+      database: BROKER
+      schema: PRICE
+      object: FACT_ENTERPRISE_RESULTS
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, reporting unit.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_reporting_unit_identity
+      dataset_columns:
+      - reporting_unit_id
+      description: Identifier of the reporting unit.
+  columns:
+  - name: enterprise_results_record_id
+    description: Surrogate record identifier for this enterprise results row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: reporting_unit_id
+    description: Identifier of the related reporting unit.
+  - name: total_revenue_amount
+    description: Total revenue in dollars.
+  - name: operating_income_amount
+    description: Operating income in dollars.
+  - name: net_income_amount
+    description: Net income in dollars.
+  - name: diluted_earnings_per_share
+    description: Diluted earnings per share in dollars per share.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_reporting_unit_identity
+    dataset_columns:
+    - reporting_unit_id
+    entity_universe: partial
+- node_id: sf:broker.price.fact_operating_expense
+  descriptor:
+    qualified_name: broker.price.fact_operating_expense
+    display_name: Operating Expense
+    description: Operating expense by cost bucket and reporting unit. Stores expense in dollars. Stores no headcount.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - broker
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: broker.us-east-1
+      database: BROKER
+      schema: PRICE
+      object: FACT_OPERATING_EXPENSE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, cost bucket, reporting unit.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_cost_bucket_identity
+      dataset_columns:
+      - cost_bucket_id
+      description: Identifier of the cost bucket.
+    - identity_id: dim_reporting_unit_identity
+      dataset_columns:
+      - reporting_unit_id
+      description: Identifier of the reporting unit.
+  columns:
+  - name: operating_expense_record_id
+    description: Surrogate record identifier for this operating expense row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: cost_bucket_id
+    description: Identifier of the related cost bucket.
+  - name: reporting_unit_id
+    description: Identifier of the related reporting unit.
+  - name: operating_expense_amount
+    description: Operating expense in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_cost_bucket_identity
+    dataset_columns:
+    - cost_bucket_id
+    entity_universe: partial
+  - identity_id: dim_reporting_unit_identity
+    dataset_columns:
+    - reporting_unit_id
+    entity_universe: partial
+- node_id: sf:broker.price.fact_efficiency
+  descriptor:
+    qualified_name: broker.price.fact_efficiency
+    display_name: Efficiency
+    description: Efficiency and compensation ratios by reporting unit. Stores ratios in percent. Stores no revenue or expense
+      quantity.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - broker
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: broker.us-east-1
+      database: BROKER
+      schema: PRICE
+      object: FACT_EFFICIENCY
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, reporting unit.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_reporting_unit_identity
+      dataset_columns:
+      - reporting_unit_id
+      description: Identifier of the reporting unit.
+  columns:
+  - name: efficiency_record_id
+    description: Surrogate record identifier for this efficiency row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: reporting_unit_id
+    description: Identifier of the related reporting unit.
+  - name: efficiency_ratio_percent
+    description: Efficiency ratio in percent.
+  - name: compensation_ratio_percent
+    description: Compensation ratio in percent.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_reporting_unit_identity
+    dataset_columns:
+    - reporting_unit_id
+    entity_universe: partial
+- node_id: sf:broker.price.fact_capital_return
+  descriptor:
+    qualified_name: broker.price.fact_capital_return
+    display_name: Capital Return
+    description: Return on capital by reporting unit. Stores return in percent. The capital denominator is on the capital
+      capacity fact at the same grain.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - broker
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: broker.us-east-1
+      database: BROKER
+      schema: PRICE
+      object: FACT_CAPITAL_RETURN
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, reporting unit, capital instrument.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_reporting_unit_identity
+      dataset_columns:
+      - reporting_unit_id
+      description: Identifier of the reporting unit.
+    - identity_id: dim_capital_instrument_identity
+      dataset_columns:
+      - capital_instrument_id
+      description: Identifier of the capital instrument.
+  columns:
+  - name: capital_return_record_id
+    description: Surrogate record identifier for this capital return row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: reporting_unit_id
+    description: Identifier of the related reporting unit.
+  - name: capital_instrument_id
+    description: Identifier of the related capital instrument.
+  - name: return_on_equity_percent
+    description: Return on equity in percent.
+  - name: return_on_tangible_equity_percent
+    description: Return on tangible common equity in percent.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_reporting_unit_identity
+    dataset_columns:
+    - reporting_unit_id
+    entity_universe: partial
+  - identity_id: dim_capital_instrument_identity
+    dataset_columns:
+    - capital_instrument_id
+    entity_universe: partial
+- node_id: sf:broker.price.fact_wallet_share
+  descriptor:
+    qualified_name: broker.price.fact_wallet_share
+    display_name: Wallet Share
+    description: Equities and FICC wallet share by desk and geography. Stores share in percent and revenue in dollars. Market
+      volume is on the market activity facts.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - broker
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: broker.us-east-1
+      database: BROKER
+      schema: PRICE
+      object: FACT_WALLET_SHARE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, product desk, geography.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_product_desk_identity
+      dataset_columns:
+      - product_desk_id
+      description: Identifier of the product desk.
+    - identity_id: dim_geography_identity
+      dataset_columns:
+      - geography_id
+      description: Identifier of the geography.
+  columns:
+  - name: wallet_share_record_id
+    description: Surrogate record identifier for this wallet share row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: product_desk_id
+    description: Identifier of the related product desk.
+  - name: geography_id
+    description: Identifier of the related geography.
+  - name: wallet_share_percent
+    description: Wallet share in percent.
+  - name: desk_revenue_amount
+    description: Desk revenue in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_product_desk_identity
+    dataset_columns:
+    - product_desk_id
+    entity_universe: partial
+  - identity_id: dim_geography_identity
+    dataset_columns:
+    - geography_id
+    entity_universe: partial
+- node_id: sf:broker.price.fact_provision_expense
+  descriptor:
+    qualified_name: broker.price.fact_provision_expense
+    display_name: Provision Expense
+    description: Credit provisions and charge-offs by credit quality. Stores amounts in dollars. Stores no exposure quantity.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - broker
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: broker.us-east-1
+      database: BROKER
+      schema: PRICE
+      object: FACT_PROVISION_EXPENSE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, credit quality, counterparty type.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_credit_quality_identity
+      dataset_columns:
+      - credit_quality_id
+      description: Identifier of the credit quality.
+    - identity_id: dim_counterparty_type_identity
+      dataset_columns:
+      - counterparty_type_id
+      description: Identifier of the counterparty type.
+  columns:
+  - name: provision_expense_record_id
+    description: Surrogate record identifier for this provision expense row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: credit_quality_id
+    description: Identifier of the related credit quality.
+  - name: counterparty_type_id
+    description: Identifier of the related counterparty type.
+  - name: provision_amount
+    description: Provision for credit losses in dollars.
+  - name: net_charge_off_amount
+    description: Net charge-offs in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_credit_quality_identity
+    dataset_columns:
+    - credit_quality_id
+    entity_universe: partial
+  - identity_id: dim_counterparty_type_identity
+    dataset_columns:
+    - counterparty_type_id
+    entity_universe: partial
+- node_id: sf:broker.price.fact_deposit_margin
+  descriptor:
+    qualified_name: broker.price.fact_deposit_margin
+    display_name: Deposit Margin
+    description: Net interest income and rate earned on deposits by type. Stores income in dollars and rate in percent. Deposit
+      balances are on the deposit base fact.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - broker
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: broker.us-east-1
+      database: BROKER
+      schema: PRICE
+      object: FACT_DEPOSIT_MARGIN
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, deposit type, wealth channel.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_deposit_type_identity
+      dataset_columns:
+      - deposit_type_id
+      description: Identifier of the deposit type.
+    - identity_id: dim_wealth_channel_identity
+      dataset_columns:
+      - wealth_channel_id
+      description: Identifier of the wealth channel.
+  columns:
+  - name: deposit_margin_record_id
+    description: Surrogate record identifier for this deposit margin row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: deposit_type_id
+    description: Identifier of the related deposit type.
+  - name: wealth_channel_id
+    description: Identifier of the related wealth channel.
+  - name: deposit_net_interest_income_amount
+    description: Deposit net interest income in dollars.
+  - name: average_deposit_rate_percent
+    description: Average rate paid on deposits in percent.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_deposit_type_identity
+    dataset_columns:
+    - deposit_type_id
+    entity_universe: partial
+  - identity_id: dim_wealth_channel_identity
+    dataset_columns:
+    - wealth_channel_id
+    entity_universe: partial
+- node_id: sf:broker.price.fact_sweep_margin
+  descriptor:
+    qualified_name: broker.price.fact_sweep_margin
+    display_name: Sweep Margin
+    description: Spread earned on client cash sweeps by wealth channel. Stores income in dollars and spread in percent. Cash
+      balances are on the deposit base fact.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - broker
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: broker.us-east-1
+      database: BROKER
+      schema: PRICE
+      object: FACT_SWEEP_MARGIN
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, wealth channel.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_wealth_channel_identity
+      dataset_columns:
+      - wealth_channel_id
+      description: Identifier of the wealth channel.
+  columns:
+  - name: sweep_margin_record_id
+    description: Surrogate record identifier for this sweep margin row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: wealth_channel_id
+    description: Identifier of the related wealth channel.
+  - name: sweep_net_interest_income_amount
+    description: Sweep net interest income in dollars.
+  - name: sweep_spread_percent
+    description: Sweep spread in percent.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_wealth_channel_identity
+    dataset_columns:
+    - wealth_channel_id
+    entity_universe: partial
+- node_id: sf:broker.price.fact_technology_investment
+  descriptor:
+    qualified_name: broker.price.fact_technology_investment
+    display_name: Technology Investment
+    description: Technology investment spend by program and unit. Stores spend in dollars. Stores no engineer count.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - broker
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: broker.us-east-1
+      database: BROKER
+      schema: PRICE
+      object: FACT_TECHNOLOGY_INVESTMENT
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, technology program, reporting unit.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_technology_program_identity
+      dataset_columns:
+      - technology_program_id
+      description: Identifier of the technology program.
+    - identity_id: dim_reporting_unit_identity
+      dataset_columns:
+      - reporting_unit_id
+      description: Identifier of the reporting unit.
+  columns:
+  - name: technology_investment_record_id
+    description: Surrogate record identifier for this technology investment row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: technology_program_id
+    description: Identifier of the related technology program.
+  - name: reporting_unit_id
+    description: Identifier of the related reporting unit.
+  - name: technology_investment_amount
+    description: Technology investment in dollars.
+  - name: productivity_saving_amount
+    description: Productivity savings realized in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_technology_program_identity
+    dataset_columns:
+    - technology_program_id
+    entity_universe: partial
+  - identity_id: dim_reporting_unit_identity
+    dataset_columns:
+    - reporting_unit_id
+    entity_universe: partial
+- node_id: sf:broker.price.fact_principal_investment
+  descriptor:
+    qualified_name: broker.price.fact_principal_investment
+    display_name: Principal Investment
+    description: Principal investment gains by asset class. Stores gains in dollars. Stores no invested asset quantity.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - broker
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: broker.us-east-1
+      database: BROKER
+      schema: PRICE
+      object: FACT_PRINCIPAL_INVESTMENT
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, asset class, geography.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_asset_class_identity
+      dataset_columns:
+      - asset_class_id
+      description: Identifier of the asset class.
+    - identity_id: dim_geography_identity
+      dataset_columns:
+      - geography_id
+      description: Identifier of the geography.
+  columns:
+  - name: principal_investment_record_id
+    description: Surrogate record identifier for this principal investment row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: asset_class_id
+    description: Identifier of the related asset class.
+  - name: geography_id
+    description: Identifier of the related geography.
+  - name: principal_investment_gain_amount
+    description: Principal investment gains in dollars.
+  - name: monetized_gain_amount
+    description: Gains monetized in the period in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_asset_class_identity
+    dataset_columns:
+    - asset_class_id
+    entity_universe: partial
+  - identity_id: dim_geography_identity
+    dataset_columns:
+    - geography_id
+    entity_universe: partial
+- node_id: sf:broker.price.fact_revenue_per_employee
+  descriptor:
+    qualified_name: broker.price.fact_revenue_per_employee
+    display_name: Revenue Per Employee
+    description: Revenue productivity at the enterprise grain. Stores revenue per employee in dollars per employee. Headcount
+      is on the workforce capacity fact.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - broker
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: broker.us-east-1
+      database: BROKER
+      schema: PRICE
+      object: FACT_REVENUE_PER_EMPLOYEE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, reporting unit.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_reporting_unit_identity
+      dataset_columns:
+      - reporting_unit_id
+      description: Identifier of the reporting unit.
+  columns:
+  - name: revenue_per_employee_record_id
+    description: Surrogate record identifier for this revenue per employee row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: reporting_unit_id
+    description: Identifier of the related reporting unit.
+  - name: revenue_per_employee_amount
+    description: Revenue per employee in dollars per employee.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_reporting_unit_identity
+    dataset_columns:
+    - reporting_unit_id
+    entity_universe: partial
+- node_id: sf:broker.price.fact_markets_revenue_mix
+  descriptor:
+    qualified_name: broker.price.fact_markets_revenue_mix
+    display_name: Markets Revenue Mix
+    description: Markets revenue by desk and trading activity. Stores revenue in dollars. Stores no trade count.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - broker
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: broker.us-east-1
+      database: BROKER
+      schema: PRICE
+      object: FACT_MARKETS_REVENUE_MIX
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, product desk, trading activity, revenue line.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_product_desk_identity
+      dataset_columns:
+      - product_desk_id
+      description: Identifier of the product desk.
+    - identity_id: dim_trading_activity_identity
+      dataset_columns:
+      - trading_activity_id
+      description: Identifier of the trading activity.
+    - identity_id: dim_revenue_line_identity
+      dataset_columns:
+      - revenue_line_id
+      description: Identifier of the revenue line.
+  columns:
+  - name: markets_revenue_mix_record_id
+    description: Surrogate record identifier for this markets revenue mix row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: product_desk_id
+    description: Identifier of the related product desk.
+  - name: trading_activity_id
+    description: Identifier of the related trading activity.
+  - name: revenue_line_id
+    description: Identifier of the related revenue line.
+  - name: markets_revenue_amount
+    description: Markets revenue in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_product_desk_identity
+    dataset_columns:
+    - product_desk_id
+    entity_universe: partial
+  - identity_id: dim_trading_activity_identity
+    dataset_columns:
+    - trading_activity_id
+    entity_universe: partial
+  - identity_id: dim_revenue_line_identity
+    dataset_columns:
+    - revenue_line_id
+    entity_universe: partial

@@ -1,0 +1,636 @@
+schema_version: '3'
+nodes:
+- node_id: sf:platform.supply.dim_data_center_region
+  descriptor:
+    qualified_name: platform.supply.dim_data_center_region
+    display_name: Data Center Region
+    description: Data center region.
+    synonyms: []
+    tags:
+    - dimension
+    - supply
+    - platform
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: platform.us-west-1
+      database: PLATFORM
+      schema: SUPPLY
+      object: DIM_DATA_CENTER_REGION
+      format: table
+  grain:
+    description: One row is one data center region.
+    components:
+    - identity_id: dim_data_center_region_identity
+      dataset_columns:
+      - data_center_region_id
+      description: Identifier of the data center region.
+  columns:
+  - name: data_center_region_id
+    description: Identifier of the data center region.
+  - name: data_center_region_code
+    description: Data Center Region code.
+    value_description: north_america, europe, asia_pacific, middle_east
+  - name: data_center_region_name
+    description: Data Center Region name.
+  entity_definitions:
+  - identity_id: dim_data_center_region_identity
+    dataset_columns:
+    - data_center_region_id
+    entity_universe: complete
+- node_id: sf:platform.supply.dim_component_type
+  descriptor:
+    qualified_name: platform.supply.dim_component_type
+    display_name: Component Type
+    description: Hardware component type for cloud capacity.
+    synonyms: []
+    tags:
+    - dimension
+    - supply
+    - platform
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: platform.us-west-1
+      database: PLATFORM
+      schema: SUPPLY
+      object: DIM_COMPONENT_TYPE
+      format: table
+  grain:
+    description: One row is one component type.
+    components:
+    - identity_id: dim_component_type_identity
+      dataset_columns:
+      - component_type_id
+      description: Identifier of the component type.
+  columns:
+  - name: component_type_id
+    description: Identifier of the component type.
+  - name: component_type_code
+    description: Component Type code.
+    value_description: gpu, cpu, memory, storage_media, networking
+  - name: component_type_name
+    description: Component Type name.
+  entity_definitions:
+  - identity_id: dim_component_type_identity
+    dataset_columns:
+    - component_type_id
+    entity_universe: complete
+- node_id: sf:platform.supply.dim_capacity_type
+  descriptor:
+    qualified_name: platform.supply.dim_capacity_type
+    display_name: Capacity Type
+    description: Capacity type for cloud infrastructure.
+    synonyms: []
+    tags:
+    - dimension
+    - supply
+    - platform
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: platform.us-west-1
+      database: PLATFORM
+      schema: SUPPLY
+      object: DIM_CAPACITY_TYPE
+      format: table
+  grain:
+    description: One row is one capacity type.
+    components:
+    - identity_id: dim_capacity_type_identity
+      dataset_columns:
+      - capacity_type_id
+      description: Identifier of the capacity type.
+  columns:
+  - name: capacity_type_id
+    description: Identifier of the capacity type.
+  - name: capacity_type_code
+    description: Capacity Type code.
+    value_description: owned_data_center, leased_data_center, third_party
+  - name: capacity_type_name
+    description: Capacity Type name.
+  entity_definitions:
+  - identity_id: dim_capacity_type_identity
+    dataset_columns:
+    - capacity_type_id
+    entity_universe: complete
+- node_id: sf:platform.supply.fact_data_center_capacity
+  descriptor:
+    qualified_name: platform.supply.fact_data_center_capacity
+    display_name: Data Center Capacity
+    description: Data center capacity in megawatts.
+    synonyms: []
+    tags:
+    - fact
+    - supply
+    - platform
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: platform.us-west-1
+      database: PLATFORM
+      schema: SUPPLY
+      object: FACT_DATA_CENTER_CAPACITY
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, data center region, capacity type.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_data_center_region_identity
+      dataset_columns:
+      - data_center_region_id
+      description: Identifier of the data center region.
+    - identity_id: dim_capacity_type_identity
+      dataset_columns:
+      - capacity_type_id
+      description: Identifier of the capacity type.
+  columns:
+  - name: data_center_capacity_record_id
+    description: Surrogate record identifier for this data center capacity row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: data_center_region_id
+    description: Identifier of the related data center region.
+  - name: capacity_type_id
+    description: Identifier of the related capacity type.
+  - name: capacity_megawatt_quantity
+    description: Data center capacity in megawatts.
+  - name: available_megawatt_quantity
+    description: Available capacity in megawatts.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_data_center_region_identity
+    dataset_columns:
+    - data_center_region_id
+    entity_universe: partial
+  - identity_id: dim_capacity_type_identity
+    dataset_columns:
+    - capacity_type_id
+    entity_universe: partial
+- node_id: sf:platform.supply.fact_compute_capacity
+  descriptor:
+    qualified_name: platform.supply.fact_compute_capacity
+    display_name: Compute Capacity
+    description: Compute capacity in server units or GPU units.
+    synonyms: []
+    tags:
+    - fact
+    - supply
+    - platform
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: platform.us-west-1
+      database: PLATFORM
+      schema: SUPPLY
+      object: FACT_COMPUTE_CAPACITY
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, component type, data center region.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_component_type_identity
+      dataset_columns:
+      - component_type_id
+      description: Identifier of the component type.
+    - identity_id: dim_data_center_region_identity
+      dataset_columns:
+      - data_center_region_id
+      description: Identifier of the data center region.
+  columns:
+  - name: compute_capacity_record_id
+    description: Surrogate record identifier for this compute capacity row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: component_type_id
+    description: Identifier of the related component type.
+  - name: data_center_region_id
+    description: Identifier of the related data center region.
+  - name: server_unit_quantity
+    description: Compute capacity in server units.
+  - name: gpu_unit_quantity
+    description: Compute capacity in GPU units.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_component_type_identity
+    dataset_columns:
+    - component_type_id
+    entity_universe: partial
+  - identity_id: dim_data_center_region_identity
+    dataset_columns:
+    - data_center_region_id
+    entity_universe: partial
+- node_id: sf:platform.supply.fact_cloud_utilization
+  descriptor:
+    qualified_name: platform.supply.fact_cloud_utilization
+    display_name: Cloud Utilization
+    description: Cloud utilization rate in percent; denominator capacity is on the data center capacity fact at the same grain.
+    synonyms: []
+    tags:
+    - fact
+    - supply
+    - platform
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: platform.us-west-1
+      database: PLATFORM
+      schema: SUPPLY
+      object: FACT_CLOUD_UTILIZATION
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, data center region, capacity type.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_data_center_region_identity
+      dataset_columns:
+      - data_center_region_id
+      description: Identifier of the data center region.
+    - identity_id: dim_capacity_type_identity
+      dataset_columns:
+      - capacity_type_id
+      description: Identifier of the capacity type.
+  columns:
+  - name: cloud_utilization_record_id
+    description: Surrogate record identifier for this cloud utilization row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: data_center_region_id
+    description: Identifier of the related data center region.
+  - name: capacity_type_id
+    description: Identifier of the related capacity type.
+  - name: utilization_percent
+    description: Utilization rate in percent.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_data_center_region_identity
+    dataset_columns:
+    - data_center_region_id
+    entity_universe: partial
+  - identity_id: dim_capacity_type_identity
+    dataset_columns:
+    - capacity_type_id
+    entity_universe: partial
+- node_id: sf:platform.supply.fact_headcount_sw
+  descriptor:
+    qualified_name: platform.supply.fact_headcount_sw
+    display_name: Headcount
+    description: Workforce quantity in employees by reporting unit.
+    synonyms: []
+    tags:
+    - fact
+    - supply
+    - platform
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: platform.us-west-1
+      database: PLATFORM
+      schema: SUPPLY
+      object: FACT_HEADCOUNT_SW
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, reporting unit.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_reporting_unit_identity
+      dataset_columns:
+      - reporting_unit_id
+      description: Identifier of the reporting unit.
+  columns:
+  - name: headcount_sw_record_id
+    description: Surrogate record identifier for this headcount row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: reporting_unit_id
+    description: Identifier of the related reporting unit.
+  - name: employee_quantity
+    description: Workforce quantity in employees.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_reporting_unit_identity
+    dataset_columns:
+    - reporting_unit_id
+    entity_universe: partial
+- node_id: sf:platform.supply.fact_support_capacity
+  descriptor:
+    qualified_name: platform.supply.fact_support_capacity
+    display_name: Support Capacity
+    description: Support capacity in support cases handled per quarter is a quantity in cases.
+    synonyms: []
+    tags:
+    - fact
+    - supply
+    - platform
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: platform.us-west-1
+      database: PLATFORM
+      schema: SUPPLY
+      object: FACT_SUPPORT_CAPACITY
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, support tier, reporting unit.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_support_tier_identity
+      dataset_columns:
+      - support_tier_id
+      description: Identifier of the support tier.
+    - identity_id: dim_reporting_unit_identity
+      dataset_columns:
+      - reporting_unit_id
+      description: Identifier of the reporting unit.
+  columns:
+  - name: support_capacity_record_id
+    description: Surrogate record identifier for this support capacity row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: support_tier_id
+    description: Identifier of the related support tier.
+  - name: reporting_unit_id
+    description: Identifier of the related reporting unit.
+  - name: support_case_quantity
+    description: Support capacity quantity in cases.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_support_tier_identity
+    dataset_columns:
+    - support_tier_id
+    entity_universe: partial
+  - identity_id: dim_reporting_unit_identity
+    dataset_columns:
+    - reporting_unit_id
+    entity_universe: partial
+- node_id: sf:platform.supply.fact_production_capacity_sw
+  descriptor:
+    qualified_name: platform.supply.fact_production_capacity_sw
+    display_name: Platform Release Capacity
+    description: Platform release capacity in releases per quarter.
+    synonyms: []
+    tags:
+    - fact
+    - supply
+    - platform
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: platform.us-west-1
+      database: PLATFORM
+      schema: SUPPLY
+      object: FACT_PRODUCTION_CAPACITY_SW
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, servicenow product.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_now_product_identity
+      dataset_columns:
+      - now_product_id
+      description: Identifier of the servicenow product.
+  columns:
+  - name: production_capacity_sw_record_id
+    description: Surrogate record identifier for this platform release capacity row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: now_product_id
+    description: Identifier of the related servicenow product.
+  - name: release_quantity
+    description: Release capacity in releases per quarter.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_now_product_identity
+    dataset_columns:
+    - now_product_id
+    entity_universe: partial
+- node_id: sf:platform.supply.fact_partner_capacity
+  descriptor:
+    qualified_name: platform.supply.fact_partner_capacity
+    display_name: Partner Capacity
+    description: Partner capacity quantity in certified partners.
+    synonyms: []
+    tags:
+    - fact
+    - supply
+    - platform
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: platform.us-west-1
+      database: PLATFORM
+      schema: SUPPLY
+      object: FACT_PARTNER_CAPACITY
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, partner type, region.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_partner_type_identity
+      dataset_columns:
+      - partner_type_id
+      description: Identifier of the partner type.
+    - identity_id: dim_region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+  columns:
+  - name: partner_capacity_record_id
+    description: Surrogate record identifier for this partner capacity row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: partner_type_id
+    description: Identifier of the related partner type.
+  - name: region_id
+    description: Identifier of the related region.
+  - name: partner_quantity
+    description: Partner capacity quantity in partners.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_partner_type_identity
+    dataset_columns:
+    - partner_type_id
+    entity_universe: partial
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:platform.supply.fact_lease_capacity
+  descriptor:
+    qualified_name: platform.supply.fact_lease_capacity
+    display_name: Lease Capacity
+    description: Leased capacity quantity in megawatts by capacity type.
+    synonyms: []
+    tags:
+    - fact
+    - supply
+    - platform
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: platform.us-west-1
+      database: PLATFORM
+      schema: SUPPLY
+      object: FACT_LEASE_CAPACITY
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, capacity type, data center region.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_capacity_type_identity
+      dataset_columns:
+      - capacity_type_id
+      description: Identifier of the capacity type.
+    - identity_id: dim_data_center_region_identity
+      dataset_columns:
+      - data_center_region_id
+      description: Identifier of the data center region.
+  columns:
+  - name: lease_capacity_record_id
+    description: Surrogate record identifier for this lease capacity row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: capacity_type_id
+    description: Identifier of the related capacity type.
+  - name: data_center_region_id
+    description: Identifier of the related data center region.
+  - name: leased_megawatt_quantity
+    description: Leased capacity in megawatts.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_capacity_type_identity
+    dataset_columns:
+    - capacity_type_id
+    entity_universe: partial
+  - identity_id: dim_data_center_region_identity
+    dataset_columns:
+    - data_center_region_id
+    entity_universe: partial

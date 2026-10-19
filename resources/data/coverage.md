@@ -12,7 +12,7 @@ Status values: `selected` (pair locked, transcripts not read), `extracting`, `qu
 
 Every pair below is `questions-ready`: four recent calls were read and analyst questions were
 paraphrased into `{slug}/{ticker}/questions.md`. Each industry directory has `references.md`
-naming those companies and calls. Seventeen industries have one schema version 3 warehouse at
+naming those companies and calls. All thirty industries have one schema version 3 warehouse at
 `{slug}/warehouse/`. Design rules for those warehouses are in `model-learnings.md`.
 
 | # | GICS sector | GICS sub-industry | Ticker | Company | Status |
@@ -88,5 +88,11 @@ present, is the single model for that industry: `restaurants/warehouse/` (Burger
 `managed-care/warehouse/` (Health Plan Inc), `soft-drinks/warehouse/` (Beverage Inc),
 `automobile-manufacturers/warehouse/` (Automaker Inc), `rail-transportation/warehouse/` (Railroad Inc),
 `integrated-oil-gas/warehouse/` (Energy Inc), `electric-utilities/warehouse/` (Utility Inc),
-`diversified-banks/warehouse/` (Bank Inc), `merchandise-retail/warehouse/` (Merchandise Inc), and
-`interactive-media/warehouse/` (Social Inc).
+`diversified-banks/warehouse/` (Bank Inc), `merchandise-retail/warehouse/` (Merchandise Inc),
+`interactive-media/warehouse/` (Social Inc), `aerospace-defense/warehouse/` (Defense Inc),
+`systems-software/warehouse/` (Platform Inc), `movies-entertainment/warehouse/` (Studio Inc),
+`payments/warehouse/` (Payments Inc), `investment-banking/warehouse/` (Broker Inc),
+`semiconductor-materials-equipment/warehouse/` (Wafer Tool Inc), `semiconductors/warehouse/` (Chip Inc),
+`pharmaceuticals/warehouse/` (Pharma Inc), `integrated-telecom/warehouse/` (Carrier Inc),
+`home-improvement-retail/warehouse/` (Hardware Store Inc), `broadline-retail/warehouse/` (Broadline Inc),
+`pc-insurance/warehouse/` (Insurance Inc), and `application-software/warehouse/` (App Inc).

@@ -1,0 +1,2022 @@
+schema_version: '3'
+nodes:
+- node_id: sf:carrier.subscribers.dim_fiscal_quarter
+  descriptor:
+    qualified_name: carrier.subscribers.dim_fiscal_quarter
+    display_name: Fiscal Quarter
+    description: Fiscal quarter in which the owner reports results.
+    synonyms: []
+    tags:
+    - dimension
+    - subscribers
+    - carrier
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: carrier.us-east-1
+      database: CARRIER
+      schema: SUBSCRIBERS
+      object: DIM_FISCAL_QUARTER
+      format: table
+  grain:
+    description: One row is one fiscal quarter.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the fiscal quarter.
+  - name: fiscal_quarter_code
+    description: Fiscal Quarter code.
+    value_description: 2024Q3, 2024Q4, 2025Q1, 2025Q2, 2025Q3, 2025Q4, 2026Q1, 2026Q2
+  - name: fiscal_quarter_name
+    description: Fiscal Quarter name.
+  - name: fiscal_year
+    description: Fiscal year number.
+  - name: quarter_number
+    description: Quarter number within the fiscal year.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: complete
+- node_id: sf:carrier.subscribers.dim_scenario
+  descriptor:
+    qualified_name: carrier.subscribers.dim_scenario
+    display_name: Scenario
+    description: Reporting scenario for a row. The same fiscal quarter can be a reported
+      result and a later guide.
+    synonyms: []
+    tags:
+    - dimension
+    - subscribers
+    - carrier
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: carrier.us-east-1
+      database: CARRIER
+      schema: SUBSCRIBERS
+      object: DIM_SCENARIO
+      format: table
+  grain:
+    description: One row is one scenario.
+    components:
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+  columns:
+  - name: scenario_id
+    description: Identifier of the scenario.
+  - name: scenario_code
+    description: Scenario code.
+    value_description: reported, guide
+  - name: scenario_name
+    description: Scenario name.
+  entity_definitions:
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: complete
+- node_id: sf:carrier.subscribers.dim_calendar_month
+  descriptor:
+    qualified_name: carrier.subscribers.dim_calendar_month
+    display_name: Calendar Month
+    description: Calendar month inside a fiscal quarter.
+    synonyms: []
+    tags:
+    - dimension
+    - subscribers
+    - carrier
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: carrier.us-east-1
+      database: CARRIER
+      schema: SUBSCRIBERS
+      object: DIM_CALENDAR_MONTH
+      format: table
+  grain:
+    description: One row is one calendar month.
+    components:
+    - identity_id: dim_calendar_month_identity
+      dataset_columns:
+      - calendar_month_id
+      description: Identifier of the calendar month.
+  columns:
+  - name: calendar_month_id
+    description: Identifier of the calendar month.
+  - name: calendar_month_code
+    description: Calendar Month code.
+    value_description: january, february, march, april, may, june, july, august, september,
+      october, november, december
+  - name: calendar_month_name
+    description: Calendar Month name.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  entity_definitions:
+  - identity_id: dim_calendar_month_identity
+    dataset_columns:
+    - calendar_month_id
+    entity_universe: complete
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+- node_id: sf:carrier.subscribers.dim_service
+  descriptor:
+    qualified_name: carrier.subscribers.dim_service
+    display_name: Service
+    description: Telecom service offered to a customer. Mobility, fiber, fixed wireless
+      and business wireline are different services.
+    synonyms: []
+    tags:
+    - dimension
+    - subscribers
+    - carrier
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: carrier.us-east-1
+      database: CARRIER
+      schema: SUBSCRIBERS
+      object: DIM_SERVICE
+      format: table
+  grain:
+    description: One row is one service.
+    components:
+    - identity_id: dim_service_identity
+      dataset_columns:
+      - service_id
+      description: Identifier of the service.
+  columns:
+  - name: service_id
+    description: Identifier of the service.
+  - name: service_code
+    description: Service code.
+    value_description: mobility, fiber_broadband, fixed_wireless, business_wireline,
+      consumer_wireline, satellite_broadband
+  - name: service_name
+    description: Service name.
+  entity_definitions:
+  - identity_id: dim_service_identity
+    dataset_columns:
+    - service_id
+    entity_universe: complete
+- node_id: sf:carrier.subscribers.dim_customer_segment
+  descriptor:
+    qualified_name: carrier.subscribers.dim_customer_segment
+    display_name: Customer Segment
+    description: Buyer segment for a telecom service.
+    synonyms: []
+    tags:
+    - dimension
+    - subscribers
+    - carrier
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: carrier.us-east-1
+      database: CARRIER
+      schema: SUBSCRIBERS
+      object: DIM_CUSTOMER_SEGMENT
+      format: table
+  grain:
+    description: One row is one customer segment.
+    components:
+    - identity_id: dim_customer_segment_identity
+      dataset_columns:
+      - customer_segment_id
+      description: Identifier of the customer segment.
+  columns:
+  - name: customer_segment_id
+    description: Identifier of the customer segment.
+  - name: customer_segment_code
+    description: Customer Segment code.
+    value_description: consumer, small_business, enterprise, government, wholesale
+  - name: customer_segment_name
+    description: Customer Segment name.
+  entity_definitions:
+  - identity_id: dim_customer_segment_identity
+    dataset_columns:
+    - customer_segment_id
+    entity_universe: complete
+- node_id: sf:carrier.subscribers.dim_att_reporting_segment
+  descriptor:
+    qualified_name: carrier.subscribers.dim_att_reporting_segment
+    display_name: AT&T Reporting Segment
+    description: AT&T reportable segment axis, used only for AT&T segment rows.
+    synonyms: []
+    tags:
+    - dimension
+    - subscribers
+    - carrier
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: carrier.us-east-1
+      database: CARRIER
+      schema: SUBSCRIBERS
+      object: DIM_ATT_REPORTING_SEGMENT
+      format: table
+  grain:
+    description: One row is one at&t reporting segment.
+    components:
+    - identity_id: dim_att_reporting_segment_identity
+      dataset_columns:
+      - att_reporting_segment_id
+      description: Identifier of the at&t reporting segment.
+  columns:
+  - name: att_reporting_segment_id
+    description: Identifier of the at&t reporting segment.
+  - name: att_reporting_segment_code
+    description: AT&T Reporting Segment code.
+    value_description: mobility, business_wireline, consumer_wireline, corporate_and_other
+  - name: att_reporting_segment_name
+    description: AT&T Reporting Segment name.
+  entity_definitions:
+  - identity_id: dim_att_reporting_segment_identity
+    dataset_columns:
+    - att_reporting_segment_id
+    entity_universe: complete
+- node_id: sf:carrier.subscribers.dim_verizon_reporting_segment
+  descriptor:
+    qualified_name: carrier.subscribers.dim_verizon_reporting_segment
+    display_name: Verizon Reporting Segment
+    description: Verizon reportable segment axis, used only for Verizon segment rows.
+    synonyms: []
+    tags:
+    - dimension
+    - subscribers
+    - carrier
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: carrier.us-east-1
+      database: CARRIER
+      schema: SUBSCRIBERS
+      object: DIM_VERIZON_REPORTING_SEGMENT
+      format: table
+  grain:
+    description: One row is one verizon reporting segment.
+    components:
+    - identity_id: dim_verizon_reporting_segment_identity
+      dataset_columns:
+      - verizon_reporting_segment_id
+      description: Identifier of the verizon reporting segment.
+  columns:
+  - name: verizon_reporting_segment_id
+    description: Identifier of the verizon reporting segment.
+  - name: verizon_reporting_segment_code
+    description: Verizon Reporting Segment code.
+    value_description: consumer_group, business_group, corporate_and_other
+  - name: verizon_reporting_segment_name
+    description: Verizon Reporting Segment name.
+  entity_definitions:
+  - identity_id: dim_verizon_reporting_segment_identity
+    dataset_columns:
+    - verizon_reporting_segment_id
+    entity_universe: complete
+- node_id: sf:carrier.subscribers.dim_region
+  descriptor:
+    qualified_name: carrier.subscribers.dim_region
+    display_name: Region
+    description: Geographic region.
+    synonyms: []
+    tags:
+    - dimension
+    - subscribers
+    - carrier
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: carrier.us-east-1
+      database: CARRIER
+      schema: SUBSCRIBERS
+      object: DIM_REGION
+      format: table
+  grain:
+    description: One row is one region.
+    components:
+    - identity_id: dim_region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+  columns:
+  - name: region_id
+    description: Identifier of the region.
+  - name: region_code
+    description: Region code.
+    value_description: northeast, southeast, midwest, south_central, west, national
+  - name: region_name
+    description: Region name.
+  entity_definitions:
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: complete
+- node_id: sf:carrier.subscribers.dim_sales_channel
+  descriptor:
+    qualified_name: carrier.subscribers.dim_sales_channel
+    display_name: Sales Channel
+    description: Channel through which a service is sold.
+    synonyms: []
+    tags:
+    - dimension
+    - subscribers
+    - carrier
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: carrier.us-east-1
+      database: CARRIER
+      schema: SUBSCRIBERS
+      object: DIM_SALES_CHANNEL
+      format: table
+  grain:
+    description: One row is one sales channel.
+    components:
+    - identity_id: dim_sales_channel_identity
+      dataset_columns:
+      - sales_channel_id
+      description: Identifier of the sales channel.
+  columns:
+  - name: sales_channel_id
+    description: Identifier of the sales channel.
+  - name: sales_channel_code
+    description: Sales Channel code.
+    value_description: direct_store, online, call_center, dealer_agent, partner_wholesale
+  - name: sales_channel_name
+    description: Sales Channel name.
+  entity_definitions:
+  - identity_id: dim_sales_channel_identity
+    dataset_columns:
+    - sales_channel_id
+    entity_universe: complete
+- node_id: sf:carrier.subscribers.dim_device_type
+  descriptor:
+    qualified_name: carrier.subscribers.dim_device_type
+    display_name: Device Type
+    description: Customer device type.
+    synonyms: []
+    tags:
+    - dimension
+    - subscribers
+    - carrier
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: carrier.us-east-1
+      database: CARRIER
+      schema: SUBSCRIBERS
+      object: DIM_DEVICE_TYPE
+      format: table
+  grain:
+    description: One row is one device type.
+    components:
+    - identity_id: dim_device_type_identity
+      dataset_columns:
+      - device_type_id
+      description: Identifier of the device type.
+  columns:
+  - name: device_type_id
+    description: Identifier of the device type.
+  - name: device_type_code
+    description: Device Type code.
+    value_description: smartphone, tablet, wearable, connected_device, router_gateway
+  - name: device_type_name
+    description: Device Type name.
+  entity_definitions:
+  - identity_id: dim_device_type_identity
+    dataset_columns:
+    - device_type_id
+    entity_universe: complete
+- node_id: sf:carrier.subscribers.dim_plan_type
+  descriptor:
+    qualified_name: carrier.subscribers.dim_plan_type
+    display_name: Plan Type
+    description: Service plan billing relationship.
+    synonyms: []
+    tags:
+    - dimension
+    - subscribers
+    - carrier
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: carrier.us-east-1
+      database: CARRIER
+      schema: SUBSCRIBERS
+      object: DIM_PLAN_TYPE
+      format: table
+  grain:
+    description: One row is one plan type.
+    components:
+    - identity_id: dim_plan_type_identity
+      dataset_columns:
+      - plan_type_id
+      description: Identifier of the plan type.
+  columns:
+  - name: plan_type_id
+    description: Identifier of the plan type.
+  - name: plan_type_code
+    description: Plan Type code.
+    value_description: postpaid, prepaid, reseller_wholesale
+  - name: plan_type_name
+    description: Plan Type name.
+  entity_definitions:
+  - identity_id: dim_plan_type_identity
+    dataset_columns:
+    - plan_type_id
+    entity_universe: complete
+- node_id: sf:carrier.subscribers.dim_partner_type
+  descriptor:
+    qualified_name: carrier.subscribers.dim_partner_type
+    display_name: Partner Type
+    description: External partner type.
+    synonyms: []
+    tags:
+    - dimension
+    - subscribers
+    - carrier
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: carrier.us-east-1
+      database: CARRIER
+      schema: SUBSCRIBERS
+      object: DIM_PARTNER_TYPE
+      format: table
+  grain:
+    description: One row is one partner type.
+    components:
+    - identity_id: dim_partner_type_identity
+      dataset_columns:
+      - partner_type_id
+      description: Identifier of the partner type.
+  columns:
+  - name: partner_type_id
+    description: Identifier of the partner type.
+  - name: partner_type_code
+    description: Partner Type code.
+    value_description: satellite_partner, mvno_wholesale, roaming_partner, content_partner,
+      enterprise_solution_partner
+  - name: partner_type_name
+    description: Partner Type name.
+  entity_definitions:
+  - identity_id: dim_partner_type_identity
+    dataset_columns:
+    - partner_type_id
+    entity_universe: complete
+- node_id: sf:carrier.subscribers.dim_competitor
+  descriptor:
+    qualified_name: carrier.subscribers.dim_competitor
+    display_name: Competitor
+    description: Competing provider type.
+    synonyms: []
+    tags:
+    - dimension
+    - subscribers
+    - carrier
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: carrier.us-east-1
+      database: CARRIER
+      schema: SUBSCRIBERS
+      object: DIM_COMPETITOR
+      format: table
+  grain:
+    description: One row is one competitor.
+    components:
+    - identity_id: dim_competitor_identity
+      dataset_columns:
+      - competitor_id
+      description: Identifier of the competitor.
+  columns:
+  - name: competitor_id
+    description: Identifier of the competitor.
+  - name: competitor_code
+    description: Competitor code.
+    value_description: national_wireless_rival, cable_operator, regional_carrier,
+      satellite_provider, other_provider
+  - name: competitor_name
+    description: Competitor name.
+  entity_definitions:
+  - identity_id: dim_competitor_identity
+    dataset_columns:
+    - competitor_id
+    entity_universe: complete
+- node_id: sf:carrier.subscribers.dim_promotion_type
+  descriptor:
+    qualified_name: carrier.subscribers.dim_promotion_type
+    display_name: Promotion Type
+    description: Customer promotion mechanism.
+    synonyms: []
+    tags:
+    - dimension
+    - subscribers
+    - carrier
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: carrier.us-east-1
+      database: CARRIER
+      schema: SUBSCRIBERS
+      object: DIM_PROMOTION_TYPE
+      format: table
+  grain:
+    description: One row is one promotion type.
+    components:
+    - identity_id: dim_promotion_type_identity
+      dataset_columns:
+      - promotion_type_id
+      description: Identifier of the promotion type.
+  columns:
+  - name: promotion_type_id
+    description: Identifier of the promotion type.
+  - name: promotion_type_code
+    description: Promotion Type code.
+    value_description: device_subsidy, bill_credit, trade_in, service_discount, bundled_offer
+  - name: promotion_type_name
+    description: Promotion Type name.
+  entity_definitions:
+  - identity_id: dim_promotion_type_identity
+    dataset_columns:
+    - promotion_type_id
+    entity_universe: complete
+- node_id: sf:carrier.subscribers.dim_contract_type
+  descriptor:
+    qualified_name: carrier.subscribers.dim_contract_type
+    display_name: Contract Type
+    description: Customer contract structure.
+    synonyms: []
+    tags:
+    - dimension
+    - subscribers
+    - carrier
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: carrier.us-east-1
+      database: CARRIER
+      schema: SUBSCRIBERS
+      object: DIM_CONTRACT_TYPE
+      format: table
+  grain:
+    description: One row is one contract type.
+    components:
+    - identity_id: dim_contract_type_identity
+      dataset_columns:
+      - contract_type_id
+      description: Identifier of the contract type.
+  columns:
+  - name: contract_type_id
+    description: Identifier of the contract type.
+  - name: contract_type_code
+    description: Contract Type code.
+    value_description: consumer_installment, enterprise_contract, wholesale_agreement,
+      prepaid_no_contract
+  - name: contract_type_name
+    description: Contract Type name.
+  entity_definitions:
+  - identity_id: dim_contract_type_identity
+    dataset_columns:
+    - contract_type_id
+    entity_universe: complete
+- node_id: sf:carrier.subscribers.dim_movement_type
+  descriptor:
+    qualified_name: carrier.subscribers.dim_movement_type
+    display_name: Movement Type
+    description: Direction of a subscriber movement.
+    synonyms: []
+    tags:
+    - dimension
+    - subscribers
+    - carrier
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: carrier.us-east-1
+      database: CARRIER
+      schema: SUBSCRIBERS
+      object: DIM_MOVEMENT_TYPE
+      format: table
+  grain:
+    description: One row is one movement type.
+    components:
+    - identity_id: dim_movement_type_identity
+      dataset_columns:
+      - movement_type_id
+      description: Identifier of the movement type.
+  columns:
+  - name: movement_type_id
+    description: Identifier of the movement type.
+  - name: movement_type_code
+    description: Movement Type code.
+    value_description: gross_addition, voluntary_disconnect, involuntary_disconnect,
+      migration_in, migration_out
+  - name: movement_type_name
+    description: Movement Type name.
+  entity_definitions:
+  - identity_id: dim_movement_type_identity
+    dataset_columns:
+    - movement_type_id
+    entity_universe: complete
+- node_id: sf:carrier.subscribers.dim_financing_type
+  descriptor:
+    qualified_name: carrier.subscribers.dim_financing_type
+    display_name: Financing Type
+    description: How a device is financed.
+    synonyms: []
+    tags:
+    - dimension
+    - subscribers
+    - carrier
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: carrier.us-east-1
+      database: CARRIER
+      schema: SUBSCRIBERS
+      object: DIM_FINANCING_TYPE
+      format: table
+  grain:
+    description: One row is one financing type.
+    components:
+    - identity_id: dim_financing_type_identity
+      dataset_columns:
+      - financing_type_id
+      description: Identifier of the financing type.
+  columns:
+  - name: financing_type_id
+    description: Identifier of the financing type.
+  - name: financing_type_code
+    description: Financing Type code.
+    value_description: installment, subsidy, lease, outright_purchase
+  - name: financing_type_name
+    description: Financing Type name.
+  entity_definitions:
+  - identity_id: dim_financing_type_identity
+    dataset_columns:
+    - financing_type_id
+    entity_universe: complete
+- node_id: sf:carrier.subscribers.dim_enterprise_product
+  descriptor:
+    qualified_name: carrier.subscribers.dim_enterprise_product
+    display_name: Enterprise Product
+    description: Business wireline and advanced enterprise product.
+    synonyms: []
+    tags:
+    - dimension
+    - subscribers
+    - carrier
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: carrier.us-east-1
+      database: CARRIER
+      schema: SUBSCRIBERS
+      object: DIM_ENTERPRISE_PRODUCT
+      format: table
+  grain:
+    description: One row is one enterprise product.
+    components:
+    - identity_id: dim_enterprise_product_identity
+      dataset_columns:
+      - enterprise_product_id
+      description: Identifier of the enterprise product.
+  columns:
+  - name: enterprise_product_id
+    description: Identifier of the enterprise product.
+  - name: enterprise_product_code
+    description: Enterprise Product code.
+    value_description: advanced_mobility, internet_of_things, private_network, cybersecurity,
+      cloud_connectivity, legacy_voice_data
+  - name: enterprise_product_name
+    description: Enterprise Product name.
+  entity_definitions:
+  - identity_id: dim_enterprise_product_identity
+    dataset_columns:
+    - enterprise_product_id
+    entity_universe: complete
+- node_id: sf:carrier.subscribers.dim_speed_tier
+  descriptor:
+    qualified_name: carrier.subscribers.dim_speed_tier
+    display_name: Speed Tier
+    description: Broadband speed tier.
+    synonyms: []
+    tags:
+    - dimension
+    - subscribers
+    - carrier
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: carrier.us-east-1
+      database: CARRIER
+      schema: SUBSCRIBERS
+      object: DIM_SPEED_TIER
+      format: table
+  grain:
+    description: One row is one speed tier.
+    components:
+    - identity_id: dim_speed_tier_identity
+      dataset_columns:
+      - speed_tier_id
+      description: Identifier of the speed tier.
+  columns:
+  - name: speed_tier_id
+    description: Identifier of the speed tier.
+  - name: speed_tier_code
+    description: Speed Tier code.
+    value_description: gigabit_plus, mid_tier, entry_tier, legacy_dsl_tier
+  - name: speed_tier_name
+    description: Speed Tier name.
+  entity_definitions:
+  - identity_id: dim_speed_tier_identity
+    dataset_columns:
+    - speed_tier_id
+    entity_universe: complete
+- node_id: sf:carrier.subscribers.fact_subscriber_base
+  descriptor:
+    qualified_name: carrier.subscribers.fact_subscriber_base
+    display_name: Subscriber Base
+    description: Subscriber and account quantity by service. Stores quantity in subscribers
+      and accounts.
+    synonyms: []
+    tags:
+    - fact
+    - subscribers
+    - carrier
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: carrier.us-east-1
+      database: CARRIER
+      schema: SUBSCRIBERS
+      object: FACT_SUBSCRIBER_BASE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, service,
+      customer segment, plan type, region.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_service_identity
+      dataset_columns:
+      - service_id
+      description: Identifier of the service.
+    - identity_id: dim_customer_segment_identity
+      dataset_columns:
+      - customer_segment_id
+      description: Identifier of the customer segment.
+    - identity_id: dim_plan_type_identity
+      dataset_columns:
+      - plan_type_id
+      description: Identifier of the plan type.
+    - identity_id: dim_region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: service_id
+    description: Identifier of the related service.
+  - name: customer_segment_id
+    description: Identifier of the related customer segment.
+  - name: plan_type_id
+    description: Identifier of the related plan type.
+  - name: region_id
+    description: Identifier of the related region.
+  - name: subscriber_count
+    description: Subscriber quantity in subscribers.
+  - name: account_count
+    description: Account quantity in accounts.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_service_identity
+    dataset_columns:
+    - service_id
+    entity_universe: partial
+  - identity_id: dim_customer_segment_identity
+    dataset_columns:
+    - customer_segment_id
+    entity_universe: partial
+  - identity_id: dim_plan_type_identity
+    dataset_columns:
+    - plan_type_id
+    entity_universe: partial
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:carrier.subscribers.fact_subscriber_movement
+  descriptor:
+    qualified_name: carrier.subscribers.fact_subscriber_movement
+    display_name: Subscriber Movement
+    description: Subscriber movement quantity by movement type. Stores quantity in
+      subscribers.
+    synonyms: []
+    tags:
+    - fact
+    - subscribers
+    - carrier
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: carrier.us-east-1
+      database: CARRIER
+      schema: SUBSCRIBERS
+      object: FACT_SUBSCRIBER_MOVEMENT
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, service,
+      customer segment, movement type, sales channel.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_service_identity
+      dataset_columns:
+      - service_id
+      description: Identifier of the service.
+    - identity_id: dim_customer_segment_identity
+      dataset_columns:
+      - customer_segment_id
+      description: Identifier of the customer segment.
+    - identity_id: dim_movement_type_identity
+      dataset_columns:
+      - movement_type_id
+      description: Identifier of the movement type.
+    - identity_id: dim_sales_channel_identity
+      dataset_columns:
+      - sales_channel_id
+      description: Identifier of the sales channel.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: service_id
+    description: Identifier of the related service.
+  - name: customer_segment_id
+    description: Identifier of the related customer segment.
+  - name: movement_type_id
+    description: Identifier of the related movement type.
+  - name: sales_channel_id
+    description: Identifier of the related sales channel.
+  - name: subscriber_movement_count
+    description: Subscriber movement quantity in subscribers.
+  - name: account_movement_count
+    description: Account movement quantity in accounts.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_service_identity
+    dataset_columns:
+    - service_id
+    entity_universe: partial
+  - identity_id: dim_customer_segment_identity
+    dataset_columns:
+    - customer_segment_id
+    entity_universe: partial
+  - identity_id: dim_movement_type_identity
+    dataset_columns:
+    - movement_type_id
+    entity_universe: partial
+  - identity_id: dim_sales_channel_identity
+    dataset_columns:
+    - sales_channel_id
+    entity_universe: partial
+- node_id: sf:carrier.subscribers.fact_phone_connections
+  descriptor:
+    qualified_name: carrier.subscribers.fact_phone_connections
+    display_name: Phone Connections
+    description: Phone connection quantity. Stores quantity in connections.
+    synonyms: []
+    tags:
+    - fact
+    - subscribers
+    - carrier
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: carrier.us-east-1
+      database: CARRIER
+      schema: SUBSCRIBERS
+      object: FACT_PHONE_CONNECTIONS
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, plan type,
+      device type, region.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_plan_type_identity
+      dataset_columns:
+      - plan_type_id
+      description: Identifier of the plan type.
+    - identity_id: dim_device_type_identity
+      dataset_columns:
+      - device_type_id
+      description: Identifier of the device type.
+    - identity_id: dim_region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: plan_type_id
+    description: Identifier of the related plan type.
+  - name: device_type_id
+    description: Identifier of the related device type.
+  - name: region_id
+    description: Identifier of the related region.
+  - name: phone_connection_count
+    description: Phone quantity in connections.
+  - name: connection_count
+    description: Total quantity in connections.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_plan_type_identity
+    dataset_columns:
+    - plan_type_id
+    entity_universe: partial
+  - identity_id: dim_device_type_identity
+    dataset_columns:
+    - device_type_id
+    entity_universe: partial
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:carrier.subscribers.fact_broadband_subscribers
+  descriptor:
+    qualified_name: carrier.subscribers.fact_broadband_subscribers
+    display_name: Broadband Subscribers
+    description: Broadband subscriber quantity by speed tier and footprint. Stores
+      quantity in subscribers and households.
+    synonyms: []
+    tags:
+    - fact
+    - subscribers
+    - carrier
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: carrier.us-east-1
+      database: CARRIER
+      schema: SUBSCRIBERS
+      object: FACT_BROADBAND_SUBSCRIBERS
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, service,
+      speed tier, footprint type, region.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_service_identity
+      dataset_columns:
+      - service_id
+      description: Identifier of the service.
+    - identity_id: dim_speed_tier_identity
+      dataset_columns:
+      - speed_tier_id
+      description: Identifier of the speed tier.
+    - identity_id: dim_footprint_type_identity
+      dataset_columns:
+      - footprint_type_id
+      description: Identifier of the footprint type.
+    - identity_id: dim_region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: service_id
+    description: Identifier of the related service.
+  - name: speed_tier_id
+    description: Identifier of the related speed tier.
+  - name: footprint_type_id
+    description: Identifier of the related footprint type.
+  - name: region_id
+    description: Identifier of the related region.
+  - name: broadband_subscriber_count
+    description: Broadband quantity in subscribers.
+  - name: household_count
+    description: Household quantity in households.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_service_identity
+    dataset_columns:
+    - service_id
+    entity_universe: partial
+  - identity_id: dim_speed_tier_identity
+    dataset_columns:
+    - speed_tier_id
+    entity_universe: partial
+  - identity_id: dim_footprint_type_identity
+    dataset_columns:
+    - footprint_type_id
+    entity_universe: partial
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:carrier.subscribers.fact_converged_subscribers
+  descriptor:
+    qualified_name: carrier.subscribers.fact_converged_subscribers
+    display_name: Converged Subscribers
+    description: Households taking more than one service. Stores quantity in households
+      and accounts.
+    synonyms: []
+    tags:
+    - fact
+    - subscribers
+    - carrier
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: carrier.us-east-1
+      database: CARRIER
+      schema: SUBSCRIBERS
+      object: FACT_CONVERGED_SUBSCRIBERS
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, service,
+      customer segment, footprint type.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_service_identity
+      dataset_columns:
+      - service_id
+      description: Identifier of the service.
+    - identity_id: dim_customer_segment_identity
+      dataset_columns:
+      - customer_segment_id
+      description: Identifier of the customer segment.
+    - identity_id: dim_footprint_type_identity
+      dataset_columns:
+      - footprint_type_id
+      description: Identifier of the footprint type.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: service_id
+    description: Identifier of the related service.
+  - name: customer_segment_id
+    description: Identifier of the related customer segment.
+  - name: footprint_type_id
+    description: Identifier of the related footprint type.
+  - name: converged_household_count
+    description: Converged quantity in households.
+  - name: multi_service_account_count
+    description: Multi-service quantity in accounts.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_service_identity
+    dataset_columns:
+    - service_id
+    entity_universe: partial
+  - identity_id: dim_customer_segment_identity
+    dataset_columns:
+    - customer_segment_id
+    entity_universe: partial
+  - identity_id: dim_footprint_type_identity
+    dataset_columns:
+    - footprint_type_id
+    entity_universe: partial
+- node_id: sf:carrier.subscribers.fact_device_upgrades
+  descriptor:
+    qualified_name: carrier.subscribers.fact_device_upgrades
+    display_name: Device Upgrades
+    description: Device upgrade and activation quantity. Stores quantity in devices.
+    synonyms: []
+    tags:
+    - fact
+    - subscribers
+    - carrier
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: carrier.us-east-1
+      database: CARRIER
+      schema: SUBSCRIBERS
+      object: FACT_DEVICE_UPGRADES
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, device type,
+      financing type, promotion type.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_device_type_identity
+      dataset_columns:
+      - device_type_id
+      description: Identifier of the device type.
+    - identity_id: dim_financing_type_identity
+      dataset_columns:
+      - financing_type_id
+      description: Identifier of the financing type.
+    - identity_id: dim_promotion_type_identity
+      dataset_columns:
+      - promotion_type_id
+      description: Identifier of the promotion type.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: device_type_id
+    description: Identifier of the related device type.
+  - name: financing_type_id
+    description: Identifier of the related financing type.
+  - name: promotion_type_id
+    description: Identifier of the related promotion type.
+  - name: upgrade_count
+    description: Upgrade quantity in devices.
+  - name: device_activation_count
+    description: Activation quantity in devices.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_device_type_identity
+    dataset_columns:
+    - device_type_id
+    entity_universe: partial
+  - identity_id: dim_financing_type_identity
+    dataset_columns:
+    - financing_type_id
+    entity_universe: partial
+  - identity_id: dim_promotion_type_identity
+    dataset_columns:
+    - promotion_type_id
+    entity_universe: partial
+- node_id: sf:carrier.subscribers.fact_wholesale_connections
+  descriptor:
+    qualified_name: carrier.subscribers.fact_wholesale_connections
+    display_name: Wholesale Connections
+    description: Wholesale connection quantity by partner. Stores quantity in connections.
+    synonyms: []
+    tags:
+    - fact
+    - subscribers
+    - carrier
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: carrier.us-east-1
+      database: CARRIER
+      schema: SUBSCRIBERS
+      object: FACT_WHOLESALE_CONNECTIONS
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, partner type,
+      service.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_partner_type_identity
+      dataset_columns:
+      - partner_type_id
+      description: Identifier of the partner type.
+    - identity_id: dim_service_identity
+      dataset_columns:
+      - service_id
+      description: Identifier of the service.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: partner_type_id
+    description: Identifier of the related partner type.
+  - name: service_id
+    description: Identifier of the related service.
+  - name: wholesale_connection_count
+    description: Wholesale quantity in connections.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_partner_type_identity
+    dataset_columns:
+    - partner_type_id
+    entity_universe: partial
+  - identity_id: dim_service_identity
+    dataset_columns:
+    - service_id
+    entity_universe: partial
+- node_id: sf:carrier.subscribers.fact_enterprise_connections
+  descriptor:
+    qualified_name: carrier.subscribers.fact_enterprise_connections
+    display_name: Enterprise Connections
+    description: Enterprise connection quantity including IoT. Stores quantity in
+      connections.
+    synonyms: []
+    tags:
+    - fact
+    - subscribers
+    - carrier
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: carrier.us-east-1
+      database: CARRIER
+      schema: SUBSCRIBERS
+      object: FACT_ENTERPRISE_CONNECTIONS
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, enterprise
+      product, customer segment.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_enterprise_product_identity
+      dataset_columns:
+      - enterprise_product_id
+      description: Identifier of the enterprise product.
+    - identity_id: dim_customer_segment_identity
+      dataset_columns:
+      - customer_segment_id
+      description: Identifier of the customer segment.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: enterprise_product_id
+    description: Identifier of the related enterprise product.
+  - name: customer_segment_id
+    description: Identifier of the related customer segment.
+  - name: enterprise_connection_count
+    description: Enterprise quantity in connections.
+  - name: iot_connection_count
+    description: IoT quantity in connections.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_enterprise_product_identity
+    dataset_columns:
+    - enterprise_product_id
+    entity_universe: partial
+  - identity_id: dim_customer_segment_identity
+    dataset_columns:
+    - customer_segment_id
+    entity_universe: partial
+- node_id: sf:carrier.subscribers.fact_prepaid_subscribers
+  descriptor:
+    qualified_name: carrier.subscribers.fact_prepaid_subscribers
+    display_name: Prepaid Subscribers
+    description: Prepaid subscriber quantity. Stores quantity in subscribers.
+    synonyms: []
+    tags:
+    - fact
+    - subscribers
+    - carrier
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: carrier.us-east-1
+      database: CARRIER
+      schema: SUBSCRIBERS
+      object: FACT_PREPAID_SUBSCRIBERS
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, plan type,
+      sales channel, region.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_plan_type_identity
+      dataset_columns:
+      - plan_type_id
+      description: Identifier of the plan type.
+    - identity_id: dim_sales_channel_identity
+      dataset_columns:
+      - sales_channel_id
+      description: Identifier of the sales channel.
+    - identity_id: dim_region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: plan_type_id
+    description: Identifier of the related plan type.
+  - name: sales_channel_id
+    description: Identifier of the related sales channel.
+  - name: region_id
+    description: Identifier of the related region.
+  - name: prepaid_subscriber_count
+    description: Prepaid quantity in subscribers.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_plan_type_identity
+    dataset_columns:
+    - plan_type_id
+    entity_universe: partial
+  - identity_id: dim_sales_channel_identity
+    dataset_columns:
+    - sales_channel_id
+    entity_universe: partial
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:carrier.subscribers.fact_att_segment_subscribers
+  descriptor:
+    qualified_name: carrier.subscribers.fact_att_segment_subscribers
+    display_name: AT&T Segment Subscribers
+    description: Subscriber quantity on the AT&T reporting-segment axis. Stores quantity
+      in subscribers.
+    synonyms: []
+    tags:
+    - fact
+    - subscribers
+    - carrier
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: carrier.us-east-1
+      database: CARRIER
+      schema: SUBSCRIBERS
+      object: FACT_ATT_SEGMENT_SUBSCRIBERS
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, at&t reporting
+      segment, service.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_att_reporting_segment_identity
+      dataset_columns:
+      - att_reporting_segment_id
+      description: Identifier of the at&t reporting segment.
+    - identity_id: dim_service_identity
+      dataset_columns:
+      - service_id
+      description: Identifier of the service.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: att_reporting_segment_id
+    description: Identifier of the related at&t reporting segment.
+  - name: service_id
+    description: Identifier of the related service.
+  - name: att_subscriber_count
+    description: AT&T segment quantity in subscribers.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_att_reporting_segment_identity
+    dataset_columns:
+    - att_reporting_segment_id
+    entity_universe: partial
+  - identity_id: dim_service_identity
+    dataset_columns:
+    - service_id
+    entity_universe: partial
+- node_id: sf:carrier.subscribers.fact_verizon_segment_subscribers
+  descriptor:
+    qualified_name: carrier.subscribers.fact_verizon_segment_subscribers
+    display_name: Verizon Segment Subscribers
+    description: Subscriber quantity on the Verizon reporting-segment axis. Stores
+      quantity in subscribers.
+    synonyms: []
+    tags:
+    - fact
+    - subscribers
+    - carrier
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: carrier.us-east-1
+      database: CARRIER
+      schema: SUBSCRIBERS
+      object: FACT_VERIZON_SEGMENT_SUBSCRIBERS
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, verizon reporting
+      segment, service.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_verizon_reporting_segment_identity
+      dataset_columns:
+      - verizon_reporting_segment_id
+      description: Identifier of the verizon reporting segment.
+    - identity_id: dim_service_identity
+      dataset_columns:
+      - service_id
+      description: Identifier of the service.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: verizon_reporting_segment_id
+    description: Identifier of the related verizon reporting segment.
+  - name: service_id
+    description: Identifier of the related service.
+  - name: verizon_subscriber_count
+    description: Verizon segment quantity in subscribers.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_verizon_reporting_segment_identity
+    dataset_columns:
+    - verizon_reporting_segment_id
+    entity_universe: partial
+  - identity_id: dim_service_identity
+    dataset_columns:
+    - service_id
+    entity_universe: partial
+- node_id: sf:carrier.subscribers.fact_satellite_subscribers
+  descriptor:
+    qualified_name: carrier.subscribers.fact_satellite_subscribers
+    display_name: Satellite Subscribers
+    description: Satellite broadband subscriber quantity. Stores quantity in subscribers.
+    synonyms: []
+    tags:
+    - fact
+    - subscribers
+    - carrier
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: carrier.us-east-1
+      database: CARRIER
+      schema: SUBSCRIBERS
+      object: FACT_SATELLITE_SUBSCRIBERS
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, partner type,
+      network technology.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_partner_type_identity
+      dataset_columns:
+      - partner_type_id
+      description: Identifier of the partner type.
+    - identity_id: dim_network_technology_identity
+      dataset_columns:
+      - network_technology_id
+      description: Identifier of the network technology.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: partner_type_id
+    description: Identifier of the related partner type.
+  - name: network_technology_id
+    description: Identifier of the related network technology.
+  - name: satellite_subscriber_count
+    description: Satellite quantity in subscribers.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_partner_type_identity
+    dataset_columns:
+    - partner_type_id
+    entity_universe: partial
+  - identity_id: dim_network_technology_identity
+    dataset_columns:
+    - network_technology_id
+    entity_universe: partial
+- node_id: sf:carrier.subscribers.fact_fixed_wireless_subscribers
+  descriptor:
+    qualified_name: carrier.subscribers.fact_fixed_wireless_subscribers
+    display_name: Fixed Wireless Subscribers
+    description: Fixed-wireless subscriber quantity by footprint. Stores quantity
+      in subscribers.
+    synonyms: []
+    tags:
+    - fact
+    - subscribers
+    - carrier
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: carrier.us-east-1
+      database: CARRIER
+      schema: SUBSCRIBERS
+      object: FACT_FIXED_WIRELESS_SUBSCRIBERS
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, footprint
+      type, region, customer segment.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_footprint_type_identity
+      dataset_columns:
+      - footprint_type_id
+      description: Identifier of the footprint type.
+    - identity_id: dim_region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+    - identity_id: dim_customer_segment_identity
+      dataset_columns:
+      - customer_segment_id
+      description: Identifier of the customer segment.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: footprint_type_id
+    description: Identifier of the related footprint type.
+  - name: region_id
+    description: Identifier of the related region.
+  - name: customer_segment_id
+    description: Identifier of the related customer segment.
+  - name: fixed_wireless_subscriber_count
+    description: Fixed-wireless quantity in subscribers.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_footprint_type_identity
+    dataset_columns:
+    - footprint_type_id
+    entity_universe: partial
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+  - identity_id: dim_customer_segment_identity
+    dataset_columns:
+    - customer_segment_id
+    entity_universe: partial
+- node_id: sf:carrier.subscribers.fact_fiber_penetration_base
+  descriptor:
+    qualified_name: carrier.subscribers.fact_fiber_penetration_base
+    display_name: Fiber Penetration Base
+    description: Fiber subscriber quantity that penetration is measured against locations
+      passed in supply. Stores quantity in subscribers.
+    synonyms: []
+    tags:
+    - fact
+    - subscribers
+    - carrier
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: carrier.us-east-1
+      database: CARRIER
+      schema: SUBSCRIBERS
+      object: FACT_FIBER_PENETRATION_BASE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, footprint
+      type, region.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_footprint_type_identity
+      dataset_columns:
+      - footprint_type_id
+      description: Identifier of the footprint type.
+    - identity_id: dim_region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: footprint_type_id
+    description: Identifier of the related footprint type.
+  - name: region_id
+    description: Identifier of the related region.
+  - name: fiber_subscriber_count
+    description: Fiber quantity in subscribers.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_footprint_type_identity
+    dataset_columns:
+    - footprint_type_id
+    entity_universe: partial
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:carrier.subscribers.fact_market_subscribers
+  descriptor:
+    qualified_name: carrier.subscribers.fact_market_subscribers
+    display_name: Market Subscribers
+    description: Competitor subscriber quantity in the market. Stores quantity in
+      subscribers.
+    synonyms: []
+    tags:
+    - fact
+    - subscribers
+    - carrier
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: carrier.us-east-1
+      database: CARRIER
+      schema: SUBSCRIBERS
+      object: FACT_MARKET_SUBSCRIBERS
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, competitor,
+      service, region.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_competitor_identity
+      dataset_columns:
+      - competitor_id
+      description: Identifier of the competitor.
+    - identity_id: dim_service_identity
+      dataset_columns:
+      - service_id
+      description: Identifier of the service.
+    - identity_id: dim_region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: competitor_id
+    description: Identifier of the related competitor.
+  - name: service_id
+    description: Identifier of the related service.
+  - name: region_id
+    description: Identifier of the related region.
+  - name: competitor_subscriber_count
+    description: Competitor quantity in subscribers.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_competitor_identity
+    dataset_columns:
+    - competitor_id
+    entity_universe: partial
+  - identity_id: dim_service_identity
+    dataset_columns:
+    - service_id
+    entity_universe: partial
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:carrier.subscribers.fact_promotional_additions
+  descriptor:
+    qualified_name: carrier.subscribers.fact_promotional_additions
+    display_name: Promotional Additions
+    description: Gross additions under a promotion. Stores quantity in subscribers.
+    synonyms: []
+    tags:
+    - fact
+    - subscribers
+    - carrier
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: carrier.us-east-1
+      database: CARRIER
+      schema: SUBSCRIBERS
+      object: FACT_PROMOTIONAL_ADDITIONS
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, promotion
+      type, service, sales channel.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_promotion_type_identity
+      dataset_columns:
+      - promotion_type_id
+      description: Identifier of the promotion type.
+    - identity_id: dim_service_identity
+      dataset_columns:
+      - service_id
+      description: Identifier of the service.
+    - identity_id: dim_sales_channel_identity
+      dataset_columns:
+      - sales_channel_id
+      description: Identifier of the sales channel.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: promotion_type_id
+    description: Identifier of the related promotion type.
+  - name: service_id
+    description: Identifier of the related service.
+  - name: sales_channel_id
+    description: Identifier of the related sales channel.
+  - name: promotional_gross_add_count
+    description: Promotional gross-add quantity in subscribers.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_promotion_type_identity
+    dataset_columns:
+    - promotion_type_id
+    entity_universe: partial
+  - identity_id: dim_service_identity
+    dataset_columns:
+    - service_id
+    entity_universe: partial
+  - identity_id: dim_sales_channel_identity
+    dataset_columns:
+    - sales_channel_id
+    entity_universe: partial
+- node_id: sf:carrier.subscribers.fact_network_usage
+  descriptor:
+    qualified_name: carrier.subscribers.fact_network_usage
+    display_name: Network Usage
+    description: Traffic quantity carried on the network. Stores quantity in petabytes
+      and minutes.
+    synonyms: []
+    tags:
+    - fact
+    - subscribers
+    - carrier
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: carrier.us-east-1
+      database: CARRIER
+      schema: SUBSCRIBERS
+      object: FACT_NETWORK_USAGE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, network technology,
+      service.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_network_technology_identity
+      dataset_columns:
+      - network_technology_id
+      description: Identifier of the network technology.
+    - identity_id: dim_service_identity
+      dataset_columns:
+      - service_id
+      description: Identifier of the service.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: network_technology_id
+    description: Identifier of the related network technology.
+  - name: service_id
+    description: Identifier of the related service.
+  - name: data_traffic_quantity
+    description: Data traffic quantity in petabytes.
+  - name: voice_minute_quantity
+    description: Voice quantity in minutes.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_network_technology_identity
+    dataset_columns:
+    - network_technology_id
+    entity_universe: partial
+  - identity_id: dim_service_identity
+    dataset_columns:
+    - service_id
+    entity_universe: partial

@@ -1,0 +1,1089 @@
+schema_version: '3'
+nodes:
+- node_id: sf:wafertool.price.dim_revenue_line
+  descriptor:
+    qualified_name: wafertool.price.dim_revenue_line
+    display_name: Revenue Line
+    description: Line of revenue earned.
+    synonyms: []
+    tags:
+    - dim
+    - price
+    - wafertool
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: wafertool.us-west-1
+      database: WAFER_TOOL
+      schema: PRICE
+      object: DIM_REVENUE_LINE
+      format: table
+  grain:
+    description: One row is one revenue line.
+    components:
+    - identity_id: dim_revenue_line_identity
+      dataset_columns:
+      - revenue_line_id
+      description: Identifier of the revenue line.
+  columns:
+  - name: revenue_line_id
+    description: Identifier of the revenue line.
+  - name: revenue_line_code
+    description: Revenue Line code.
+    value_description: systems_revenue, service_revenue, spare_parts_revenue, upgrade_revenue
+  - name: revenue_line_name
+    description: Revenue Line name.
+  entity_definitions:
+  - identity_id: dim_revenue_line_identity
+    dataset_columns:
+    - revenue_line_id
+    entity_universe: complete
+- node_id: sf:wafertool.price.dim_cost_bucket
+  descriptor:
+    qualified_name: wafertool.price.dim_cost_bucket
+    display_name: Cost Bucket
+    description: Bucket of operating cost.
+    synonyms: []
+    tags:
+    - dim
+    - price
+    - wafertool
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: wafertool.us-west-1
+      database: WAFER_TOOL
+      schema: PRICE
+      object: DIM_COST_BUCKET
+      format: table
+  grain:
+    description: One row is one cost bucket.
+    components:
+    - identity_id: dim_cost_bucket_identity
+      dataset_columns:
+      - cost_bucket_id
+      description: Identifier of the cost bucket.
+  columns:
+  - name: cost_bucket_id
+    description: Identifier of the cost bucket.
+  - name: cost_bucket_code
+    description: Cost Bucket code.
+    value_description: cost_of_goods, research_development, sales_general_administrative, warranty
+  - name: cost_bucket_name
+    description: Cost Bucket name.
+  entity_definitions:
+  - identity_id: dim_cost_bucket_identity
+    dataset_columns:
+    - cost_bucket_id
+    entity_universe: complete
+- node_id: sf:wafertool.price.dim_product_line
+  descriptor:
+    qualified_name: wafertool.price.dim_product_line
+    display_name: Product Line
+    description: Product line sold. Systems and installed-base services are separate lines.
+    synonyms: []
+    tags:
+    - dim
+    - price
+    - wafertool
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: wafertool.us-west-1
+      database: WAFER_TOOL
+      schema: PRICE
+      object: DIM_PRODUCT_LINE
+      format: table
+  grain:
+    description: One row is one product line.
+    components:
+    - identity_id: dim_product_line_identity
+      dataset_columns:
+      - product_line_id
+      description: Identifier of the product line.
+  columns:
+  - name: product_line_id
+    description: Identifier of the product line.
+  - name: product_line_code
+    description: Product Line code.
+    value_description: new_systems, installed_base_service, spares_upgrades
+  - name: product_line_name
+    description: Product Line name.
+  entity_definitions:
+  - identity_id: dim_product_line_identity
+    dataset_columns:
+    - product_line_id
+    entity_universe: complete
+- node_id: sf:wafertool.price.dim_discount_type
+  descriptor:
+    qualified_name: wafertool.price.dim_discount_type
+    display_name: Discount Type
+    description: Type of discount applied to a system or service.
+    synonyms: []
+    tags:
+    - dim
+    - price
+    - wafertool
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: wafertool.us-west-1
+      database: WAFER_TOOL
+      schema: PRICE
+      object: DIM_DISCOUNT_TYPE
+      format: table
+  grain:
+    description: One row is one discount type.
+    components:
+    - identity_id: dim_discount_type_identity
+      dataset_columns:
+      - discount_type_id
+      description: Identifier of the discount type.
+  columns:
+  - name: discount_type_id
+    description: Identifier of the discount type.
+  - name: discount_type_code
+    description: Discount Type code.
+    value_description: volume, strategic_customer, bundle
+  - name: discount_type_name
+    description: Discount Type name.
+  entity_definitions:
+  - identity_id: dim_discount_type_identity
+    dataset_columns:
+    - discount_type_id
+    entity_universe: complete
+- node_id: sf:wafertool.price.fact_system_revenue
+  descriptor:
+    qualified_name: wafertool.price.fact_system_revenue
+    display_name: System Revenue
+    description: New system revenue by process. Stores revenue in dollars. Stores no system count.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - wafertool
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: wafertool.us-west-1
+      database: WAFER_TOOL
+      schema: PRICE
+      object: FACT_SYSTEM_REVENUE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, process type, tool family, customer type, geography.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_process_type_identity
+      dataset_columns:
+      - process_type_id
+      description: Identifier of the process type.
+    - identity_id: dim_tool_family_identity
+      dataset_columns:
+      - tool_family_id
+      description: Identifier of the tool family.
+    - identity_id: dim_customer_type_identity
+      dataset_columns:
+      - customer_type_id
+      description: Identifier of the customer type.
+    - identity_id: dim_geography_identity
+      dataset_columns:
+      - geography_id
+      description: Identifier of the geography.
+  columns:
+  - name: system_revenue_record_id
+    description: Surrogate record identifier for this system revenue row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: process_type_id
+    description: Identifier of the related process type.
+  - name: tool_family_id
+    description: Identifier of the related tool family.
+  - name: customer_type_id
+    description: Identifier of the related customer type.
+  - name: geography_id
+    description: Identifier of the related geography.
+  - name: system_revenue_amount
+    description: System revenue in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_process_type_identity
+    dataset_columns:
+    - process_type_id
+    entity_universe: partial
+  - identity_id: dim_tool_family_identity
+    dataset_columns:
+    - tool_family_id
+    entity_universe: partial
+  - identity_id: dim_customer_type_identity
+    dataset_columns:
+    - customer_type_id
+    entity_universe: partial
+  - identity_id: dim_geography_identity
+    dataset_columns:
+    - geography_id
+    entity_universe: partial
+- node_id: sf:wafertool.price.fact_service_revenue
+  descriptor:
+    qualified_name: wafertool.price.fact_service_revenue
+    display_name: Service Revenue
+    description: Installed-base service revenue by service type. Stores revenue in dollars. Stores no tool count.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - wafertool
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: wafertool.us-west-1
+      database: WAFER_TOOL
+      schema: PRICE
+      object: FACT_SERVICE_REVENUE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, service type, process type, geography.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_service_type_identity
+      dataset_columns:
+      - service_type_id
+      description: Identifier of the service type.
+    - identity_id: dim_process_type_identity
+      dataset_columns:
+      - process_type_id
+      description: Identifier of the process type.
+    - identity_id: dim_geography_identity
+      dataset_columns:
+      - geography_id
+      description: Identifier of the geography.
+  columns:
+  - name: service_revenue_record_id
+    description: Surrogate record identifier for this service revenue row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: service_type_id
+    description: Identifier of the related service type.
+  - name: process_type_id
+    description: Identifier of the related process type.
+  - name: geography_id
+    description: Identifier of the related geography.
+  - name: service_revenue_amount
+    description: Service revenue in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_service_type_identity
+    dataset_columns:
+    - service_type_id
+    entity_universe: partial
+  - identity_id: dim_process_type_identity
+    dataset_columns:
+    - process_type_id
+    entity_universe: partial
+  - identity_id: dim_geography_identity
+    dataset_columns:
+    - geography_id
+    entity_universe: partial
+- node_id: sf:wafertool.price.fact_product_revenue
+  descriptor:
+    qualified_name: wafertool.price.fact_product_revenue
+    display_name: Product Revenue
+    description: Revenue by product line. Stores revenue in dollars. Stores no unit quantity.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - wafertool
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: wafertool.us-west-1
+      database: WAFER_TOOL
+      schema: PRICE
+      object: FACT_PRODUCT_REVENUE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, product line, geography.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_product_line_identity
+      dataset_columns:
+      - product_line_id
+      description: Identifier of the product line.
+    - identity_id: dim_geography_identity
+      dataset_columns:
+      - geography_id
+      description: Identifier of the geography.
+  columns:
+  - name: product_revenue_record_id
+    description: Surrogate record identifier for this product revenue row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: product_line_id
+    description: Identifier of the related product line.
+  - name: geography_id
+    description: Identifier of the related geography.
+  - name: product_revenue_amount
+    description: Product revenue in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_product_line_identity
+    dataset_columns:
+    - product_line_id
+    entity_universe: partial
+  - identity_id: dim_geography_identity
+    dataset_columns:
+    - geography_id
+    entity_universe: partial
+- node_id: sf:wafertool.price.fact_enterprise_results
+  descriptor:
+    qualified_name: wafertool.price.fact_enterprise_results
+    display_name: Enterprise Results
+    description: Enterprise results for Wafer Tool Inc. Stores revenue, income and earnings in dollars. Grained only at fiscal
+      quarter and scenario.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - wafertool
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: wafertool.us-west-1
+      database: WAFER_TOOL
+      schema: PRICE
+      object: FACT_ENTERPRISE_RESULTS
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+  columns:
+  - name: enterprise_results_record_id
+    description: Surrogate record identifier for this enterprise results row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: total_revenue_amount
+    description: Total revenue in dollars.
+  - name: operating_income_amount
+    description: Operating income in dollars.
+  - name: net_income_amount
+    description: Net income in dollars.
+  - name: diluted_earnings_per_share
+    description: Diluted earnings per share in dollars per share.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+- node_id: sf:wafertool.price.fact_gross_margin
+  descriptor:
+    qualified_name: wafertool.price.fact_gross_margin
+    display_name: Gross Margin
+    description: Gross profit and margin by product line. Stores gross profit in dollars and margin in percent. Unit quantity
+      is on the shipment and installed-base facts.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - wafertool
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: wafertool.us-west-1
+      database: WAFER_TOOL
+      schema: PRICE
+      object: FACT_GROSS_MARGIN
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, product line, process type.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_product_line_identity
+      dataset_columns:
+      - product_line_id
+      description: Identifier of the product line.
+    - identity_id: dim_process_type_identity
+      dataset_columns:
+      - process_type_id
+      description: Identifier of the process type.
+  columns:
+  - name: gross_margin_record_id
+    description: Surrogate record identifier for this gross margin row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: product_line_id
+    description: Identifier of the related product line.
+  - name: process_type_id
+    description: Identifier of the related process type.
+  - name: gross_profit_amount
+    description: Gross profit in dollars.
+  - name: gross_margin_percent
+    description: Gross margin in percent.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_product_line_identity
+    dataset_columns:
+    - product_line_id
+    entity_universe: partial
+  - identity_id: dim_process_type_identity
+    dataset_columns:
+    - process_type_id
+    entity_universe: partial
+- node_id: sf:wafertool.price.fact_operating_expense
+  descriptor:
+    qualified_name: wafertool.price.fact_operating_expense
+    display_name: Operating Expense
+    description: Operating expense by cost bucket. Stores expense in dollars. Stores no headcount.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - wafertool
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: wafertool.us-west-1
+      database: WAFER_TOOL
+      schema: PRICE
+      object: FACT_OPERATING_EXPENSE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, cost bucket.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_cost_bucket_identity
+      dataset_columns:
+      - cost_bucket_id
+      description: Identifier of the cost bucket.
+  columns:
+  - name: operating_expense_record_id
+    description: Surrogate record identifier for this operating expense row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: cost_bucket_id
+    description: Identifier of the related cost bucket.
+  - name: operating_expense_amount
+    description: Operating expense in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_cost_bucket_identity
+    dataset_columns:
+    - cost_bucket_id
+    entity_universe: partial
+- node_id: sf:wafertool.price.fact_system_price
+  descriptor:
+    qualified_name: wafertool.price.fact_system_price
+    display_name: System Price
+    description: Average system price by process and tool family. Stores price in dollars per system. System count is on the
+      shipment fact at the same grain.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - wafertool
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: wafertool.us-west-1
+      database: WAFER_TOOL
+      schema: PRICE
+      object: FACT_SYSTEM_PRICE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, process type, tool family.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_process_type_identity
+      dataset_columns:
+      - process_type_id
+      description: Identifier of the process type.
+    - identity_id: dim_tool_family_identity
+      dataset_columns:
+      - tool_family_id
+      description: Identifier of the tool family.
+  columns:
+  - name: system_price_record_id
+    description: Surrogate record identifier for this system price row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: process_type_id
+    description: Identifier of the related process type.
+  - name: tool_family_id
+    description: Identifier of the related tool family.
+  - name: revenue_per_system_amount
+    description: Revenue per system in dollars per system.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_process_type_identity
+    dataset_columns:
+    - process_type_id
+    entity_universe: partial
+  - identity_id: dim_tool_family_identity
+    dataset_columns:
+    - tool_family_id
+    entity_universe: partial
+- node_id: sf:wafertool.price.fact_service_price
+  descriptor:
+    qualified_name: wafertool.price.fact_service_price
+    display_name: Service Price
+    description: Service revenue per installed tool. Stores dollars per tool. Installed tool count is on the installed-base
+      fact.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - wafertool
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: wafertool.us-west-1
+      database: WAFER_TOOL
+      schema: PRICE
+      object: FACT_SERVICE_PRICE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, service type, process type.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_service_type_identity
+      dataset_columns:
+      - service_type_id
+      description: Identifier of the service type.
+    - identity_id: dim_process_type_identity
+      dataset_columns:
+      - process_type_id
+      description: Identifier of the process type.
+  columns:
+  - name: service_price_record_id
+    description: Surrogate record identifier for this service price row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: service_type_id
+    description: Identifier of the related service type.
+  - name: process_type_id
+    description: Identifier of the related process type.
+  - name: revenue_per_installed_tool_amount
+    description: Service revenue per installed tool in dollars per tool.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_service_type_identity
+    dataset_columns:
+    - service_type_id
+    entity_universe: partial
+  - identity_id: dim_process_type_identity
+    dataset_columns:
+    - process_type_id
+    entity_universe: partial
+- node_id: sf:wafertool.price.fact_cash_flow
+  descriptor:
+    qualified_name: wafertool.price.fact_cash_flow
+    display_name: Cash Flow
+    description: Enterprise cash flow. Stores cash flow in dollars. Grained only at fiscal quarter and scenario.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - wafertool
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: wafertool.us-west-1
+      database: WAFER_TOOL
+      schema: PRICE
+      object: FACT_CASH_FLOW
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+  columns:
+  - name: cash_flow_record_id
+    description: Surrogate record identifier for this cash flow row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: operating_cash_flow_amount
+    description: Operating cash flow in dollars.
+  - name: capital_expenditure_amount
+    description: Capital expenditure in dollars.
+  - name: free_cash_flow_amount
+    description: Free cash flow in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+- node_id: sf:wafertool.price.fact_backlog_revenue
+  descriptor:
+    qualified_name: wafertool.price.fact_backlog_revenue
+    display_name: Backlog Revenue Value
+    description: Revenue value of backlog by process. Stores backlog value in dollars. Systems in backlog are on the backlog
+      supply fact.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - wafertool
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: wafertool.us-west-1
+      database: WAFER_TOOL
+      schema: PRICE
+      object: FACT_BACKLOG_REVENUE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, process type, customer type.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_process_type_identity
+      dataset_columns:
+      - process_type_id
+      description: Identifier of the process type.
+    - identity_id: dim_customer_type_identity
+      dataset_columns:
+      - customer_type_id
+      description: Identifier of the customer type.
+  columns:
+  - name: backlog_revenue_record_id
+    description: Surrogate record identifier for this backlog revenue value row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: process_type_id
+    description: Identifier of the related process type.
+  - name: customer_type_id
+    description: Identifier of the related customer type.
+  - name: backlog_revenue_amount
+    description: Backlog revenue value in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_process_type_identity
+    dataset_columns:
+    - process_type_id
+    entity_universe: partial
+  - identity_id: dim_customer_type_identity
+    dataset_columns:
+    - customer_type_id
+    entity_universe: partial
+- node_id: sf:wafertool.price.fact_warranty_cost
+  descriptor:
+    qualified_name: wafertool.price.fact_warranty_cost
+    display_name: Warranty Cost
+    description: Warranty cost by tool family. Stores warranty cost in dollars. Stores no tool count.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - wafertool
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: wafertool.us-west-1
+      database: WAFER_TOOL
+      schema: PRICE
+      object: FACT_WARRANTY_COST
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, tool family, cost bucket.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_tool_family_identity
+      dataset_columns:
+      - tool_family_id
+      description: Identifier of the tool family.
+    - identity_id: dim_cost_bucket_identity
+      dataset_columns:
+      - cost_bucket_id
+      description: Identifier of the cost bucket.
+  columns:
+  - name: warranty_cost_record_id
+    description: Surrogate record identifier for this warranty cost row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: tool_family_id
+    description: Identifier of the related tool family.
+  - name: cost_bucket_id
+    description: Identifier of the related cost bucket.
+  - name: warranty_cost_amount
+    description: Warranty cost in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_tool_family_identity
+    dataset_columns:
+    - tool_family_id
+    entity_universe: partial
+  - identity_id: dim_cost_bucket_identity
+    dataset_columns:
+    - cost_bucket_id
+    entity_universe: partial
+- node_id: sf:wafertool.price.fact_research_spend
+  descriptor:
+    qualified_name: wafertool.price.fact_research_spend
+    display_name: Research Spend
+    description: Research and development spend by process. Stores spend in dollars. Stores no engineer count.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - wafertool
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: wafertool.us-west-1
+      database: WAFER_TOOL
+      schema: PRICE
+      object: FACT_RESEARCH_SPEND
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, process type, cost bucket.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_process_type_identity
+      dataset_columns:
+      - process_type_id
+      description: Identifier of the process type.
+    - identity_id: dim_cost_bucket_identity
+      dataset_columns:
+      - cost_bucket_id
+      description: Identifier of the cost bucket.
+  columns:
+  - name: research_spend_record_id
+    description: Surrogate record identifier for this research spend row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: process_type_id
+    description: Identifier of the related process type.
+  - name: cost_bucket_id
+    description: Identifier of the related cost bucket.
+  - name: research_spend_amount
+    description: Research and development spend in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_process_type_identity
+    dataset_columns:
+    - process_type_id
+    entity_universe: partial
+  - identity_id: dim_cost_bucket_identity
+    dataset_columns:
+    - cost_bucket_id
+    entity_universe: partial
+- node_id: sf:wafertool.price.fact_spares_revenue
+  descriptor:
+    qualified_name: wafertool.price.fact_spares_revenue
+    display_name: Spares Revenue
+    description: Spare parts and upgrade revenue by service type. Stores revenue in dollars. Stores no part count.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - wafertool
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: wafertool.us-west-1
+      database: WAFER_TOOL
+      schema: PRICE
+      object: FACT_SPARES_REVENUE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, service type, revenue line.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_service_type_identity
+      dataset_columns:
+      - service_type_id
+      description: Identifier of the service type.
+    - identity_id: dim_revenue_line_identity
+      dataset_columns:
+      - revenue_line_id
+      description: Identifier of the revenue line.
+  columns:
+  - name: spares_revenue_record_id
+    description: Surrogate record identifier for this spares revenue row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: service_type_id
+    description: Identifier of the related service type.
+  - name: revenue_line_id
+    description: Identifier of the related revenue line.
+  - name: spares_revenue_amount
+    description: Spare parts and upgrade revenue in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_service_type_identity
+    dataset_columns:
+    - service_type_id
+    entity_universe: partial
+  - identity_id: dim_revenue_line_identity
+    dataset_columns:
+    - revenue_line_id
+    entity_universe: partial
+- node_id: sf:wafertool.price.fact_discount
+  descriptor:
+    qualified_name: wafertool.price.fact_discount
+    display_name: Discount
+    description: Discounts given by discount type and product line. Stores discount in dollars. Stores no system count.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - wafertool
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: wafertool.us-west-1
+      database: WAFER_TOOL
+      schema: PRICE
+      object: FACT_DISCOUNT
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, discount type, product line.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_discount_type_identity
+      dataset_columns:
+      - discount_type_id
+      description: Identifier of the discount type.
+    - identity_id: dim_product_line_identity
+      dataset_columns:
+      - product_line_id
+      description: Identifier of the product line.
+  columns:
+  - name: discount_record_id
+    description: Surrogate record identifier for this discount row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: discount_type_id
+    description: Identifier of the related discount type.
+  - name: product_line_id
+    description: Identifier of the related product line.
+  - name: discount_amount
+    description: Discounts given in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_discount_type_identity
+    dataset_columns:
+    - discount_type_id
+    entity_universe: partial
+  - identity_id: dim_product_line_identity
+    dataset_columns:
+    - product_line_id
+    entity_universe: partial

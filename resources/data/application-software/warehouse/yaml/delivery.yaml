@@ -1,0 +1,830 @@
+schema_version: '3'
+nodes:
+- node_id: sf:app.delivery.dim_capacity_type
+  descriptor:
+    qualified_name: app.delivery.dim_capacity_type
+    display_name: Capacity Type
+    description: Data-center capacity type.
+    synonyms: []
+    tags:
+    - dimension
+    - delivery
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: DELIVERY
+      object: DIM_CAPACITY_TYPE
+      format: table
+  grain:
+    description: One row is one capacity type.
+    components:
+    - identity_id: dim_capacity_type_identity
+      dataset_columns:
+      - capacity_type_id
+      description: Identifier of the capacity type.
+  columns:
+  - name: capacity_type_id
+    description: Identifier of the capacity type.
+  - name: capacity_type_code
+    description: Capacity Type code.
+    value_description: gpu_compute, cpu_compute, storage, database_capacity, networking_capacity
+  - name: capacity_type_name
+    description: Capacity Type name.
+  entity_definitions:
+  - identity_id: dim_capacity_type_identity
+    dataset_columns:
+    - capacity_type_id
+    entity_universe: complete
+- node_id: sf:app.delivery.dim_workforce_group
+  descriptor:
+    qualified_name: app.delivery.dim_workforce_group
+    display_name: Workforce Group
+    description: Employee group, including sales reps and data-center operations.
+    synonyms: []
+    tags:
+    - dimension
+    - delivery
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: DELIVERY
+      object: DIM_WORKFORCE_GROUP
+      format: table
+  grain:
+    description: One row is one workforce group.
+    components:
+    - identity_id: dim_workforce_group_identity
+      dataset_columns:
+      - workforce_group_id
+      description: Identifier of the workforce group.
+  columns:
+  - name: workforce_group_id
+    description: Identifier of the workforce group.
+  - name: workforce_group_code
+    description: Workforce Group code.
+    value_description: sales_rep, solution_engineer, data_center_operations, product_engineering,
+      customer_success, corporate
+  - name: workforce_group_name
+    description: Workforce Group name.
+  entity_definitions:
+  - identity_id: dim_workforce_group_identity
+    dataset_columns:
+    - workforce_group_id
+    entity_universe: complete
+- node_id: sf:app.delivery.fact_data_center_capacity
+  descriptor:
+    qualified_name: app.delivery.fact_data_center_capacity
+    display_name: Data Center Capacity
+    description: Data-center, power and GPU capacity by region and capacity type.
+      Stores capacity in data centers, megawatts and GPU units.
+    synonyms: []
+    tags:
+    - fact
+    - delivery
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: DELIVERY
+      object: FACT_DATA_CENTER_CAPACITY
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, region, capacity
+      type.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+    - identity_id: dim_capacity_type_identity
+      dataset_columns:
+      - capacity_type_id
+      description: Identifier of the capacity type.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: region_id
+    description: Identifier of the related region.
+  - name: capacity_type_id
+    description: Identifier of the related capacity type.
+  - name: data_center_count
+    description: Data-center quantity in data centers.
+  - name: power_megawatt_capacity
+    description: Power capacity in megawatts.
+  - name: gpu_unit_count
+    description: GPU quantity in GPU units.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+  - identity_id: dim_capacity_type_identity
+    dataset_columns:
+    - capacity_type_id
+    entity_universe: partial
+- node_id: sf:app.delivery.fact_cloud_region_capacity
+  descriptor:
+    qualified_name: app.delivery.fact_cloud_region_capacity
+    display_name: Cloud Region Capacity
+    description: Cloud region and availability-domain capacity by venue and region.
+      Stores quantity in regions and domains.
+    synonyms: []
+    tags:
+    - fact
+    - delivery
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: DELIVERY
+      object: FACT_CLOUD_REGION_CAPACITY
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, oracle cloud
+      venue, region.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_oracle_cloud_venue_identity
+      dataset_columns:
+      - oracle_cloud_venue_id
+      description: Identifier of the oracle cloud venue.
+    - identity_id: dim_region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: oracle_cloud_venue_id
+    description: Identifier of the related oracle cloud venue.
+  - name: region_id
+    description: Identifier of the related region.
+  - name: cloud_region_count
+    description: Cloud region quantity in regions.
+  - name: availability_domain_count
+    description: Availability-domain quantity in domains.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_oracle_cloud_venue_identity
+    dataset_columns:
+    - oracle_cloud_venue_id
+    entity_universe: partial
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:app.delivery.fact_sales_capacity
+  descriptor:
+    qualified_name: app.delivery.fact_sales_capacity
+    display_name: Sales Capacity
+    description: Sales rep and employee capacity by workforce group and region. Stores
+      quantity in employees.
+    synonyms: []
+    tags:
+    - fact
+    - delivery
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: DELIVERY
+      object: FACT_SALES_CAPACITY
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, workforce
+      group, region.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_workforce_group_identity
+      dataset_columns:
+      - workforce_group_id
+      description: Identifier of the workforce group.
+    - identity_id: dim_region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: workforce_group_id
+    description: Identifier of the related workforce group.
+  - name: region_id
+    description: Identifier of the related region.
+  - name: sales_rep_count
+    description: Sales rep quantity in employees.
+  - name: delivery_employee_count
+    description: Employee quantity in employees.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_workforce_group_identity
+    dataset_columns:
+    - workforce_group_id
+    entity_universe: partial
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:app.delivery.fact_partner_capacity
+  descriptor:
+    qualified_name: app.delivery.fact_partner_capacity
+    display_name: Partner Capacity
+    description: Partner and certified-consultant capacity by partner type and channel.
+      Stores quantity in partners and consultants.
+    synonyms: []
+    tags:
+    - fact
+    - delivery
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: DELIVERY
+      object: FACT_PARTNER_CAPACITY
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, partner type,
+      sales channel.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_partner_type_identity
+      dataset_columns:
+      - partner_type_id
+      description: Identifier of the partner type.
+    - identity_id: dim_sales_channel_identity
+      dataset_columns:
+      - sales_channel_id
+      description: Identifier of the sales channel.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: partner_type_id
+    description: Identifier of the related partner type.
+  - name: sales_channel_id
+    description: Identifier of the related sales channel.
+  - name: partner_count
+    description: Partner quantity in partners.
+  - name: certified_consultant_count
+    description: Consultant quantity in consultants.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_partner_type_identity
+    dataset_columns:
+    - partner_type_id
+    entity_universe: partial
+  - identity_id: dim_sales_channel_identity
+    dataset_columns:
+    - sales_channel_id
+    entity_universe: partial
+- node_id: sf:app.delivery.fact_site_delivery_capacity
+  descriptor:
+    qualified_name: app.delivery.fact_site_delivery_capacity
+    display_name: Site Delivery Capacity
+    description: Data-center sites under construction or planned by region and capacity
+      type, including delivery-slip tracking at region grain. Stores quantity in sites.
+    synonyms: []
+    tags:
+    - fact
+    - delivery
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: DELIVERY
+      object: FACT_SITE_DELIVERY_CAPACITY
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, region, capacity
+      type.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+    - identity_id: dim_capacity_type_identity
+      dataset_columns:
+      - capacity_type_id
+      description: Identifier of the capacity type.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: region_id
+    description: Identifier of the related region.
+  - name: capacity_type_id
+    description: Identifier of the related capacity type.
+  - name: site_under_construction_count
+    description: Under-construction quantity in sites.
+  - name: planned_site_count
+    description: Planned quantity in sites.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+  - identity_id: dim_capacity_type_identity
+    dataset_columns:
+    - capacity_type_id
+    entity_universe: partial
+- node_id: sf:app.delivery.fact_sovereign_capacity
+  descriptor:
+    qualified_name: app.delivery.fact_sovereign_capacity
+    display_name: Sovereign Capacity
+    description: Sovereign and dedicated region capacity by venue and customer segment.
+      Stores quantity in regions.
+    synonyms: []
+    tags:
+    - fact
+    - delivery
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: DELIVERY
+      object: FACT_SOVEREIGN_CAPACITY
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, oracle cloud
+      venue, customer segment.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_oracle_cloud_venue_identity
+      dataset_columns:
+      - oracle_cloud_venue_id
+      description: Identifier of the oracle cloud venue.
+    - identity_id: dim_customer_segment_identity
+      dataset_columns:
+      - customer_segment_id
+      description: Identifier of the customer segment.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: oracle_cloud_venue_id
+    description: Identifier of the related oracle cloud venue.
+  - name: customer_segment_id
+    description: Identifier of the related customer segment.
+  - name: sovereign_region_count
+    description: Sovereign region quantity in regions.
+  - name: dedicated_region_count
+    description: Dedicated region quantity in regions.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_oracle_cloud_venue_identity
+    dataset_columns:
+    - oracle_cloud_venue_id
+    entity_universe: partial
+  - identity_id: dim_customer_segment_identity
+    dataset_columns:
+    - customer_segment_id
+    entity_universe: partial
+- node_id: sf:app.delivery.fact_model_integration_capacity
+  descriptor:
+    qualified_name: app.delivery.fact_model_integration_capacity
+    display_name: Model Integration Capacity
+    description: Frontier-model integration count by partner type and Agentforce product.
+      Stores quantity in integrations.
+    synonyms: []
+    tags:
+    - fact
+    - delivery
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: DELIVERY
+      object: FACT_MODEL_INTEGRATION_CAPACITY
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, partner type,
+      agentforce and data product.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_partner_type_identity
+      dataset_columns:
+      - partner_type_id
+      description: Identifier of the partner type.
+    - identity_id: dim_agentforce_product_identity
+      dataset_columns:
+      - agentforce_product_id
+      description: Identifier of the agentforce and data product.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: partner_type_id
+    description: Identifier of the related partner type.
+  - name: agentforce_product_id
+    description: Identifier of the related agentforce and data product.
+  - name: model_integration_count
+    description: Integration quantity in integrations.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_partner_type_identity
+    dataset_columns:
+    - partner_type_id
+    entity_universe: partial
+  - identity_id: dim_agentforce_product_identity
+    dataset_columns:
+    - agentforce_product_id
+    entity_universe: partial
+- node_id: sf:app.delivery.fact_support_capacity
+  descriptor:
+    qualified_name: app.delivery.fact_support_capacity
+    display_name: Support Capacity
+    description: Customer-success employee capacity by workforce group and Salesforce
+      cloud. Stores quantity in employees.
+    synonyms: []
+    tags:
+    - fact
+    - delivery
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: DELIVERY
+      object: FACT_SUPPORT_CAPACITY
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, workforce
+      group, salesforce cloud.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_workforce_group_identity
+      dataset_columns:
+      - workforce_group_id
+      description: Identifier of the workforce group.
+    - identity_id: dim_salesforce_cloud_identity
+      dataset_columns:
+      - salesforce_cloud_id
+      description: Identifier of the salesforce cloud.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: workforce_group_id
+    description: Identifier of the related workforce group.
+  - name: salesforce_cloud_id
+    description: Identifier of the related salesforce cloud.
+  - name: customer_success_employee_count
+    description: Customer-success quantity in employees.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_workforce_group_identity
+    dataset_columns:
+    - workforce_group_id
+    entity_universe: partial
+  - identity_id: dim_salesforce_cloud_identity
+    dataset_columns:
+    - salesforce_cloud_id
+    entity_universe: partial
+- node_id: sf:app.delivery.fact_chip_capacity
+  descriptor:
+    qualified_name: app.delivery.fact_chip_capacity
+    display_name: Chip Capacity
+    description: Prepaid and bring-your-own chip unit capacity by deal structure and
+      capacity type. Stores quantity in chip units.
+    synonyms: []
+    tags:
+    - fact
+    - delivery
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: DELIVERY
+      object: FACT_CHIP_CAPACITY
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, deal structure,
+      capacity type.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_deal_structure_identity
+      dataset_columns:
+      - deal_structure_id
+      description: Identifier of the deal structure.
+    - identity_id: dim_capacity_type_identity
+      dataset_columns:
+      - capacity_type_id
+      description: Identifier of the capacity type.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: deal_structure_id
+    description: Identifier of the related deal structure.
+  - name: capacity_type_id
+    description: Identifier of the related capacity type.
+  - name: chip_unit_count
+    description: Chip quantity in chip units.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_deal_structure_identity
+    dataset_columns:
+    - deal_structure_id
+    entity_universe: partial
+  - identity_id: dim_capacity_type_identity
+    dataset_columns:
+    - capacity_type_id
+    entity_universe: partial
+- node_id: sf:app.delivery.fact_inference_capacity
+  descriptor:
+    qualified_name: app.delivery.fact_inference_capacity
+    display_name: Inference Capacity
+    description: Inference site capacity by workload and region, for sites closer
+      to users. Stores quantity in sites.
+    synonyms: []
+    tags:
+    - fact
+    - delivery
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: DELIVERY
+      object: FACT_INFERENCE_CAPACITY
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, ai workload,
+      region.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_ai_workload_identity
+      dataset_columns:
+      - ai_workload_id
+      description: Identifier of the ai workload.
+    - identity_id: dim_region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: ai_workload_id
+    description: Identifier of the related ai workload.
+  - name: region_id
+    description: Identifier of the related region.
+  - name: inference_site_count
+    description: Inference site quantity in sites.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_ai_workload_identity
+    dataset_columns:
+    - ai_workload_id
+    entity_universe: partial
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:app.delivery.fact_engineering_capacity
+  descriptor:
+    qualified_name: app.delivery.fact_engineering_capacity
+    display_name: Engineering Capacity
+    description: Product engineering employee capacity by workforce group. Stores
+      quantity in employees.
+    synonyms: []
+    tags:
+    - fact
+    - delivery
+    - app
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: app.us-west-1
+      database: APP
+      schema: DELIVERY
+      object: FACT_ENGINEERING_CAPACITY
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, workforce
+      group, buyer industry.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_workforce_group_identity
+      dataset_columns:
+      - workforce_group_id
+      description: Identifier of the workforce group.
+    - identity_id: dim_buyer_industry_identity
+      dataset_columns:
+      - buyer_industry_id
+      description: Identifier of the buyer industry.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: workforce_group_id
+    description: Identifier of the related workforce group.
+  - name: buyer_industry_id
+    description: Identifier of the related buyer industry.
+  - name: engineer_count
+    description: Engineer quantity in employees.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_workforce_group_identity
+    dataset_columns:
+    - workforce_group_id
+    entity_universe: partial
+  - identity_id: dim_buyer_industry_identity
+    dataset_columns:
+    - buyer_industry_id
+    entity_universe: partial

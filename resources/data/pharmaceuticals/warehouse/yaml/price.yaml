@@ -1,0 +1,1204 @@
+schema_version: '3'
+nodes:
+- node_id: sf:pharma.price.dim_revenue_line
+  descriptor:
+    qualified_name: pharma.price.dim_revenue_line
+    display_name: Revenue Line
+    description: Line of revenue earned.
+    synonyms: []
+    tags:
+    - dim
+    - price
+    - pharma
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: pharma.us-east-1
+      database: PHARMA
+      schema: PRICE
+      object: DIM_REVENUE_LINE
+      format: table
+  grain:
+    description: One row is one revenue line.
+    components:
+    - identity_id: dim_revenue_line_identity
+      dataset_columns:
+      - revenue_line_id
+      description: Identifier of the revenue line.
+  columns:
+  - name: revenue_line_id
+    description: Identifier of the revenue line.
+  - name: revenue_line_code
+    description: Revenue Line code.
+    value_description: product_sales, alliance_revenue, milestone_revenue, other_revenue
+  - name: revenue_line_name
+    description: Revenue Line name.
+  entity_definitions:
+  - identity_id: dim_revenue_line_identity
+    dataset_columns:
+    - revenue_line_id
+    entity_universe: complete
+- node_id: sf:pharma.price.dim_cost_bucket
+  descriptor:
+    qualified_name: pharma.price.dim_cost_bucket
+    display_name: Cost Bucket
+    description: Bucket of operating cost.
+    synonyms: []
+    tags:
+    - dim
+    - price
+    - pharma
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: pharma.us-east-1
+      database: PHARMA
+      schema: PRICE
+      object: DIM_COST_BUCKET
+      format: table
+  grain:
+    description: One row is one cost bucket.
+    components:
+    - identity_id: dim_cost_bucket_identity
+      dataset_columns:
+      - cost_bucket_id
+      description: Identifier of the cost bucket.
+  columns:
+  - name: cost_bucket_id
+    description: Identifier of the cost bucket.
+  - name: cost_bucket_code
+    description: Cost Bucket code.
+    value_description: cost_of_goods, research_development, marketing_selling_administrative, acquired_research
+  - name: cost_bucket_name
+    description: Cost Bucket name.
+  entity_definitions:
+  - identity_id: dim_cost_bucket_identity
+    dataset_columns:
+    - cost_bucket_id
+    entity_universe: complete
+- node_id: sf:pharma.price.dim_competitor
+  descriptor:
+    qualified_name: pharma.price.dim_competitor
+    display_name: Competitor
+    description: Competitor product or company referenced in a question.
+    synonyms: []
+    tags:
+    - dim
+    - price
+    - pharma
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: pharma.us-east-1
+      database: PHARMA
+      schema: PRICE
+      object: DIM_COMPETITOR
+      format: table
+  grain:
+    description: One row is one competitor.
+    components:
+    - identity_id: dim_competitor_identity
+      dataset_columns:
+      - competitor_id
+      description: Identifier of the competitor.
+  columns:
+  - name: competitor_id
+    description: Identifier of the competitor.
+  - name: competitor_code
+    description: Competitor code.
+    value_description: novo_nordisk, astrazeneca, gilead, competitor_pd1_vegf, biosimilar_entrant, generic_semaglutide
+  - name: competitor_name
+    description: Competitor name.
+  entity_definitions:
+  - identity_id: dim_competitor_identity
+    dataset_columns:
+    - competitor_id
+    entity_universe: complete
+- node_id: sf:pharma.price.dim_contract_type
+  descriptor:
+    qualified_name: pharma.price.dim_contract_type
+    display_name: Contract Type
+    description: Type of payer contract.
+    synonyms: []
+    tags:
+    - dim
+    - price
+    - pharma
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: pharma.us-east-1
+      database: PHARMA
+      schema: PRICE
+      object: DIM_CONTRACT_TYPE
+      format: table
+  grain:
+    description: One row is one contract type.
+    components:
+    - identity_id: dim_contract_type_identity
+      dataset_columns:
+      - contract_type_id
+      description: Identifier of the contract type.
+  columns:
+  - name: contract_type_id
+    description: Identifier of the contract type.
+  - name: contract_type_code
+    description: Contract Type code.
+    value_description: rebate_contract, outcomes_contract, direct_contract
+  - name: contract_type_name
+    description: Contract Type name.
+  entity_definitions:
+  - identity_id: dim_contract_type_identity
+    dataset_columns:
+    - contract_type_id
+    entity_universe: complete
+- node_id: sf:pharma.price.fact_product_revenue
+  descriptor:
+    qualified_name: pharma.price.fact_product_revenue
+    display_name: Product Revenue
+    description: Product sales by product, therapy area and geography. Stores sales in dollars. Stores no patient count.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - pharma
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: pharma.us-east-1
+      database: PHARMA
+      schema: PRICE
+      object: FACT_PRODUCT_REVENUE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, product, therapy area, geography, revenue line.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_product_identity
+      dataset_columns:
+      - product_id
+      description: Identifier of the product.
+    - identity_id: dim_therapy_area_identity
+      dataset_columns:
+      - therapy_area_id
+      description: Identifier of the therapy area.
+    - identity_id: dim_geography_identity
+      dataset_columns:
+      - geography_id
+      description: Identifier of the geography.
+    - identity_id: dim_revenue_line_identity
+      dataset_columns:
+      - revenue_line_id
+      description: Identifier of the revenue line.
+  columns:
+  - name: product_revenue_record_id
+    description: Surrogate record identifier for this product revenue row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: product_id
+    description: Identifier of the related product.
+  - name: therapy_area_id
+    description: Identifier of the related therapy area.
+  - name: geography_id
+    description: Identifier of the related geography.
+  - name: revenue_line_id
+    description: Identifier of the related revenue line.
+  - name: product_sales_amount
+    description: Product sales in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_product_identity
+    dataset_columns:
+    - product_id
+    entity_universe: partial
+  - identity_id: dim_therapy_area_identity
+    dataset_columns:
+    - therapy_area_id
+    entity_universe: partial
+  - identity_id: dim_geography_identity
+    dataset_columns:
+    - geography_id
+    entity_universe: partial
+  - identity_id: dim_revenue_line_identity
+    dataset_columns:
+    - revenue_line_id
+    entity_universe: partial
+- node_id: sf:pharma.price.fact_incretin_revenue
+  descriptor:
+    qualified_name: pharma.price.fact_incretin_revenue
+    display_name: Incretin Revenue
+    description: Incretin franchise sales by product and payer channel. Stores sales in dollars. Stores no prescription count.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - pharma
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: pharma.us-east-1
+      database: PHARMA
+      schema: PRICE
+      object: FACT_INCRETIN_REVENUE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, product, payer channel, geography.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_product_identity
+      dataset_columns:
+      - product_id
+      description: Identifier of the product.
+    - identity_id: dim_payer_channel_identity
+      dataset_columns:
+      - payer_channel_id
+      description: Identifier of the payer channel.
+    - identity_id: dim_geography_identity
+      dataset_columns:
+      - geography_id
+      description: Identifier of the geography.
+  columns:
+  - name: incretin_revenue_record_id
+    description: Surrogate record identifier for this incretin revenue row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: product_id
+    description: Identifier of the related product.
+  - name: payer_channel_id
+    description: Identifier of the related payer channel.
+  - name: geography_id
+    description: Identifier of the related geography.
+  - name: incretin_sales_amount
+    description: Incretin product sales in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_product_identity
+    dataset_columns:
+    - product_id
+    entity_universe: partial
+  - identity_id: dim_payer_channel_identity
+    dataset_columns:
+    - payer_channel_id
+    entity_universe: partial
+  - identity_id: dim_geography_identity
+    dataset_columns:
+    - geography_id
+    entity_universe: partial
+- node_id: sf:pharma.price.fact_oncology_revenue
+  descriptor:
+    qualified_name: pharma.price.fact_oncology_revenue
+    display_name: Oncology Revenue
+    description: Oncology sales by product and indication. Stores sales in dollars. Stores no patient count.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - pharma
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: pharma.us-east-1
+      database: PHARMA
+      schema: PRICE
+      object: FACT_ONCOLOGY_REVENUE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, product, indication, geography.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_product_identity
+      dataset_columns:
+      - product_id
+      description: Identifier of the product.
+    - identity_id: dim_indication_identity
+      dataset_columns:
+      - indication_id
+      description: Identifier of the indication.
+    - identity_id: dim_geography_identity
+      dataset_columns:
+      - geography_id
+      description: Identifier of the geography.
+  columns:
+  - name: oncology_revenue_record_id
+    description: Surrogate record identifier for this oncology revenue row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: product_id
+    description: Identifier of the related product.
+  - name: indication_id
+    description: Identifier of the related indication.
+  - name: geography_id
+    description: Identifier of the related geography.
+  - name: oncology_sales_amount
+    description: Oncology product sales in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_product_identity
+    dataset_columns:
+    - product_id
+    entity_universe: partial
+  - identity_id: dim_indication_identity
+    dataset_columns:
+    - indication_id
+    entity_universe: partial
+  - identity_id: dim_geography_identity
+    dataset_columns:
+    - geography_id
+    entity_universe: partial
+- node_id: sf:pharma.price.fact_vaccine_revenue
+  descriptor:
+    qualified_name: pharma.price.fact_vaccine_revenue
+    display_name: Vaccine Revenue
+    description: Vaccine sales by product and geography. Stores sales in dollars. Stores no dose count.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - pharma
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: pharma.us-east-1
+      database: PHARMA
+      schema: PRICE
+      object: FACT_VACCINE_REVENUE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, product, geography.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_product_identity
+      dataset_columns:
+      - product_id
+      description: Identifier of the product.
+    - identity_id: dim_geography_identity
+      dataset_columns:
+      - geography_id
+      description: Identifier of the geography.
+  columns:
+  - name: vaccine_revenue_record_id
+    description: Surrogate record identifier for this vaccine revenue row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: product_id
+    description: Identifier of the related product.
+  - name: geography_id
+    description: Identifier of the related geography.
+  - name: vaccine_sales_amount
+    description: Vaccine sales in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_product_identity
+    dataset_columns:
+    - product_id
+    entity_universe: partial
+  - identity_id: dim_geography_identity
+    dataset_columns:
+    - geography_id
+    entity_universe: partial
+- node_id: sf:pharma.price.fact_gross_to_net
+  descriptor:
+    qualified_name: pharma.price.fact_gross_to_net
+    display_name: Gross To Net
+    description: Gross sales, rebates and net sales by product and payer channel. Stores amounts in dollars. Stores no prescription
+      count.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - pharma
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: pharma.us-east-1
+      database: PHARMA
+      schema: PRICE
+      object: FACT_GROSS_TO_NET
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, product, payer channel.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_product_identity
+      dataset_columns:
+      - product_id
+      description: Identifier of the product.
+    - identity_id: dim_payer_channel_identity
+      dataset_columns:
+      - payer_channel_id
+      description: Identifier of the payer channel.
+  columns:
+  - name: gross_to_net_record_id
+    description: Surrogate record identifier for this gross to net row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: product_id
+    description: Identifier of the related product.
+  - name: payer_channel_id
+    description: Identifier of the related payer channel.
+  - name: gross_sales_amount
+    description: Gross product sales in dollars.
+  - name: rebate_amount
+    description: Rebates and discounts in dollars.
+  - name: net_sales_amount
+    description: Net product sales in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_product_identity
+    dataset_columns:
+    - product_id
+    entity_universe: partial
+  - identity_id: dim_payer_channel_identity
+    dataset_columns:
+    - payer_channel_id
+    entity_universe: partial
+- node_id: sf:pharma.price.fact_net_price
+  descriptor:
+    qualified_name: pharma.price.fact_net_price
+    display_name: Net Price
+    description: Net price per unit by product and payer channel. Stores dollars per unit. Units are on the product demand
+      and supply output facts.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - pharma
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: pharma.us-east-1
+      database: PHARMA
+      schema: PRICE
+      object: FACT_NET_PRICE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, product, payer channel, dosage form.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_product_identity
+      dataset_columns:
+      - product_id
+      description: Identifier of the product.
+    - identity_id: dim_payer_channel_identity
+      dataset_columns:
+      - payer_channel_id
+      description: Identifier of the payer channel.
+    - identity_id: dim_dosage_form_identity
+      dataset_columns:
+      - dosage_form_id
+      description: Identifier of the dosage form.
+  columns:
+  - name: net_price_record_id
+    description: Surrogate record identifier for this net price row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: product_id
+    description: Identifier of the related product.
+  - name: payer_channel_id
+    description: Identifier of the related payer channel.
+  - name: dosage_form_id
+    description: Identifier of the related dosage form.
+  - name: net_price_per_unit_amount
+    description: Net price per unit in dollars per unit.
+  - name: list_price_per_unit_amount
+    description: List price per unit in dollars per unit.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_product_identity
+    dataset_columns:
+    - product_id
+    entity_universe: partial
+  - identity_id: dim_payer_channel_identity
+    dataset_columns:
+    - payer_channel_id
+    entity_universe: partial
+  - identity_id: dim_dosage_form_identity
+    dataset_columns:
+    - dosage_form_id
+    entity_universe: partial
+- node_id: sf:pharma.price.fact_enterprise_results
+  descriptor:
+    qualified_name: pharma.price.fact_enterprise_results
+    display_name: Enterprise Results
+    description: Enterprise results for Pharma Inc. Stores revenue, income and earnings in dollars. Grained only at fiscal
+      quarter and scenario.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - pharma
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: pharma.us-east-1
+      database: PHARMA
+      schema: PRICE
+      object: FACT_ENTERPRISE_RESULTS
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+  columns:
+  - name: enterprise_results_record_id
+    description: Surrogate record identifier for this enterprise results row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: total_revenue_amount
+    description: Total revenue in dollars.
+  - name: operating_income_amount
+    description: Operating income in dollars.
+  - name: net_income_amount
+    description: Net income in dollars.
+  - name: diluted_earnings_per_share
+    description: Diluted earnings per share in dollars per share.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+- node_id: sf:pharma.price.fact_gross_margin
+  descriptor:
+    qualified_name: pharma.price.fact_gross_margin
+    display_name: Gross Margin
+    description: Gross profit and margin by therapy area. Stores gross profit in dollars and margin in percent. Dose quantity
+      is on the supply output fact.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - pharma
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: pharma.us-east-1
+      database: PHARMA
+      schema: PRICE
+      object: FACT_GROSS_MARGIN
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, therapy area, product.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_therapy_area_identity
+      dataset_columns:
+      - therapy_area_id
+      description: Identifier of the therapy area.
+    - identity_id: dim_product_identity
+      dataset_columns:
+      - product_id
+      description: Identifier of the product.
+  columns:
+  - name: gross_margin_record_id
+    description: Surrogate record identifier for this gross margin row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: therapy_area_id
+    description: Identifier of the related therapy area.
+  - name: product_id
+    description: Identifier of the related product.
+  - name: gross_profit_amount
+    description: Gross profit in dollars.
+  - name: gross_margin_percent
+    description: Gross margin in percent.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_therapy_area_identity
+    dataset_columns:
+    - therapy_area_id
+    entity_universe: partial
+  - identity_id: dim_product_identity
+    dataset_columns:
+    - product_id
+    entity_universe: partial
+- node_id: sf:pharma.price.fact_operating_expense
+  descriptor:
+    qualified_name: pharma.price.fact_operating_expense
+    display_name: Operating Expense
+    description: Operating expense by cost bucket and therapy area. Stores expense in dollars. Stores no headcount.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - pharma
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: pharma.us-east-1
+      database: PHARMA
+      schema: PRICE
+      object: FACT_OPERATING_EXPENSE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, cost bucket, therapy area.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_cost_bucket_identity
+      dataset_columns:
+      - cost_bucket_id
+      description: Identifier of the cost bucket.
+    - identity_id: dim_therapy_area_identity
+      dataset_columns:
+      - therapy_area_id
+      description: Identifier of the therapy area.
+  columns:
+  - name: operating_expense_record_id
+    description: Surrogate record identifier for this operating expense row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: cost_bucket_id
+    description: Identifier of the related cost bucket.
+  - name: therapy_area_id
+    description: Identifier of the related therapy area.
+  - name: operating_expense_amount
+    description: Operating expense in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_cost_bucket_identity
+    dataset_columns:
+    - cost_bucket_id
+    entity_universe: partial
+  - identity_id: dim_therapy_area_identity
+    dataset_columns:
+    - therapy_area_id
+    entity_universe: partial
+- node_id: sf:pharma.price.fact_cash_flow
+  descriptor:
+    qualified_name: pharma.price.fact_cash_flow
+    display_name: Cash Flow
+    description: Enterprise cash flow. Stores cash flow in dollars. Grained only at fiscal quarter and scenario.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - pharma
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: pharma.us-east-1
+      database: PHARMA
+      schema: PRICE
+      object: FACT_CASH_FLOW
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+  columns:
+  - name: cash_flow_record_id
+    description: Surrogate record identifier for this cash flow row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: operating_cash_flow_amount
+    description: Operating cash flow in dollars.
+  - name: capital_expenditure_amount
+    description: Capital expenditure in dollars.
+  - name: free_cash_flow_amount
+    description: Free cash flow in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+- node_id: sf:pharma.price.fact_business_development
+  descriptor:
+    qualified_name: pharma.price.fact_business_development
+    display_name: Business Development
+    description: Business development investment by therapy area. Stores deal value and milestone amounts in dollars. Stores
+      no asset count.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - pharma
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: pharma.us-east-1
+      database: PHARMA
+      schema: PRICE
+      object: FACT_BUSINESS_DEVELOPMENT
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, therapy area, indication.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_therapy_area_identity
+      dataset_columns:
+      - therapy_area_id
+      description: Identifier of the therapy area.
+    - identity_id: dim_indication_identity
+      dataset_columns:
+      - indication_id
+      description: Identifier of the indication.
+  columns:
+  - name: business_development_record_id
+    description: Surrogate record identifier for this business development row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: therapy_area_id
+    description: Identifier of the related therapy area.
+  - name: indication_id
+    description: Identifier of the related indication.
+  - name: deal_value_amount
+    description: Business development deal value in dollars.
+  - name: milestone_payment_amount
+    description: Milestone payments in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_therapy_area_identity
+    dataset_columns:
+    - therapy_area_id
+    entity_universe: partial
+  - identity_id: dim_indication_identity
+    dataset_columns:
+    - indication_id
+    entity_universe: partial
+- node_id: sf:pharma.price.fact_alliance_revenue
+  descriptor:
+    qualified_name: pharma.price.fact_alliance_revenue
+    display_name: Alliance Revenue
+    description: Alliance and milestone revenue by therapy area. Stores revenue in dollars. Stores no asset count.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - pharma
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: pharma.us-east-1
+      database: PHARMA
+      schema: PRICE
+      object: FACT_ALLIANCE_REVENUE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, therapy area, revenue line, geography.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_therapy_area_identity
+      dataset_columns:
+      - therapy_area_id
+      description: Identifier of the therapy area.
+    - identity_id: dim_revenue_line_identity
+      dataset_columns:
+      - revenue_line_id
+      description: Identifier of the revenue line.
+    - identity_id: dim_geography_identity
+      dataset_columns:
+      - geography_id
+      description: Identifier of the geography.
+  columns:
+  - name: alliance_revenue_record_id
+    description: Surrogate record identifier for this alliance revenue row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: therapy_area_id
+    description: Identifier of the related therapy area.
+  - name: revenue_line_id
+    description: Identifier of the related revenue line.
+  - name: geography_id
+    description: Identifier of the related geography.
+  - name: alliance_revenue_amount
+    description: Alliance revenue in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_therapy_area_identity
+    dataset_columns:
+    - therapy_area_id
+    entity_universe: partial
+  - identity_id: dim_revenue_line_identity
+    dataset_columns:
+    - revenue_line_id
+    entity_universe: partial
+  - identity_id: dim_geography_identity
+    dataset_columns:
+    - geography_id
+    entity_universe: partial
+- node_id: sf:pharma.price.fact_other_product_revenue
+  descriptor:
+    qualified_name: pharma.price.fact_other_product_revenue
+    display_name: Other Product Revenue
+    description: Other product sales by therapy area and geography. Stores sales in dollars. Stores no patient count.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - pharma
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: pharma.us-east-1
+      database: PHARMA
+      schema: PRICE
+      object: FACT_OTHER_PRODUCT_REVENUE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, therapy area, geography.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_therapy_area_identity
+      dataset_columns:
+      - therapy_area_id
+      description: Identifier of the therapy area.
+    - identity_id: dim_geography_identity
+      dataset_columns:
+      - geography_id
+      description: Identifier of the geography.
+  columns:
+  - name: other_product_revenue_record_id
+    description: Surrogate record identifier for this other product revenue row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: therapy_area_id
+    description: Identifier of the related therapy area.
+  - name: geography_id
+    description: Identifier of the related geography.
+  - name: other_product_sales_amount
+    description: Other product sales in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_therapy_area_identity
+    dataset_columns:
+    - therapy_area_id
+    entity_universe: partial
+  - identity_id: dim_geography_identity
+    dataset_columns:
+    - geography_id
+    entity_universe: partial
+- node_id: sf:pharma.price.fact_contract_revenue
+  descriptor:
+    qualified_name: pharma.price.fact_contract_revenue
+    display_name: Contract Revenue
+    description: Net sales by payer contract type and product. Stores net sales in dollars. Stores no patient count.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - pharma
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: pharma.us-east-1
+      database: PHARMA
+      schema: PRICE
+      object: FACT_CONTRACT_REVENUE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, contract type, product.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_contract_type_identity
+      dataset_columns:
+      - contract_type_id
+      description: Identifier of the contract type.
+    - identity_id: dim_product_identity
+      dataset_columns:
+      - product_id
+      description: Identifier of the product.
+  columns:
+  - name: contract_revenue_record_id
+    description: Surrogate record identifier for this contract revenue row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: contract_type_id
+    description: Identifier of the related contract type.
+  - name: product_id
+    description: Identifier of the related product.
+  - name: contract_net_sales_amount
+    description: Net sales under the contract type in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_contract_type_identity
+    dataset_columns:
+    - contract_type_id
+    entity_universe: partial
+  - identity_id: dim_product_identity
+    dataset_columns:
+    - product_id
+    entity_universe: partial
+- node_id: sf:pharma.price.fact_diabetes_revenue
+  descriptor:
+    qualified_name: pharma.price.fact_diabetes_revenue
+    display_name: Diabetes Revenue
+    description: Diabetes product sales by product and geography. Stores sales in dollars. Stores no patient count.
+    synonyms: []
+    tags:
+    - fact
+    - price
+    - pharma
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: pharma.us-east-1
+      database: PHARMA
+      schema: PRICE
+      object: FACT_DIABETES_REVENUE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, product, geography.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_product_identity
+      dataset_columns:
+      - product_id
+      description: Identifier of the product.
+    - identity_id: dim_geography_identity
+      dataset_columns:
+      - geography_id
+      description: Identifier of the geography.
+  columns:
+  - name: diabetes_revenue_record_id
+    description: Surrogate record identifier for this diabetes revenue row. It is not the grain.
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: product_id
+    description: Identifier of the related product.
+  - name: geography_id
+    description: Identifier of the related geography.
+  - name: diabetes_sales_amount
+    description: Diabetes product sales in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_product_identity
+    dataset_columns:
+    - product_id
+    entity_universe: partial
+  - identity_id: dim_geography_identity
+    dataset_columns:
+    - geography_id
+    entity_universe: partial

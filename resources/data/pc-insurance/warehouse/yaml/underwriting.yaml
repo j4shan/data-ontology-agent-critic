@@ -1,0 +1,730 @@
+schema_version: '3'
+nodes:
+- node_id: sf:insurance.underwriting.dim_employee_group
+  descriptor:
+    qualified_name: insurance.underwriting.dim_employee_group
+    display_name: Employee Group
+    description: Insurance employee group.
+    synonyms: []
+    tags:
+    - dimension
+    - underwriting
+    - insurance
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: insurance.us-east-1
+      database: INSURANCE
+      schema: UNDERWRITING
+      object: DIM_EMPLOYEE_GROUP
+      format: table
+  grain:
+    description: One row is one employee group.
+    components:
+    - identity_id: dim_employee_group_identity
+      dataset_columns:
+      - employee_group_id
+      description: Identifier of the employee group.
+  columns:
+  - name: employee_group_id
+    description: Identifier of the employee group.
+  - name: employee_group_code
+    description: Employee Group code.
+    value_description: underwriting, claims, agency_sales, technology, corporate
+  - name: employee_group_name
+    description: Employee Group name.
+  entity_definitions:
+  - identity_id: dim_employee_group_identity
+    dataset_columns:
+    - employee_group_id
+    entity_universe: complete
+- node_id: sf:insurance.underwriting.dim_initiative
+  descriptor:
+    qualified_name: insurance.underwriting.dim_initiative
+    display_name: Initiative
+    description: Insurance initiative.
+    synonyms: []
+    tags:
+    - dimension
+    - underwriting
+    - insurance
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: insurance.us-east-1
+      database: INSURANCE
+      schema: UNDERWRITING
+      object: DIM_INITIATIVE
+      format: table
+  grain:
+    description: One row is one initiative.
+    components:
+    - identity_id: dim_initiative_identity
+      dataset_columns:
+      - initiative_id
+      description: Identifier of the initiative.
+  columns:
+  - name: initiative_id
+    description: Identifier of the initiative.
+  - name: initiative_code
+    description: Initiative code.
+    value_description: digital_transformation, casualty_remediation, growth_initiative,
+      catastrophe_modeling
+  - name: initiative_name
+    description: Initiative name.
+  entity_definitions:
+  - identity_id: dim_initiative_identity
+    dataset_columns:
+    - initiative_id
+    entity_universe: complete
+- node_id: sf:insurance.underwriting.fact_underwriting_capacity
+  descriptor:
+    qualified_name: insurance.underwriting.fact_underwriting_capacity
+    display_name: Underwriting Capacity
+    description: Underwriter employee capacity by line and region. Stores quantity
+      in employees.
+    synonyms: []
+    tags:
+    - fact
+    - underwriting
+    - insurance
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: insurance.us-east-1
+      database: INSURANCE
+      schema: UNDERWRITING
+      object: FACT_UNDERWRITING_CAPACITY
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, employee
+      group, line of business, region.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_employee_group_identity
+      dataset_columns:
+      - employee_group_id
+      description: Identifier of the employee group.
+    - identity_id: dim_line_of_business_identity
+      dataset_columns:
+      - line_of_business_id
+      description: Identifier of the line of business.
+    - identity_id: dim_region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: employee_group_id
+    description: Identifier of the related employee group.
+  - name: line_of_business_id
+    description: Identifier of the related line of business.
+  - name: region_id
+    description: Identifier of the related region.
+  - name: underwriter_count
+    description: Underwriter quantity in employees.
+  - name: underwriting_employee_count
+    description: Underwriting employee quantity in employees.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_employee_group_identity
+    dataset_columns:
+    - employee_group_id
+    entity_universe: partial
+  - identity_id: dim_line_of_business_identity
+    dataset_columns:
+    - line_of_business_id
+    entity_universe: partial
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:insurance.underwriting.fact_agency_capacity
+  descriptor:
+    qualified_name: insurance.underwriting.fact_agency_capacity
+    display_name: Agency Capacity
+    description: Agency and agent capacity by channel and region. Stores quantity
+      in agencies and agents.
+    synonyms: []
+    tags:
+    - fact
+    - underwriting
+    - insurance
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: insurance.us-east-1
+      database: INSURANCE
+      schema: UNDERWRITING
+      object: FACT_AGENCY_CAPACITY
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, distribution
+      channel, region.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_distribution_channel_identity
+      dataset_columns:
+      - distribution_channel_id
+      description: Identifier of the distribution channel.
+    - identity_id: dim_region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: distribution_channel_id
+    description: Identifier of the related distribution channel.
+  - name: region_id
+    description: Identifier of the related region.
+  - name: agency_count
+    description: Agency quantity in agencies.
+  - name: active_agent_count
+    description: Agent quantity in agents.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_distribution_channel_identity
+    dataset_columns:
+    - distribution_channel_id
+    entity_universe: partial
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:insurance.underwriting.fact_claims_capacity
+  descriptor:
+    qualified_name: insurance.underwriting.fact_claims_capacity
+    display_name: Claims Capacity
+    description: Claims adjuster capacity. Stores quantity in adjusters.
+    synonyms: []
+    tags:
+    - fact
+    - underwriting
+    - insurance
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: insurance.us-east-1
+      database: INSURANCE
+      schema: UNDERWRITING
+      object: FACT_CLAIMS_CAPACITY
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, employee
+      group, region.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_employee_group_identity
+      dataset_columns:
+      - employee_group_id
+      description: Identifier of the employee group.
+    - identity_id: dim_region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: employee_group_id
+    description: Identifier of the related employee group.
+  - name: region_id
+    description: Identifier of the related region.
+  - name: claims_adjuster_count
+    description: Adjuster quantity in adjusters.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_employee_group_identity
+    dataset_columns:
+    - employee_group_id
+    entity_universe: partial
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:insurance.underwriting.fact_branch_capacity
+  descriptor:
+    qualified_name: insurance.underwriting.fact_branch_capacity
+    display_name: Branch Capacity
+    description: Branch office capacity. Stores quantity in offices.
+    synonyms: []
+    tags:
+    - fact
+    - underwriting
+    - insurance
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: insurance.us-east-1
+      database: INSURANCE
+      schema: UNDERWRITING
+      object: FACT_BRANCH_CAPACITY
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, region, us
+      region.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+    - identity_id: dim_us_region_identity
+      dataset_columns:
+      - us_region_id
+      description: Identifier of the us region.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: region_id
+    description: Identifier of the related region.
+  - name: us_region_id
+    description: Identifier of the related us region.
+  - name: branch_office_count
+    description: Branch quantity in offices.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+  - identity_id: dim_us_region_identity
+    dataset_columns:
+    - us_region_id
+    entity_universe: partial
+- node_id: sf:insurance.underwriting.fact_reinsurance_capacity
+  descriptor:
+    qualified_name: insurance.underwriting.fact_reinsurance_capacity
+    display_name: Reinsurance Capacity
+    description: Treaty capacity count by reinsurance type and peril. Stores quantity
+      in treaties.
+    synonyms: []
+    tags:
+    - fact
+    - underwriting
+    - insurance
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: insurance.us-east-1
+      database: INSURANCE
+      schema: UNDERWRITING
+      object: FACT_REINSURANCE_CAPACITY
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, reinsurance
+      type, peril.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_reinsurance_type_identity
+      dataset_columns:
+      - reinsurance_type_id
+      description: Identifier of the reinsurance type.
+    - identity_id: dim_peril_identity
+      dataset_columns:
+      - peril_id
+      description: Identifier of the peril.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: reinsurance_type_id
+    description: Identifier of the related reinsurance type.
+  - name: peril_id
+    description: Identifier of the related peril.
+  - name: treaty_count
+    description: Treaty quantity in treaties.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_reinsurance_type_identity
+    dataset_columns:
+    - reinsurance_type_id
+    entity_universe: partial
+  - identity_id: dim_peril_identity
+    dataset_columns:
+    - peril_id
+    entity_universe: partial
+- node_id: sf:insurance.underwriting.fact_digital_capacity
+  descriptor:
+    qualified_name: insurance.underwriting.fact_digital_capacity
+    display_name: Digital Capacity
+    description: Digital application and automation capacity by initiative. Stores
+      quantity in applications and use cases.
+    synonyms: []
+    tags:
+    - fact
+    - underwriting
+    - insurance
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: insurance.us-east-1
+      database: INSURANCE
+      schema: UNDERWRITING
+      object: FACT_DIGITAL_CAPACITY
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, initiative.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_initiative_identity
+      dataset_columns:
+      - initiative_id
+      description: Identifier of the initiative.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: initiative_id
+    description: Identifier of the related initiative.
+  - name: digital_application_count
+    description: Digital application quantity in applications.
+  - name: automation_use_case_count
+    description: Automation quantity in use cases.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_initiative_identity
+    dataset_columns:
+    - initiative_id
+    entity_universe: partial
+- node_id: sf:insurance.underwriting.fact_underwriting_authority
+  descriptor:
+    qualified_name: insurance.underwriting.fact_underwriting_authority
+    display_name: Underwriting Authority
+    description: Authorized account capacity by commercial size and line. Stores quantity
+      in accounts.
+    synonyms: []
+    tags:
+    - fact
+    - underwriting
+    - insurance
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: insurance.us-east-1
+      database: INSURANCE
+      schema: UNDERWRITING
+      object: FACT_UNDERWRITING_AUTHORITY
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, commercial
+      size, line of business.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_commercial_size_identity
+      dataset_columns:
+      - commercial_size_id
+      description: Identifier of the commercial size.
+    - identity_id: dim_line_of_business_identity
+      dataset_columns:
+      - line_of_business_id
+      description: Identifier of the line of business.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: commercial_size_id
+    description: Identifier of the related commercial size.
+  - name: line_of_business_id
+    description: Identifier of the related line of business.
+  - name: authorized_account_count
+    description: Authorized account quantity in accounts.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_commercial_size_identity
+    dataset_columns:
+    - commercial_size_id
+    entity_universe: partial
+  - identity_id: dim_line_of_business_identity
+    dataset_columns:
+    - line_of_business_id
+    entity_universe: partial
+- node_id: sf:insurance.underwriting.fact_investment_holdings_capacity
+  descriptor:
+    qualified_name: insurance.underwriting.fact_investment_holdings_capacity
+    display_name: Investment Holdings Capacity
+    description: Investment holding count by asset class. Stores quantity in holdings;
+      income dollars are in economics.
+    synonyms: []
+    tags:
+    - fact
+    - underwriting
+    - insurance
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: insurance.us-east-1
+      database: INSURANCE
+      schema: UNDERWRITING
+      object: FACT_INVESTMENT_HOLDINGS_CAPACITY
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, investment
+      asset.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_investment_asset_identity
+      dataset_columns:
+      - investment_asset_id
+      description: Identifier of the investment asset.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: investment_asset_id
+    description: Identifier of the related investment asset.
+  - name: portfolio_holding_count
+    description: Holding quantity in holdings.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_investment_asset_identity
+    dataset_columns:
+    - investment_asset_id
+    entity_universe: partial
+- node_id: sf:insurance.underwriting.fact_partner_capacity
+  descriptor:
+    qualified_name: insurance.underwriting.fact_partner_capacity
+    display_name: Partner Capacity
+    description: Distribution partner capacity by channel. Stores quantity in partners.
+    synonyms: []
+    tags:
+    - fact
+    - underwriting
+    - insurance
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: insurance.us-east-1
+      database: INSURANCE
+      schema: UNDERWRITING
+      object: FACT_PARTNER_CAPACITY
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, distribution
+      channel.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_distribution_channel_identity
+      dataset_columns:
+      - distribution_channel_id
+      description: Identifier of the distribution channel.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: distribution_channel_id
+    description: Identifier of the related distribution channel.
+  - name: distribution_partner_count
+    description: Partner quantity in partners.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_distribution_channel_identity
+    dataset_columns:
+    - distribution_channel_id
+    entity_universe: partial
+- node_id: sf:insurance.underwriting.fact_catastrophe_model_capacity
+  descriptor:
+    qualified_name: insurance.underwriting.fact_catastrophe_model_capacity
+    display_name: Catastrophe Model Capacity
+    description: Modeled peril-region combinations capacity. Stores quantity in modeled
+      combinations.
+    synonyms: []
+    tags:
+    - fact
+    - underwriting
+    - insurance
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: insurance.us-east-1
+      database: INSURANCE
+      schema: UNDERWRITING
+      object: FACT_CATASTROPHE_MODEL_CAPACITY
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, peril, region.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_peril_identity
+      dataset_columns:
+      - peril_id
+      description: Identifier of the peril.
+    - identity_id: dim_region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: peril_id
+    description: Identifier of the related peril.
+  - name: region_id
+    description: Identifier of the related region.
+  - name: modeled_combination_count
+    description: Modeled quantity in combinations.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_peril_identity
+    dataset_columns:
+    - peril_id
+    entity_universe: partial
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial

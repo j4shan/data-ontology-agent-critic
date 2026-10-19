@@ -1,0 +1,1448 @@
+schema_version: '3'
+nodes:
+- node_id: sf:hardwarestore.economics.dim_cost_bucket
+  descriptor:
+    qualified_name: hardwarestore.economics.dim_cost_bucket
+    display_name: Cost Bucket
+    description: Operating cost bucket.
+    synonyms: []
+    tags:
+    - dimension
+    - economics
+    - hardwarestore
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: hardwarestore.us-east-1
+      database: HARDWARE_STORE
+      schema: ECONOMICS
+      object: DIM_COST_BUCKET
+      format: table
+  grain:
+    description: One row is one cost bucket.
+    components:
+    - identity_id: dim_cost_bucket_identity
+      dataset_columns:
+      - cost_bucket_id
+      description: Identifier of the cost bucket.
+  columns:
+  - name: cost_bucket_id
+    description: Identifier of the cost bucket.
+  - name: cost_bucket_code
+    description: Cost Bucket code.
+    value_description: cost_of_sales, selling_general_administrative, depreciation,
+      advertising, supply_chain, merchant_credit_fees
+  - name: cost_bucket_name
+    description: Cost Bucket name.
+  entity_definitions:
+  - identity_id: dim_cost_bucket_identity
+    dataset_columns:
+    - cost_bucket_id
+    entity_universe: complete
+- node_id: sf:hardwarestore.economics.dim_capital_project_type
+  descriptor:
+    qualified_name: hardwarestore.economics.dim_capital_project_type
+    display_name: Capital Project Type
+    description: Capital project type.
+    synonyms: []
+    tags:
+    - dimension
+    - economics
+    - hardwarestore
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: hardwarestore.us-east-1
+      database: HARDWARE_STORE
+      schema: ECONOMICS
+      object: DIM_CAPITAL_PROJECT_TYPE
+      format: table
+  grain:
+    description: One row is one capital project type.
+    components:
+    - identity_id: dim_capital_project_type_identity
+      dataset_columns:
+      - capital_project_type_id
+      description: Identifier of the capital project type.
+  columns:
+  - name: capital_project_type_id
+    description: Identifier of the capital project type.
+  - name: capital_project_type_code
+    description: Capital Project Type code.
+    value_description: new_store, remodel, supply_chain_project, technology_project,
+      maintenance
+  - name: capital_project_type_name
+    description: Capital Project Type name.
+  entity_definitions:
+  - identity_id: dim_capital_project_type_identity
+    dataset_columns:
+    - capital_project_type_id
+    entity_universe: complete
+- node_id: sf:hardwarestore.economics.fact_net_sales
+  descriptor:
+    qualified_name: hardwarestore.economics.fact_net_sales
+    display_name: Net Sales
+    description: Net sales dollars by department, customer type and channel. Stores
+      dollars, no transaction quantity.
+    synonyms: []
+    tags:
+    - fact
+    - economics
+    - hardwarestore
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: hardwarestore.us-east-1
+      database: HARDWARE_STORE
+      schema: ECONOMICS
+      object: FACT_NET_SALES
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, department,
+      customer type, sales channel.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_department_identity
+      dataset_columns:
+      - department_id
+      description: Identifier of the department.
+    - identity_id: dim_customer_type_identity
+      dataset_columns:
+      - customer_type_id
+      description: Identifier of the customer type.
+    - identity_id: dim_sales_channel_identity
+      dataset_columns:
+      - sales_channel_id
+      description: Identifier of the sales channel.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: department_id
+    description: Identifier of the related department.
+  - name: customer_type_id
+    description: Identifier of the related customer type.
+  - name: sales_channel_id
+    description: Identifier of the related sales channel.
+  - name: net_sales_amount
+    description: Net sales in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_department_identity
+    dataset_columns:
+    - department_id
+    entity_universe: partial
+  - identity_id: dim_customer_type_identity
+    dataset_columns:
+    - customer_type_id
+    entity_universe: partial
+  - identity_id: dim_sales_channel_identity
+    dataset_columns:
+    - sales_channel_id
+    entity_universe: partial
+- node_id: sf:hardwarestore.economics.fact_average_ticket_rate
+  descriptor:
+    qualified_name: hardwarestore.economics.fact_average_ticket_rate
+    display_name: Average Ticket Rate
+    description: Average ticket rate. Denominator transaction_count is on sales_transactions
+      at the same grain (customer_type, department, sales_channel). Stores dollars
+      per transaction.
+    synonyms: []
+    tags:
+    - fact
+    - economics
+    - hardwarestore
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: hardwarestore.us-east-1
+      database: HARDWARE_STORE
+      schema: ECONOMICS
+      object: FACT_AVERAGE_TICKET_RATE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, customer
+      type, department, sales channel.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_customer_type_identity
+      dataset_columns:
+      - customer_type_id
+      description: Identifier of the customer type.
+    - identity_id: dim_department_identity
+      dataset_columns:
+      - department_id
+      description: Identifier of the department.
+    - identity_id: dim_sales_channel_identity
+      dataset_columns:
+      - sales_channel_id
+      description: Identifier of the sales channel.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: customer_type_id
+    description: Identifier of the related customer type.
+  - name: department_id
+    description: Identifier of the related department.
+  - name: sales_channel_id
+    description: Identifier of the related sales channel.
+  - name: average_ticket_amount
+    description: Average ticket in dollars per transaction.
+  - name: average_units_per_transaction_rate
+    description: Average units in units per transaction.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_customer_type_identity
+    dataset_columns:
+    - customer_type_id
+    entity_universe: partial
+  - identity_id: dim_department_identity
+    dataset_columns:
+    - department_id
+    entity_universe: partial
+  - identity_id: dim_sales_channel_identity
+    dataset_columns:
+    - sales_channel_id
+    entity_universe: partial
+- node_id: sf:hardwarestore.economics.fact_comparable_sales_rate
+  descriptor:
+    qualified_name: hardwarestore.economics.fact_comparable_sales_rate
+    display_name: Comparable Sales Rate
+    description: Comparable sales and transaction rates by store format and region.
+      Stores percent; transaction count denominator is joinable from customer_traffic
+      and sales_transactions.
+    synonyms: []
+    tags:
+    - fact
+    - economics
+    - hardwarestore
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: hardwarestore.us-east-1
+      database: HARDWARE_STORE
+      schema: ECONOMICS
+      object: FACT_COMPARABLE_SALES_RATE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, store format,
+      region.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_store_format_identity
+      dataset_columns:
+      - store_format_id
+      description: Identifier of the store format.
+    - identity_id: dim_region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: store_format_id
+    description: Identifier of the related store format.
+  - name: region_id
+    description: Identifier of the related region.
+  - name: comparable_sales_percent
+    description: Comparable sales change in percent.
+  - name: comparable_transaction_percent
+    description: Comparable transaction change in percent.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_store_format_identity
+    dataset_columns:
+    - store_format_id
+    entity_universe: partial
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:hardwarestore.economics.fact_gross_margin_rate
+  descriptor:
+    qualified_name: hardwarestore.economics.fact_gross_margin_rate
+    display_name: Gross Margin Rate
+    description: Gross margin rate by department and brand. Denominator net sales
+      is joinable from net_sales by department. Stores percent.
+    synonyms: []
+    tags:
+    - fact
+    - economics
+    - hardwarestore
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: hardwarestore.us-east-1
+      database: HARDWARE_STORE
+      schema: ECONOMICS
+      object: FACT_GROSS_MARGIN_RATE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, department,
+      brand type.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_department_identity
+      dataset_columns:
+      - department_id
+      description: Identifier of the department.
+    - identity_id: dim_brand_type_identity
+      dataset_columns:
+      - brand_type_id
+      description: Identifier of the brand type.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: department_id
+    description: Identifier of the related department.
+  - name: brand_type_id
+    description: Identifier of the related brand type.
+  - name: gross_margin_percent
+    description: Gross margin in percent.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_department_identity
+    dataset_columns:
+    - department_id
+    entity_universe: partial
+  - identity_id: dim_brand_type_identity
+    dataset_columns:
+    - brand_type_id
+    entity_universe: partial
+- node_id: sf:hardwarestore.economics.fact_brand_sales
+  descriptor:
+    qualified_name: hardwarestore.economics.fact_brand_sales
+    display_name: Brand Sales
+    description: Sales dollars by department and brand type. Stores dollars.
+    synonyms: []
+    tags:
+    - fact
+    - economics
+    - hardwarestore
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: hardwarestore.us-east-1
+      database: HARDWARE_STORE
+      schema: ECONOMICS
+      object: FACT_BRAND_SALES
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, department,
+      brand type.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_department_identity
+      dataset_columns:
+      - department_id
+      description: Identifier of the department.
+    - identity_id: dim_brand_type_identity
+      dataset_columns:
+      - brand_type_id
+      description: Identifier of the brand type.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: department_id
+    description: Identifier of the related department.
+  - name: brand_type_id
+    description: Identifier of the related brand type.
+  - name: brand_sales_amount
+    description: Brand sales in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_department_identity
+    dataset_columns:
+    - department_id
+    entity_universe: partial
+  - identity_id: dim_brand_type_identity
+    dataset_columns:
+    - brand_type_id
+    entity_universe: partial
+- node_id: sf:hardwarestore.economics.fact_operating_expense
+  descriptor:
+    qualified_name: hardwarestore.economics.fact_operating_expense
+    display_name: Operating Expense
+    description: Operating expense dollars by cost bucket and store format. Stores
+      dollars.
+    synonyms: []
+    tags:
+    - fact
+    - economics
+    - hardwarestore
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: hardwarestore.us-east-1
+      database: HARDWARE_STORE
+      schema: ECONOMICS
+      object: FACT_OPERATING_EXPENSE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, cost bucket,
+      store format.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_cost_bucket_identity
+      dataset_columns:
+      - cost_bucket_id
+      description: Identifier of the cost bucket.
+    - identity_id: dim_store_format_identity
+      dataset_columns:
+      - store_format_id
+      description: Identifier of the store format.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: cost_bucket_id
+    description: Identifier of the related cost bucket.
+  - name: store_format_id
+    description: Identifier of the related store format.
+  - name: operating_expense_amount
+    description: Operating expense in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_cost_bucket_identity
+    dataset_columns:
+    - cost_bucket_id
+    entity_universe: partial
+  - identity_id: dim_store_format_identity
+    dataset_columns:
+    - store_format_id
+    entity_universe: partial
+- node_id: sf:hardwarestore.economics.fact_enterprise_economics
+  descriptor:
+    qualified_name: hardwarestore.economics.fact_enterprise_economics
+    display_name: Enterprise Economics
+    description: Enterprise revenue, operating income, earnings and free cash flow
+      at enterprise grain only. Stores dollars.
+    synonyms: []
+    tags:
+    - fact
+    - economics
+    - hardwarestore
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: hardwarestore.us-east-1
+      database: HARDWARE_STORE
+      schema: ECONOMICS
+      object: FACT_ENTERPRISE_ECONOMICS
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: total_revenue_amount
+    description: Total revenue in dollars.
+  - name: operating_income_amount
+    description: Operating income in dollars.
+  - name: net_earnings_amount
+    description: Net earnings in dollars.
+  - name: free_cash_flow_amount
+    description: Free cash flow in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+- node_id: sf:hardwarestore.economics.fact_pro_sales
+  descriptor:
+    qualified_name: hardwarestore.economics.fact_pro_sales
+    display_name: Pro Sales
+    description: Pro sales dollars by customer type and project. Stores dollars; Pro
+      rows use the pro code on customer_type.
+    synonyms: []
+    tags:
+    - fact
+    - economics
+    - hardwarestore
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: hardwarestore.us-east-1
+      database: HARDWARE_STORE
+      schema: ECONOMICS
+      object: FACT_PRO_SALES
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, customer
+      type, project type.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_customer_type_identity
+      dataset_columns:
+      - customer_type_id
+      description: Identifier of the customer type.
+    - identity_id: dim_project_type_identity
+      dataset_columns:
+      - project_type_id
+      description: Identifier of the project type.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: customer_type_id
+    description: Identifier of the related customer type.
+  - name: project_type_id
+    description: Identifier of the related project type.
+  - name: pro_sales_amount
+    description: Pro sales in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_customer_type_identity
+    dataset_columns:
+    - customer_type_id
+    entity_universe: partial
+  - identity_id: dim_project_type_identity
+    dataset_columns:
+    - project_type_id
+    entity_universe: partial
+- node_id: sf:hardwarestore.economics.fact_online_sales
+  descriptor:
+    qualified_name: hardwarestore.economics.fact_online_sales
+    display_name: Online Sales
+    description: Online sales dollars by channel, fulfillment and department. Stores
+      dollars.
+    synonyms: []
+    tags:
+    - fact
+    - economics
+    - hardwarestore
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: hardwarestore.us-east-1
+      database: HARDWARE_STORE
+      schema: ECONOMICS
+      object: FACT_ONLINE_SALES
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, sales channel,
+      fulfillment type, department.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_sales_channel_identity
+      dataset_columns:
+      - sales_channel_id
+      description: Identifier of the sales channel.
+    - identity_id: dim_fulfillment_type_identity
+      dataset_columns:
+      - fulfillment_type_id
+      description: Identifier of the fulfillment type.
+    - identity_id: dim_department_identity
+      dataset_columns:
+      - department_id
+      description: Identifier of the department.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: sales_channel_id
+    description: Identifier of the related sales channel.
+  - name: fulfillment_type_id
+    description: Identifier of the related fulfillment type.
+  - name: department_id
+    description: Identifier of the related department.
+  - name: online_sales_amount
+    description: Online sales in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_sales_channel_identity
+    dataset_columns:
+    - sales_channel_id
+    entity_universe: partial
+  - identity_id: dim_fulfillment_type_identity
+    dataset_columns:
+    - fulfillment_type_id
+    entity_universe: partial
+  - identity_id: dim_department_identity
+    dataset_columns:
+    - department_id
+    entity_universe: partial
+- node_id: sf:hardwarestore.economics.fact_services_revenue
+  descriptor:
+    qualified_name: hardwarestore.economics.fact_services_revenue
+    display_name: Services Revenue
+    description: Retail-service revenue dollars. Stores dollars.
+    synonyms: []
+    tags:
+    - fact
+    - economics
+    - hardwarestore
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: hardwarestore.us-east-1
+      database: HARDWARE_STORE
+      schema: ECONOMICS
+      object: FACT_SERVICES_REVENUE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, retail service,
+      customer type.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_retail_service_identity
+      dataset_columns:
+      - retail_service_id
+      description: Identifier of the retail service.
+    - identity_id: dim_customer_type_identity
+      dataset_columns:
+      - customer_type_id
+      description: Identifier of the customer type.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: retail_service_id
+    description: Identifier of the related retail service.
+  - name: customer_type_id
+    description: Identifier of the related customer type.
+  - name: service_revenue_amount
+    description: Service revenue in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_retail_service_identity
+    dataset_columns:
+    - retail_service_id
+    entity_universe: partial
+  - identity_id: dim_customer_type_identity
+    dataset_columns:
+    - customer_type_id
+    entity_universe: partial
+- node_id: sf:hardwarestore.economics.fact_inventory_cost
+  descriptor:
+    qualified_name: hardwarestore.economics.fact_inventory_cost
+    display_name: Inventory Cost
+    description: Inventory and shrink cost dollars. Stores dollars, no unit quantity.
+    synonyms: []
+    tags:
+    - fact
+    - economics
+    - hardwarestore
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: hardwarestore.us-east-1
+      database: HARDWARE_STORE
+      schema: ECONOMICS
+      object: FACT_INVENTORY_COST
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, department,
+      supplier type.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_department_identity
+      dataset_columns:
+      - department_id
+      description: Identifier of the department.
+    - identity_id: dim_supplier_type_identity
+      dataset_columns:
+      - supplier_type_id
+      description: Identifier of the supplier type.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: department_id
+    description: Identifier of the related department.
+  - name: supplier_type_id
+    description: Identifier of the related supplier type.
+  - name: inventory_cost_amount
+    description: Inventory cost in dollars.
+  - name: shrink_cost_amount
+    description: Shrink cost in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_department_identity
+    dataset_columns:
+    - department_id
+    entity_universe: partial
+  - identity_id: dim_supplier_type_identity
+    dataset_columns:
+    - supplier_type_id
+    entity_universe: partial
+- node_id: sf:hardwarestore.economics.fact_advertising_expense
+  descriptor:
+    qualified_name: hardwarestore.economics.fact_advertising_expense
+    display_name: Advertising Expense
+    description: Advertising expense dollars by promotion and channel. Stores dollars.
+    synonyms: []
+    tags:
+    - fact
+    - economics
+    - hardwarestore
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: hardwarestore.us-east-1
+      database: HARDWARE_STORE
+      schema: ECONOMICS
+      object: FACT_ADVERTISING_EXPENSE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, promotion
+      type, sales channel.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_promotion_type_identity
+      dataset_columns:
+      - promotion_type_id
+      description: Identifier of the promotion type.
+    - identity_id: dim_sales_channel_identity
+      dataset_columns:
+      - sales_channel_id
+      description: Identifier of the sales channel.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: promotion_type_id
+    description: Identifier of the related promotion type.
+  - name: sales_channel_id
+    description: Identifier of the related sales channel.
+  - name: advertising_amount
+    description: Advertising expense in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_promotion_type_identity
+    dataset_columns:
+    - promotion_type_id
+    entity_universe: partial
+  - identity_id: dim_sales_channel_identity
+    dataset_columns:
+    - sales_channel_id
+    entity_universe: partial
+- node_id: sf:hardwarestore.economics.fact_credit_income
+  descriptor:
+    qualified_name: hardwarestore.economics.fact_credit_income
+    display_name: Credit Income
+    description: Credit programme income dollars by tender and customer type. Stores
+      dollars.
+    synonyms: []
+    tags:
+    - fact
+    - economics
+    - hardwarestore
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: hardwarestore.us-east-1
+      database: HARDWARE_STORE
+      schema: ECONOMICS
+      object: FACT_CREDIT_INCOME
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, payment type,
+      customer type.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_payment_type_identity
+      dataset_columns:
+      - payment_type_id
+      description: Identifier of the payment type.
+    - identity_id: dim_customer_type_identity
+      dataset_columns:
+      - customer_type_id
+      description: Identifier of the customer type.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: payment_type_id
+    description: Identifier of the related payment type.
+  - name: customer_type_id
+    description: Identifier of the related customer type.
+  - name: credit_income_amount
+    description: Credit income in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_payment_type_identity
+    dataset_columns:
+    - payment_type_id
+    entity_universe: partial
+  - identity_id: dim_customer_type_identity
+    dataset_columns:
+    - customer_type_id
+    entity_universe: partial
+- node_id: sf:hardwarestore.economics.fact_delivery_economics
+  descriptor:
+    qualified_name: hardwarestore.economics.fact_delivery_economics
+    display_name: Delivery Economics
+    description: Delivery fee revenue and delivery cost dollars. Stores dollars.
+    synonyms: []
+    tags:
+    - fact
+    - economics
+    - hardwarestore
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: hardwarestore.us-east-1
+      database: HARDWARE_STORE
+      schema: ECONOMICS
+      object: FACT_DELIVERY_ECONOMICS
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, fulfillment
+      type, department.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_fulfillment_type_identity
+      dataset_columns:
+      - fulfillment_type_id
+      description: Identifier of the fulfillment type.
+    - identity_id: dim_department_identity
+      dataset_columns:
+      - department_id
+      description: Identifier of the department.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: fulfillment_type_id
+    description: Identifier of the related fulfillment type.
+  - name: department_id
+    description: Identifier of the related department.
+  - name: delivery_fee_revenue_amount
+    description: Delivery fee revenue in dollars.
+  - name: delivery_cost_amount
+    description: Delivery cost in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_fulfillment_type_identity
+    dataset_columns:
+    - fulfillment_type_id
+    entity_universe: partial
+  - identity_id: dim_department_identity
+    dataset_columns:
+    - department_id
+    entity_universe: partial
+- node_id: sf:hardwarestore.economics.fact_capital_expenditure
+  descriptor:
+    qualified_name: hardwarestore.economics.fact_capital_expenditure
+    display_name: Capital Expenditure
+    description: Capital expenditure dollars by project type and region. Stores dollars.
+    synonyms: []
+    tags:
+    - fact
+    - economics
+    - hardwarestore
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: hardwarestore.us-east-1
+      database: HARDWARE_STORE
+      schema: ECONOMICS
+      object: FACT_CAPITAL_EXPENDITURE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, capital project
+      type, region.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_capital_project_type_identity
+      dataset_columns:
+      - capital_project_type_id
+      description: Identifier of the capital project type.
+    - identity_id: dim_region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: capital_project_type_id
+    description: Identifier of the related capital project type.
+  - name: region_id
+    description: Identifier of the related region.
+  - name: capital_expenditure_amount
+    description: Capital expenditure in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_capital_project_type_identity
+    dataset_columns:
+    - capital_project_type_id
+    entity_universe: partial
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:hardwarestore.economics.fact_occupancy_cost
+  descriptor:
+    qualified_name: hardwarestore.economics.fact_occupancy_cost
+    display_name: Occupancy Cost
+    description: Occupancy cost dollars by store format and region. Stores dollars.
+    synonyms: []
+    tags:
+    - fact
+    - economics
+    - hardwarestore
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: hardwarestore.us-east-1
+      database: HARDWARE_STORE
+      schema: ECONOMICS
+      object: FACT_OCCUPANCY_COST
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, store format,
+      region.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_store_format_identity
+      dataset_columns:
+      - store_format_id
+      description: Identifier of the store format.
+    - identity_id: dim_region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: store_format_id
+    description: Identifier of the related store format.
+  - name: region_id
+    description: Identifier of the related region.
+  - name: occupancy_cost_amount
+    description: Occupancy cost in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_store_format_identity
+    dataset_columns:
+    - store_format_id
+    entity_universe: partial
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:hardwarestore.economics.fact_selling_price_rate
+  descriptor:
+    qualified_name: hardwarestore.economics.fact_selling_price_rate
+    display_name: Selling Price Rate
+    description: Average selling price rate by department and brand. Denominator unit_quantity
+      is joinable from sales_transactions by department. Stores dollars per unit.
+    synonyms: []
+    tags:
+    - fact
+    - economics
+    - hardwarestore
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: hardwarestore.us-east-1
+      database: HARDWARE_STORE
+      schema: ECONOMICS
+      object: FACT_SELLING_PRICE_RATE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, department,
+      brand type.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_department_identity
+      dataset_columns:
+      - department_id
+      description: Identifier of the department.
+    - identity_id: dim_brand_type_identity
+      dataset_columns:
+      - brand_type_id
+      description: Identifier of the brand type.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: department_id
+    description: Identifier of the related department.
+  - name: brand_type_id
+    description: Identifier of the related brand type.
+  - name: average_selling_price_amount
+    description: Average selling price in dollars per unit.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_department_identity
+    dataset_columns:
+    - department_id
+    entity_universe: partial
+  - identity_id: dim_brand_type_identity
+    dataset_columns:
+    - brand_type_id
+    entity_universe: partial
+- node_id: sf:hardwarestore.economics.fact_seasonal_sales
+  descriptor:
+    qualified_name: hardwarestore.economics.fact_seasonal_sales
+    display_name: Seasonal Sales
+    description: Seasonal sales dollars. Stores dollars.
+    synonyms: []
+    tags:
+    - fact
+    - economics
+    - hardwarestore
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: hardwarestore.us-east-1
+      database: HARDWARE_STORE
+      schema: ECONOMICS
+      object: FACT_SEASONAL_SALES
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, season, department.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_season_identity
+      dataset_columns:
+      - season_id
+      description: Identifier of the season.
+    - identity_id: dim_department_identity
+      dataset_columns:
+      - department_id
+      description: Identifier of the department.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: season_id
+    description: Identifier of the related season.
+  - name: department_id
+    description: Identifier of the related department.
+  - name: seasonal_sales_amount
+    description: Seasonal sales in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_season_identity
+    dataset_columns:
+    - season_id
+    entity_universe: partial
+  - identity_id: dim_department_identity
+    dataset_columns:
+    - department_id
+    entity_universe: partial
+- node_id: sf:hardwarestore.economics.fact_markdown_economics
+  descriptor:
+    qualified_name: hardwarestore.economics.fact_markdown_economics
+    display_name: Markdown Economics
+    description: Clearance sales and markdown dollars by promotion and department.
+      Stores dollars.
+    synonyms: []
+    tags:
+    - fact
+    - economics
+    - hardwarestore
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: hardwarestore.us-east-1
+      database: HARDWARE_STORE
+      schema: ECONOMICS
+      object: FACT_MARKDOWN_ECONOMICS
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, promotion
+      type, department.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_promotion_type_identity
+      dataset_columns:
+      - promotion_type_id
+      description: Identifier of the promotion type.
+    - identity_id: dim_department_identity
+      dataset_columns:
+      - department_id
+      description: Identifier of the department.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: promotion_type_id
+    description: Identifier of the related promotion type.
+  - name: department_id
+    description: Identifier of the related department.
+  - name: clearance_sales_amount
+    description: Clearance sales in dollars.
+  - name: markdown_amount
+    description: Markdown in dollars.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_promotion_type_identity
+    dataset_columns:
+    - promotion_type_id
+    entity_universe: partial
+  - identity_id: dim_department_identity
+    dataset_columns:
+    - department_id
+    entity_universe: partial
+- node_id: sf:hardwarestore.economics.fact_competitor_price_rate
+  descriptor:
+    qualified_name: hardwarestore.economics.fact_competitor_price_rate
+    display_name: Competitor Price Rate
+    description: Competitor average price rate by department and region. Stores dollars
+      per unit.
+    synonyms: []
+    tags:
+    - fact
+    - economics
+    - hardwarestore
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: hardwarestore.us-east-1
+      database: HARDWARE_STORE
+      schema: ECONOMICS
+      object: FACT_COMPETITOR_PRICE_RATE
+      format: table
+  grain:
+    description: One row is one combination of fiscal quarter, scenario, competitor,
+      department, region.
+    components:
+    - identity_id: dim_fiscal_quarter_identity
+      dataset_columns:
+      - fiscal_quarter_id
+      description: Identifier of the fiscal quarter.
+    - identity_id: dim_scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the scenario.
+    - identity_id: dim_competitor_identity
+      dataset_columns:
+      - competitor_id
+      description: Identifier of the competitor.
+    - identity_id: dim_department_identity
+      dataset_columns:
+      - department_id
+      description: Identifier of the department.
+    - identity_id: dim_region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the region.
+  columns:
+  - name: fiscal_quarter_id
+    description: Identifier of the related fiscal quarter.
+  - name: scenario_id
+    description: Identifier of the related scenario.
+  - name: competitor_id
+    description: Identifier of the related competitor.
+  - name: department_id
+    description: Identifier of the related department.
+  - name: region_id
+    description: Identifier of the related region.
+  - name: competitor_price_amount
+    description: Competitor price in dollars per unit.
+  entity_definitions:
+  - identity_id: dim_fiscal_quarter_identity
+    dataset_columns:
+    - fiscal_quarter_id
+    entity_universe: partial
+  - identity_id: dim_scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: dim_competitor_identity
+    dataset_columns:
+    - competitor_id
+    entity_universe: partial
+  - identity_id: dim_department_identity
+    dataset_columns:
+    - department_id
+    entity_universe: partial
+  - identity_id: dim_region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
