@@ -1,223 +1,298 @@
-# Burger Inc restaurant system warehouse coverage
+# Burger Inc restaurant system
 
-This slice is the Burger Inc restaurant system: restaurants, franchisees, operators, ownership spells, development, remodels, kitchens, and supply commodities. Guest checks and the corporate ledger are outside this slice.
+Restaurant operating models, franchising, licensing, labour, development and supply.
 
-Amounts that use a currency, a calendar day, or an accounting period reference those populations. This slice does not hold their complete populations.
+Every fact below uses `fiscal_period_id` for the fiscal period and `scenario_id` for the scenario (`reported` or `guide` in `dim_scenario`). Measure descriptions in the YAML name the unit.
 
-## Complete populations
-
-| Identity | Dataset | Column |
-| --- | --- | --- |
-| `restaurant_identity` | `burger.restaurant.dim_restaurant` | `restaurant_id` |
-| `franchisee_identity` | `burger.restaurant.dim_franchisee` | `franchisee_id` |
-| `operator_identity` | `burger.restaurant.dim_operator` | `operator_id` |
-| `ownership_spell_identity` | `burger.restaurant.fact_restaurant_ownership_spell` | `ownership_spell_id` |
-| `development_project_identity` | `burger.development.dim_development_project` | `development_project_id` |
-| `remodel_identity` | `burger.development.fact_restaurant_remodel` | `remodel_id` |
-| `kitchen_asset_identity` | `burger.development.dim_kitchen_asset` | `kitchen_asset_id` |
-| `supplier_identity` | `burger.supply.dim_supplier` | `supplier_id` |
-| `commodity_identity` | `burger.supply.dim_commodity` | `commodity_id` |
-| `distribution_center_identity` | `burger.supply.dim_distribution_center` | `distribution_center_id` |
-| `country_identity` | `burger.organization.dim_country` | `country_id` |
-| `segment_identity` | `burger.organization.dim_segment` | `segment_id` |
-
-## Referenced populations
-
-These identities are referenced and are not marked complete.
-
-| Identity | Node | Column |
-| --- | --- | --- |
-| `calendar_day_identity` | `sf:burger.calendar.dim_calendar_day` | `calendar_day_id` |
-| `accounting_period_identity` | `sf:burger.finance.dim_accounting_period` | `accounting_period_id` |
-| `currency_identity` | `sf:burger.finance.dim_currency` | `currency_id` |
-
-## Questions
-
-### Q2 2026 (3)
-
-Why franchisee participation in the value program was lower, and whether that was disagreement on the traffic driver or cost pressure.
-
-| Dataset | Columns |
-| --- | --- |
-| `burger.restaurant.fact_value_program_participation` | `participation_status`, `opt_out_reason`, `offer_cost_amount`, `traffic_count`, `franchisee_id`, `restaurant_id`, `accounting_period_id`, `country_id`, `segment_id` |
-| `burger.restaurant.fact_restaurant_period_performance` | `guest_count`, `restaurant_id`, `accounting_period_id` |
-| `burger.restaurant.dim_franchisee` | `franchisee_id`, `franchisee_name` |
-| `burger.supply.fact_commodity_cost` | `commodity_id`, `country_id`, `accounting_period_id`, `unit_cost_amount`, `cost_change_rate` |
-| `burger.supply.dim_commodity` | `commodity_id`, `commodity_code` |
+## McDonald's (MCD)
 
 ### Q2 2026 (4)
 
-Whether company-operated restaurants outperform franchise restaurants on service, and what it takes to move weak stores to stronger operators.
+Do company-operated restaurants outperform franchisees on service, and what would it take to move weak stores to stronger operators?
 
-| Dataset | Columns |
-| --- | --- |
-| `burger.restaurant.fact_restaurant_period_performance` | `service_score`, `ownership_type`, `operator_id`, `franchisee_id`, `restaurant_id`, `accounting_period_id` |
-| `burger.restaurant.fact_restaurant_ownership_spell` | `ownership_type`, `operator_id`, `franchisee_id`, `restaurant_id`, `start_calendar_day_id`, `end_calendar_day_id` |
-| `burger.restaurant.dim_operator` | `operator_id`, `operator_strength_tier`, `franchisee_id` |
-| `burger.restaurant.fact_operator_reassignment` | `restaurant_id`, `from_operator_id`, `to_operator_id`, `from_operator_strength_tier`, `to_operator_strength_tier`, `calendar_day_id`, `service_score_before`, `service_score_after`, `reassignment_cost_amount` |
-| `burger.restaurant.dim_restaurant` | `restaurant_id`, `country_id`, `segment_id` |
+- `burger.restaurant.fact_franchise_restaurant_sales_amount`: `franchised_restaurant_sales_amount`, `franchisee_id`, `mcdonalds_segment_id`
+- `burger.restaurant.fact_royalty_amount`: `royalty_amount`
+- `burger.restaurant.fact_rent_amount`: `rent_amount`
+- `burger.finance.fact_franchisee_cashflow_amount`: `franchisee_profit_amount`, `operating_cash_flow_amount`
 
 ### Q2 2026 (5)
 
-Whether a faster new-restaurant pace hurt same-store sales through cannibalization or by pulling resources off operations.
+Did the faster pace of new restaurants hurt same-store sales through cannibalization or by pulling resources off operations?
 
-| Dataset | Columns |
-| --- | --- |
-| `burger.development.fact_restaurant_opening` | `restaurant_id`, `calendar_day_id`, `country_id`, `segment_id`, `cannibalizes_nearby_flag`, `nearby_comparable_sales_change_rate`, `cannibalized_guest_count`, `operations_hours_diverted` |
-| `burger.restaurant.fact_restaurant_period_performance` | `comparable_sales_amount`, `comparable_sales_change_rate`, `same_store_guest_count`, `guest_count`, `operations_score`, `restaurant_id`, `accounting_period_id`, `country_id`, `segment_id` |
-| `burger.development.fact_segment_development_result` | `segment_id`, `accounting_period_id`, `actual_opening_count`, `target_opening_count` |
-| `burger.development.fact_development_capex` | `country_id`, `accounting_period_id`, `opening_count` |
-| `burger.development.dim_development_project` | `development_project_id`, `project_type`, `country_id`, `segment_id` |
-| `burger.organization.dim_country` | `country_id`, `country_name` |
-| `burger.organization.dim_segment` | `segment_id`, `segment_code` |
+- `burger.development.fact_development_quantity`: `target_opening_count`, `actual_opening_count`, `ending_restaurant_count`
+- `burger.restaurant.fact_restaurant_opening_quantity`: `opened_restaurant_count`
+- `burger.restaurant.fact_restaurant_closure_quantity`: `closed_restaurant_count`
+- `burger.finance.fact_capex_amount`: `capital_spend_amount`, `capital_budget_amount`, `project_type_id`
 
 ### Q2 2026 (7)
 
-Whether franchisees can fund operations, value, and experience work while cash flow is pressured.
+Can franchisees fund the U.S. operations, value, and experience work while their cash flow is under pressure?
 
-| Dataset | Columns |
-| --- | --- |
-| `burger.restaurant.fact_franchisee_period_cash_flow` | `franchisee_id`, `country_id`, `segment_id`, `accounting_period_id`, `currency_id`, `operating_cash_flow_amount`, `franchisee_profit_amount`, `operations_funding_need_amount`, `value_funding_need_amount`, `experience_funding_need_amount`, `funding_shortfall_amount`, `company_support_amount` |
-| `burger.development.fact_restaurant_remodel` | `franchisee_id`, `country_id`, `segment_id`, `experience_scope`, `franchisee_funded_amount`, `company_funded_amount`, `remodel_cost_amount` |
-| `burger.supply.fact_commodity_cost` | `commodity_id`, `country_id`, `accounting_period_id`, `unit_cost_amount`, `cost_change_rate` |
-| `burger.supply.dim_commodity` | `commodity_id`, `commodity_code`, `commodity_group` |
-| `burger.restaurant.dim_franchisee` | `franchisee_id`, `franchisee_structure`, `segment_id` |
+- `burger.restaurant.fact_franchise_restaurant_sales_amount`: `franchised_restaurant_sales_amount`, `franchisee_id`, `mcdonalds_segment_id`
+- `burger.restaurant.fact_royalty_amount`: `royalty_amount`
+- `burger.restaurant.fact_rent_amount`: `rent_amount`
+- `burger.finance.fact_franchisee_cashflow_amount`: `franchisee_profit_amount`, `operating_cash_flow_amount`
+
+### Q2 2026 (8)
+
+Were too many simultaneous product deployments hurting U.S. store operations, and should new-product news be slowed so throughput holds?
+
+- `burger.restaurant.fact_labour_quantity`: `labour_hour_count`, `transaction_count`, `store_cohort_id`
+- `burger.restaurant.fact_service_productivity_rate`: `transactions_per_labour_hour`
+- `burger.restaurant.fact_service_duration`: `average_service_time_seconds`
 
 ### Q1 2026 (4)
 
-How large the opportunity is to refranchise company stores in the U.S. and international operated markets when franchise economics are better.
+How large is the opportunity to refranchise company stores in the U.S. and international operated markets if franchise economics are better?
 
-| Dataset | Columns |
-| --- | --- |
-| `burger.restaurant.fact_company_operated_period_margin` | `restaurant_id`, `country_id`, `segment_id`, `accounting_period_id`, `currency_id`, `ownership_type`, `company_operated_margin_amount`, `company_operated_margin_rate`, `sales_amount` |
-| `burger.restaurant.fact_franchisee_period_cash_flow` | `franchisee_id`, `country_id`, `segment_id`, `accounting_period_id`, `currency_id`, `franchisee_profit_amount`, `franchisee_restaurant_margin_amount`, `average_restaurant_profit_amount`, `operated_restaurant_count` |
-| `burger.restaurant.fact_restaurant_ownership_spell` | `restaurant_id`, `ownership_type`, `refranchise_flag`, `franchisee_id`, `country_id`, `segment_id`, `start_calendar_day_id`, `end_calendar_day_id`, `transfer_consideration_amount` |
-| `burger.organization.dim_segment` | `segment_id`, `segment_code`, `segment_name` |
-| `burger.organization.dim_country` | `country_id`, `country_name`, `segment_id` |
-| `burger.restaurant.dim_restaurant` | `restaurant_id`, `country_id`, `segment_id` |
-| `burger.restaurant.dim_franchisee` | `franchisee_id`, `segment_id`, `country_id` |
+- `burger.restaurant.fact_franchise_restaurant_sales_amount`: `franchised_restaurant_sales_amount`, `franchisee_id`, `mcdonalds_segment_id`
+- `burger.restaurant.fact_royalty_amount`: `royalty_amount`
+- `burger.restaurant.fact_rent_amount`: `rent_amount`
+- `burger.finance.fact_franchisee_cashflow_amount`: `franchisee_profit_amount`, `operating_cash_flow_amount`
 
 ### Q1 2026 (5)
 
-Whether U.S. and international development targets should change if stores are refranchised because margins are below the original plan.
+If stores are refranchised, should U.S. and international development targets change because margins are below the original plan?
 
-| Dataset | Columns |
-| --- | --- |
-| `burger.development.fact_segment_development_result` | `segment_id`, `accounting_period_id`, `target_opening_count`, `actual_opening_count`, `plan_margin_rate`, `actual_margin_rate`, `refranchise_case_target_opening_count` |
-| `burger.development.dim_development_project` | `development_project_id`, `project_type`, `segment_id`, `country_id`, `plan_margin_rate` |
-| `burger.development.fact_restaurant_opening` | `development_project_id`, `segment_id`, `country_id`, `calendar_day_id`, `restaurant_id` |
-| `burger.restaurant.fact_company_operated_period_margin` | `segment_id`, `country_id`, `accounting_period_id`, `company_operated_margin_amount`, `company_operated_margin_rate` |
-| `burger.restaurant.fact_franchisee_period_cash_flow` | `segment_id`, `country_id`, `accounting_period_id`, `franchisee_profit_amount`, `average_restaurant_profit_amount` |
-| `burger.restaurant.fact_restaurant_ownership_spell` | `ownership_type`, `refranchise_flag`, `segment_id`, `country_id` |
-| `burger.organization.dim_segment` | `segment_id`, `segment_code` |
+- `burger.restaurant.fact_franchise_restaurant_sales_amount`: `franchised_restaurant_sales_amount`, `franchisee_id`, `mcdonalds_segment_id`
+- `burger.restaurant.fact_royalty_amount`: `royalty_amount`
+- `burger.restaurant.fact_rent_amount`: `rent_amount`
+- `burger.finance.fact_franchisee_cashflow_amount`: `franchisee_profit_amount`, `operating_cash_flow_amount`
+
+### Q1 2026 (6)
+
+Are U.S. franchisee profits holding up even though company-operated margins are not?
+
+- `burger.restaurant.fact_franchise_restaurant_sales_amount`: `franchised_restaurant_sales_amount`, `franchisee_id`, `mcdonalds_segment_id`
+- `burger.restaurant.fact_royalty_amount`: `royalty_amount`
+- `burger.restaurant.fact_rent_amount`: `rent_amount`
+- `burger.finance.fact_franchisee_cashflow_amount`: `franchisee_profit_amount`, `operating_cash_flow_amount`
+
+### Q1 2026 (7)
+
+What is the outlook for international operated-market franchisee profit given the spike in energy prices, and is support like 2022 needed again?
+
+- `burger.restaurant.fact_franchise_restaurant_sales_amount`: `franchised_restaurant_sales_amount`, `franchisee_id`, `mcdonalds_segment_id`
+- `burger.restaurant.fact_royalty_amount`: `royalty_amount`
+- `burger.restaurant.fact_rent_amount`: `rent_amount`
+- `burger.finance.fact_franchisee_cashflow_amount`: `franchisee_profit_amount`, `operating_cash_flow_amount`
 
 ### Q1 2026 (13)
 
-How higher build costs and supply-chain strain change the next U.S. remodel cycle, including company capital franchisees would need.
+How do higher build costs and supply-chain strain change the next U.S. remodel cycle, including how much company capital franchisees would need?
 
-| Dataset | Columns |
-| --- | --- |
-| `burger.development.fact_restaurant_opening` | `restaurant_id`, `country_id`, `segment_id`, `build_cost_amount`, `currency_id`, `calendar_day_id` |
-| `burger.development.fact_restaurant_remodel` | `remodel_id`, `restaurant_id`, `country_id`, `segment_id`, `experience_scope`, `funding_party`, `remodel_cost_amount`, `company_funded_amount`, `franchisee_funded_amount`, `currency_id` |
-| `burger.development.fact_remodel_kitchen_equipment` | `remodel_id`, `kitchen_asset_id`, `equipment_cost_amount`, `company_funded_amount`, `franchisee_funded_amount` |
-| `burger.development.fact_development_capex` | `country_id`, `segment_id`, `accounting_period_id`, `new_construction_capex_amount`, `remodel_capex_amount`, `kitchen_equipment_capex_amount`, `currency_id` |
-| `burger.development.dim_development_project` | `development_project_id`, `project_type`, `country_id` |
-| `burger.supply.fact_commodity_cost` | `commodity_id`, `country_id`, `accounting_period_id`, `unit_cost_amount`, `cost_change_rate` |
-| `burger.supply.fact_supplier_shipment` | `supplier_id`, `distribution_center_id`, `commodity_id`, `country_id`, `accounting_period_id`, `shipped_quantity`, `received_quantity`, `shipped_cost_amount` |
-| `burger.supply.dim_commodity` | `commodity_id`, `commodity_code` |
-| `burger.supply.dim_supplier` | `supplier_id`, `supplier_name`, `country_id` |
-| `burger.supply.dim_distribution_center` | `distribution_center_id`, `country_id`, `segment_id` |
-| `burger.organization.dim_country` | `country_id`, `country_name` |
+- `burger.restaurant.fact_franchise_restaurant_sales_amount`: `franchised_restaurant_sales_amount`, `franchisee_id`, `mcdonalds_segment_id`
+- `burger.restaurant.fact_royalty_amount`: `royalty_amount`
+- `burger.restaurant.fact_rent_amount`: `rent_amount`
+- `burger.finance.fact_franchisee_cashflow_amount`: `franchisee_profit_amount`, `operating_cash_flow_amount`
 
 ### Q1 2026 (16)
 
-Whether developmental-license markets must deliver more of the path to 50,000 restaurants because U.S. and operated-market cash flow is tight.
+Will developmental-license markets have to deliver more of the path to 50,000 restaurants because U.S. and operated-market cash flow is tight?
 
-| Dataset | Columns |
-| --- | --- |
-| `burger.development.fact_segment_development_result` | `segment_id`, `accounting_period_id`, `actual_opening_count`, `target_opening_count`, `ending_restaurant_count`, `system_goal_restaurant_count`, `remaining_openings_to_goal_count`, `segment_share_of_remaining_openings_rate`, `cash_funded_opening_capacity_count` |
-| `burger.development.fact_restaurant_opening` | `segment_id`, `country_id`, `calendar_day_id`, `restaurant_id` |
-| `burger.restaurant.fact_franchisee_period_cash_flow` | `segment_id`, `country_id`, `accounting_period_id`, `operating_cash_flow_amount`, `funding_shortfall_amount`, `franchisee_profit_amount` |
-| `burger.restaurant.dim_franchisee` | `franchisee_id`, `franchisee_structure`, `segment_id` |
-| `burger.organization.dim_segment` | `segment_id`, `segment_code` |
-| `burger.organization.dim_country` | `country_id`, `country_name`, `segment_id` |
+- `burger.development.fact_development_quantity`: `target_opening_count`, `actual_opening_count`, `ending_restaurant_count`
+- `burger.restaurant.fact_restaurant_opening_quantity`: `opened_restaurant_count`
+- `burger.restaurant.fact_restaurant_closure_quantity`: `closed_restaurant_count`
+- `burger.finance.fact_capex_amount`: `capital_spend_amount`, `capital_budget_amount`, `project_type_id`
 
 ### Q4 2025 (4)
 
-Whether higher capital expenditure is mostly faster new-store construction, and whether unit growth in slow-population markets is a share grab.
+Is the higher capital budget mostly faster new-store construction, and is unit growth in slow-population markets a share grab while the industry is stressed?
 
-| Dataset | Columns |
-| --- | --- |
-| `burger.development.fact_development_capex` | `country_id`, `segment_id`, `accounting_period_id`, `currency_id`, `new_construction_capex_amount`, `remodel_capex_amount`, `kitchen_equipment_capex_amount`, `other_capex_amount`, `opening_count`, `market_share_rate`, `market_share_change_rate` |
-| `burger.organization.dim_country` | `country_id`, `country_name`, `population_growth_band`, `segment_id` |
-| `burger.development.fact_restaurant_opening` | `country_id`, `segment_id`, `calendar_day_id`, `restaurant_id`, `build_cost_amount` |
-| `burger.development.fact_segment_development_result` | `segment_id`, `accounting_period_id`, `actual_opening_count`, `target_opening_count` |
-| `burger.development.dim_development_project` | `development_project_id`, `project_type`, `country_id` |
-| `burger.organization.dim_segment` | `segment_id`, `segment_code` |
+- `burger.development.fact_development_quantity`: `target_opening_count`, `actual_opening_count`, `ending_restaurant_count`
+- `burger.restaurant.fact_restaurant_opening_quantity`: `opened_restaurant_count`
+- `burger.restaurant.fact_restaurant_closure_quantity`: `closed_restaurant_count`
+- `burger.finance.fact_capex_amount`: `capital_spend_amount`, `capital_budget_amount`, `project_type_id`
 
 ### Q4 2025 (5)
 
-Which kitchen equipment or layout changes are required for taste and quality, including an experience remodel.
+What kitchen equipment or layout changes are required to hit taste and quality goals, including anything like a new experience-of-the-future remodel?
 
-| Dataset | Columns |
-| --- | --- |
-| `burger.development.dim_kitchen_asset` | `kitchen_asset_id`, `asset_name`, `equipment_family`, `layout_role`, `supports_taste_quality_flag`, `experience_program_flag`, `reference_country_id` |
-| `burger.development.fact_remodel_kitchen_equipment` | `remodel_id`, `kitchen_asset_id`, `equipment_cost_amount`, `company_funded_amount`, `franchisee_funded_amount` |
-| `burger.development.fact_restaurant_remodel` | `remodel_id`, `restaurant_id`, `country_id`, `segment_id`, `experience_scope`, `kitchen_equipment_change_flag`, `layout_change_flag`, `taste_quality_program_flag`, `remodel_cost_amount` |
-| `burger.organization.dim_country` | `country_id`, `country_name` |
-| `burger.restaurant.dim_restaurant` | `restaurant_id`, `country_id` |
+- `burger.development.fact_development_quantity`: `target_opening_count`, `actual_opening_count`, `ending_restaurant_count`
+- `burger.restaurant.fact_restaurant_opening_quantity`: `opened_restaurant_count`
+- `burger.restaurant.fact_restaurant_closure_quantity`: `closed_restaurant_count`
+- `burger.finance.fact_capex_amount`: `capital_spend_amount`, `capital_budget_amount`, `project_type_id`
 
-### Q4 2025 (6)
+### Q3 2025 (5)
 
-Whether U.S. franchisees keep the value strategy after company financial support ends.
+Is the double-digit higher-income traffic gain an acceleration that shows trade-down, and is China the exception that is not positive inside developmental-license markets?
 
-| Dataset | Columns |
-| --- | --- |
-| `burger.restaurant.fact_value_program_participation` | `franchisee_id`, `restaurant_id`, `country_id`, `segment_id`, `accounting_period_id`, `participation_status`, `continued_after_support_flag`, `company_support_amount` |
-| `burger.restaurant.fact_value_strategy_coinvestment` | `country_id`, `segment_id`, `accounting_period_id`, `company_coinvestment_amount`, `support_in_force_flag`, `currency_id` |
-| `burger.restaurant.fact_franchisee_period_cash_flow` | `franchisee_id`, `country_id`, `segment_id`, `accounting_period_id`, `franchisee_profit_amount`, `company_support_amount`, `value_funding_need_amount` |
-| `burger.restaurant.dim_franchisee` | `franchisee_id`, `country_id`, `segment_id` |
-| `burger.organization.dim_country` | `country_id`, `country_name` |
-| `burger.organization.dim_segment` | `segment_id`, `segment_code` |
+- `burger.development.fact_development_quantity`: `target_opening_count`, `actual_opening_count`, `ending_restaurant_count`
+- `burger.restaurant.fact_restaurant_opening_quantity`: `opened_restaurant_count`
+- `burger.restaurant.fact_restaurant_closure_quantity`: `closed_restaurant_count`
+- `burger.finance.fact_capex_amount`: `capital_spend_amount`, `capital_budget_amount`, `project_type_id`
 
-### Q3 2025 (2)
+## Starbucks (SBUX)
 
-How large the company co-investment in the U.S. value strategy is, and what traffic or value-score result lets franchisees continue without that support.
+### Q3 FY2026 (4)
 
-| Dataset | Columns |
-| --- | --- |
-| `burger.restaurant.fact_value_strategy_coinvestment` | `country_id`, `segment_id`, `accounting_period_id`, `currency_id`, `company_coinvestment_amount`, `franchisee_investment_amount`, `observed_traffic_count`, `observed_value_score`, `continuation_traffic_threshold`, `continuation_value_score_threshold`, `support_in_force_flag` |
-| `burger.restaurant.fact_restaurant_period_performance` | `restaurant_id`, `country_id`, `segment_id`, `accounting_period_id`, `guest_count`, `value_score` |
-| `burger.restaurant.fact_value_program_participation` | `restaurant_id`, `franchisee_id`, `country_id`, `segment_id`, `traffic_count`, `company_support_amount`, `continued_after_support_flag` |
-| `burger.restaurant.fact_franchisee_period_cash_flow` | `franchisee_id`, `country_id`, `segment_id`, `company_support_amount`, `franchisee_profit_amount` |
-| `burger.organization.dim_country` | `country_id`, `country_name`, `segment_id` |
-| `burger.organization.dim_segment` | `segment_id`, `segment_code` |
+Does that competitive dynamic change in markets where Starbucks is opening against other coffee specialists?
 
-## Datasets and questions
+- `burger.development.fact_development_quantity`: `target_opening_count`, `actual_opening_count`, `ending_restaurant_count`
+- `burger.restaurant.fact_restaurant_opening_quantity`: `opened_restaurant_count`
+- `burger.restaurant.fact_restaurant_closure_quantity`: `closed_restaurant_count`
+- `burger.finance.fact_capex_amount`: `capital_spend_amount`, `capital_budget_amount`, `project_type_id`
 
-| Dataset | Questions |
-| --- | --- |
-| `burger.development.dim_development_project` | Q2 2026 (5), Q1 2026 (5), Q1 2026 (13), Q4 2025 (4) |
-| `burger.development.dim_kitchen_asset` | Q4 2025 (5) |
-| `burger.development.fact_development_capex` | Q2 2026 (5), Q1 2026 (13), Q4 2025 (4) |
-| `burger.development.fact_remodel_kitchen_equipment` | Q1 2026 (13), Q4 2025 (5) |
-| `burger.development.fact_restaurant_opening` | Q2 2026 (5), Q1 2026 (5), Q1 2026 (13), Q1 2026 (16), Q4 2025 (4) |
-| `burger.development.fact_restaurant_remodel` | Q2 2026 (7), Q1 2026 (13), Q4 2025 (5) |
-| `burger.development.fact_segment_development_result` | Q2 2026 (5), Q1 2026 (5), Q1 2026 (16), Q4 2025 (4) |
-| `burger.organization.dim_country` | Q2 2026 (5), Q1 2026 (4), Q1 2026 (13), Q1 2026 (16), Q4 2025 (4), Q4 2025 (5), Q4 2025 (6), Q3 2025 (2) |
-| `burger.organization.dim_segment` | Q2 2026 (5), Q1 2026 (4), Q1 2026 (5), Q1 2026 (16), Q4 2025 (4), Q4 2025 (6), Q3 2025 (2) |
-| `burger.restaurant.dim_franchisee` | Q2 2026 (3), Q2 2026 (7), Q1 2026 (4), Q1 2026 (16), Q4 2025 (6) |
-| `burger.restaurant.dim_operator` | Q2 2026 (4) |
-| `burger.restaurant.dim_restaurant` | Q2 2026 (4), Q1 2026 (4), Q4 2025 (5) |
-| `burger.restaurant.fact_company_operated_period_margin` | Q1 2026 (4), Q1 2026 (5) |
-| `burger.restaurant.fact_franchisee_period_cash_flow` | Q2 2026 (7), Q1 2026 (4), Q1 2026 (5), Q1 2026 (16), Q4 2025 (6), Q3 2025 (2) |
-| `burger.restaurant.fact_operator_reassignment` | Q2 2026 (4) |
-| `burger.restaurant.fact_restaurant_ownership_spell` | Q2 2026 (4), Q1 2026 (4), Q1 2026 (5) |
-| `burger.restaurant.fact_restaurant_period_performance` | Q2 2026 (3), Q2 2026 (4), Q2 2026 (5), Q3 2025 (2) |
-| `burger.restaurant.fact_value_program_participation` | Q2 2026 (3), Q4 2025 (6), Q3 2025 (2) |
-| `burger.restaurant.fact_value_strategy_coinvestment` | Q4 2025 (6), Q3 2025 (2) |
-| `burger.supply.dim_commodity` | Q2 2026 (3), Q2 2026 (7), Q1 2026 (13) |
-| `burger.supply.dim_distribution_center` | Q1 2026 (13) |
-| `burger.supply.dim_supplier` | Q1 2026 (13) |
-| `burger.supply.fact_commodity_cost` | Q2 2026 (3), Q2 2026 (7), Q1 2026 (13) |
-| `burger.supply.fact_supplier_shipment` | Q1 2026 (13) |
+### Q3 FY2026 (5)
+
+How much are store uplifts helping U.S. results, how is that measured per store, and what characterizes stores that may still close?
+
+- `burger.restaurant.fact_restaurant_closure_quantity`: `closed_restaurant_count`, `operating_model_id`
+- `burger.restaurant.fact_closure_sales_transfer_amount`: `transferred_sales_amount`, `closed_store_sales_amount`
+- `burger.sales.fact_comparable_base_quantity`: `comparable_restaurant_count`, `comparable_transaction_count`
+
+### Q3 FY2026 (6)
+
+How do company-operated comparable sales and operations in North America compare with licensed stores, and what can Starbucks do to close the gap?
+
+- `burger.restaurant.fact_license_store_sales_amount`: `licensed_store_sales_amount`, `licensee_id`, `starbucks_segment_id`
+- `burger.restaurant.fact_license_fee_amount`: `license_fee_amount`
+- `burger.sales.fact_comparable_sales_rate`: `comparable_sales_rate`, `operating_model_id`
+
+### Q3 FY2026 (7)
+
+How much of the third-quarter comparable sales came from longer hours, closures, and delivery versus brand initiatives?
+
+- `burger.restaurant.fact_restaurant_closure_quantity`: `closed_restaurant_count`, `operating_model_id`
+- `burger.restaurant.fact_closure_sales_transfer_amount`: `transferred_sales_amount`, `closed_store_sales_amount`
+- `burger.sales.fact_comparable_base_quantity`: `comparable_restaurant_count`, `comparable_transaction_count`
+
+### Q3 FY2026 (9)
+
+Are Green Apron labor hours now enough for higher traffic, or is there room to get more transactions from the same hours?
+
+- `burger.restaurant.fact_labour_quantity`: `labour_hour_count`, `transaction_count`, `store_cohort_id`
+- `burger.restaurant.fact_service_productivity_rate`: `transactions_per_labour_hour`
+- `burger.restaurant.fact_service_duration`: `average_service_time_seconds`
+
+### Q3 FY2026 (11)
+
+How did marketing spend change year over year, and is there still room for advertising to rise as a percent of sales or only to mix differently?
+
+- `burger.restaurant.fact_franchise_restaurant_sales_amount`: `franchised_restaurant_sales_amount`, `franchisee_id`, `mcdonalds_segment_id`
+- `burger.restaurant.fact_royalty_amount`: `royalty_amount`
+- `burger.restaurant.fact_rent_amount`: `rent_amount`
+- `burger.finance.fact_franchisee_cashflow_amount`: `franchisee_profit_amount`, `operating_cash_flow_amount`
+
+### Q3 FY2026 (13)
+
+What limits the remodel pace, when could the system be finished, and how much can 2027 accelerate?
+
+- `burger.development.fact_development_quantity`: `target_opening_count`, `actual_opening_count`, `ending_restaurant_count`
+- `burger.restaurant.fact_restaurant_opening_quantity`: `opened_restaurant_count`
+- `burger.restaurant.fact_restaurant_closure_quantity`: `closed_restaurant_count`
+- `burger.finance.fact_capex_amount`: `capital_spend_amount`, `capital_budget_amount`, `project_type_id`
+
+### Q2 FY2026 (1)
+
+Are stores hitting service-time targets, how did the algorithm changes help, and what does scheduled ordering add?
+
+- `burger.restaurant.fact_labour_quantity`: `labour_hour_count`, `transaction_count`, `store_cohort_id`
+- `burger.restaurant.fact_service_productivity_rate`: `transactions_per_labour_hour`
+- `burger.restaurant.fact_service_duration`: `average_service_time_seconds`
+
+### Q2 FY2026 (3)
+
+How is Green Apron cost staged through the year relative to the productivity planned against it?
+
+- `burger.restaurant.fact_labour_quantity`: `labour_hour_count`, `transaction_count`, `store_cohort_id`
+- `burger.restaurant.fact_service_productivity_rate`: `transactions_per_labour_hour`
+- `burger.restaurant.fact_service_duration`: `average_service_time_seconds`
+
+### Q2 FY2026 (6)
+
+Where do labor dollars per operating week settle over the next couple of years, and can existing hours be made efficient enough to fund more transactions?
+
+- `burger.restaurant.fact_labour_quantity`: `labour_hour_count`, `transaction_count`, `store_cohort_id`
+- `burger.restaurant.fact_service_productivity_rate`: `transactions_per_labour_hour`
+- `burger.restaurant.fact_service_duration`: `average_service_time_seconds`
+
+### Q2 FY2026 (7)
+
+Are the original Green Apron store cohorts still improving, or does the gain become habitual?
+
+- `burger.restaurant.fact_labour_quantity`: `labour_hour_count`, `transaction_count`, `store_cohort_id`
+- `burger.restaurant.fact_service_productivity_rate`: `transactions_per_labour_hour`
+- `burger.restaurant.fact_service_duration`: `average_service_time_seconds`
+
+### Q1 FY2026 (1)
+
+How much of North America traffic was sales transferred from September closures, and what was the underlying improvement?
+
+- `burger.restaurant.fact_restaurant_closure_quantity`: `closed_restaurant_count`, `operating_model_id`
+- `burger.restaurant.fact_closure_sales_transfer_amount`: `transferred_sales_amount`, `closed_store_sales_amount`
+- `burger.sales.fact_comparable_base_quantity`: `comparable_restaurant_count`, `comparable_transaction_count`
+
+### Q1 FY2026 (2)
+
+Are the earliest Green Apron stores still adding traffic from the service model?
+
+- `burger.restaurant.fact_labour_quantity`: `labour_hour_count`, `transaction_count`, `store_cohort_id`
+- `burger.restaurant.fact_service_productivity_rate`: `transactions_per_labour_hour`
+- `burger.restaurant.fact_service_duration`: `average_service_time_seconds`
+
+### Q1 FY2026 (6)
+
+Should morning and afternoon be run differently, and what should Starbucks do about competitors that are almost entirely drive-thru and takeout?
+
+- `burger.restaurant.fact_franchise_restaurant_sales_amount`: `franchised_restaurant_sales_amount`, `franchisee_id`, `mcdonalds_segment_id`
+- `burger.restaurant.fact_royalty_amount`: `royalty_amount`
+- `burger.restaurant.fact_rent_amount`: `rent_amount`
+- `burger.finance.fact_franchisee_cashflow_amount`: `franchisee_profit_amount`, `operating_cash_flow_amount`
+
+### Q1 FY2026 (9)
+
+How fast can U.S. unit growth reaccelerate, and what penetration and return work supports a much larger long-term store count?
+
+- `burger.development.fact_development_quantity`: `target_opening_count`, `actual_opening_count`, `ending_restaurant_count`
+- `burger.restaurant.fact_restaurant_opening_quantity`: `opened_restaurant_count`
+- `burger.restaurant.fact_restaurant_closure_quantity`: `closed_restaurant_count`
+- `burger.finance.fact_capex_amount`: `capital_spend_amount`, `capital_budget_amount`, `project_type_id`
+
+### Q1 FY2026 (11)
+
+Is being under a four-minute service promise the right throughput level, or is there more to gain over the next year?
+
+- `burger.restaurant.fact_labour_quantity`: `labour_hour_count`, `transaction_count`, `store_cohort_id`
+- `burger.restaurant.fact_service_productivity_rate`: `transactions_per_labour_hour`
+- `burger.restaurant.fact_service_duration`: `average_service_time_seconds`
+
+### Q4 FY2025 (3)
+
+Where is the Green Apron consumer response after a few months, and do August stores differ from stores upgraded earlier in the year?
+
+- `burger.restaurant.fact_labour_quantity`: `labour_hour_count`, `transaction_count`, `store_cohort_id`
+- `burger.restaurant.fact_service_productivity_rate`: `transactions_per_labour_hour`
+- `burger.restaurant.fact_service_duration`: `average_service_time_seconds`
+
+### Q4 FY2025 (4)
+
+Was added Green Apron staffing mainly to stop traffic declines or to drive transactions, and can staffing go further?
+
+- `burger.restaurant.fact_labour_quantity`: `labour_hour_count`, `transaction_count`, `store_cohort_id`
+- `burger.restaurant.fact_service_productivity_rate`: `transactions_per_labour_hour`
+- `burger.restaurant.fact_service_duration`: `average_service_time_seconds`
+
+### Q4 FY2025 (6)
+
+Is the added staffing already in place, what further Green Apron investment remains, and do 2026 product-cost savings offset commodity inflation?
+
+- `burger.restaurant.fact_labour_quantity`: `labour_hour_count`, `transaction_count`, `store_cohort_id`
+- `burger.restaurant.fact_service_productivity_rate`: `transactions_per_labour_hour`
+- `burger.restaurant.fact_service_duration`: `average_service_time_seconds`
+
+### Q4 FY2025 (7)
+
+Are closing coffeehouses low-volume or high-cost, how much sales transfers, and do closures lower restaurant margins while also lowering overhead?
+
+- `burger.restaurant.fact_restaurant_closure_quantity`: `closed_restaurant_count`, `operating_model_id`
+- `burger.restaurant.fact_closure_sales_transfer_amount`: `transferred_sales_amount`, `closed_store_sales_amount`
+- `burger.sales.fact_comparable_base_quantity`: `comparable_restaurant_count`, `comparable_transaction_count`
+
+### Q4 FY2025 (10)
+
+After meetings with licensees, is there a chance to simplify the licensed business in a way that helps company-owned stores?
+
+- `burger.restaurant.fact_license_store_sales_amount`: `licensed_store_sales_amount`, `licensee_id`, `starbucks_segment_id`
+- `burger.restaurant.fact_license_fee_amount`: `license_fee_amount`
+- `burger.sales.fact_comparable_sales_rate`: `comparable_sales_rate`, `operating_model_id`

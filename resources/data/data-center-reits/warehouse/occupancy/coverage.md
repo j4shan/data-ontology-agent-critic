@@ -1,165 +1,398 @@
-# Colocation Inc occupancy and bookings coverage
+# Colocation Inc occupancy and leasing
 
-This slice is bookings, pre-leases, occupancy snapshots, churn, renewals, price, and revenue. A booking is not an occupancy snapshot, and a lease is not either one. Development capacity and interconnection are owned in the other slices. Calendar year, quarter, and day are complete here because bookings and revenue are stated on them. Metro, region, customer, and customer vertical are referenced and not re-authored.
+Retail cabinet occupancy separate from wholesale leased megawatts, bookings, churn, leases and pipeline.
 
-Foreign identities are referenced from this slice and are partial here. Their complete populations are not re-authored in this slice.
+Every fact below uses `fiscal_period_id` for the fiscal period and `scenario_id` for the scenario (`reported` or `guide` in `dim_scenario`). Measure descriptions in the YAML name the unit.
 
-| Identity | Column | Node |
-| --- | --- | --- |
-| `campus_identity` | `campus_id` | `sf:colocation.power.dim_campus` |
-| `customer_identity` | `customer_id` | `sf:colocation.interconnection.dim_customer` |
-| `customer_vertical_identity` | `customer_vertical_id` | `sf:colocation.interconnection.dim_customer_vertical` |
-| `development_project_identity` | `development_project_id` | `sf:colocation.power.dim_development_project` |
-| `ibx_identity` | `ibx_id` | `sf:colocation.power.dim_ibx` |
-| `metro_identity` | `metro_id` | `sf:colocation.interconnection.dim_metro` |
-| `region_identity` | `region_id` | `sf:colocation.interconnection.dim_region` |
+## Equinix (EQIX)
 
-## Complete populations
+### Q2 2026 (5)
 
-| Identity | Dataset | Column |
-| --- | --- | --- |
-| `fiscal_year_identity` | `colocation.calendar.dim_fiscal_year` | `fiscal_year_id` |
-| `fiscal_quarter_identity` | `colocation.calendar.dim_fiscal_quarter` | `fiscal_quarter_id` |
-| `calendar_day_identity` | `colocation.calendar.dim_calendar_day` | `calendar_day_id` |
-| `product_line_identity` | `colocation.occupancy.dim_product_line` | `product_line_id` |
-| `workload_type_identity` | `colocation.occupancy.dim_workload_type` | `workload_type_id` |
-| `deal_band_identity` | `colocation.occupancy.dim_deal_band` | `deal_band_id` |
-| `churn_driver_identity` | `colocation.occupancy.dim_churn_driver` | `churn_driver_id` |
-| `cost_pressure_identity` | `colocation.occupancy.dim_cost_pressure` | `cost_pressure_id` |
-| `lease_identity` | `colocation.occupancy.dim_lease` | `lease_id` |
-| `cabinet_identity` | `colocation.occupancy.dim_cabinet` | `cabinet_id` |
-| `booking_identity` | `colocation.occupancy.fact_booking` | `booking_id` |
-| `pipeline_identity` | `colocation.occupancy.fact_pipeline` | `pipeline_id` |
-| `prelease_identity` | `colocation.occupancy.fact_prelease` | `prelease_id` |
-| `prelease_delivery_identity` | `colocation.occupancy.fact_prelease_delivery` | `prelease_delivery_id` |
-| `churn_quarter_identity` | `colocation.occupancy.fact_churn_quarter` | `churn_quarter_id` |
-| `renewal_identity` | `colocation.occupancy.fact_renewal` | `renewal_id` |
-| `revenue_quarter_identity` | `colocation.occupancy.fact_revenue_quarter` | `revenue_quarter_id` |
-| `revenue_guide_identity` | `colocation.occupancy.fact_revenue_guide` | `revenue_guide_id` |
-| `price_realization_identity` | `colocation.occupancy.fact_price_realization` | `price_realization_id` |
-| `operating_cost_identity` | `colocation.occupancy.fact_operating_cost` | `operating_cost_id` |
-| `demand_timing_identity` | `colocation.occupancy.fact_demand_timing` | `demand_timing_id` |
-| `xscale_fee_identity` | `colocation.occupancy.fact_xscale_fee` | `xscale_fee_id` |
-| `retail_demand_identity` | `colocation.occupancy.fact_retail_demand` | `retail_demand_id` |
-| `placement_choice_identity` | `colocation.occupancy.fact_placement_choice` | `placement_choice_id` |
-| `occupancy_quarter_identity` | `colocation.occupancy.fact_occupancy_quarter` | `occupancy_quarter_id` |
-| `booking_runrate_identity` | `colocation.occupancy.fact_booking_runrate` | `booking_runrate_id` |
-| `cabinet_delivery_identity` | `colocation.occupancy.fact_cabinet_delivery` | `cabinet_delivery_id` |
+How should the three regions grow relative to the portfolio, and is growth inside the range similar each year?
 
-## Numbered questions
+- `colocation.retail.fact_retail_cabinet_occupied_quantity`: `leased_cabinet_count`, `occupied_cabinet_count`, `retail_facility_id`
+- `colocation.retail.fact_retail_cabinet_capacity_quantity`: `total_cabinet_count`, `available_cabinet_count`
+- `colocation.retail.fact_retail_booking_amount`: `annualized_booking_amount`, `metro_id`
 
-### Q2 2026 (2) — AI deal size, market mix, and interconnection attach
+### Q2 2026 (6)
 
-Deal size and market are `colocation.occupancy.fact_booking.deal_size_kw`, `metro_id`, and `ai_booking_flag`, with `workload_type_id` joined to `colocation.occupancy.dim_workload_type.workload_code`. Attach is `colocation.interconnection.fact_attach_rate.attach_rate` against `historical_attach_rate` for the same `metro_id` and `workload_type_id`.
+How much of the multi-year upside comes from renewal spreads?
 
-### Q2 2026 (4) — Nonrecurring share under the long-term guide
+- `colocation.wholesale.fact_lease_commencement_event`: `leased_mw`, `commencement_lag_day_count`, `wholesale_lease_id`
+- `colocation.wholesale.fact_lease_expiration_quantity`: `expiring_mw`, `expiring_lease_count`
+- `colocation.wholesale.fact_renewal_spread_rate`: `renewal_spread_rate`, `annual_escalator_rate`
 
-`colocation.occupancy.fact_revenue_guide.nonrecurring_share` is the guide share. The level is `colocation.occupancy.fact_revenue_quarter.nonrecurring_revenue_amount` against `total_revenue_amount`, with `recurring_revenue_amount` kept apart. `fiscal_year_id` places the guide.
+### Q2 2026 (7)
 
-### Q2 2026 (5) — Regional growth versus the portfolio
+What operating and risk steps keep the CapEx plan deployable if realized demand misses the forecast?
 
-`colocation.occupancy.fact_revenue_quarter.revenue_growth_rate` and `constant_currency_growth_rate` by `region_id` compare with `portfolio_growth_rate`. `colocation.interconnection.dim_region.region_code` separates Americas, EMEA, and Asia-Pacific. `colocation.occupancy.fact_revenue_guide.year_similarity_flag` says whether the path inside the range is similar each year.
+- `colocation.retail.fact_retail_cabinet_occupied_quantity`: `leased_cabinet_count`, `occupied_cabinet_count`, `retail_facility_id`
+- `colocation.retail.fact_retail_cabinet_capacity_quantity`: `total_cabinet_count`, `available_cabinet_count`
+- `colocation.retail.fact_retail_booking_amount`: `annualized_booking_amount`, `metro_id`
 
-### Q2 2026 (6) — Renewal spreads in the multi-year upside
+### Q2 2026 (8)
 
-`colocation.occupancy.fact_renewal.renewal_spread_rate`, `revenue_bridge_amount`, and `multiyear_upside_amount` are the renewal contribution. `colocation.occupancy.fact_revenue_guide.renewal_contribution_amount` places that contribution in the guide. `fiscal_year_id` is the year of the bridge.
+What supports higher development spending when others are also adding large-scale capacity?
 
-### Q2 2026 (11) — Pipeline mix of open-weight, private AI, and enterprise inference
+- `colocation.retail.fact_retail_cabinet_occupied_quantity`: `leased_cabinet_count`, `occupied_cabinet_count`, `retail_facility_id`
+- `colocation.retail.fact_retail_cabinet_capacity_quantity`: `total_cabinet_count`, `available_cabinet_count`
+- `colocation.retail.fact_retail_booking_amount`: `annualized_booking_amount`, `metro_id`
 
-`colocation.occupancy.fact_pipeline.pipeline_kw` with `open_weight_flag`, `private_ai_flag`, and `enterprise_inference_flag`. `workload_type_id` joins `colocation.occupancy.dim_workload_type.workload_code`. `metro_id` and `customer_vertical_id` place the slice.
+### Q2 2026 (11)
 
-### Q1 2026 (2) — Earlier and longer pre-lease terms, price, and deposits
+Is the leasing pipeline showing open-weight models driving private AI or enterprise inference?
 
-`colocation.occupancy.fact_prelease.preleased_kw`, `commitment_lead_months`, `earlier_commitment_flag`, `term_months`, `price_per_kw_amount`, and `deposit_amount`. The delivery quarter is `colocation.occupancy.fact_prelease_delivery.fiscal_quarter_id` joined on `prelease_id`. `campus_id` and `customer_id` name where and who.
+- `colocation.commercial.fact_pipeline_quantity`: `pipeline_mw`, `pipeline_booking_count`, `workload_phase_id`, `deployment_model_id`, `model_access_type_id`
+- `colocation.wholesale.fact_wholesale_booking_quantity`: `booked_mw`, `deal_size_band_id`
 
-### Q1 2026 (3) — Memory, fuel, and IT cost pressure on booking timing
+### Q1 2026 (2)
 
-`colocation.occupancy.fact_demand_timing.timing_effect` and `affected_booking_amount`. `cost_pressure_id` joins `colocation.occupancy.dim_cost_pressure.pressure_code` for memory, fuel, and IT. `customer_vertical_id` and `metro_id` say who moved and where.
+Are tenants committing earlier and for longer terms, and how is that showing up in price, term, or deposits on pre-leasing?
 
-### Q1 2026 (5) — Seasonal bookings dip and enterprise versus large-deal mix
+- `colocation.commercial.fact_pipeline_quantity`: `pipeline_mw`, `pipeline_booking_count`, `workload_phase_id`, `deployment_model_id`, `model_access_type_id`
+- `colocation.wholesale.fact_wholesale_booking_quantity`: `booked_mw`, `deal_size_band_id`
 
-`colocation.occupancy.fact_booking.seasonal_flag`, `annualized_booking_amount`, and `deal_band_id` joined to `colocation.occupancy.dim_deal_band.band_code`. `customer_vertical_id` joins `colocation.interconnection.dim_customer_vertical.vertical_code` for enterprise. `colocation.calendar.dim_fiscal_quarter.season_code` is the quarter.
+### Q1 2026 (3)
 
-### Q1 2026 (8) — Low churn versus the full-year range
+Are higher memory, fuel, and IT costs pulling demand forward or pushing deals out?
 
-`colocation.occupancy.fact_churn_quarter.churn_rate`, `full_year_low_rate`, `full_year_high_rate`, and `delayed_demand_flag`. `fiscal_quarter_id` is the quarter. `region_id` keeps the result regional.
+- `colocation.retail.fact_retail_cabinet_occupied_quantity`: `leased_cabinet_count`, `occupied_cabinet_count`, `retail_facility_id`
+- `colocation.retail.fact_retail_cabinet_capacity_quantity`: `total_cabinet_count`, `available_cabinet_count`
+- `colocation.retail.fact_retail_booking_amount`: `annualized_booking_amount`, `metro_id`
 
-### Q1 2026 (9) — xScale one-time fees and Manukau pre-leasing
+### Q1 2026 (4)
 
-`colocation.occupancy.fact_xscale_fee.onetime_fee_amount` and `fee_framework_code` size the fee, with `lease_id` and `campus_id`. Pre-leasing status at a campus such as Manukau is `colocation.occupancy.fact_prelease.preleased_kw` on that `campus_id`, with delivery on `colocation.occupancy.fact_prelease_delivery.fiscal_quarter_id`. The campus population is `colocation.power.dim_campus.campus_name`.
+Does AI inference require more incremental capital than traditional workloads, and does higher density raise or lower returns?
 
-### Q1 2026 (10) — Edge and colocation versus on-premises or public cloud
+- `colocation.retail.fact_retail_cabinet_occupied_quantity`: `leased_cabinet_count`, `occupied_cabinet_count`, `retail_facility_id`
+- `colocation.retail.fact_retail_cabinet_capacity_quantity`: `total_cabinet_count`, `available_cabinet_count`
+- `colocation.retail.fact_retail_booking_amount`: `annualized_booking_amount`, `metro_id`
 
-`colocation.occupancy.fact_placement_choice.location_choice` and `investment_shift_flag`. `workload_type_id` joins `colocation.occupancy.dim_workload_type.workload_code` for agentic workloads. `metro_id` is the market. `customer_id` is the customer.
+### Q1 2026 (5)
 
-### Q4 2025 (1) — AI bookings from enterprises versus hyperscaler edge nodes
+How much of the sequential bookings dip is seasonal, and what is the mix of traditional enterprise versus larger deals?
 
-`colocation.occupancy.fact_booking.ai_booking_flag` and `annualized_booking_amount`. `customer_vertical_id` joins `colocation.interconnection.dim_customer_vertical.vertical_code` for enterprise and hyperscaler. `workload_type_id` joins `workload_code` for hyperscaler_edge. `metro_id` is the location.
+- `colocation.commercial.fact_pipeline_quantity`: `pipeline_mw`, `pipeline_booking_count`, `workload_phase_id`, `deployment_model_id`, `model_access_type_id`
+- `colocation.wholesale.fact_wholesale_booking_quantity`: `booked_mw`, `deal_size_band_id`
 
-### Q4 2025 (2) — AI deal size and location versus traditional bookings
+### Q1 2026 (7)
 
-`colocation.occupancy.fact_booking.deal_size_kw`, `metro_id`, `ai_booking_flag`, and `prior_run_rate_amount`. `workload_type_id` separates AI workloads from `workload_code` traditional. `fiscal_quarter_id` shows whether demand has accelerated since the prior run rate.
+Have Middle East geopolitical issues affected the ability to sell or add capacity there?
 
-### Q4 2025 (3) — Controllable churn versus customer workload optimization
+- `colocation.retail.fact_retail_cabinet_occupied_quantity`: `leased_cabinet_count`, `occupied_cabinet_count`, `retail_facility_id`
+- `colocation.retail.fact_retail_cabinet_capacity_quantity`: `total_cabinet_count`, `available_cabinet_count`
+- `colocation.retail.fact_retail_booking_amount`: `annualized_booking_amount`, `metro_id`
 
-`colocation.occupancy.fact_churn_quarter.controllable_share` and `customer_optimization_share`. `churn_driver_id` joins `colocation.occupancy.dim_churn_driver.driver_code`. `churn_rate` is the level. `customer_vertical_id` names the vertical.
+### Q1 2026 (8)
 
-### Q4 2025 (5) — How far pricing can move and what varies growth inside the range
+Is the low churn rate delayed demand that returns above the usual range, or can the full year stay at the low end?
 
-`colocation.occupancy.fact_price_realization.price_change_rate` and `growth_variance_driver`. `presale_price_differential` is the pre-sale gap. The growth level is `colocation.occupancy.fact_revenue_quarter.revenue_growth_rate` by `region_id`.
+- `colocation.commercial.fact_churn_rate`: `churn_rate`, `churn_reason_id`, `region_id`
+- `colocation.commercial.fact_churn_base_amount`: `beginning_recurring_revenue_amount`, `expiring_recurring_revenue_amount`
 
-### Q4 2025 (6) — Cost reductions versus staffing at the current booking pace
+### Q1 2026 (9)
 
-`colocation.occupancy.fact_operating_cost.cost_reduction_amount`, `operating_cost_amount`, `staffing_count`, `staffing_need_flag`, and `booking_pace_amount`. `fiscal_quarter_id` is the trend. `region_id` places the cost.
+What framework sizes the one-time fees on xScale leases, and what is the status of pre-leasing at the Manukau campus?
 
-### Q4 2025 (7) — Bookings from new cabinets in constrained metros versus broader demand
+- `colocation.commercial.fact_pipeline_quantity`: `pipeline_mw`, `pipeline_booking_count`, `workload_phase_id`, `deployment_model_id`, `model_access_type_id`
+- `colocation.wholesale.fact_wholesale_booking_quantity`: `booked_mw`, `deal_size_band_id`
 
-`colocation.occupancy.fact_booking.new_cabinet_flag`, `constrained_market_flag`, `cabinet_count`, and `annualized_booking_amount`. `metro_id` joins `colocation.interconnection.dim_metro.metro_name` for Northern Virginia and Frankfurt. New supply is `colocation.occupancy.fact_cabinet_delivery.delivered_cabinet_count` for the same metro and quarter.
+### Q1 2026 (10)
 
-### Q3 2025 (3) — Price firmness where capacity is constrained, including pre-sales
+Are agent workloads pulling investment from public cloud toward the edge, and how do customers choose colocation versus on-premises?
 
-`colocation.occupancy.fact_price_realization.price_change_rate`, `capacity_constrained_flag`, and `presale_price_differential`. `metro_id` joins `colocation.interconnection.dim_metro.constrained_flag`. Available power beside that price is `colocation.power.fact_market_power.power_available_mw` for the same metro.
+- `colocation.retail.fact_retail_cabinet_occupied_quantity`: `leased_cabinet_count`, `occupied_cabinet_count`, `retail_facility_id`
+- `colocation.retail.fact_retail_cabinet_capacity_quantity`: `total_cabinet_count`, `available_cabinet_count`
+- `colocation.retail.fact_retail_booking_amount`: `annualized_booking_amount`, `metro_id`
 
-### Q3 2025 (6) — Larger-footprint retail demand and pre-leasing
+### Q1 2026 (11)
 
-`colocation.occupancy.fact_retail_demand.retail_demand_kw`, `preleased_kw`, and `remaining_capacity_kw`. `product_line_id` joins `colocation.occupancy.dim_product_line.product_line_code` for larger_footprint_retail. `metro_id` and `campus_id` place the demand.
+Is the current annual development spend the run rate for the next few years, or is it front-loaded?
 
-### Q3 2025 (7) — Constant-currency regional growth versus profit
+- `colocation.retail.fact_retail_cabinet_occupied_quantity`: `leased_cabinet_count`, `occupied_cabinet_count`, `retail_facility_id`
+- `colocation.retail.fact_retail_cabinet_capacity_quantity`: `total_cabinet_count`, `available_cabinet_count`
+- `colocation.retail.fact_retail_booking_amount`: `annualized_booking_amount`, `metro_id`
 
-`colocation.occupancy.fact_revenue_quarter.constant_currency_growth_rate` and `profit_amount` by `region_id`. `revenue_growth_rate` is the reported rate. `colocation.interconnection.dim_region.region_code` names the region.
+### Q1 2026 (12)
 
-### Q3 2025 (9) — Pre-sold bookings as a one-off or a new run rate
+How many liquid-cooling deployments are active or signed, and how quickly is direct-to-chip or immersion demand growing?
 
-`colocation.occupancy.fact_booking_runrate.annualized_presold_amount`, `normal_run_rate_amount`, `one_off_flag`, and `presold_price_differential`. `fiscal_quarter_id` is the quarter. `region_id` places the run rate.
+- `colocation.wholesale.fact_lease_commencement_event`: `leased_mw`, `commencement_lag_day_count`, `wholesale_lease_id`
+- `colocation.wholesale.fact_lease_expiration_quantity`: `expiring_mw`, `expiring_lease_count`
+- `colocation.wholesale.fact_renewal_spread_rate`: `renewal_spread_rate`, `annual_escalator_rate`
 
-## Datasets
+### Q4 2025 (2)
 
-| Qualified name | Questions served |
-| --- | --- |
-| `colocation.calendar.dim_fiscal_year` | supporting population |
-| `colocation.calendar.dim_fiscal_quarter` | Q1 2026 (5) |
-| `colocation.calendar.dim_calendar_day` | supporting population |
-| `colocation.occupancy.dim_product_line` | Q3 2025 (6) |
-| `colocation.occupancy.dim_workload_type` | Q2 2026 (2), Q2 2026 (11), Q1 2026 (10) |
-| `colocation.occupancy.dim_deal_band` | Q1 2026 (5) |
-| `colocation.occupancy.dim_churn_driver` | Q4 2025 (3) |
-| `colocation.occupancy.dim_cost_pressure` | Q1 2026 (3) |
-| `colocation.occupancy.dim_lease` | supporting population |
-| `colocation.occupancy.dim_cabinet` | supporting population |
-| `colocation.occupancy.fact_booking` | Q2 2026 (2), Q1 2026 (5), Q4 2025 (1), Q4 2025 (2), Q4 2025 (7) |
-| `colocation.occupancy.fact_pipeline` | Q2 2026 (11) |
-| `colocation.occupancy.fact_prelease` | Q1 2026 (2), Q1 2026 (9) |
-| `colocation.occupancy.fact_prelease_delivery` | Q1 2026 (2), Q1 2026 (9) |
-| `colocation.occupancy.fact_churn_quarter` | Q1 2026 (8), Q4 2025 (3) |
-| `colocation.occupancy.fact_renewal` | Q2 2026 (6) |
-| `colocation.occupancy.fact_revenue_quarter` | Q2 2026 (4), Q2 2026 (5), Q4 2025 (5), Q3 2025 (7) |
-| `colocation.occupancy.fact_revenue_guide` | Q2 2026 (4), Q2 2026 (5), Q2 2026 (6) |
-| `colocation.occupancy.fact_price_realization` | Q4 2025 (5), Q3 2025 (3) |
-| `colocation.occupancy.fact_operating_cost` | Q4 2025 (6) |
-| `colocation.occupancy.fact_demand_timing` | Q1 2026 (3) |
-| `colocation.occupancy.fact_xscale_fee` | Q1 2026 (9) |
-| `colocation.occupancy.fact_retail_demand` | Q3 2025 (6) |
-| `colocation.occupancy.fact_placement_choice` | Q1 2026 (10) |
-| `colocation.occupancy.fact_occupancy_quarter` | supporting population |
-| `colocation.occupancy.fact_booking_runrate` | Q3 2025 (9) |
-| `colocation.occupancy.fact_cabinet_delivery` | Q4 2025 (7) |
+Do AI deals differ from traditional deals in size or location, and has demand accelerated since the prior update?
+
+- `colocation.retail.fact_retail_cabinet_occupied_quantity`: `leased_cabinet_count`, `occupied_cabinet_count`, `retail_facility_id`
+- `colocation.retail.fact_retail_cabinet_capacity_quantity`: `total_cabinet_count`, `available_cabinet_count`
+- `colocation.retail.fact_retail_booking_amount`: `annualized_booking_amount`, `metro_id`
+
+### Q4 2025 (3)
+
+How much of the churn-improvement opportunity is in the company's control versus customer workload optimization?
+
+- `colocation.commercial.fact_churn_rate`: `churn_rate`, `churn_reason_id`, `region_id`
+- `colocation.commercial.fact_churn_base_amount`: `beginning_recurring_revenue_amount`, `expiring_recurring_revenue_amount`
+
+### Q4 2025 (5)
+
+How much further can pricing move, and what causes the growth rate to vary inside the projected range?
+
+- `colocation.retail.fact_retail_cabinet_occupied_quantity`: `leased_cabinet_count`, `occupied_cabinet_count`, `retail_facility_id`
+- `colocation.retail.fact_retail_cabinet_capacity_quantity`: `total_cabinet_count`, `available_cabinet_count`
+- `colocation.retail.fact_retail_booking_amount`: `annualized_booking_amount`, `metro_id`
+
+### Q4 2025 (6)
+
+Can cost reductions continue, or do bookings at this pace require more staffing?
+
+- `colocation.commercial.fact_pipeline_quantity`: `pipeline_mw`, `pipeline_booking_count`, `workload_phase_id`, `deployment_model_id`, `model_access_type_id`
+- `colocation.wholesale.fact_wholesale_booking_quantity`: `booked_mw`, `deal_size_band_id`
+
+### Q4 2025 (7)
+
+How much of the bookings came from new cabinets in constrained markets such as Northern Virginia and Frankfurt versus a broader demand acceleration?
+
+- `colocation.commercial.fact_pipeline_quantity`: `pipeline_mw`, `pipeline_booking_count`, `workload_phase_id`, `deployment_model_id`, `model_access_type_id`
+- `colocation.wholesale.fact_wholesale_booking_quantity`: `booked_mw`, `deal_size_band_id`
+
+### Q3 2025 (2)
+
+Is selling capacity further ahead of delivery driving pre-lease strength, and how much of upcoming capacity in key markets is pre-leased?
+
+- `colocation.retail.fact_retail_cabinet_occupied_quantity`: `leased_cabinet_count`, `occupied_cabinet_count`, `retail_facility_id`
+- `colocation.retail.fact_retail_cabinet_capacity_quantity`: `total_cabinet_count`, `available_cabinet_count`
+- `colocation.retail.fact_retail_booking_amount`: `annualized_booking_amount`, `metro_id`
+
+### Q3 2025 (3)
+
+Is pricing firm or improving because of capacity constraints, including on pre-sales?
+
+- `colocation.retail.fact_retail_cabinet_occupied_quantity`: `leased_cabinet_count`, `occupied_cabinet_count`, `retail_facility_id`
+- `colocation.retail.fact_retail_cabinet_capacity_quantity`: `total_cabinet_count`, `available_cabinet_count`
+- `colocation.retail.fact_retail_booking_amount`: `annualized_booking_amount`, `metro_id`
+
+### Q3 2025 (4)
+
+Which of the new land sites are largest, and where is the plan xScale versus retail?
+
+- `colocation.retail.fact_retail_cabinet_occupied_quantity`: `leased_cabinet_count`, `occupied_cabinet_count`, `retail_facility_id`
+- `colocation.retail.fact_retail_cabinet_capacity_quantity`: `total_cabinet_count`, `available_cabinet_count`
+- `colocation.retail.fact_retail_booking_amount`: `annualized_booking_amount`, `metro_id`
+
+### Q3 2025 (5)
+
+How is the Chicago campus split between xScale and retail?
+
+- `colocation.retail.fact_retail_cabinet_occupied_quantity`: `leased_cabinet_count`, `occupied_cabinet_count`, `retail_facility_id`
+- `colocation.retail.fact_retail_cabinet_capacity_quantity`: `total_cabinet_count`, `available_cabinet_count`
+- `colocation.retail.fact_retail_booking_amount`: `annualized_booking_amount`, `metro_id`
+
+### Q3 2025 (6)
+
+What demand and pre-leasing are showing up in larger-footprint retail?
+
+- `colocation.commercial.fact_pipeline_quantity`: `pipeline_mw`, `pipeline_booking_count`, `workload_phase_id`, `deployment_model_id`, `model_access_type_id`
+- `colocation.wholesale.fact_wholesale_booking_quantity`: `booked_mw`, `deal_size_band_id`
+
+### Q3 2025 (7)
+
+Why are constant-currency growth rates diverging across regions relative to profit?
+
+- `colocation.retail.fact_retail_cabinet_occupied_quantity`: `leased_cabinet_count`, `occupied_cabinet_count`, `retail_facility_id`
+- `colocation.retail.fact_retail_cabinet_capacity_quantity`: `total_cabinet_count`, `available_cabinet_count`
+- `colocation.retail.fact_retail_booking_amount`: `annualized_booking_amount`, `metro_id`
+
+### Q3 2025 (9)
+
+Was the annualized and pre-sold bookings level a one-off, or a new quarterly run rate, and is pre-sold capacity priced differently?
+
+- `colocation.commercial.fact_pipeline_quantity`: `pipeline_mw`, `pipeline_booking_count`, `workload_phase_id`, `deployment_model_id`, `model_access_type_id`
+- `colocation.wholesale.fact_wholesale_booking_quantity`: `booked_mw`, `deal_size_band_id`
+
+## Digital Realty (DLR)
+
+### Q1 2026 (2)
+
+Is the jump in commencement lag to about 19 months from one large lease, utility delays, or customers booking further ahead?
+
+- `colocation.wholesale.fact_lease_commencement_event`: `leased_mw`, `commencement_lag_day_count`, `wholesale_lease_id`
+- `colocation.wholesale.fact_lease_expiration_quantity`: `expiring_mw`, `expiring_lease_count`
+- `colocation.wholesale.fact_renewal_spread_rate`: `renewal_spread_rate`, `annual_escalator_rate`
+
+### Q1 2026 (4)
+
+If hyperscalers change designs, how relevant are fixed-price renewal options on larger contracts?
+
+- `colocation.wholesale.fact_lease_commencement_event`: `leased_mw`, `commencement_lag_day_count`, `wholesale_lease_id`
+- `colocation.wholesale.fact_lease_expiration_quantity`: `expiring_mw`, `expiring_lease_count`
+- `colocation.wholesale.fact_renewal_spread_rate`: `renewal_spread_rate`, `annual_escalator_rate`
+
+### Q1 2026 (5)
+
+Which operating-expense lines, other than energy, slowed constant-currency cash NOI growth?
+
+- `colocation.commercial.fact_operating_cost_amount`: `operating_cost_amount`, `cost_reduction_amount`, `cost_category_id`
+- `colocation.power.fact_development_spend_amount`: `development_spend_amount`, `development_project_id`
+
+### Q1 2026 (7)
+
+How far down the deal-size spectrum is AI showing up in leasing above 1 megawatt, and what does that mean for filling remaining capacity?
+
+- `colocation.commercial.fact_pipeline_quantity`: `pipeline_mw`, `pipeline_booking_count`, `workload_phase_id`, `deployment_model_id`, `model_access_type_id`
+- `colocation.wholesale.fact_wholesale_booking_quantity`: `booked_mw`, `deal_size_band_id`
+
+### Q1 2026 (8)
+
+How should greater-than-1-megawatt bookings trend for the rest of the year given additional large buildings in Charlotte and Atlanta?
+
+- `colocation.commercial.fact_pipeline_quantity`: `pipeline_mw`, `pipeline_booking_count`, `workload_phase_id`, `deployment_model_id`, `model_access_type_id`
+- `colocation.wholesale.fact_wholesale_booking_quantity`: `booked_mw`, `deal_size_band_id`
+
+### Q4 2025 (2)
+
+What does inference scaling in 2026 look like for the industry and for the portfolio?
+
+- `colocation.retail.fact_retail_cabinet_occupied_quantity`: `leased_cabinet_count`, `occupied_cabinet_count`, `retail_facility_id`
+- `colocation.retail.fact_retail_cabinet_capacity_quantity`: `total_cabinet_count`, `available_cabinet_count`
+- `colocation.retail.fact_retail_booking_amount`: `annualized_booking_amount`, `metro_id`
+
+### Q4 2025 (3)
+
+Are any bottlenecks limiting growth even with hyperscale capital spending staying high?
+
+- `colocation.retail.fact_retail_cabinet_occupied_quantity`: `leased_cabinet_count`, `occupied_cabinet_count`, `retail_facility_id`
+- `colocation.retail.fact_retail_cabinet_capacity_quantity`: `total_cabinet_count`, `available_cabinet_count`
+- `colocation.retail.fact_retail_booking_amount`: `annualized_booking_amount`, `metro_id`
+
+### Q4 2025 (5)
+
+How much of 0–1 megawatt strength is share gain versus underlying demand, and does the picture change if the band is widened to 2 or 3 megawatts?
+
+- `colocation.commercial.fact_pipeline_quantity`: `pipeline_mw`, `pipeline_booking_count`, `workload_phase_id`, `deployment_model_id`, `model_access_type_id`
+- `colocation.wholesale.fact_wholesale_booking_quantity`: `booked_mw`, `deal_size_band_id`
+
+### Q4 2025 (6)
+
+How could industry capacity arriving in 2027 and 2028 affect bookings, and how far out is labor secured for contracted growth?
+
+- `colocation.commercial.fact_pipeline_quantity`: `pipeline_mw`, `pipeline_booking_count`, `workload_phase_id`, `deployment_model_id`, `model_access_type_id`
+- `colocation.wholesale.fact_wholesale_booking_quantity`: `booked_mw`, `deal_size_band_id`
+
+### Q4 2025 (9)
+
+What is showing up in enterprise demand for roughly 5 to 15 megawatt blocks?
+
+- `colocation.commercial.fact_pipeline_quantity`: `pipeline_mw`, `pipeline_booking_count`, `workload_phase_id`, `deployment_model_id`, `model_access_type_id`
+- `colocation.wholesale.fact_wholesale_booking_quantity`: `booked_mw`, `deal_size_band_id`
+
+### Q4 2025 (10)
+
+Given strong renewal spreads, is there appetite for shorter terms or higher annual escalators?
+
+- `colocation.wholesale.fact_lease_commencement_event`: `leased_mw`, `commencement_lag_day_count`, `wholesale_lease_id`
+- `colocation.wholesale.fact_lease_expiration_quantity`: `expiring_mw`, `expiring_lease_count`
+- `colocation.wholesale.fact_renewal_spread_rate`: `renewal_spread_rate`, `annual_escalator_rate`
+
+### Q3 2025 (1)
+
+What puts and takes determine whether growth can hold or accelerate next year while development investment continues?
+
+- `colocation.retail.fact_retail_cabinet_occupied_quantity`: `leased_cabinet_count`, `occupied_cabinet_count`, `retail_facility_id`
+- `colocation.retail.fact_retail_cabinet_capacity_quantity`: `total_cabinet_count`, `available_cabinet_count`
+- `colocation.retail.fact_retail_booking_amount`: `annualized_booking_amount`, `metro_id`
+
+### Q3 2025 (3)
+
+How much room is there to lift renewal spreads on 2026 expirations?
+
+- `colocation.wholesale.fact_lease_commencement_event`: `leased_mw`, `commencement_lag_day_count`, `wholesale_lease_id`
+- `colocation.wholesale.fact_lease_expiration_quantity`: `expiring_mw`, `expiring_lease_count`
+- `colocation.wholesale.fact_renewal_spread_rate`: `renewal_spread_rate`, `annual_escalator_rate`
+
+### Q3 2025 (4)
+
+Is large-block demand diversified across neo clouds, model developers, and chip companies, or still concentrated in the largest hyperscalers?
+
+- `colocation.commercial.fact_pipeline_quantity`: `pipeline_mw`, `pipeline_booking_count`, `workload_phase_id`, `deployment_model_id`, `model_access_type_id`
+- `colocation.wholesale.fact_wholesale_booking_quantity`: `booked_mw`, `deal_size_band_id`
+
+### Q3 2025 (8)
+
+How large can 2027 development be relative to 2026 if most 2026 capacity is already sold?
+
+- `colocation.retail.fact_retail_cabinet_occupied_quantity`: `leased_cabinet_count`, `occupied_cabinet_count`, `retail_facility_id`
+- `colocation.retail.fact_retail_cabinet_capacity_quantity`: `total_cabinet_count`, `available_cabinet_count`
+- `colocation.retail.fact_retail_booking_amount`: `annualized_booking_amount`, `metro_id`
+
+### Q3 2025 (9)
+
+Do 2026 and 2027 hyperscale commencements require liquid cooling and higher-voltage designs that most existing halls lack?
+
+- `colocation.wholesale.fact_lease_commencement_event`: `leased_mw`, `commencement_lag_day_count`, `wholesale_lease_id`
+- `colocation.wholesale.fact_lease_expiration_quantity`: `expiring_mw`, `expiring_lease_count`
+- `colocation.wholesale.fact_renewal_spread_rate`: `renewal_spread_rate`, `annual_escalator_rate`
+
+### Q3 2025 (10)
+
+What is the average enterprise deployment size, and is share being gained there?
+
+- `colocation.retail.fact_retail_cabinet_occupied_quantity`: `leased_cabinet_count`, `occupied_cabinet_count`, `retail_facility_id`
+- `colocation.retail.fact_retail_cabinet_capacity_quantity`: `total_cabinet_count`, `available_cabinet_count`
+- `colocation.retail.fact_retail_booking_amount`: `annualized_booking_amount`, `metro_id`
+
+### Q3 2025 (11)
+
+Are double-digit renewal spreads on leases above 1 megawatt a temporary artifact or a new level?
+
+- `colocation.wholesale.fact_lease_commencement_event`: `leased_mw`, `commencement_lag_day_count`, `wholesale_lease_id`
+- `colocation.wholesale.fact_lease_expiration_quantity`: `expiring_mw`, `expiring_lease_count`
+- `colocation.wholesale.fact_renewal_spread_rate`: `renewal_spread_rate`, `annual_escalator_rate`
+
+### Q3 2025 (12)
+
+Is future capital spending tilted toward retrofits for denser deployments or toward new capacity?
+
+- `colocation.retail.fact_retail_cabinet_occupied_quantity`: `leased_cabinet_count`, `occupied_cabinet_count`, `retail_facility_id`
+- `colocation.retail.fact_retail_cabinet_capacity_quantity`: `total_cabinet_count`, `available_cabinet_count`
+- `colocation.retail.fact_retail_booking_amount`: `annualized_booking_amount`, `metro_id`
+
+### Q2 2025 (1)
+
+Is the inflection in 0–1 megawatt growth market-wide or mostly share gain?
+
+- `colocation.commercial.fact_pipeline_quantity`: `pipeline_mw`, `pipeline_booking_count`, `workload_phase_id`, `deployment_model_id`, `model_access_type_id`
+- `colocation.wholesale.fact_wholesale_booking_quantity`: `booked_mw`, `deal_size_band_id`
+
+### Q2 2025 (3)
+
+What does sustainable multi-year growth look like after this year's rate?
+
+- `colocation.retail.fact_retail_cabinet_occupied_quantity`: `leased_cabinet_count`, `occupied_cabinet_count`, `retail_facility_id`
+- `colocation.retail.fact_retail_cabinet_capacity_quantity`: `total_cabinet_count`, `available_cabinet_count`
+- `colocation.retail.fact_retail_booking_amount`: `annualized_booking_amount`, `metro_id`
+
+### Q2 2025 (6)
+
+If 0–1 megawatt bookings persist, is there existing space to pull more of that business into 2026 commencements?
+
+- `colocation.wholesale.fact_lease_commencement_event`: `leased_mw`, `commencement_lag_day_count`, `wholesale_lease_id`
+- `colocation.wholesale.fact_lease_expiration_quantity`: `expiring_mw`, `expiring_lease_count`
+- `colocation.wholesale.fact_renewal_spread_rate`: `renewal_spread_rate`, `annual_escalator_rate`
+
+### Q2 2025 (7)
+
+As small-block bookings grow, is share being taken while peers build larger blocks?
+
+- `colocation.commercial.fact_pipeline_quantity`: `pipeline_mw`, `pipeline_booking_count`, `workload_phase_id`, `deployment_model_id`, `model_access_type_id`
+- `colocation.wholesale.fact_wholesale_booking_quantity`: `booked_mw`, `deal_size_band_id`
+
+### Q2 2025 (8)
+
+When do customers say enterprise AI adoption starts to compound demand in tier-one markets?
+
+- `colocation.retail.fact_retail_cabinet_occupied_quantity`: `leased_cabinet_count`, `occupied_cabinet_count`, `retail_facility_id`
+- `colocation.retail.fact_retail_cabinet_capacity_quantity`: `total_cabinet_count`, `available_cabinet_count`
+- `colocation.retail.fact_retail_booking_amount`: `annualized_booking_amount`, `metro_id`

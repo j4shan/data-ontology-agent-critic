@@ -1,244 +1,361 @@
-# Device Inc demand and device family
+# Device Inc demand and product
 
-This slice owns device family, generation, SKU, channel, geography, calendar, and the demand facts. Demand quantity, sell-through, the installed base, and the upgrade program live here. Shipments, memory and silicon supply, the device price file, and service attachment are owned in the other slices. A demand row names those populations only as a partial identity.
+Apple and Dell product configurations, shipment and sell-through quantities, installed base, server orders and PC shipments.
 
-Identifiers owned by another slice are partial here. Their complete populations are not re-authored in this slice.
+Every fact below uses `fiscal_period_id` for the fiscal period and `scenario_id` for the scenario (`reported` or `guide` in `dim_scenario`). Measure descriptions in the YAML name the unit.
 
-| Identity | Column on this slice | Complete population |
-| --- | --- | --- |
-| `component_commodity_identity` | `component_commodity_id` | `sf:device.component.dim_component_commodity` `component_commodity_id` |
-
-## Numbered questions
-
-### Q3 FY2026 (1)
-
-How much of the guided growth slowdown is supply constraint versus currency, and which constraints are spreading?
-
-- `device.demand.fact_guided_growth`: `guided_growth_rate`, `prior_period_growth_rate`, `supply_constraint_effect_amount`, `fx_effect_amount`, `fiscal_quarter_id`, `comparison_quarter_code`
-- `device.supply.fact_constraint_spread`: `spreading_flag`, `versus_prior_quarter_code`, `component_commodity_id`, `device_family_id`, `fiscal_quarter_id`
-- `device.component.dim_component_commodity`: `commodity_code`, `commodity_name`
-- `device.geography.dim_fiscal_quarter`: `quarter_code`, `quarter_label`
+## Apple (AAPL)
 
 ### Q3 FY2026 (3)
 
 What adoption is expected for the Apple Upgrade Program across the installed base, and does it shorten replacement for iPhone only or also Mac and iPad?
 
-- `device.demand.fact_upgrade_program`: `adoption_rate`, `replacement_interval_months`, `shortens_replacement_flag`, `device_family_id`, `country_id`, `fiscal_quarter_id`
-- `device.demand.fact_installed_base`: `installed_quantity`, `device_family_id`, `country_id`
-- `device.product.dim_device_family`: `family_code`
-
-### Q3 FY2026 (8)
-
-Which new markets open as more AI runs on the device?
-
-- `device.demand.fact_on_device_market`: `use_case_name`, `new_market_flag`, `in_current_product_set_flag`, `feature_id`, `device_family_id`, `fiscal_quarter_id`
-- `device.product.dim_feature`: `feature_code`
-- `device.product.dim_device_family`: `family_code`
-- `device.services.dim_compute_location`: `location_code`
-
-### Q2 FY2026 (1)
-
-Do agents imply a new phone form factor or new products, or do they sit on the current iPhone?
-
-- `device.demand.fact_agent_hardware`: `sits_on_current_iphone_flag`, `requires_new_form_factor_flag`, `requires_new_product_flag`, `form_factor_id`, `device_family_id`, `feature_id`, `fiscal_quarter_id`
-- `device.product.dim_form_factor`: `form_factor_code`
-- `device.product.dim_device_family`: `family_code`
+- `device.demand.fact_installed_base_quantity`: `installed_unit_count`, `ai_capable_unit_count`, `apple_family_id`
+- `device.demand.fact_upgrade_activity_quantity`: `upgrader_unit_count`, `switcher_unit_count`
+- `device.apple.dim_apple_family`: `apple_family_code`
 
 ### Q2 FY2026 (3)
 
 Which new segments — education, value, or emerging markets — is MacBook Neo reaching, and how does the roadmap address other underpenetrated markets?
 
-- `device.demand.fact_segment_penetration`: `mix_share`, `penetration_rate`, `roadmap_addresses_flag`, `customer_segment_id`, `product_generation_id`, `device_family_id`, `country_id`, `fiscal_quarter_id`
-- `device.product.dim_customer_segment`: `segment_code`
-- `device.product.dim_product_generation`: `generation_code`
-- `device.geography.dim_country`: `country_code`, `region_id`
+- `device.demand.fact_installed_base_quantity`: `installed_unit_count`, `ai_capable_unit_count`, `apple_family_id`
+- `device.demand.fact_upgrade_activity_quantity`: `upgrader_unit_count`, `switcher_unit_count`
+- `device.apple.dim_apple_family`: `apple_family_code`
 
-### Q2 FY2026 (5)
+### Q2 FY2026 (6)
 
-In this memory dislocation, is the priority share at the low end where competitors are strained, or profitability?
+Which layers of an agentic stack does Apple build versus partners, and does that require more of Apple’s own infrastructure?
 
-- `device.demand.fact_competitive_position`: `priority_code`, `low_end_focus_flag`, `competitor_constraint_index`, `share_change_rate`, `device_family_id`, `country_id`, `fiscal_quarter_id`
-- `device.supply.fact_component_cost`: `dislocated_flag`, `inflation_rate`, `component_commodity_id`
-- `device.price.fact_price_decision`: `used_price_lever_flag`, `lever_reason_code`, `device_family_id`
-- `device.price.fact_product_margin`: `product_gross_margin_rate`, `fiscal_quarter_id`
-
-### Q2 FY2026 (7)
-
-What is sustaining iPhone growth above 20% despite supply limits, and how durable is it?
-
-- `device.demand.fact_iphone_driver`: `growth_rate`, `above_twenty_percent_flag`, `durable_flag`, `contribution_amount`, `demand_driver_id`, `device_family_id`, `fiscal_quarter_id`
-- `device.demand.fact_unmet_demand`: `constrained_revenue_amount`, `still_constrained_at_exit_flag`, `device_family_id`, `fiscal_quarter_id`
-- `device.product.dim_demand_driver`: `driver_code`
-- `device.supply.fact_constraint_spread`: `spreading_flag`, `component_commodity_id`, `device_family_id`
-
-### Q2 FY2026 (12)
-
-In China, is Apple gaining because competitors are more supply-constrained, and how is the India iPhone opportunity evolving with the installed base and a larger middle class?
-
-- `device.demand.fact_competitive_position`: `share_change_rate`, `competitor_constraint_index`, `country_id`, `device_family_id`, `fiscal_quarter_id`
-- `device.demand.fact_regional_outlook`: `middle_class_tailwind_flag`, `installed_base_opportunity_quantity`, `demand_direction`, `country_id`, `device_family_id`
-- `device.demand.fact_installed_base`: `installed_quantity`, `country_id`, `device_family_id`
-- `device.demand.fact_sell_through`: `sell_through_quantity`, `country_id`, `channel_id`, `device_family_id`
-- `device.geography.dim_country`: `country_code`
-
-### Q1 FY2026 (2)
-
-Which one or two factors are driving iPhone strength, and how sustainable are they?
-
-- `device.demand.fact_iphone_driver`: `contribution_amount`, `durable_flag`, `demand_driver_id`, `device_family_id`, `fiscal_quarter_id`, `growth_rate`
-- `device.product.dim_demand_driver`: `driver_name`, `driver_code`
-- `device.product.dim_device_family`: `family_code`
-
-### Q1 FY2026 (5)
-
-How is overall smartphone demand holding up as memory prices rise, given worries about shortages and demand destruction?
-
-- `device.demand.fact_industry_smartphone_demand`: `industry_demand_index`, `demand_destruction_flag`, `component_commodity_id`, `country_id`, `fiscal_quarter_id`
-- `device.supply.fact_component_cost`: `inflation_rate`, `cost_change_amount`, `component_commodity_id`
-- `device.supply.fact_constraint_spread`: `spreading_flag`, `versus_prior_quarter_code`, `component_commodity_id`
-- `device.component.dim_component_commodity`: `commodity_code`
-
-### Q1 FY2026 (9)
-
-What is driving iPhone traction in India, and how large is the remaining installed-base opportunity?
-
-- `device.demand.fact_regional_outlook`: `demand_direction`, `installed_base_opportunity_quantity`, `middle_class_tailwind_flag`, `country_id`, `device_family_id`, `fiscal_quarter_id`
-- `device.demand.fact_sell_through`: `sell_through_quantity`, `country_id`, `channel_id`, `device_family_id`, `calendar_day_id`
-- `device.demand.fact_installed_base`: `installed_quantity`, `country_id`, `device_family_id`
-- `device.geography.dim_country`: `country_code`
-
-### Q1 FY2026 (12)
-
-What share of the active iPhone or device base can run Apple Intelligence, and is that why broader AI services are launching gradually?
-
-- `device.demand.fact_installed_base`: `ai_capable_quantity`, `ai_capable_share`, `installed_quantity`, `device_family_id`, `country_id`, `calendar_day_id`
-- `device.services.fact_services_driver`: `driver_code`, `contribution_amount`, `fiscal_quarter_id`
-- `device.product.dim_feature`: `feature_code`
-- `device.product.dim_device_family`: `family_code`
-
-### Q4 FY2025 (1)
-
-Is iPhone 17 strength mainly an aging installed base replacing phones, or specific features versus prior cycles?
-
-- `device.demand.fact_replacement_cycle`: `upgrade_pool_share`, `feature_driven_share`, `prior_cycle_feature_share`, `product_generation_id`, `device_family_id`, `country_id`, `fiscal_quarter_id`
-- `device.demand.fact_installed_base`: `aging_base_share`, `installed_quantity`, `device_family_id`
-- `device.product.dim_product_generation`: `generation_code`
+- `device.dell.fact_server_order_quantity`: `ordered_unit_count`, `backlog_unit_count`, `dell_family_id`, `customer_type_id`
+- `device.dell.fact_server_order_amount`: `order_amount`, `backlog_amount`
+- `device.dell.fact_infrastructure_shipment_quantity`: `shipped_unit_count`, `attached_storage_unit_count`
+- `device.finance.fact_dell_segment_amount`: `segment_revenue_amount`, `dell_segment_id`
 
 ### Q4 FY2025 (2)
 
 How should iPhone in China trend in the December quarter, and has that region turned?
 
-- `device.demand.fact_regional_outlook`: `demand_direction`, `december_driver_code`, `country_id`, `device_family_id`, `fiscal_quarter_id`
-- `device.geography.dim_country`: `country_code`, `region_id`
-- `device.geography.dim_region`: `region_code`
-- `device.geography.dim_fiscal_quarter`: `quarter_code`
-- `device.product.dim_device_family`: `family_code`
+- `device.demand.fact_installed_base_quantity`: `installed_unit_count`, `ai_capable_unit_count`, `apple_family_id`
+- `device.demand.fact_upgrade_activity_quantity`: `upgrader_unit_count`, `switcher_unit_count`
+- `device.apple.dim_apple_family`: `apple_family_code`
 
 ### Q4 FY2025 (5)
 
 Are iPhone buyers shifting between upgraders and switchers, are U.S. carrier promotions helping, and where is channel inventory?
 
-- `device.demand.fact_buyer_mix`: `upgrader_quantity`, `switcher_quantity`, `carrier_promotion_id`, `channel_id`, `country_id`, `device_family_id`, `calendar_day_id`
-- `device.channel.dim_carrier_promotion`: `promotion_name`, `channel_id`
-- `device.supply.fact_channel_inventory`: `on_hand_quantity`, `channel_id`, `country_id`, `device_family_id`, `calendar_day_id`
-- `device.demand.fact_sell_through`: `sell_through_quantity`, `channel_id`, `country_id`, `device_family_id`
-- `device.geography.dim_country`: `country_code`
-
-### Q4 FY2025 (6)
-
-Was September weakness in China a pause until iPhone Air arrived, and what else lifts the December view there?
-
-- `device.demand.fact_regional_outlook`: `pause_until_generation_flag`, `december_driver_code`, `demand_direction`, `product_generation_id`, `country_id`, `device_family_id`, `fiscal_quarter_id`
-- `device.product.dim_product_generation`: `generation_code`
-- `device.geography.dim_country`: `country_code`
-- `device.geography.dim_fiscal_quarter`: `quarter_code`
-
-### Q4 FY2025 (7)
-
-Will iPhone supply still be constrained exiting December, and how much revenue did constraints hold back this quarter?
-
-- `device.demand.fact_unmet_demand`: `constrained_revenue_amount`, `still_constrained_at_exit_flag`, `device_family_id`, `fiscal_quarter_id`
-- `device.demand.fact_device_demand`: `demand_quantity`, `device_family_id`, `channel_id`, `country_id`, `calendar_day_id`
-- `device.supply.fact_device_shipment`: `shipment_quantity`, `device_family_id`, `channel_id`, `country_id`, `calendar_day_id`
-- `device.supply.fact_constraint_spread`: `spreading_flag`, `component_commodity_id`, `device_family_id`
-- `device.product.dim_device_family`: `family_code`
+- `device.demand.fact_installed_base_quantity`: `installed_unit_count`, `ai_capable_unit_count`, `apple_family_id`
+- `device.demand.fact_upgrade_activity_quantity`: `upgrader_unit_count`, `switcher_unit_count`
+- `device.apple.dim_apple_family`: `apple_family_code`
 
 ### Q4 FY2025 (8)
 
 How much of the China momentum is smartphone subsidies, and what share of buyers is using them?
 
-- `device.demand.fact_subsidy_uptake`: `buyer_share_using_subsidy`, `subsidy_attributed_demand_quantity`, `underlying_demand_quantity`, `country_id`, `device_family_id`, `fiscal_quarter_id`
-- `device.demand.fact_sell_through`: `sell_through_quantity`, `country_id`, `device_family_id`
-- `device.geography.dim_country`: `country_code`
+- `device.demand.fact_installed_base_quantity`: `installed_unit_count`, `ai_capable_unit_count`, `apple_family_id`
+- `device.demand.fact_upgrade_activity_quantity`: `upgrader_unit_count`, `switcher_unit_count`
+- `device.apple.dim_apple_family`: `apple_family_code`
+
+### Q4 FY2025 (9)
+
+What is inside the December operating-expense step-up, and should expense growth keep outrunning revenue?
+
+- `device.demand.fact_shipment_quantity`: `shipped_unit_count`, `product_configuration_id`, `country_id`
+- `device.price.fact_product_price`: `unit_price_amount`, `product_configuration_id`
+- `device.demand.fact_sellthrough_quantity`: `sellthrough_unit_count`
+- `device.product.dim_product_configuration`: `configuration_name`, `apple_generation_id`, `dell_generation_id`
 
 ### Q4 FY2025 (11)
 
 How should holiday attach of other products to iPhone be read given where consumer budgets are?
 
-- `device.demand.fact_product_attach`: `attach_rate`, `wallet_pressure_index`, `holiday_flag`, `device_family_id`, `attached_family_code`, `country_id`, `fiscal_quarter_id`
-- `device.product.dim_device_family`: `family_code`
-- `device.price.fact_price_file`: `unit_price`, `device_family_id`, `channel_id`, `country_id`, `calendar_day_id`
+- `device.demand.fact_shipment_quantity`: `shipped_unit_count`, `product_configuration_id`, `country_id`
+- `device.price.fact_product_price`: `unit_price_amount`, `product_configuration_id`
+- `device.demand.fact_sellthrough_quantity`: `sellthrough_unit_count`
+- `device.product.dim_product_configuration`: `configuration_name`, `apple_generation_id`, `dell_generation_id`
 
 ### Q4 FY2025 (12)
 
 Has iPhone 17 mix shifted between Pro and Pro Max versus prior cycles?
 
-- `device.demand.fact_generation_mix`: `mix_share`, `prior_cycle_mix_share`, `product_generation_id`, `device_family_id`, `fiscal_quarter_id`
-- `device.product.dim_product_generation`: `generation_code`
-- `device.product.dim_device_family`: `family_code`
+- `device.demand.fact_shipment_quantity`: `shipped_unit_count`, `product_configuration_id`, `country_id`
+- `device.price.fact_product_price`: `unit_price_amount`, `product_configuration_id`
+- `device.demand.fact_sellthrough_quantity`: `sellthrough_unit_count`
+- `device.product.dim_product_configuration`: `configuration_name`, `apple_generation_id`, `dell_generation_id`
 
-### Q4 FY2025 (14)
+### Q4 FY2025 (13)
 
-Does iPhone Air reception say anything about demand for a foldable, or are those form factors different?
+How should the private-cloud compute build be thought about from here?
 
-- `device.demand.fact_generation_mix`: `mix_share`, `same_demand_as_other_form_flag`, `form_factor_id`, `product_generation_id`, `device_family_id`, `fiscal_quarter_id`
-- `device.product.dim_form_factor`: `form_factor_code`
-- `device.product.dim_product_generation`: `generation_code`
-- `device.demand.fact_device_demand`: `demand_quantity`, `device_family_id`, `channel_id`, `country_id`, `calendar_day_id`
+- `device.demand.fact_shipment_quantity`: `shipped_unit_count`, `product_configuration_id`, `country_id`
+- `device.price.fact_product_price`: `unit_price_amount`, `product_configuration_id`
+- `device.demand.fact_sellthrough_quantity`: `sellthrough_unit_count`
+- `device.product.dim_product_configuration`: `configuration_name`, `apple_generation_id`, `dell_generation_id`
 
-### Q4 FY2025 (16)
+## Dell Technologies (DELL)
 
-Are AI features actually swaying purchases, or are record sales still about iOS retention and other factors?
+### Q2 FY2027 (1)
 
-- `device.demand.fact_purchase_reason`: `reason_code`, `purchase_share`, `sways_purchase_flag`, `feature_id`, `device_family_id`, `country_id`, `fiscal_quarter_id`
-- `device.demand.fact_sell_through`: `sell_through_quantity`, `device_family_id`, `channel_id`, `country_id`
-- `device.product.dim_feature`: `feature_code`
-- `device.product.dim_device_family`: `family_code`
+Is the surge in traditional servers and storage real demand and share gain, or price and pre-buying?
 
-## Datasets
+- `device.dell.fact_server_order_quantity`: `ordered_unit_count`, `backlog_unit_count`, `dell_family_id`, `customer_type_id`
+- `device.dell.fact_server_order_amount`: `order_amount`, `backlog_amount`
+- `device.dell.fact_infrastructure_shipment_quantity`: `shipped_unit_count`, `attached_storage_unit_count`
+- `device.finance.fact_dell_segment_amount`: `segment_revenue_amount`, `dell_segment_id`
 
-| Qualified name | Role | Questions served |
-| --- | --- | --- |
-| `device.geography.dim_region` | dimension | Q4 FY2025 (2) |
-| `device.geography.dim_fiscal_quarter` | dimension | Q3 FY2026 (1), Q4 FY2025 (2), Q4 FY2025 (6) |
-| `device.geography.dim_country` | dimension | Q2 FY2026 (3), Q2 FY2026 (12), Q1 FY2026 (9), Q4 FY2025 (2), Q4 FY2025 (5), Q4 FY2025 (6), Q4 FY2025 (8) |
-| `device.geography.dim_calendar_day` | dimension | join support |
-| `device.channel.dim_channel` | dimension | join support |
-| `device.channel.dim_carrier_promotion` | dimension | Q4 FY2025 (5) |
-| `device.product.dim_device_family` | dimension | Q3 FY2026 (3), Q3 FY2026 (8), Q2 FY2026 (1), Q1 FY2026 (2), Q1 FY2026 (12), Q4 FY2025 (2), Q4 FY2025 (7), Q4 FY2025 (11), Q4 FY2025 (12), Q4 FY2025 (16) |
-| `device.product.dim_form_factor` | dimension | Q2 FY2026 (1), Q4 FY2025 (14) |
-| `device.product.dim_customer_segment` | dimension | Q2 FY2026 (3) |
-| `device.product.dim_feature` | dimension | Q3 FY2026 (8), Q1 FY2026 (12), Q4 FY2025 (16) |
-| `device.product.dim_demand_driver` | dimension | Q2 FY2026 (7), Q1 FY2026 (2) |
-| `device.product.dim_product_generation` | dimension | Q2 FY2026 (3), Q4 FY2025 (1), Q4 FY2025 (6), Q4 FY2025 (12), Q4 FY2025 (14) |
-| `device.product.dim_sku` | dimension | join support |
-| `device.demand.fact_guided_growth` | fact | Q3 FY2026 (1) |
-| `device.demand.fact_device_demand` | fact | Q4 FY2025 (7), Q4 FY2025 (14) |
-| `device.demand.fact_sell_through` | fact | Q2 FY2026 (12), Q1 FY2026 (9), Q4 FY2025 (5), Q4 FY2025 (8), Q4 FY2025 (16) |
-| `device.demand.fact_installed_base` | fact | Q3 FY2026 (3), Q2 FY2026 (12), Q1 FY2026 (9), Q1 FY2026 (12), Q4 FY2025 (1) |
-| `device.demand.fact_upgrade_program` | fact | Q3 FY2026 (3) |
-| `device.demand.fact_replacement_cycle` | fact | Q4 FY2025 (1) |
-| `device.demand.fact_buyer_mix` | fact | Q4 FY2025 (5) |
-| `device.demand.fact_unmet_demand` | fact | Q2 FY2026 (7), Q4 FY2025 (7) |
-| `device.demand.fact_iphone_driver` | fact | Q2 FY2026 (7), Q1 FY2026 (2) |
-| `device.demand.fact_segment_penetration` | fact | Q2 FY2026 (3) |
-| `device.demand.fact_competitive_position` | fact | Q2 FY2026 (5), Q2 FY2026 (12) |
-| `device.demand.fact_regional_outlook` | fact | Q2 FY2026 (12), Q1 FY2026 (9), Q4 FY2025 (2), Q4 FY2025 (6) |
-| `device.demand.fact_subsidy_uptake` | fact | Q4 FY2025 (8) |
-| `device.demand.fact_on_device_market` | fact | Q3 FY2026 (8) |
-| `device.demand.fact_agent_hardware` | fact | Q2 FY2026 (1) |
-| `device.demand.fact_purchase_reason` | fact | Q4 FY2025 (16) |
-| `device.demand.fact_product_attach` | fact | Q4 FY2025 (11) |
-| `device.demand.fact_generation_mix` | fact | Q4 FY2025 (12), Q4 FY2025 (14) |
-| `device.demand.fact_industry_smartphone_demand` | fact | Q1 FY2026 (5) |
-| `device.demand.fact_feature_demand` | fact | join support |
+### Q2 FY2027 (2)
+
+Should next year’s growth track the AI-server partner’s outlook, given the backlog jump and new CPU racks sold into agentic deployments?
+
+- `device.dell.fact_server_order_quantity`: `ordered_unit_count`, `backlog_unit_count`, `dell_family_id`, `customer_type_id`
+- `device.dell.fact_server_order_amount`: `order_amount`, `backlog_amount`
+- `device.dell.fact_infrastructure_shipment_quantity`: `shipped_unit_count`, `attached_storage_unit_count`
+- `device.finance.fact_dell_segment_amount`: `segment_revenue_amount`, `dell_segment_id`
+
+### Q2 FY2027 (3)
+
+Is “traditional” server demand still almost all enterprise, or are neoclouds in that bucket now that CPU racks are included, and how does the AI-server customer mix compare?
+
+- `device.dell.fact_server_order_quantity`: `ordered_unit_count`, `backlog_unit_count`, `dell_family_id`, `customer_type_id`
+- `device.dell.fact_server_order_amount`: `order_amount`, `backlog_amount`
+- `device.dell.fact_infrastructure_shipment_quantity`: `shipped_unit_count`, `attached_storage_unit_count`
+- `device.finance.fact_dell_segment_amount`: `segment_revenue_amount`, `dell_segment_id`
+
+### Q2 FY2027 (4)
+
+How much of the margin beat came from enterprise pull-through of networking, storage, and PCs, and does that lift the margin framework when enterprise is a larger mix?
+
+- `device.dell.fact_server_order_quantity`: `ordered_unit_count`, `backlog_unit_count`, `dell_family_id`, `customer_type_id`
+- `device.dell.fact_server_order_amount`: `order_amount`, `backlog_amount`
+- `device.dell.fact_infrastructure_shipment_quantity`: `shipped_unit_count`, `attached_storage_unit_count`
+- `device.finance.fact_dell_segment_amount`: `segment_revenue_amount`, `dell_segment_id`
+
+### Q2 FY2027 (5)
+
+How much enterprise demand is deferred because budgets cannot absorb the price increase, so buyers take part of the order now and leave the rest for next year?
+
+- `device.demand.fact_shipment_quantity`: `shipped_unit_count`, `product_configuration_id`, `country_id`
+- `device.price.fact_product_price`: `unit_price_amount`, `product_configuration_id`
+- `device.demand.fact_sellthrough_quantity`: `sellthrough_unit_count`
+- `device.product.dim_product_configuration`: `configuration_name`, `apple_generation_id`, `dell_generation_id`
+
+### Q2 FY2027 (6)
+
+Is the long-discussed storage attach on AI servers starting to show up, and how long can that runway last?
+
+- `device.dell.fact_server_order_quantity`: `ordered_unit_count`, `backlog_unit_count`, `dell_family_id`, `customer_type_id`
+- `device.dell.fact_server_order_amount`: `order_amount`, `backlog_amount`
+- `device.dell.fact_infrastructure_shipment_quantity`: `shipped_unit_count`, `attached_storage_unit_count`
+- `device.finance.fact_dell_segment_amount`: `segment_revenue_amount`, `dell_segment_id`
+
+### Q2 FY2027 (8)
+
+How much of traditional server and storage upside is volume versus price, and how much price headroom is left?
+
+- `device.dell.fact_server_order_quantity`: `ordered_unit_count`, `backlog_unit_count`, `dell_family_id`, `customer_type_id`
+- `device.dell.fact_server_order_amount`: `order_amount`, `backlog_amount`
+- `device.dell.fact_infrastructure_shipment_quantity`: `shipped_unit_count`, `attached_storage_unit_count`
+- `device.finance.fact_dell_segment_amount`: `segment_revenue_amount`, `dell_segment_id`
+
+### Q2 FY2027 (9)
+
+How much of the ISG margin gain is like-for-like uplift as customers move off older server generations, versus scale in the supply chain?
+
+- `device.dell.fact_server_order_quantity`: `ordered_unit_count`, `backlog_unit_count`, `dell_family_id`, `customer_type_id`
+- `device.dell.fact_server_order_amount`: `order_amount`, `backlog_amount`
+- `device.dell.fact_infrastructure_shipment_quantity`: `shipped_unit_count`, `attached_storage_unit_count`
+- `device.finance.fact_dell_segment_amount`: `segment_revenue_amount`, `dell_segment_id`
+
+### Q1 FY2027 (1)
+
+Is the quarter’s strength a pull-forward in traditional servers and PCs, or does raising the second half mean demand continues?
+
+- `device.dell.fact_server_order_quantity`: `ordered_unit_count`, `backlog_unit_count`, `dell_family_id`, `customer_type_id`
+- `device.dell.fact_server_order_amount`: `order_amount`, `backlog_amount`
+- `device.dell.fact_infrastructure_shipment_quantity`: `shipped_unit_count`, `attached_storage_unit_count`
+- `device.finance.fact_dell_segment_amount`: `segment_revenue_amount`, `dell_segment_id`
+
+### Q1 FY2027 (2)
+
+How much of the traditional-server outperformance is units versus price, and does it last through this year and into next year?
+
+- `device.dell.fact_server_order_quantity`: `ordered_unit_count`, `backlog_unit_count`, `dell_family_id`, `customer_type_id`
+- `device.dell.fact_server_order_amount`: `order_amount`, `backlog_amount`
+- `device.dell.fact_infrastructure_shipment_quantity`: `shipped_unit_count`, `attached_storage_unit_count`
+- `device.finance.fact_dell_segment_amount`: `segment_revenue_amount`, `dell_segment_id`
+
+### Q1 FY2027 (6)
+
+Would the prior medium-term revenue framework be higher now, given agentic uses of traditional servers and share gains?
+
+- `device.dell.fact_server_order_quantity`: `ordered_unit_count`, `backlog_unit_count`, `dell_family_id`, `customer_type_id`
+- `device.dell.fact_server_order_amount`: `order_amount`, `backlog_amount`
+- `device.dell.fact_infrastructure_shipment_quantity`: `shipped_unit_count`, `attached_storage_unit_count`
+- `device.finance.fact_dell_segment_amount`: `segment_revenue_amount`, `dell_segment_id`
+
+### Q1 FY2027 (7)
+
+What drove Client Solutions profitability sequentially and year over year, and is that drop-through sustainable?
+
+- `device.dell.fact_pc_shipment_quantity`: `shipped_pc_unit_count`, `dell_family_id`, `customer_segment_id`
+- `device.demand.fact_pc_market_unit_quantity`: `industry_pc_unit_count`, `company_pc_unit_count`
+- `device.price.fact_product_price`: `unit_price_amount`, `product_configuration_id`
+
+### Q1 FY2027 (8)
+
+If traditional servers are guided far faster than storage, does storage get a longer tail as server demand pulls it through?
+
+- `device.dell.fact_server_order_quantity`: `ordered_unit_count`, `backlog_unit_count`, `dell_family_id`, `customer_type_id`
+- `device.dell.fact_server_order_amount`: `order_amount`, `backlog_amount`
+- `device.dell.fact_infrastructure_shipment_quantity`: `shipped_unit_count`, `attached_storage_unit_count`
+- `device.finance.fact_dell_segment_amount`: `segment_revenue_amount`, `dell_segment_id`
+
+### Q1 FY2027 (10)
+
+What is the mix of x86 versus Arm servers, and is there a margin difference between those architectures?
+
+- `device.dell.fact_server_order_quantity`: `ordered_unit_count`, `backlog_unit_count`, `dell_family_id`, `customer_type_id`
+- `device.dell.fact_server_order_amount`: `order_amount`, `backlog_amount`
+- `device.dell.fact_infrastructure_shipment_quantity`: `shipped_unit_count`, `attached_storage_unit_count`
+- `device.finance.fact_dell_segment_amount`: `segment_revenue_amount`, `dell_segment_id`
+
+### Q4 FY2026 (1)
+
+How is AI-server profitability trending, and how are higher memory prices flowing through PCs and traditional infrastructure?
+
+- `device.dell.fact_server_order_quantity`: `ordered_unit_count`, `backlog_unit_count`, `dell_family_id`, `customer_type_id`
+- `device.dell.fact_server_order_amount`: `order_amount`, `backlog_amount`
+- `device.dell.fact_infrastructure_shipment_quantity`: `shipped_unit_count`, `attached_storage_unit_count`
+- `device.finance.fact_dell_segment_amount`: `segment_revenue_amount`, `dell_segment_id`
+
+### Q4 FY2026 (2)
+
+Why isn’t traditional-server growth faster, and is inference still landing on AI servers rather than traditional servers?
+
+- `device.dell.fact_server_order_quantity`: `ordered_unit_count`, `backlog_unit_count`, `dell_family_id`, `customer_type_id`
+- `device.dell.fact_server_order_amount`: `order_amount`, `backlog_amount`
+- `device.dell.fact_infrastructure_shipment_quantity`: `shipped_unit_count`, `attached_storage_unit_count`
+- `device.finance.fact_dell_segment_amount`: `segment_revenue_amount`, `dell_segment_id`
+
+### Q4 FY2026 (3)
+
+Will operating margins through the Rubin cycle be smoother than they were through Blackwell?
+
+- `device.dell.fact_server_order_quantity`: `ordered_unit_count`, `backlog_unit_count`, `dell_family_id`, `customer_type_id`
+- `device.dell.fact_server_order_amount`: `order_amount`, `backlog_amount`
+- `device.dell.fact_infrastructure_shipment_quantity`: `shipped_unit_count`, `attached_storage_unit_count`
+- `device.finance.fact_dell_segment_amount`: `segment_revenue_amount`, `dell_segment_id`
+
+### Q4 FY2026 (4)
+
+Is storage actually turning, and will it help mix in the back half if it outgrows servers?
+
+- `device.dell.fact_server_order_quantity`: `ordered_unit_count`, `backlog_unit_count`, `dell_family_id`, `customer_type_id`
+- `device.dell.fact_server_order_amount`: `order_amount`, `backlog_amount`
+- `device.dell.fact_infrastructure_shipment_quantity`: `shipped_unit_count`, `attached_storage_unit_count`
+- `device.finance.fact_dell_segment_amount`: `segment_revenue_amount`, `dell_segment_id`
+
+### Q4 FY2026 (6)
+
+How do AI-server orders split among enterprise, neoclouds, and sovereign buyers, and when does enterprise AI adoption show up in storage?
+
+- `device.dell.fact_server_order_quantity`: `ordered_unit_count`, `backlog_unit_count`, `dell_family_id`, `customer_type_id`
+- `device.dell.fact_server_order_amount`: `order_amount`, `backlog_amount`
+- `device.dell.fact_infrastructure_shipment_quantity`: `shipped_unit_count`, `attached_storage_unit_count`
+- `device.finance.fact_dell_segment_amount`: `segment_revenue_amount`, `dell_segment_id`
+
+### Q4 FY2026 (7)
+
+How does the AI backlog split between Blackwell and Vera Rubin, when does that mix ship, and is there capacity if demand runs past the revenue target?
+
+- `device.dell.fact_server_order_quantity`: `ordered_unit_count`, `backlog_unit_count`, `dell_family_id`, `customer_type_id`
+- `device.dell.fact_server_order_amount`: `order_amount`, `backlog_amount`
+- `device.dell.fact_infrastructure_shipment_quantity`: `shipped_unit_count`, `attached_storage_unit_count`
+- `device.finance.fact_dell_segment_amount`: `segment_revenue_amount`, `dell_segment_id`
+
+### Q4 FY2026 (8)
+
+Are attach rates on shipped AI servers better than before, and what else is attaching?
+
+- `device.dell.fact_server_order_quantity`: `ordered_unit_count`, `backlog_unit_count`, `dell_family_id`, `customer_type_id`
+- `device.dell.fact_server_order_amount`: `order_amount`, `backlog_amount`
+- `device.dell.fact_infrastructure_shipment_quantity`: `shipped_unit_count`, `attached_storage_unit_count`
+- `device.finance.fact_dell_segment_amount`: `segment_revenue_amount`, `dell_segment_id`
+
+### Q4 FY2026 (9)
+
+Do dynamic pricing and supply access support structural PC share gains versus smaller competitors for more than the next year?
+
+- `device.dell.fact_pc_shipment_quantity`: `shipped_pc_unit_count`, `dell_family_id`, `customer_segment_id`
+- `device.demand.fact_pc_market_unit_quantity`: `industry_pc_unit_count`, `company_pc_unit_count`
+- `device.price.fact_product_price`: `unit_price_amount`, `product_configuration_id`
+
+### Q3 FY2026 (1)
+
+Which product categories can absorb price increases more easily than others?
+
+- `device.demand.fact_shipment_quantity`: `shipped_unit_count`, `product_configuration_id`, `country_id`
+- `device.price.fact_product_price`: `unit_price_amount`, `product_configuration_id`
+- `device.demand.fact_sellthrough_quantity`: `sellthrough_unit_count`
+- `device.product.dim_product_configuration`: `configuration_name`, `apple_generation_id`, `dell_generation_id`
+
+### Q3 FY2026 (2)
+
+How large was the sequential AI-server margin increase, does it continue next quarter, and is higher-margin attach improving?
+
+- `device.dell.fact_server_order_quantity`: `ordered_unit_count`, `backlog_unit_count`, `dell_family_id`, `customer_type_id`
+- `device.dell.fact_server_order_amount`: `order_amount`, `backlog_amount`
+- `device.dell.fact_infrastructure_shipment_quantity`: `shipped_unit_count`, `attached_storage_unit_count`
+- `device.finance.fact_dell_segment_amount`: `segment_revenue_amount`, `dell_segment_id`
+
+### Q3 FY2026 (3)
+
+Where is the PC refresh — still Windows end-of-life, or are new factors extending the cycle?
+
+- `device.dell.fact_pc_shipment_quantity`: `shipped_pc_unit_count`, `dell_family_id`, `customer_segment_id`
+- `device.demand.fact_pc_market_unit_quantity`: `industry_pc_unit_count`, `company_pc_unit_count`
+- `device.price.fact_product_price`: `unit_price_amount`, `product_configuration_id`
+
+### Q3 FY2026 (4)
+
+How much of the raised AI outlook depends on neoclouds obtaining financing versus customers Dell can already see?
+
+- `device.dell.fact_server_order_quantity`: `ordered_unit_count`, `backlog_unit_count`, `dell_family_id`, `customer_type_id`
+- `device.dell.fact_server_order_amount`: `order_amount`, `backlog_amount`
+- `device.dell.fact_infrastructure_shipment_quantity`: `shipped_unit_count`, `attached_storage_unit_count`
+- `device.finance.fact_dell_segment_amount`: `segment_revenue_amount`, `dell_segment_id`
+
+### Q3 FY2026 (5)
+
+What lifted infrastructure margins so sharply versus the prior quarter, and how does a record AI-server quarter affect gross margin?
+
+- `device.dell.fact_server_order_quantity`: `ordered_unit_count`, `backlog_unit_count`, `dell_family_id`, `customer_type_id`
+- `device.dell.fact_server_order_amount`: `order_amount`, `backlog_amount`
+- `device.dell.fact_infrastructure_shipment_quantity`: `shipped_unit_count`, `attached_storage_unit_count`
+- `device.finance.fact_dell_segment_amount`: `segment_revenue_amount`, `dell_segment_id`
+
+### Q3 FY2026 (6)
+
+If traditional-server demand is up double digits but revenue is not, where is the upgrade cycle, and is double-digit growth a fair baseline?
+
+- `device.dell.fact_server_order_quantity`: `ordered_unit_count`, `backlog_unit_count`, `dell_family_id`, `customer_type_id`
+- `device.dell.fact_server_order_amount`: `order_amount`, `backlog_amount`
+- `device.dell.fact_infrastructure_shipment_quantity`: `shipped_unit_count`, `attached_storage_unit_count`
+- `device.finance.fact_dell_segment_amount`: `segment_revenue_amount`, `dell_segment_id`
+
+### Q3 FY2026 (8)
+
+How should storage be viewed next year given commodity costs, and is the mix shifting toward Dell’s own storage intellectual property?
+
+- `device.dell.fact_server_order_quantity`: `ordered_unit_count`, `backlog_unit_count`, `dell_family_id`, `customer_type_id`
+- `device.dell.fact_server_order_amount`: `order_amount`, `backlog_amount`
+- `device.dell.fact_infrastructure_shipment_quantity`: `shipped_unit_count`, `attached_storage_unit_count`
+- `device.finance.fact_dell_segment_amount`: `segment_revenue_amount`, `dell_segment_id`
+
+### Q3 FY2026 (11)
+
+As more neocloud, sovereign, and enterprise AI backlog converts, does operating margin stay in the mid-single digits or move up, and can PC share expand beyond high-end commercial?
+
+- `device.dell.fact_server_order_quantity`: `ordered_unit_count`, `backlog_unit_count`, `dell_family_id`, `customer_type_id`
+- `device.dell.fact_server_order_amount`: `order_amount`, `backlog_amount`
+- `device.dell.fact_infrastructure_shipment_quantity`: `shipped_unit_count`, `attached_storage_unit_count`
+- `device.finance.fact_dell_segment_amount`: `segment_revenue_amount`, `dell_segment_id`

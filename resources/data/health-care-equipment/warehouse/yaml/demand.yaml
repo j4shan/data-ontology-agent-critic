@@ -1,0 +1,883 @@
+schema_version: '3'
+nodes:
+- node_id: sf:surgicalsupply.customer.dim_care_setting
+  descriptor:
+    qualified_name: surgicalsupply.customer.dim_care_setting
+    display_name: Care Setting
+    description: Setting in which a procedure is performed.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: CUSTOMER
+      object: DIM_CARE_SETTING
+      format: table
+  grain:
+    description: One row per Care Setting identified by care_setting_id.
+    components:
+    - identity_id: care_setting_identity
+      dataset_columns:
+      - care_setting_id
+      description: Identifier of the Care Setting.
+  columns:
+  - name: care_setting_id
+    description: Identifier of the Care Setting. This dataset holds the complete population.
+  - name: care_setting_name
+    description: Name of the Care Setting.
+  - name: care_setting_code
+    description: Code of the Care Setting.
+    value_description: inpatient, outpatient.
+  entity_definitions:
+  - identity_id: care_setting_identity
+    dataset_columns:
+    - care_setting_id
+    entity_universe: complete
+- node_id: sf:surgicalsupply.customer.dim_health_system
+  descriptor:
+    qualified_name: surgicalsupply.customer.dim_health_system
+    display_name: Health System
+    description: One hospital health system.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: CUSTOMER
+      object: DIM_HEALTH_SYSTEM
+      format: table
+  grain:
+    description: One row per Health System identified by health_system_id.
+    components:
+    - identity_id: health_system_identity
+      dataset_columns:
+      - health_system_id
+      description: Identifier of the Health System.
+  columns:
+  - name: health_system_id
+    description: Identifier of the Health System. This dataset holds the complete population.
+  - name: health_system_name
+    description: Name of the Health System.
+  - name: country_id
+    description: Identifier of the Country. The complete population is owned by its owner dataset.
+  entity_definitions:
+  - identity_id: health_system_identity
+    dataset_columns:
+    - health_system_id
+    entity_universe: complete
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+- node_id: sf:surgicalsupply.customer.dim_hospital
+  descriptor:
+    qualified_name: surgicalsupply.customer.dim_hospital
+    display_name: Hospital
+    description: One hospital customer paid by the device maker's customer, not a payer.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: CUSTOMER
+      object: DIM_HOSPITAL
+      format: table
+  grain:
+    description: One row per Hospital identified by hospital_id.
+    components:
+    - identity_id: hospital_identity
+      dataset_columns:
+      - hospital_id
+      description: Identifier of the Hospital.
+  columns:
+  - name: hospital_id
+    description: Identifier of the Hospital. This dataset holds the complete population.
+  - name: hospital_name
+    description: Name of the Hospital.
+  - name: country_id
+    description: Identifier of the Country. The complete population is owned by its owner dataset.
+  - name: health_system_id
+    description: Identifier of the Health System. The complete population is owned by its owner dataset.
+  - name: site_type_id
+    description: Identifier of the Site Type. The complete population is owned by its owner dataset.
+  entity_definitions:
+  - identity_id: hospital_identity
+    dataset_columns:
+    - hospital_id
+    entity_universe: complete
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: health_system_identity
+    dataset_columns:
+    - health_system_id
+    entity_universe: partial
+  - identity_id: site_type_identity
+    dataset_columns:
+    - site_type_id
+    entity_universe: partial
+- node_id: sf:surgicalsupply.customer.dim_site_type
+  descriptor:
+    qualified_name: surgicalsupply.customer.dim_site_type
+    display_name: Site Type
+    description: Type of care facility.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: CUSTOMER
+      object: DIM_SITE_TYPE
+      format: table
+  grain:
+    description: One row per Site Type identified by site_type_id.
+    components:
+    - identity_id: site_type_identity
+      dataset_columns:
+      - site_type_id
+      description: Identifier of the Site Type.
+  columns:
+  - name: site_type_id
+    description: Identifier of the Site Type. This dataset holds the complete population.
+  - name: site_type_name
+    description: Name of the Site Type.
+  - name: site_type_code
+    description: Code of the Site Type.
+    value_description: hospital, ambulatory_surgery_center, clinic, physician_office.
+  entity_definitions:
+  - identity_id: site_type_identity
+    dataset_columns:
+    - site_type_id
+    entity_universe: complete
+- node_id: sf:surgicalsupply.customer.fact_hospital_demand_quantity
+  descriptor:
+    qualified_name: surgicalsupply.customer.fact_hospital_demand_quantity
+    display_name: Hospital Demand Quantity
+    description: Underlying procedure and capital demand at a hospital before supply constraints.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: CUSTOMER
+      object: FACT_HOSPITAL_DEMAND_QUANTITY
+      format: table
+  grain:
+    description: One row per hospital demand quantity for the combination of fiscal_period_id, scenario_id,
+      hospital_id, procedure_family_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: hospital_identity
+      dataset_columns:
+      - hospital_id
+      description: Identifier of the Hospital.
+    - identity_id: procedure_family_identity
+      dataset_columns:
+      - procedure_family_id
+      description: Identifier of the Procedure Family.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: hospital_id
+    description: Identifier of the Hospital. The complete population is owned by its owner dataset.
+  - name: procedure_family_id
+    description: Identifier of the Procedure Family. The complete population is owned by its owner dataset.
+  - name: underlying_procedure_demand_count
+    description: Underlying Procedure Demand Count measured in procedures.
+  - name: capital_demand_unit_count
+    description: Capital Demand Unit Count measured in units.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: hospital_identity
+    dataset_columns:
+    - hospital_id
+    entity_universe: partial
+  - identity_id: procedure_family_identity
+    dataset_columns:
+    - procedure_family_id
+    entity_universe: partial
+- node_id: sf:surgicalsupply.geography.dim_country
+  descriptor:
+    qualified_name: surgicalsupply.geography.dim_country
+    display_name: Country
+    description: One country.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: GEOGRAPHY
+      object: DIM_COUNTRY
+      format: table
+  grain:
+    description: One row per Country identified by country_id.
+    components:
+    - identity_id: country_identity
+      dataset_columns:
+      - country_id
+      description: Identifier of the Country.
+  columns:
+  - name: country_id
+    description: Identifier of the Country. This dataset holds the complete population.
+  - name: country_name
+    description: Name of the Country.
+  - name: region_id
+    description: Identifier of the Region. The complete population is owned by its owner dataset.
+  entity_definitions:
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: complete
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: partial
+- node_id: sf:surgicalsupply.geography.dim_region
+  descriptor:
+    qualified_name: surgicalsupply.geography.dim_region
+    display_name: Region
+    description: One geographic region.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: GEOGRAPHY
+      object: DIM_REGION
+      format: table
+  grain:
+    description: One row per Region identified by region_id.
+    components:
+    - identity_id: region_identity
+      dataset_columns:
+      - region_id
+      description: Identifier of the Region.
+  columns:
+  - name: region_id
+    description: Identifier of the Region. This dataset holds the complete population.
+  - name: region_name
+    description: Name of the Region.
+  - name: region_code
+    description: Code of the Region.
+    value_description: north_america, europe, asia_pacific, latin_america, other.
+  entity_definitions:
+  - identity_id: region_identity
+    dataset_columns:
+    - region_id
+    entity_universe: complete
+- node_id: sf:surgicalsupply.market.fact_competitor_event_quantity
+  descriptor:
+    qualified_name: surgicalsupply.market.fact_competitor_event_quantity
+    display_name: Competitor Event Quantity
+    description: Procedures and orders observed around a competitor event.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: MARKET
+      object: FACT_COMPETITOR_EVENT_QUANTITY
+      format: table
+  grain:
+    description: One row per competitor event quantity for the combination of fiscal_period_id, scenario_id,
+      competitor_id, country_id, procedure_family_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: competitor_identity
+      dataset_columns:
+      - competitor_id
+      description: Identifier of the Competitor.
+    - identity_id: country_identity
+      dataset_columns:
+      - country_id
+      description: Identifier of the Country.
+    - identity_id: procedure_family_identity
+      dataset_columns:
+      - procedure_family_id
+      description: Identifier of the Procedure Family.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: competitor_id
+    description: Identifier of the Competitor. The complete population is owned by its owner dataset.
+  - name: country_id
+    description: Identifier of the Country. The complete population is owned by its owner dataset.
+  - name: procedure_family_id
+    description: Identifier of the Procedure Family. The complete population is owned by its owner dataset.
+  - name: affected_procedure_count
+    description: Affected Procedure Count measured in procedures.
+  - name: affected_order_count
+    description: Affected Order Count measured in orders.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: competitor_identity
+    dataset_columns:
+    - competitor_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: procedure_family_identity
+    dataset_columns:
+    - procedure_family_id
+    entity_universe: partial
+- node_id: sf:surgicalsupply.market.fact_coverage_context_quantity
+  descriptor:
+    qualified_name: surgicalsupply.market.fact_coverage_context_quantity
+    display_name: Coverage Context Quantity
+    description: Procedures exposed to a payer coverage context by payer, program and procedure family.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: MARKET
+      object: FACT_COVERAGE_CONTEXT_QUANTITY
+      format: table
+  grain:
+    description: One row per coverage context quantity for the combination of fiscal_period_id, scenario_id,
+      payer_type_id, payment_program_id, procedure_family_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: payer_type_identity
+      dataset_columns:
+      - payer_type_id
+      description: Identifier of the Payer Type.
+    - identity_id: payment_program_identity
+      dataset_columns:
+      - payment_program_id
+      description: Identifier of the Payment Program.
+    - identity_id: procedure_family_identity
+      dataset_columns:
+      - procedure_family_id
+      description: Identifier of the Procedure Family.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: payer_type_id
+    description: Identifier of the Payer Type. The complete population is owned by its owner dataset.
+  - name: payment_program_id
+    description: Identifier of the Payment Program. The complete population is owned by its owner dataset.
+  - name: procedure_family_id
+    description: Identifier of the Procedure Family. The complete population is owned by its owner dataset.
+  - name: exposed_procedure_count
+    description: Exposed Procedure Count measured in procedures.
+  - name: expected_procedure_count
+    description: Expected Procedure Count measured in procedures.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: payer_type_identity
+    dataset_columns:
+    - payer_type_id
+    entity_universe: partial
+  - identity_id: payment_program_identity
+    dataset_columns:
+    - payment_program_id
+    entity_universe: partial
+  - identity_id: procedure_family_identity
+    dataset_columns:
+    - procedure_family_id
+    entity_universe: partial
+- node_id: sf:surgicalsupply.procedure.dim_procedure
+  descriptor:
+    qualified_name: surgicalsupply.procedure.dim_procedure
+    display_name: Procedure
+    description: One named procedure.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: PROCEDURE
+      object: DIM_PROCEDURE
+      format: table
+  grain:
+    description: One row per Procedure identified by procedure_id.
+    components:
+    - identity_id: procedure_identity
+      dataset_columns:
+      - procedure_id
+      description: Identifier of the Procedure.
+  columns:
+  - name: procedure_id
+    description: Identifier of the Procedure. This dataset holds the complete population.
+  - name: procedure_name
+    description: Name of the Procedure.
+  - name: procedure_family_id
+    description: Identifier of the Procedure Family. The complete population is owned by its owner dataset.
+  entity_definitions:
+  - identity_id: procedure_identity
+    dataset_columns:
+    - procedure_id
+    entity_universe: complete
+  - identity_id: procedure_family_identity
+    dataset_columns:
+    - procedure_family_id
+    entity_universe: partial
+- node_id: sf:surgicalsupply.procedure.dim_procedure_family
+  descriptor:
+    qualified_name: surgicalsupply.procedure.dim_procedure_family
+    display_name: Procedure Family
+    description: One clinical procedure family.
+    synonyms: []
+    tags:
+    - dimension
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: PROCEDURE
+      object: DIM_PROCEDURE_FAMILY
+      format: table
+  grain:
+    description: One row per Procedure Family identified by procedure_family_id.
+    components:
+    - identity_id: procedure_family_identity
+      dataset_columns:
+      - procedure_family_id
+      description: Identifier of the Procedure Family.
+  columns:
+  - name: procedure_family_id
+    description: Identifier of the Procedure Family. This dataset holds the complete population.
+  - name: procedure_family_name
+    description: Name of the Procedure Family.
+  - name: procedure_family_code
+    description: Code of the Procedure Family.
+    value_description: hip, knee, shoulder, trauma, spine, vascular, endoscopy, general_surgery, bariatric,
+      cardiac, hernia, colorectal, thoracic, urology, gynecology.
+  entity_definitions:
+  - identity_id: procedure_family_identity
+    dataset_columns:
+    - procedure_family_id
+    entity_universe: complete
+- node_id: sf:surgicalsupply.procedure.fact_company_procedure_quantity
+  descriptor:
+    qualified_name: surgicalsupply.procedure.fact_company_procedure_quantity
+    display_name: Company Procedure Quantity
+    description: Procedures using company products by procedure family and country; denominator for market
+      share rate.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: PROCEDURE
+      object: FACT_COMPANY_PROCEDURE_QUANTITY
+      format: table
+  grain:
+    description: One row per company procedure quantity for the combination of fiscal_period_id, scenario_id,
+      country_id, procedure_family_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: country_identity
+      dataset_columns:
+      - country_id
+      description: Identifier of the Country.
+    - identity_id: procedure_family_identity
+      dataset_columns:
+      - procedure_family_id
+      description: Identifier of the Procedure Family.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: country_id
+    description: Identifier of the Country. The complete population is owned by its owner dataset.
+  - name: procedure_family_id
+    description: Identifier of the Procedure Family. The complete population is owned by its owner dataset.
+  - name: company_procedure_count
+    description: Company Procedure Count measured in procedures.
+  - name: robotic_procedure_count
+    description: Robotic Procedure Count measured in procedures.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: procedure_family_identity
+    dataset_columns:
+    - procedure_family_id
+    entity_universe: partial
+- node_id: sf:surgicalsupply.procedure.fact_market_procedure_quantity
+  descriptor:
+    qualified_name: surgicalsupply.procedure.fact_market_procedure_quantity
+    display_name: Market Procedure Quantity
+    description: Total market procedures by the same procedure and country keys as company procedure quantity.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: PROCEDURE
+      object: FACT_MARKET_PROCEDURE_QUANTITY
+      format: table
+  grain:
+    description: One row per market procedure quantity for the combination of fiscal_period_id, scenario_id,
+      country_id, procedure_family_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: country_identity
+      dataset_columns:
+      - country_id
+      description: Identifier of the Country.
+    - identity_id: procedure_family_identity
+      dataset_columns:
+      - procedure_family_id
+      description: Identifier of the Procedure Family.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: country_id
+    description: Identifier of the Country. The complete population is owned by its owner dataset.
+  - name: procedure_family_id
+    description: Identifier of the Procedure Family. The complete population is owned by its owner dataset.
+  - name: market_procedure_count
+    description: Market Procedure Count measured in procedures.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: procedure_family_identity
+    dataset_columns:
+    - procedure_family_id
+    entity_universe: partial
+- node_id: sf:surgicalsupply.procedure.fact_procedure_catchup_quantity
+  descriptor:
+    qualified_name: surgicalsupply.procedure.fact_procedure_catchup_quantity
+    display_name: Procedure Catchup Quantity
+    description: Delayed, recovered and still-ahead procedures by family and country.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: PROCEDURE
+      object: FACT_PROCEDURE_CATCHUP_QUANTITY
+      format: table
+  grain:
+    description: One row per procedure catchup quantity for the combination of fiscal_period_id, scenario_id,
+      country_id, procedure_family_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: country_identity
+      dataset_columns:
+      - country_id
+      description: Identifier of the Country.
+    - identity_id: procedure_family_identity
+      dataset_columns:
+      - procedure_family_id
+      description: Identifier of the Procedure Family.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: country_id
+    description: Identifier of the Country. The complete population is owned by its owner dataset.
+  - name: procedure_family_id
+    description: Identifier of the Procedure Family. The complete population is owned by its owner dataset.
+  - name: delayed_procedure_count
+    description: Delayed Procedure Count measured in procedures.
+  - name: recovered_procedure_count
+    description: Recovered Procedure Count measured in procedures.
+  - name: still_ahead_procedure_count
+    description: Still Ahead Procedure Count measured in procedures.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: procedure_family_identity
+    dataset_columns:
+    - procedure_family_id
+    entity_universe: partial
+- node_id: sf:surgicalsupply.procedure.fact_procedure_share_rate
+  descriptor:
+    qualified_name: surgicalsupply.procedure.fact_procedure_share_rate
+    display_name: Procedure Share Rate
+    description: Company share of market procedures; company and market procedure quantities share these
+      keys.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: PROCEDURE
+      object: FACT_PROCEDURE_SHARE_RATE
+      format: table
+  grain:
+    description: One row per procedure share rate for the combination of fiscal_period_id, scenario_id,
+      country_id, procedure_family_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: country_identity
+      dataset_columns:
+      - country_id
+      description: Identifier of the Country.
+    - identity_id: procedure_family_identity
+      dataset_columns:
+      - procedure_family_id
+      description: Identifier of the Procedure Family.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: country_id
+    description: Identifier of the Country. The complete population is owned by its owner dataset.
+  - name: procedure_family_id
+    description: Identifier of the Procedure Family. The complete population is owned by its owner dataset.
+  - name: company_procedure_share_rate
+    description: Company Procedure Share Rate measured in a decimal ratio, where 1.0 equals 100 percent.
+  - name: robotic_penetration_rate
+    description: Robotic Penetration Rate measured in a decimal ratio, where 1.0 equals 100 percent.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: procedure_family_identity
+    dataset_columns:
+    - procedure_family_id
+    entity_universe: partial
+- node_id: sf:surgicalsupply.procedure.fact_site_procedure_quantity
+  descriptor:
+    qualified_name: surgicalsupply.procedure.fact_site_procedure_quantity
+    display_name: Site Procedure Quantity
+    description: Procedures by family, country, facility type and care setting.
+    synonyms: []
+    tags:
+    - fact
+  accessor:
+    schema_id: accessor.snowflake.v1
+    properties:
+      account: surgicalsupply.us-east-1
+      database: SURGICAL_SUPPLY
+      schema: PROCEDURE
+      object: FACT_SITE_PROCEDURE_QUANTITY
+      format: table
+  grain:
+    description: One row per site procedure quantity for the combination of fiscal_period_id, scenario_id,
+      care_setting_id, country_id, procedure_family_id, site_type_id.
+    components:
+    - identity_id: fiscal_period_identity
+      dataset_columns:
+      - fiscal_period_id
+      description: Identifier of the Fiscal Period.
+    - identity_id: scenario_identity
+      dataset_columns:
+      - scenario_id
+      description: Identifier of the Scenario.
+    - identity_id: care_setting_identity
+      dataset_columns:
+      - care_setting_id
+      description: Identifier of the Care Setting.
+    - identity_id: country_identity
+      dataset_columns:
+      - country_id
+      description: Identifier of the Country.
+    - identity_id: procedure_family_identity
+      dataset_columns:
+      - procedure_family_id
+      description: Identifier of the Procedure Family.
+    - identity_id: site_type_identity
+      dataset_columns:
+      - site_type_id
+      description: Identifier of the Site Type.
+  columns:
+  - name: fiscal_period_id
+    description: Identifier of the Fiscal Period. The complete population is owned by its owner dataset.
+  - name: scenario_id
+    description: Identifier of the Scenario. The complete population is owned by its owner dataset.
+  - name: care_setting_id
+    description: Identifier of the Care Setting. The complete population is owned by its owner dataset.
+  - name: country_id
+    description: Identifier of the Country. The complete population is owned by its owner dataset.
+  - name: procedure_family_id
+    description: Identifier of the Procedure Family. The complete population is owned by its owner dataset.
+  - name: site_type_id
+    description: Identifier of the Site Type. The complete population is owned by its owner dataset.
+  - name: procedure_count
+    description: Procedure Count measured in procedures.
+  entity_definitions:
+  - identity_id: fiscal_period_identity
+    dataset_columns:
+    - fiscal_period_id
+    entity_universe: partial
+  - identity_id: scenario_identity
+    dataset_columns:
+    - scenario_id
+    entity_universe: partial
+  - identity_id: care_setting_identity
+    dataset_columns:
+    - care_setting_id
+    entity_universe: partial
+  - identity_id: country_identity
+    dataset_columns:
+    - country_id
+    entity_universe: partial
+  - identity_id: procedure_family_identity
+    dataset_columns:
+    - procedure_family_id
+    entity_universe: partial
+  - identity_id: site_type_identity
+    dataset_columns:
+    - site_type_id
+    entity_universe: partial
