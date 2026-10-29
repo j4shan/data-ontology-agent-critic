@@ -52,7 +52,8 @@ LAYER_TAGS = {"sql-database": "operational", "s3": "landing", "snowflake": "anal
 
 
 def _collection(dataset: dict) -> str:
-    return f"{LAYER_NAMES[dataset['layer']['family']]}_{dataset['schema']}.yaml"
+    layer = LAYER_NAMES[dataset["layer"]["family"]]
+    return f"{layer}.yaml" if layer == dataset["schema"] else f"{layer}_{dataset['schema']}.yaml"
 
 
 def _accessor(dataset: dict) -> dict:
