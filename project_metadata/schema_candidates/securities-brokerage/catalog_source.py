@@ -16,6 +16,12 @@ OLTP = {
     "expression_context": "PostgreSQL column reference",
     "properties": {"host": "oltp.halyard.internal", "database": "brokerage", "dialect": "postgresql"},
 }
+LANDING = {
+    "schema_id": "accessor.s3.v1",
+    "family": "s3",
+    "expression_context": "Source file field reference",
+    "properties": {"bucket": "halyard-di-landing"},
+}
 WAREHOUSE = {
     "schema_id": "accessor.snowflake.v1",
     "family": "snowflake",
@@ -68,9 +74,11 @@ def ds(
     role: str,
     synonyms: tuple[str, ...] = (),
     grain_description: str = "",
+    file: dict | None = None,
 ) -> None:
     DATASETS.append(
         {
+            "file": file,
             "layer": layer,
             "schema": schema,
             "name": name,
@@ -137,6 +145,7 @@ IDENTITIES: dict[str, tuple[str, str, tuple[str, ...]]] = {
     "security_version_identity": ("Security version", "A warehouse surrogate key for one historical version of a security.", ("SK_SecurityID",)),
     "prospect_identity": ("Marketing prospect", "A person in a purchased marketing list, keyed by the agency identifier.", ("lead",)),
     "customer_segment_identity": ("Customer segment", "A marketing and service segment for customers.", ()),
+    "securities_loan_identity": ("Securities loan", "A loan of a customer's fully paid shares to a borrower.", ("stock loan",)),
     "account_day_identity": ("Account day", "One account version on one business day.", ("account snapshot",)),
 }
 
@@ -1004,3 +1013,178 @@ ds(WAREHOUSE, "mart", "fact_corporate_action_impact", "Corporate action impact",
    [k("corporate_action_identity", "action_id", unique=True), k("security_version_identity", "sk_security_id"),
     date_key("sk_ex_date_id", "The ex-date.")],
    ("corporate_action_identity", ["action_id"]), "fact")
+
+# ---------------------------------------------------------------------------------------------
+# Landing layer: TPC-DI source files delivered to object storage
+# ---------------------------------------------------------------------------------------------
+
+CDC_COLUMNS = [
+    c("cdc_flag", "Change type of an incremental record.", "I insert, U update; null in the historical load"),
+    c("cdc_dsn", "Change sequence number within the incremental batch."),
+    c("batch_id", "Load batch that delivered the record.", "1 historical, 2 and 3 incremental"),
+]
+
+
+def feed(prefix: str, file_format: str) -> dict:
+    return {"prefix": prefix, "format": file_format}
+
+
+ds(LANDING, "landing", "customer_mgmt", "CustomerMgmt feed", "Customer and account actions from the CRM export (TPC-DI CustomerMgmt.xml).",
+   [c("action_seq", "Position of the action in the file."),
+    c("action_type", "Action.", "NEW, ADDACCT, UPDCUST, UPDACCT, CLOSEACCT, INACT"), c("action_ts", "Action timestamp."),
+    c("c_id", "Customer."), c("c_tax_id", "Customer tax identifier."), c("c_gndr", "Gender."), c("c_tier", "Tier."),
+    c("c_dob", "Date of birth."), c("c_l_name", "Last name."), c("c_f_name", "First name."),
+    c("c_adline1", "Address line."), c("c_zipcode", "Postal code."), c("c_city", "City."), c("c_state_prov", "State."),
+    c("c_ctry", "Country."), c("c_prim_email", "Primary email."), c("c_lcl_tx_id", "Local tax rate."),
+    c("c_nat_tx_id", "National tax rate."), c("ca_id", "Account.", "null for customer-only actions"),
+    c("ca_tax_st", "Account tax status."), c("ca_b_id", "Account broker."), c("ca_name", "Account nickname.")],
+   [k("customer_identity", "c_id", universe="complete", description="The customer the action applies to."),
+    k("account_identity", "ca_id", universe="complete", total=False, description="The account the action applies to."),
+    k("broker_identity", "ca_b_id", total=False), k("customer_tier_identity", "c_tier", total=False),
+    k("tax_rate_identity", "c_lcl_tx_id", total=False, description="The customer's local tax rate."),
+    k("tax_rate_identity", "c_nat_tx_id", total=False, description="The customer's national tax rate.")],
+   (None, ["action_seq"]), "staging", synonyms=("CustomerMgmt.xml", "CRM extract"),
+   grain_description="One row per customer or account action.", file=feed("tpcdi/customer_mgmt/", "xml"))
+
+ds(LANDING, "landing", "hr_feed", "HR feed", "Employee extract from the HR system (TPC-DI HR.csv).",
+   [c("employee_id", "Employee."), c("manager_id", "Manager."), c("employee_first_name", "First name."),
+    c("employee_last_name", "Last name."), c("employee_mi", "Middle initial."),
+    c("employee_job_code", "Job code.", "314 is a broker; only brokers load into DimBroker"),
+    c("employee_branch", "Branch name."), c("employee_office", "Office."), c("employee_phone", "Phone.")],
+   [k("employee_identity", "employee_id", universe="complete", unique=True),
+    k("employee_identity", "manager_id", total=False, description="The employee's manager.")],
+   ("employee_identity", ["employee_id"]), "staging", synonyms=("HR.csv",), file=feed("tpcdi/hr/", "csv"))
+
+ds(LANDING, "landing", "finwire_cmp", "FINWIRE company records", "Company records from the quarterly FINWIRE files (record type CMP).",
+   [c("pts", "Posting timestamp."), c("company_name", "Company name."), c("cik", "Company identifier (CIK)."),
+    c("status", "Status code."), c("industry_id", "Industry code."), c("sp_rating", "S&P rating."),
+    c("founding_date", "Founding date."), c("addr_line1", "Address line."), c("postal_code", "Postal code."),
+    c("city", "City."), c("state_province", "State."), c("country", "Country."), c("ceo_name", "CEO."),
+    c("description", "Company description.")],
+   [k("company_identity", "cik", universe="complete"), k("industry_identity", "industry_id"),
+    k("status_type_identity", "status")],
+   (None, ["cik", "pts"]), "staging", synonyms=("FINWIRE CMP",), grain_description="One row per company per posting.",
+   file=feed("tpcdi/finwire/", "fixed-width"))
+
+ds(LANDING, "landing", "finwire_sec", "FINWIRE security records", "Security records from the quarterly FINWIRE files (record type SEC).",
+   [c("pts", "Posting timestamp."), c("symbol", "Trading symbol."), c("issue_type", "Issue type."), c("status", "Status code."),
+    c("name", "Security name."), c("ex_id", "Exchange."), c("sh_out", "Shares outstanding."),
+    c("first_trade_date", "First trade date."), c("first_trade_exchg", "First trade date on the exchange."),
+    c("dividend", "Dividend."), c("co_name_or_cik", "Issuer, given either as a 10-digit CIK or as a company name.",
+      "values of exactly 10 digits are CIKs; anything else is a name that must be matched to a company")],
+   [k("security_identity", "symbol", universe="complete"), k("exchange_identity", "ex_id"),
+    k("status_type_identity", "status"),
+    k("company_identity", "co_name_or_cik", conforms="unknown",
+      description="The issuer when the field holds a CIK; name values do not resolve without a lookup.")],
+   (None, ["pts", "symbol"]), "staging", synonyms=("FINWIRE SEC",), grain_description="One row per security per posting.",
+   file=feed("tpcdi/finwire/", "fixed-width"))
+
+ds(LANDING, "landing", "finwire_fin", "FINWIRE financial records", "Quarterly financial records from the FINWIRE files (record type FIN).",
+   [c("pts", "Posting timestamp."), c("year", "Fiscal year."), c("quarter", "Fiscal quarter."),
+    c("qtr_start_date", "Quarter start date."), c("posting_date", "Posting date."), c("revenue", "Revenue."),
+    c("earnings", "Earnings."), c("eps", "Basic EPS."), c("diluted_eps", "Diluted EPS."), c("margin", "Margin."),
+    c("inventory", "Inventory."), c("assets", "Assets."), c("liabilities", "Liabilities."), c("sh_out", "Basic shares."),
+    c("diluted_sh_out", "Diluted shares."), c("co_name_or_cik", "Company, given either as a CIK or as a name.")],
+   [k("company_identity", "co_name_or_cik", conforms="unknown",
+      description="The reporting company when the field holds a CIK.")],
+   (None, ["co_name_or_cik", "quarter", "year"]), "staging", synonyms=("FINWIRE FIN",),
+   grain_description="One row per company per fiscal quarter.", file=feed("tpcdi/finwire/", "fixed-width"))
+
+ds(LANDING, "landing", "daily_market_feed", "DailyMarket feed", "Daily market records (TPC-DI DailyMarket.txt).",
+   [c("dm_date", "Trading date."), c("dm_s_symb", "Security."), c("dm_close", "Close."), c("dm_high", "High."),
+    c("dm_low", "Low."), c("dm_vol", "Volume."), *CDC_COLUMNS],
+   [k("security_identity", "dm_s_symb")], (None, ["dm_date", "dm_s_symb"]), "staging",
+   synonyms=("DailyMarket.txt",), grain_description="One row per security per trading day.",
+   file=feed("tpcdi/daily_market/", "pipe-delimited"))
+
+ds(LANDING, "landing", "trade_feed", "Trade feed", "Trade records and their incremental updates (TPC-DI Trade.txt).",
+   [c("t_id", "Trade."), c("t_dts", "Trade timestamp."), c("t_st_id", "Status."), c("t_tt_id", "Trade type."),
+    c("t_is_cash", "Cash flag."), c("t_s_symb", "Security."), c("t_qty", "Quantity."), c("t_bid_price", "Bid price."),
+    c("t_ca_id", "Account."), c("t_exec_name", "Executor."), c("t_trade_price", "Trade price."), c("t_chrg", "Charge."),
+    c("t_comm", "Commission."), c("t_tax", "Tax."), *CDC_COLUMNS],
+   [k("trade_identity", "t_id", description="The trade; incremental batches repeat it with a new status."),
+    k("status_type_identity", "t_st_id"), k("trade_type_identity", "t_tt_id"), k("security_identity", "t_s_symb"),
+    k("account_identity", "t_ca_id")],
+   (None, ["batch_id", "t_id"]), "staging", synonyms=("Trade.txt",), grain_description="One row per trade per batch.",
+   file=feed("tpcdi/trade/", "pipe-delimited"))
+
+ds(LANDING, "landing", "cash_transaction_feed", "CashTransaction feed", "Account cash movements (TPC-DI CashTransaction.txt).",
+   [c("ct_ca_id", "Account."), c("ct_dts", "Timestamp."), c("ct_amt", "Amount."), c("ct_name", "Description."), *CDC_COLUMNS],
+   [k("account_identity", "ct_ca_id")], (None, ["ct_ca_id", "ct_dts"]), "staging", synonyms=("CashTransaction.txt",),
+   grain_description="One row per account cash movement.", file=feed("tpcdi/cash_transaction/", "pipe-delimited"))
+
+ds(LANDING, "landing", "holding_history_feed", "HoldingHistory feed", "Holding changes (TPC-DI HoldingHistory.txt).",
+   [c("hh_h_t_id", "Trade that opened the lot."), c("hh_t_id", "Trade that changed the lot."),
+    c("hh_before_qty", "Quantity before."), c("hh_after_qty", "Quantity after."), *CDC_COLUMNS],
+   [k("trade_identity", "hh_h_t_id", description="The trade that opened the lot."),
+    k("trade_identity", "hh_t_id", unique=True, description="The trade that changed the lot.")],
+   ("trade_identity", ["hh_t_id"]), "staging", synonyms=("HoldingHistory.txt",), file=feed("tpcdi/holding_history/", "pipe-delimited"))
+
+ds(LANDING, "landing", "watch_history_feed", "WatchHistory feed", "Watch placements and cancellations (TPC-DI WatchHistory.txt).",
+   [c("w_c_id", "Customer."), c("w_s_symb", "Security."), c("w_dts", "Timestamp."),
+    c("w_action", "Action.", "ACTV placed, CNCL removed"), *CDC_COLUMNS],
+   [k("customer_identity", "w_c_id"), k("security_identity", "w_s_symb")],
+   (None, ["w_action", "w_c_id", "w_s_symb"]), "staging", synonyms=("WatchHistory.txt",),
+   grain_description="One row per customer, security, and watch action.", file=feed("tpcdi/watch_history/", "pipe-delimited"))
+
+ds(LANDING, "landing", "prospect_feed", "Prospect feed", "Purchased marketing list (TPC-DI Prospect.csv), delivered in full every batch.",
+   [c("agency_id", "Agency identifier."), c("last_name", "Last name."), c("first_name", "First name."),
+    c("postal_code", "Postal code."), c("income", "Income."), c("number_cars", "Cars."), c("number_children", "Children."),
+    c("marital_status", "Marital status."), c("age", "Age."), c("credit_rating", "Credit rating."),
+    c("own_or_rent_flag", "Ownership."), c("net_worth", "Net worth."), c("batch_id", "Delivering batch.")],
+   [k("prospect_identity", "agency_id", universe="complete")], (None, ["agency_id", "batch_id"]), "staging",
+   synonyms=("Prospect.csv",), grain_description="One row per prospect per batch.", file=feed("tpcdi/prospect/", "csv"))
+
+ds(WAREHOUSE, "dw", "di_messages", "Data integration messages", "Load status and data-quality alerts written by each batch (TPC-DI DImessages).",
+   [c("message_date_and_time", "Message timestamp."), c("batch_id", "Batch."),
+    c("message_source", "Step that wrote the message.", "for example DimCustomer, FactWatches, Validation"),
+    c("message_text", "Message.", "for example Invalid customer tier, Inserted rows, Phase complete"),
+    c("message_type", "Message type.", "Status or Alert"), c("message_data", "Offending values for an alert.")],
+   [], (None, ["batch_id", "message_date_and_time", "message_source"]), "audit", synonyms=("DImessages", "load log"),
+   grain_description="One row per message.")
+
+ds(WAREHOUSE, "dw", "audit", "Audit", "Expected record counts and dates delivered with each batch.",
+   [c("dataset", "Source dataset."), c("batch_id", "Batch."), c("audit_date", "Date the value applies to."),
+    c("attribute", "Audited attribute.", "for example CA_ADDACCT, FW_CMP, DM_RECORDS"),
+    c("value", "Expected integer value."), c("dvalue", "Expected decimal value.")],
+   [], (None, ["attribute", "batch_id", "dataset"]), "audit", grain_description="One row per dataset, batch, and attribute.")
+
+# ---------------------------------------------------------------------------------------------
+# Operational layer: tax reporting, cash sweep, and securities lending
+# ---------------------------------------------------------------------------------------------
+
+ds(OLTP, "tax", "realized_gain", "Realized gain", "Lot-level realized gains for cost-basis reporting.",
+   [c("closing_t_id", "Trade that closed the shares."), c("lot_t_id", "Trade that opened the lot."), c("ca_id", "Account."),
+    c("s_symb", "Security."), c("qty", "Shares closed."), c("proceeds", "Sale proceeds.", "USD"), c("cost_basis", "Adjusted cost basis.", "USD"),
+    c("term", "Holding period.", "SHORT up to one year, LONG over one year"),
+    c("wash_sale_disallowed", "Loss disallowed by the wash-sale rule.", "USD; 0 when none"),
+    c("is_covered", "Whether the lot is a covered security reported to the IRS with basis.")],
+   [k("trade_identity", "closing_t_id", description="The trade that closed the shares."),
+    k("trade_identity", "lot_t_id", description="The trade that opened the lot."),
+    k("account_identity", "ca_id"), k("security_identity", "s_symb")],
+   (None, ["closing_t_id", "lot_t_id"]), "fact", synonyms=("cost basis", "1099-B detail"),
+   grain_description="One row per closing trade and relieved lot.")
+
+ds(OLTP, "tax", "tax_form", "Tax form", "Annual tax forms issued per account.",
+   [c("form_id", "Form identifier."), c("ca_id", "Account."), c("tax_year", "Tax year."),
+    c("form_type", "Form type.", "1099-B, 1099-DIV, 1099-INT, 1099-MISC, 1042-S"),
+    c("is_corrected", "Whether this is a corrected form."), c("issued_date", "Issue date."),
+    c("total_reported", "Total reportable amount.", "USD")],
+   [k("account_identity", "ca_id")], (None, ["ca_id", "form_type", "is_corrected", "tax_year"]), "fact",
+   synonyms=("1099",), grain_description="One row per account, tax year, form type, and correction.")
+
+ds(OLTP, "risk", "sweep_balance", "Cash sweep balance", "Daily uninvested cash swept to program banks.",
+   [c("ca_id", "Account."), c("as_of_date", "Business date."), c("program_bank", "Program bank."),
+    c("swept_balance", "Balance at the bank.", "USD"), c("client_rate", "Rate paid to the client.", "annual percent"),
+    c("bank_rate", "Rate received from the bank.", "annual percent")],
+   [k("account_identity", "ca_id")], (None, ["as_of_date", "ca_id", "program_bank"]), "fact",
+   synonyms=("bank sweep",), grain_description="One row per account, day, and program bank.")
+
+ds(OLTP, "risk", "securities_loan", "Securities loan", "Fully paid securities lending loans of customer shares.",
+   [c("loan_id", "Loan identifier."), c("ca_id", "Lending account."), c("s_symb", "Lent security."), c("qty", "Shares lent."),
+    c("borrower", "Borrowing counterparty."), c("fee_rate", "Annual lending fee.", "percent"),
+    c("client_share", "Share of the fee paid to the client.", "fraction"), c("start_date", "Loan start."),
+    c("end_date", "Loan return date.", "null while open")],
+   [pk("securities_loan_identity", "loan_id"), k("account_identity", "ca_id"), k("security_identity", "s_symb"),
+    k("position_identity", "ca_id", "s_symb", description="The long position the shares are lent from.")],
+   ("securities_loan_identity", ["loan_id"]), "fact", synonyms=("stock loan", "fully paid lending"))

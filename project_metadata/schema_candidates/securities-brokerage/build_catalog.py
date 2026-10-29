@@ -47,9 +47,12 @@ def _node_id(dataset: dict) -> str:
     return f"{dataset['layer']['family']}:{_qualified(dataset)}"
 
 
+LAYER_NAMES = {"sql-database": "oltp", "s3": "landing", "snowflake": "warehouse"}
+LAYER_TAGS = {"sql-database": "operational", "s3": "landing", "snowflake": "analytical"}
+
+
 def _collection(dataset: dict) -> str:
-    layer = "oltp" if dataset["layer"]["family"] == "sql-database" else "warehouse"
-    return f"{layer}_{dataset['schema']}.yaml"
+    return f"{LAYER_NAMES[dataset['layer']['family']]}_{dataset['schema']}.yaml"
 
 
 def _accessor(dataset: dict) -> dict:
@@ -57,6 +60,8 @@ def _accessor(dataset: dict) -> dict:
     properties = dict(layer["properties"])
     if layer["family"] == "snowflake":
         properties.update(schema=dataset["schema"].upper(), object=dataset["name"].upper())
+    elif layer["family"] == "s3":
+        properties.update(prefix=dataset["file"]["prefix"], format=dataset["file"]["format"])
     else:
         properties.update(schema=dataset["schema"], object=dataset["name"])
     return {"schema_id": layer["schema_id"], "properties": properties}
@@ -107,7 +112,7 @@ def _node(dataset: dict) -> dict:
             "description": dataset["description"],
             "synonyms": dataset["synonyms"],
             "tags": [
-                "operational" if dataset["layer"]["family"] == "sql-database" else "analytical",
+                LAYER_TAGS[dataset["layer"]["family"]],
                 dataset["schema"],
                 dataset["role"],
             ],

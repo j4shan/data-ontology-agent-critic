@@ -1,12 +1,13 @@
 seed: 20261029
 rate: 0.05
-eligible_fields: 1348
-forgotten_fields: 67
+eligible_fields: 1620
+forgotten_fields: 81
 forgotten_by_kind:
-  columns.description: 42
-  columns.value_description: 12
-  descriptor.description: 6
-  descriptor.synonyms: 2
+  columns.description: 44
+  columns.value_description: 18
+  descriptor.description: 7
+  descriptor.synonyms: 3
+  entity_definitions.description: 4
   grain.description: 4
   logical_identity.description: 1
 entries:
@@ -14,270 +15,328 @@ entries:
   location: logical_identities.customer_version_identity
   field: description
   original: A warehouse surrogate key for one historical version of a customer.
+- file: landing_landing.yaml
+  location: s3:securities-brokerage.landing.cash_transaction_feed.columns.ct_amt
+  field: description
+  original: Amount.
+- file: landing_landing.yaml
+  location: s3:securities-brokerage.landing.finwire_sec.grain
+  field: description
+  original: One row per security per posting.
+- file: landing_landing.yaml
+  location: s3:securities-brokerage.landing.finwire_sec.columns.name
+  field: description
+  original: Security name.
+- file: landing_landing.yaml
+  location: s3:securities-brokerage.landing.hr_feed.columns.employee_first_name
+  field: description
+  original: First name.
+- file: landing_landing.yaml
+  location: s3:securities-brokerage.landing.hr_feed.columns.employee_mi
+  field: description
+  original: Middle initial.
+- file: landing_landing.yaml
+  location: s3:securities-brokerage.landing.hr_feed.entity_definitions.employee_identity[manager_id]
+  field: description
+  original: The employee's manager.
+- file: landing_landing.yaml
+  location: s3:securities-brokerage.landing.trade_feed.columns.cdc_flag
+  field: value_description
+  original: I insert, U update; null in the historical load
+- file: landing_landing.yaml
+  location: s3:securities-brokerage.landing.watch_history_feed.columns.w_dts
+  field: description
+  original: Timestamp.
+- file: landing_landing.yaml
+  location: s3:securities-brokerage.landing.watch_history_feed.columns.cdc_dsn
+  field: description
+  original: Change sequence number within the incremental batch.
 - file: oltp_cashier.yaml
   location: sql-database:securities-brokerage.cashier.acats_asset.columns.cash_amount
   field: description
   original: Cash transferred.
-- file: oltp_compliance.yaml
-  location: sql-database:securities-brokerage.compliance.complaint.columns.ca_id
+- file: oltp_cashier.yaml
+  location: sql-database:securities-brokerage.cashier.acats_transfer.descriptor
   field: description
-  original: Account concerned.
+  original: Full and partial account transfers with other firms.
+- file: oltp_cashier.yaml
+  location: sql-database:securities-brokerage.cashier.bank_link.columns.verified_ts
+  field: value_description
+  original: null until verified
+- file: oltp_compliance.yaml
+  location: sql-database:securities-brokerage.compliance.aml_case.columns.disposition
+  field: value_description
+  original: NO_ACTION, SAR_FILED, ACCOUNT_CLOSED
 - file: oltp_compliance.yaml
   location: sql-database:securities-brokerage.compliance.complaint.columns.category
   field: description
   original: Problem category.
 - file: oltp_compliance.yaml
-  location: sql-database:securities-brokerage.compliance.surveillance_alert.columns.status
-  field: description
-  original: Status.
+  location: sql-database:securities-brokerage.compliance.kyc_review.columns.review_type
+  field: value_description
+  original: ONBOARDING, PERIODIC, EVENT_DRIVEN
 - file: oltp_compliance.yaml
   location: sql-database:securities-brokerage.compliance.surveillance_alert.columns.reviewer_employee_id
   field: description
   original: Reviewing analyst.
 - file: oltp_customer.yaml
-  location: sql-database:securities-brokerage.customer.account_permission.columns.ap_acl
-  field: value_description
-  original: 4-character permission mask
+  location: sql-database:securities-brokerage.customer.account_permission.columns.ap_tax_id
+  field: description
+  original: Tax identifier of the permitted person.
 - file: oltp_customer.yaml
-  location: sql-database:securities-brokerage.customer.customer.columns.c_email_1
+  location: sql-database:securities-brokerage.customer.broker.columns.b_id
   field: description
-  original: Primary email address.
+  original: Broker identifier.
 - file: oltp_customer.yaml
-  location: sql-database:securities-brokerage.customer.customer_account.columns.ca_tax_st
-  field: value_description
-  original: 0 non-taxable, 1 taxable at trade, 2 taxable at year end
+  location: sql-database:securities-brokerage.customer.customer.columns.c_ctry_1
+  field: description
+  original: Phone country code.
 - file: oltp_customer.yaml
-  location: sql-database:securities-brokerage.customer.customer_taxrate.columns.cx_tx_id
+  location: sql-database:securities-brokerage.customer.watch_list.descriptor
   field: description
-  original: Tax rate.
+  original: Customer watch lists.
 - file: oltp_firm.yaml
-  location: sql-database:securities-brokerage.firm.branch.descriptor
+  location: sql-database:securities-brokerage.firm.branch.columns.ad_id
   field: description
-  original: Branch offices.
-- file: oltp_firm.yaml
-  location: sql-database:securities-brokerage.firm.branch.columns.branch_id
-  field: description
-  original: Branch identifier.
-- file: oltp_firm.yaml
-  location: sql-database:securities-brokerage.firm.registration.columns.license
-  field: description
-  original: License.
+  original: Branch address.
 - file: oltp_market.yaml
-  location: sql-database:securities-brokerage.market.daily_market.columns.dm_high
+  location: sql-database:securities-brokerage.market.ca_entitlement.descriptor
+  field: synonyms
+  original:
+  - dividend payment
+- file: oltp_market.yaml
+  location: sql-database:securities-brokerage.market.company.columns.co_in_id
   field: description
-  original: Day high price.
+  original: Industry of the company.
+- file: oltp_market.yaml
+  location: sql-database:securities-brokerage.market.company_competitor.entity_definitions.company_identity[cp_comp_co_id]
+  field: description
+  original: The competing company.
+- file: oltp_market.yaml
+  location: sql-database:securities-brokerage.market.daily_market.descriptor
+  field: description
+  original: Daily price and volume for each security.
 - file: oltp_market.yaml
   location: sql-database:securities-brokerage.market.financial.columns.fi_qtr
   field: value_description
   original: 1 to 4
 - file: oltp_market.yaml
-  location: sql-database:securities-brokerage.market.financial.columns.fi_out_dilut
-  field: description
-  original: Diluted shares outstanding.
-- file: oltp_market.yaml
-  location: sql-database:securities-brokerage.market.last_trade.columns.lt_price
+  location: sql-database:securities-brokerage.market.financial.columns.fi_basic_eps
   field: value_description
   original: USD
 - file: oltp_market.yaml
-  location: sql-database:securities-brokerage.market.news_item.grain
+  location: sql-database:securities-brokerage.market.financial.columns.fi_assets
   field: description
-  original: One row per news item.
+  original: Total assets.
+- file: oltp_market.yaml
+  location: sql-database:securities-brokerage.market.last_trade.columns.lt_dts
+  field: description
+  original: Timestamp of the last trade.
+- file: oltp_market.yaml
+  location: sql-database:securities-brokerage.market.security.columns.s_num_out
+  field: description
+  original: Shares outstanding.
 - file: oltp_market.yaml
   location: sql-database:securities-brokerage.market.security.columns.s_start_date
   field: description
   original: First trade date.
+- file: oltp_market.yaml
+  location: sql-database:securities-brokerage.market.security.columns.s_dividend
+  field: value_description
+  original: USD
 - file: oltp_oms.yaml
-  location: sql-database:securities-brokerage.oms.customer_order.descriptor
-  field: synonyms
-  original:
-  - parent order
-- file: oltp_oms.yaml
-  location: sql-database:securities-brokerage.oms.customer_order.columns.ord_qty
-  field: description
-  original: Shares ordered.
-- file: oltp_oms.yaml
-  location: sql-database:securities-brokerage.oms.market_calendar.grain
-  field: description
-  original: One row per exchange per calendar date.
+  location: sql-database:securities-brokerage.oms.customer_order.columns.ord_channel
+  field: value_description
+  original: WEB, MOBILE, API, BROKER, IVR
 - file: oltp_oms.yaml
   location: sql-database:securities-brokerage.oms.order_execution.columns.exec_qty
   field: description
   original: Shares filled.
-- file: oltp_oms.yaml
-  location: sql-database:securities-brokerage.oms.order_route.columns.route_id
-  field: description
-  original: Route identifier.
 - file: oltp_reference.yaml
-  location: sql-database:securities-brokerage.reference.charge.columns.ch_chrg
+  location: sql-database:securities-brokerage.reference.address.columns.ad_ctry
   field: description
-  original: Flat charge per trade.
+  original: Country name.
 - file: oltp_reference.yaml
-  location: sql-database:securities-brokerage.reference.customer_tier.columns.min_household_assets
+  location: sql-database:securities-brokerage.reference.zip_code.columns.zc_code
   field: description
-  original: Minimum household assets for the tier.
-- file: oltp_reference.yaml
-  location: sql-database:securities-brokerage.reference.exchange.columns.ex_num_symb
-  field: description
-  original: Number of securities listed.
-- file: oltp_reference.yaml
-  location: sql-database:securities-brokerage.reference.industry.descriptor
-  field: description
-  original: Industries within sectors.
-- file: oltp_reference.yaml
-  location: sql-database:securities-brokerage.reference.status_type.grain
-  field: description
-  original: One row per status type.
+  original: Postal code.
 - file: oltp_risk.yaml
-  location: sql-database:securities-brokerage.risk.account_risk_daily.columns.debit_balance
+  location: sql-database:securities-brokerage.risk.account_risk_daily.columns.sma
   field: value_description
   original: USD
 - file: oltp_risk.yaml
-  location: sql-database:securities-brokerage.risk.margin_account.columns.ca_id
+  location: sql-database:securities-brokerage.risk.securities_loan.columns.loan_id
   field: description
-  original: Margin-approved account.
+  original: Loan identifier.
+- file: oltp_risk.yaml
+  location: sql-database:securities-brokerage.risk.securities_loan.columns.start_date
+  field: description
+  original: Loan start.
+- file: oltp_risk.yaml
+  location: sql-database:securities-brokerage.risk.securities_loan.entity_definitions.position_identity[ca_id,
+    s_symb]
+  field: description
+  original: The long position the shares are lent from.
+- file: oltp_risk.yaml
+  location: sql-database:securities-brokerage.risk.sweep_balance.descriptor
+  field: description
+  original: Daily uninvested cash swept to program banks.
 - file: oltp_service.yaml
-  location: sql-database:securities-brokerage.service.service_interaction.columns.interaction_id
-  field: description
-  original: Interaction identifier.
-- file: oltp_trading.yaml
-  location: sql-database:securities-brokerage.trading.holding_history.grain
-  field: description
-  original: One row per lot and the trade that changed it.
-- file: oltp_trading.yaml
-  location: sql-database:securities-brokerage.trading.trade.columns.t_st_id
-  field: description
-  original: Trade status.
-- file: warehouse_dw.yaml
-  location: snowflake:securities-brokerage.dw.dim_broker.columns.is_current
-  field: description
-  original: Whether this row is the current version.
-- file: warehouse_dw.yaml
-  location: snowflake:securities-brokerage.dw.dim_company.columns.status
-  field: description
-  original: Company status name.
-- file: warehouse_dw.yaml
-  location: snowflake:securities-brokerage.dw.dim_customer.columns.gender
-  field: description
-  original: Gender.
-- file: warehouse_dw.yaml
-  location: snowflake:securities-brokerage.dw.dim_customer.columns.email1
-  field: description
-  original: Primary email.
-- file: warehouse_dw.yaml
-  location: snowflake:securities-brokerage.dw.dim_customer.columns.national_tax_rate
+  location: sql-database:securities-brokerage.service.service_interaction.columns.employee_id
   field: value_description
-  original: fraction
-- file: warehouse_dw.yaml
-  location: snowflake:securities-brokerage.dw.dim_customer.columns.local_tax_rate_desc
+  original: null for chatbot contacts
+- file: oltp_service.yaml
+  location: sql-database:securities-brokerage.service.service_interaction.columns.reason_code
   field: description
-  original: Local tax rate name.
-- file: warehouse_dw.yaml
-  location: snowflake:securities-brokerage.dw.dim_date.columns.calendar_qtr_id
+  original: Reason.
+- file: oltp_service.yaml
+  location: sql-database:securities-brokerage.service.service_interaction.columns.complaint_id
   field: value_description
-  original: YYYYQ
-- file: warehouse_dw.yaml
-  location: snowflake:securities-brokerage.dw.dim_date.columns.calendar_week_id
+  original: null when none was logged
+- file: oltp_service.yaml
+  location: sql-database:securities-brokerage.service.statement.columns.statement_id
+  field: description
+  original: Statement identifier.
+- file: oltp_tax.yaml
+  location: sql-database:securities-brokerage.tax.realized_gain.columns.s_symb
+  field: description
+  original: Security.
+- file: oltp_tax.yaml
+  location: sql-database:securities-brokerage.tax.tax_form.columns.form_type
   field: value_description
-  original: YYYYWW
-- file: warehouse_dw.yaml
-  location: snowflake:securities-brokerage.dw.dim_date.columns.fiscal_year_id
-  field: description
-  original: Fiscal year.
-- file: warehouse_dw.yaml
-  location: snowflake:securities-brokerage.dw.dim_date.columns.holiday_flag
-  field: description
-  original: Whether the day is a market holiday.
-- file: warehouse_dw.yaml
-  location: snowflake:securities-brokerage.dw.dim_security.columns.shares_outstanding
-  field: description
-  original: Shares outstanding.
-- file: warehouse_dw.yaml
-  location: snowflake:securities-brokerage.dw.dim_time.columns.minute_id
-  field: description
-  original: Minute.
-- file: warehouse_dw.yaml
-  location: snowflake:securities-brokerage.dw.dim_time.columns.market_hours_flag
-  field: description
-  original: Whether the second is within regular market hours.
-- file: warehouse_dw.yaml
-  location: snowflake:securities-brokerage.dw.dim_trade.columns.sk_close_time_id
-  field: value_description
-  original: null while open
-- file: warehouse_dw.yaml
-  location: snowflake:securities-brokerage.dw.dim_trade.columns.trade_price
+  original: 1099-B, 1099-DIV, 1099-INT, 1099-MISC, 1042-S
+- file: oltp_tax.yaml
+  location: sql-database:securities-brokerage.tax.tax_form.columns.total_reported
   field: value_description
   original: USD
-- file: warehouse_dw.yaml
-  location: snowflake:securities-brokerage.dw.fact_holdings.columns.current_trade_id
+- file: oltp_trading.yaml
+  location: sql-database:securities-brokerage.trading.holding.columns.h_s_symb
   field: description
-  original: Trade that changed the lot.
+  original: Security.
+- file: oltp_trading.yaml
+  location: sql-database:securities-brokerage.trading.holding_history.entity_definitions.trade_identity[hh_t_id]
+  field: description
+  original: The trade that changed the lot.
+- file: oltp_trading.yaml
+  location: sql-database:securities-brokerage.trading.trade.columns.t_is_cash
+  field: value_description
+  original: 1 cash, 0 margin
+- file: oltp_trading.yaml
+  location: sql-database:securities-brokerage.trading.trade.columns.t_bid_price
+  field: description
+  original: Requested price.
+- file: oltp_trading.yaml
+  location: sql-database:securities-brokerage.trading.trade_request.columns.tr_qty
+  field: description
+  original: Shares requested.
+- file: warehouse_dw.yaml
+  location: snowflake:securities-brokerage.dw.audit.columns.attribute
+  field: value_description
+  original: for example CA_ADDACCT, FW_CMP, DM_RECORDS
+- file: warehouse_dw.yaml
+  location: snowflake:securities-brokerage.dw.dim_account.grain
+  field: description
+  original: One row per account version; Type 2 history.
+- file: warehouse_dw.yaml
+  location: snowflake:securities-brokerage.dw.dim_broker.descriptor
+  field: description
+  original: Brokers from the HR feed with branch and manager.
+- file: warehouse_dw.yaml
+  location: snowflake:securities-brokerage.dw.dim_company.descriptor
+  field: synonyms
+  original:
+  - DimCompany
+- file: warehouse_dw.yaml
+  location: snowflake:securities-brokerage.dw.dim_company.columns.description
+  field: description
+  original: Company description.
+- file: warehouse_dw.yaml
+  location: snowflake:securities-brokerage.dw.dim_security.columns.batch_id
+  field: value_description
+  original: 1 is the historical load; 2 and later are incremental loads.
+- file: warehouse_dw.yaml
+  location: snowflake:securities-brokerage.dw.dim_trade.descriptor
+  field: synonyms
+  original:
+  - DimTrade
+  - fact trade
+- file: warehouse_dw.yaml
+  location: snowflake:securities-brokerage.dw.dim_trade.columns.sk_create_date_id
+  field: description
+  original: Date the trade was created.
+- file: warehouse_dw.yaml
+  location: snowflake:securities-brokerage.dw.dim_trade.columns.cash_flag
+  field: description
+  original: Whether the trade is a cash trade.
 - file: warehouse_dw.yaml
   location: snowflake:securities-brokerage.dw.fact_holdings.columns.sk_security_id
   field: description
   original: Security version.
 - file: warehouse_dw.yaml
-  location: snowflake:securities-brokerage.dw.fact_market_history.columns.close_price
+  location: snowflake:securities-brokerage.dw.fact_market_history.columns.fifty_two_week_high
   field: description
-  original: Close.
+  original: 52-week high.
+- file: warehouse_dw.yaml
+  location: snowflake:securities-brokerage.dw.fact_market_history.columns.day_high
+  field: description
+  original: Day high.
+- file: warehouse_dw.yaml
+  location: snowflake:securities-brokerage.dw.fact_market_history.columns.day_low
+  field: description
+  original: Day low.
 - file: warehouse_dw.yaml
   location: snowflake:securities-brokerage.dw.fact_watches.descriptor
   field: description
   original: When customers added and removed securities from watch lists.
 - file: warehouse_dw.yaml
-  location: snowflake:securities-brokerage.dw.financial.columns.fi_revenue
+  location: snowflake:securities-brokerage.dw.fact_watches.columns.sk_date_id_date_placed
   field: description
-  original: Revenue.
+  original: Date the watch was placed.
 - file: warehouse_dw.yaml
-  location: snowflake:securities-brokerage.dw.industry.columns.in_name
-  field: description
-  original: Industry name.
-- file: warehouse_dw.yaml
-  location: snowflake:securities-brokerage.dw.prospect.columns.marital_status
-  field: description
-  original: Marital status.
-- file: warehouse_dw.yaml
-  location: snowflake:securities-brokerage.dw.tax_rate.descriptor
-  field: description
-  original: Warehouse copy of tax rates.
-- file: warehouse_mart.yaml
-  location: snowflake:securities-brokerage.mart.fact_complaint.descriptor
-  field: description
-  original: Complaints with resolution time.
-- file: warehouse_mart.yaml
-  location: snowflake:securities-brokerage.mart.fact_corporate_action_impact.columns.cash_paid
-  field: description
-  original: Cash paid.
-- file: warehouse_mart.yaml
-  location: snowflake:securities-brokerage.mart.fact_customer_month.descriptor
-  field: synonyms
-  original:
-  - customer scorecard
-  - retention
-- file: warehouse_mart.yaml
-  location: snowflake:securities-brokerage.mart.fact_customer_month.columns.net_new_assets
+  location: snowflake:securities-brokerage.dw.financial.columns.fi_liability
   field: value_description
   original: USD
+- file: warehouse_dw.yaml
+  location: snowflake:securities-brokerage.dw.prospect.columns.sk_record_date_id
+  field: description
+  original: Date the record was first loaded.
+- file: warehouse_mart.yaml
+  location: snowflake:securities-brokerage.mart.dim_customer_segment.columns.min_assets
+  field: value_description
+  original: USD
+- file: warehouse_mart.yaml
+  location: snowflake:securities-brokerage.mart.dim_venue.columns.venue_mic
+  field: description
+  original: Market identifier code.
+- file: warehouse_mart.yaml
+  location: snowflake:securities-brokerage.mart.fact_account_daily.grain
+  field: description
+  original: One row per account daily snapshot.
+- file: warehouse_mart.yaml
+  location: snowflake:securities-brokerage.mart.fact_complaint.columns.sk_received_date_id
+  field: description
+  original: Receipt date.
+- file: warehouse_mart.yaml
+  location: snowflake:securities-brokerage.mart.fact_customer_month.columns.digital_sessions
+  field: description
+  original: Digital sessions.
 - file: warehouse_mart.yaml
   location: snowflake:securities-brokerage.mart.fact_margin_exposure_daily.descriptor
   field: description
   original: Daily margin requirement and call exposure per margin account.
 - file: warehouse_mart.yaml
-  location: snowflake:securities-brokerage.mart.fact_net_new_assets.columns.flow_source
-  field: value_description
-  original: TRANSFER or ACATS
-- file: warehouse_mart.yaml
-  location: snowflake:securities-brokerage.mart.fact_net_new_assets.columns.transfer_id
+  location: snowflake:securities-brokerage.mart.fact_margin_exposure_daily.grain
   field: description
-  original: Funding transfer.
+  original: One row per margin account per day.
 - file: warehouse_mart.yaml
-  location: snowflake:securities-brokerage.mart.fact_net_new_assets.columns.acats_id
+  location: snowflake:securities-brokerage.mart.fact_revenue_daily.columns.fee_revenue
   field: description
-  original: ACATS transfer.
+  original: Flat charges and account fees.
 - file: warehouse_mart.yaml
-  location: snowflake:securities-brokerage.mart.fact_revenue_daily.columns.sk_broker_id
+  location: snowflake:securities-brokerage.mart.fact_revenue_daily.columns.sec_lending_revenue
   field: description
-  original: Servicing broker version.
+  original: Fully paid securities lending revenue.
 - file: warehouse_mart.yaml
-  location: snowflake:securities-brokerage.mart.fact_surveillance_alert.columns.alert_id
+  location: snowflake:securities-brokerage.mart.fact_routing_month.columns.pct_of_orders
   field: description
-  original: Alert.
+  original: Share of the class routed to the venue.

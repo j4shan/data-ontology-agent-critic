@@ -73,7 +73,6 @@ nodes:
     description: Segment name.
   - name: min_assets
     description: Lower asset bound.
-    value_description: USD
   - name: max_assets
     description: Upper asset bound.
     value_description: USD; null for the top segment
@@ -177,7 +176,6 @@ nodes:
       - venue_mic
   columns:
   - name: venue_mic
-    description: Market identifier code.
   - name: venue_name
     description: Venue name.
   - name: venue_type
@@ -216,7 +214,6 @@ nodes:
       schema: MART
       object: FACT_ACCOUNT_DAILY
   grain:
-    description: One row per account daily snapshot.
     components:
     - identity_id: account_day_identity
       dataset_columns:
@@ -459,6 +456,7 @@ nodes:
   descriptor:
     qualified_name: securities-brokerage.mart.fact_complaint
     display_name: Complaint fact
+    description: Complaints with resolution time.
     synonyms: []
     tags:
     - analytical
@@ -486,7 +484,6 @@ nodes:
     description: Broker version named.
     value_description: null when none
   - name: sk_received_date_id
-    description: Receipt date.
   - name: sk_resolved_date_id
     description: Resolution date.
     value_description: null while open
@@ -587,6 +584,7 @@ nodes:
   - name: shares_eligible
     description: Shares held on the record date.
   - name: cash_paid
+    description: Cash paid.
     value_description: USD
   - name: shares_delivered
     description: Shares delivered.
@@ -630,6 +628,9 @@ nodes:
     qualified_name: securities-brokerage.mart.fact_customer_month
     display_name: Customer month
     description: Monthly customer value, activity, and retention.
+    synonyms:
+    - customer scorecard
+    - retention
     tags:
     - analytical
     - mart
@@ -663,13 +664,13 @@ nodes:
     value_description: USD
   - name: net_new_assets
     description: Net new assets in the month.
+    value_description: USD
   - name: trades
     description: Completed trades.
   - name: revenue
     description: Attributed revenue.
     value_description: USD
   - name: digital_sessions
-    description: Digital sessions.
   - name: is_active
     description: Whether the customer traded or logged in during the month.
   - name: is_churned
@@ -889,7 +890,6 @@ nodes:
       schema: MART
       object: FACT_MARGIN_EXPOSURE_DAILY
   grain:
-    description: One row per margin account per day.
     components:
     - identity_id: account_day_identity
       dataset_columns:
@@ -991,6 +991,7 @@ nodes:
   columns:
   - name: flow_source
     description: Source system.
+    value_description: TRANSFER or ACATS
   - name: source_id
     description: Identifier in the source system.
   - name: sk_account_id
@@ -1004,8 +1005,10 @@ nodes:
     description: Flow value.
     value_description: USD; negative for outflows; ACATS securities at prior close
   - name: transfer_id
+    description: Funding transfer.
     value_description: null for ACATS flows
   - name: acats_id
+    description: ACATS transfer.
     value_description: null for funding transfers
   entity_definitions:
   - identity_id: account_version_identity
@@ -1083,11 +1086,11 @@ nodes:
   - name: sk_date_id
     description: Business date.
   - name: sk_broker_id
+    description: Servicing broker version.
   - name: commission_revenue
     description: Commissions.
     value_description: USD
   - name: fee_revenue
-    description: Flat charges and account fees.
     value_description: USD
   - name: margin_interest
     description: Margin interest accrued.
@@ -1099,7 +1102,6 @@ nodes:
     description: Cash sweep net interest.
     value_description: USD
   - name: sec_lending_revenue
-    description: Fully paid securities lending revenue.
     value_description: USD
   entity_definitions:
   - identity_id: account_day_identity
@@ -1184,7 +1186,6 @@ nodes:
   - name: orders_routed
     description: Non-directed orders routed.
   - name: pct_of_orders
-    description: Share of the class routed to the venue.
     value_description: percent
   - name: net_payment_usd
     description: Net payment received from the venue.
@@ -1240,6 +1241,7 @@ nodes:
       - alert_id
   columns:
   - name: alert_id
+    description: Alert.
   - name: sk_account_id
     description: Account version.
   - name: sk_security_id
