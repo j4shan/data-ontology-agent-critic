@@ -10,7 +10,7 @@ A billing account has one invoice in the statistics window. An invoice has many 
 
 The authored catalog `telecom-mobile` contains 173 datasets (97 dimensions, 52 facts, 24 bridges) in the Snowflake database `TELECOM_MOBILE` on account `northline.us-east-1`.
 
-Each dataset is one ontology node. The grain column is the system of record for that dataset's logical identity and is marked `is_entity_universe: true`. Foreign-key columns realize the same logical identity with `is_entity_universe: false`, because the child dataset does not hold the complete population. Edges join those two realizations. Multiplicity and match existence are directional and follow the operating rules below. Synthetic row counts and join fan-out for a 30-day window are in `statistics.md`. They are derived from authored populations and these multiplicity rules. The YAML nodes do not carry those statistics.
+Each dataset is one ontology node. The grain column is the system of record for that dataset's logical identity and is marked `is_entity_universe: true`. Foreign-key columns realize the same logical identity with `is_entity_universe: false`, because the child dataset does not hold the complete population. Edges join those two realizations. Multiplicity and match existence are directional and follow the operating rules below. Synthetic row counts and join fan-out for a 30-day window are in `statistics.md`. They are derived from authored populations and these multiplicity rules.
 
 ## Signature relationships
 

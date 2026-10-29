@@ -12,9 +12,9 @@ exists yet.
 
 | Area | Current baseline | Gap against the PRD |
 | --- | --- | --- |
-| Catalog candidates | The five schema-candidate catalogs under [`schema_candidates/`](../schema_candidates/) are the assessment corpora. | The catalogs are schema version 2 and have no `directory-manifest.yaml`, so the current actor builder will not load them. |
+| Catalog candidates | The five schema-candidate catalogs under [`schema_candidates/`](../schema_candidates/) are the assessment corpora: domain modules, business models, and question sheets. | The schema version 2 YAML was removed. No catalog YAML exists under the actor's current schema version 4. |
 | Question sheets | Each domain has a role-based analytical question sheet: `healthcare-payer` (125), `telecom-mobile` (141), `manufacturing-discrete` (115), `retail-grocery` (138), and `commerce-marketplace` (127). Each sheet stays at or under 150 questions. | The sheets are not yet cases. They have no gold AKG. |
-| Reference catalogs | None have been published under `resources/data/reference_catalogs/`. | A schema version 3 reference catalog still has to be published for each domain. |
+| Reference catalogs | None have been published under `resources/data/reference_catalogs/`. | A schema version 4 reference catalog still has to be published for each domain. |
 | Generated catalogs | The actor's DDL collector can publish reviewed output to `resources/data/generated_catalogs/<domain>/`, with a directory manifest, collection YAML, decision log, and provenance. | No generated catalog has been published. |
 | Suites and gold | Question text is drafted by role. | No suite, test case, or gold AKG has been authored. |
 | Submission schema and scorer | None. | C0.1 and C0.3. |
@@ -69,7 +69,7 @@ exists yet.
 | C0.5 | Write model-independent agent instructions for publishing, running cases, writing submissions, scoring, and collecting results. | C0.1–C0.4 | An agent following only the instructions completes one domain run. |
 | C0.6 | Implement result collection and reporting: pass rate, per-class metrics, breakdown by difficulty, failure categories, and run comparison. | C0.3 | A report compares two runs. |
 | C0.7 | Define and support the baseline condition without the actor's service. | C0.5, open decision 6 | Baseline and actor runs appear in one comparison report. |
-| C0.8 | Validate and document reproducible regeneration of the five authored catalog candidates. | — | A fresh checkout regenerates the candidate YAML without a diff and validates every catalog. |
+| C0.8 | Validate and document reproducible regeneration of the five authored catalog candidates. | — | A fresh checkout regenerates the candidate business notes without a diff and validates every catalog. |
 | C0.9 | Score the actor's DDL collector output in `generated_catalogs/<domain>/` against the human-reviewed catalog in `reference_catalogs/<domain>/`. Not an initial-release gate. | Owner-reviewed generated catalog, C0.10 | A generated current catalog receives per-element scores against its reference catalog. |
 | C0.10 | Establish a human-reviewed reference catalog for each current domain under the actor's current schema version. | C0.2 | The actor's current builder accepts every current reference catalog. |
 | C0.11 | Host development of agent tools built on the Graph Service API (formerly actor skill B). | Graph Service API | Critic contains an agent tool that uses the Graph Service API without importing actor code. |

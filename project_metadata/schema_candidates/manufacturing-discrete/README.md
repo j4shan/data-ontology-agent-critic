@@ -8,7 +8,7 @@ The equipment hierarchy follows the ISA-95 shape. One enterprise has many legal 
 
 Each grain column is the complete population of its logical identity (`is_entity_universe: true`). A foreign key on another dataset is the same identity with `is_entity_universe: false`. The edge states directional multiplicity and whether a match is required. The questions below use only those authored identities, grains, and joins. Each question has one universe dataset per identity and one column set on each join, so the datasets and the relationship path are fixed by the metadata. Measure columns such as quantity and amount are attributes of a single fact row. The catalog does not store row counts or distributions.
 
-The business narrative and the full relationship table are in `business-model.md`. Loadable YAML is in `yaml/`.
+The business narrative and the full relationship table are in `business-model.md`.
 
 ## BI questions
 

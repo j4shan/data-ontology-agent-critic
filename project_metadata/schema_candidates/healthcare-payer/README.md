@@ -6,7 +6,7 @@ Harbor Medicare Services processes Medicare-scale claims. The catalog `healthcar
 
 A claim header and a claim line are different facts. A remittance advice, a remit line, and a remit adjustment are different facts. An eligibility inquiry has one response. Members, coverage, providers, plans, and code sets are the populations those facts join. The questions below use the authored identities and joins. Synthetic row counts and fan-out for a 30-day window are listed with the major fact tables.
 
-The business narrative and the full relationship table are in `business-model.md`. Loadable YAML is in `yaml/`.
+The business narrative and the full relationship table are in `business-model.md`.
 
 ## BI questions
 

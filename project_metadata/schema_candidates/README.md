@@ -15,11 +15,10 @@ Each candidate is one directory:
 
 The directory name is the catalog label: a sector, then a hyphen, then the specialty. Qualified dataset names use that label as their first segment, for example `healthcare-payer.claim.fact_claim_header`. The Snowflake database name is the same label in uppercase, with the hyphen written as an underscore, because an unquoted Snowflake identifier cannot contain a hyphen.
 
-A candidate directory holds `README.md`, `questions.md`, `business-model.md`, and `yaml/`.
+A candidate directory holds `README.md`, `questions.md`, and `business-model.md`.
 `README.md` introduces the business. `questions.md` is the role-based analytical question
-sheet for the benchmark. The YAML directory is the finalized
-intermediary the graph builder loads. It contains only `.yaml` files: logical
-identities, one file per subject area, and the relationship file.
+sheet for the benchmark. No loadable intermediary YAML is committed; a reference catalog
+for the actor's current schema belongs under `resources/data/reference_catalogs/<domain>/`.
 
 Datasets are dimensions, facts, and bridges. The grain column of each dataset is
 the complete population of that logical identity (`is_entity_universe: true`).
@@ -33,16 +32,10 @@ Column descriptions and closed status codes are authored. `manufacturing-discret
 `retail-grocery`, and `commerce-marketplace` leave row counts and join fan-out
 unstated. `telecom-mobile` and `healthcare-payer` add a 30-day synthetic population
 in `statistics.md` and `statistics.json`: authored fact-table volumes, plus distinct
-keys and average fan-out on each inbound and outbound join. Those statistics stay
-out of the YAML the graph builder loads.
-
-`proposed/schema-update-proposal.md` asks the intermediary schema to track
-`logical_identities`, `nodes`, and `edges` in separate files. The manifests
-under `proposed/manifests/` are examples of that tracking. They are not builder
-input.
+keys and average fan-out on each inbound and outbound join.
 
 The domain modules under `domains/` are the authoring source. Regenerate the
-YAML and business notes with:
+business notes and statistics with:
 
 ```bash
 python3 emit_catalogs.py

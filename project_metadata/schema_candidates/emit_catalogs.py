@@ -1,4 +1,4 @@
-"""Emit ontology-graph YAML catalogs and business-model notes from domain modules."""
+"""Emit business-model notes and synthetic statistics from domain modules."""
 
 from __future__ import annotations
 
@@ -6,8 +6,6 @@ import json
 import sys
 from collections import defaultdict
 from pathlib import Path
-
-import yaml
 
 ROOT = Path(__file__).resolve().parent
 if str(ROOT) not in sys.path:
@@ -27,20 +25,6 @@ _EXISTENCE = {"always", "optional", "unknown"}
 
 class CatalogError(ValueError):
     pass
-
-
-def _identity_label(identity_id: str) -> str:
-    stem = identity_id.removesuffix("_identity").replace("_", " ")
-    return f"{stem[:1].upper()}{stem[1:]} identity"
-
-
-def _dump(document: dict) -> str:
-    return yaml.safe_dump(
-        document,
-        sort_keys=False,
-        allow_unicode=True,
-        width=100,
-    )
 
 
 def _validate(domain: dict) -> dict:
@@ -162,151 +146,6 @@ def _validate(domain: dict) -> dict:
     return {"universe": universe, "edges": edges}
 
 
-def _node(domain: dict, dataset: dict) -> dict:
-    grain = next(column for column in dataset["columns"] if column.get("universe"))
-    root = domain["root"]
-    qualified = f"{root}.{dataset['subject']}.{dataset['name']}"
-    columns = []
-    for column in dataset["columns"]:
-        payload = {"name": column["name"], "description": column["description"]}
-        if column.get("value_description"):
-            payload["value_description"] = column["value_description"]
-        columns.append(payload)
-    entity_definitions = []
-    for column in dataset["columns"]:
-        if not column.get("identity"):
-            continue
-        metadata = {
-            "expression_context": "SQL column reference",
-            "population_role": "universe" if column.get("universe") else "reference",
-        }
-        if column.get("mapping"):
-            metadata["mapping"] = column["mapping"]
-        rule = column.get("business_rule") or (
-            f"Complete authored population of {dataset['display_name'].lower()}."
-        )
-        metadata["business_rule"] = rule
-        entity_definitions.append(
-            {
-                "identity_id": column["identity"],
-                "dataset_columns": [column["name"]],
-                "is_entity_universe": bool(column.get("universe")),
-                "entity_expression": [f"[{column['name']}]"],
-                "entity_metadata": metadata,
-            }
-        )
-    for item in domain.get("composite_identities", []):
-        key_columns = item["members"].get(dataset["name"])
-        if key_columns is None:
-            continue
-        entity_definitions.append(
-            {
-                "identity_id": item["identity"],
-                "dataset_columns": list(key_columns),
-                "is_entity_universe": False,
-                "entity_expression": [f"[{', '.join(key_columns)}]"],
-                "entity_metadata": {
-                    "expression_context": "SQL column reference",
-                    "population_role": "composite",
-                    "business_rule": item["description"],
-                },
-            }
-        )
-    node = {
-        "node_id": f"sf:{qualified}",
-        "descriptor": {
-            "qualified_name": qualified,
-            "display_name": dataset["display_name"],
-            "description": dataset["description"],
-            "synonyms": dataset["synonyms"],
-            "tags": [dataset["role"], dataset["subject"]],
-        },
-        "accessor": {
-            "schema_id": "accessor.snowflake.v1",
-            "properties": {
-                "account": domain["account"],
-                "database": domain["database"],
-                "schema": dataset["subject"].upper(),
-                "object": dataset["name"].upper(),
-                "format": "table",
-            },
-        },
-        "grain": {
-            "description": f"One row is one {dataset['display_name'].lower()}.",
-            "components": [
-                {
-                    "identity_id": grain["identity"],
-                    "dataset_columns": [grain["name"]],
-                    "description": grain["description"],
-                }
-            ],
-        },
-        "columns": columns,
-        "entity_definitions": entity_definitions,
-    }
-    return node
-
-
-def _edge(domain: dict, edge: dict) -> dict:
-    child = edge["child"]
-    parent = edge["parent"]
-    column = edge["child_column"]
-    child_qualified = f"{domain['root']}.{child['subject']}.{child['name']}"
-    parent_qualified = f"{domain['root']}.{parent['subject']}.{parent['name']}"
-    return {
-        "endpoint_a": {
-            "node_id": f"sf:{child_qualified}",
-            "identity_id": column["identity"],
-            "dataset_columns": [column["name"]],
-        },
-        "endpoint_b": {
-            "node_id": f"sf:{parent_qualified}",
-            "identity_id": column["identity"],
-            "dataset_columns": [edge["parent_column"]],
-        },
-        "a_to_b": {
-            "multiplicity": column["to_universe_multiplicity"],
-            "match_existence": column["to_universe_existence"],
-        },
-        "b_to_a": {
-            "multiplicity": column["from_universe_multiplicity"],
-            "match_existence": column["from_universe_existence"],
-        },
-    }
-
-
-def _composite_edges(domain: dict) -> list[dict]:
-    by_name = {dataset["name"]: dataset for dataset in domain["datasets"]}
-    edges = []
-    for item in domain.get("composite_identities", []):
-        for pair in item["links"]:
-            endpoints = []
-            for name in (pair["a"], pair["b"]):
-                dataset = by_name[name]
-                endpoints.append(
-                    {
-                        "node_id": f"sf:{domain['root']}.{dataset['subject']}.{name}",
-                        "identity_id": item["identity"],
-                        "dataset_columns": list(item["members"][name]),
-                    }
-                )
-            edges.append(
-                {
-                    "endpoint_a": endpoints[0],
-                    "endpoint_b": endpoints[1],
-                    "a_to_b": {
-                        "multiplicity": pair["a_to_b"][0],
-                        "match_existence": pair["a_to_b"][1],
-                    },
-                    "b_to_a": {
-                        "multiplicity": pair["b_to_a"][0],
-                        "match_existence": pair["b_to_a"][1],
-                    },
-                }
-            )
-    return edges
-
-
 def _business_markdown(domain: dict, edges: list[dict]) -> str:
     by_subject: dict[str, list[dict]] = defaultdict(list)
     for dataset in domain["datasets"]:
@@ -338,8 +177,7 @@ def _business_markdown(domain: dict, edges: list[dict]) -> str:
             + (
                 "Synthetic row counts and join fan-out for a "
                 f"{domain['statistics_window_days']}-day window are in `statistics.md`. "
-                "They are derived from authored populations and these multiplicity rules. "
-                "The YAML nodes do not carry those statistics."
+                "They are derived from authored populations and these multiplicity rules."
                 if domain.get("statistics_window_days")
                 else "Row counts, distinct counts, and other data statistics are intentionally absent."
             )
@@ -416,49 +254,6 @@ def _business_markdown(domain: dict, edges: list[dict]) -> str:
 def emit(domain: dict) -> dict:
     checked = _validate(domain)
     target = ROOT / domain["key"]
-    yaml_dir = target / "yaml"
-    if yaml_dir.exists():
-        for stale in yaml_dir.glob("*.yaml"):
-            stale.unlink()
-    yaml_dir.mkdir(parents=True, exist_ok=True)
-
-    synonyms = domain.get("identity_synonyms", {})
-    identities = {}
-    for identity, (dataset_name, _column) in sorted(checked["universe"].items()):
-        dataset = next(item for item in domain["datasets"] if item["name"] == dataset_name)
-        payload = {
-            "name": _identity_label(identity),
-            "description": (
-                f"Identifies a {dataset['display_name'].lower()} in the "
-                f"{domain['business_name']} data ecosystem."
-            ),
-        }
-        if identity in synonyms:
-            payload["synonyms"] = synonyms[identity]
-        identities[identity] = payload
-    for item in domain.get("composite_identities", []):
-        identities[item["identity"]] = {"name": item["name"], "description": item["description"]}
-    identities = dict(sorted(identities.items()))
-    (yaml_dir / "00_logical_identities.yaml").write_text(
-        _dump({"schema_version": "2", "logical_identities": identities}),
-        encoding="utf-8",
-    )
-
-    by_subject: dict[str, list[dict]] = defaultdict(list)
-    for dataset in domain["datasets"]:
-        by_subject[dataset["subject"]].append(dataset)
-    for subject in sorted(by_subject):
-        document = {
-            "schema_version": "2",
-            "nodes": [_node(domain, dataset) for dataset in by_subject[subject]],
-        }
-        (yaml_dir / f"{subject}.yaml").write_text(_dump(document), encoding="utf-8")
-
-    edge_document = {
-        "schema_version": "2",
-        "edges": [_edge(domain, edge) for edge in checked["edges"]] + _composite_edges(domain),
-    }
-    (yaml_dir / "99_relationships.yaml").write_text(_dump(edge_document), encoding="utf-8")
     (target / "business-model.md").write_text(
         _business_markdown(domain, checked["edges"]),
         encoding="utf-8",
@@ -481,7 +276,7 @@ def emit(domain: dict) -> dict:
                 "",
                 domain["readme_intro"].strip(),
                 "",
-                "The business narrative and the full relationship table are in `business-model.md`. Loadable YAML is in `yaml/`.",
+                "The business narrative and the full relationship table are in `business-model.md`.",
                 "",
                 "## BI questions",
                 "",
@@ -495,9 +290,9 @@ def emit(domain: dict) -> dict:
     return {
         "key": domain["key"],
         "datasets": len(domain["datasets"]),
-        "edges": len(checked["edges"]) + len(_composite_edges(domain)),
+        "edges": len(checked["edges"])
+        + sum(len(item["links"]) for item in domain.get("composite_identities", [])),
         "identities": len(checked["universe"]) + len(domain.get("composite_identities", [])),
-        "yaml_dir": str(yaml_dir),
     }
 
 

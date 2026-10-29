@@ -8,7 +8,7 @@ Buyers are accounts with one or more users. Commercial documents are the cart, q
 
 Each grain column is the complete population of its logical identity (`is_entity_universe: true`). A foreign key elsewhere is the same identity with `is_entity_universe: false`. The questions below use only those authored identities, grains, and joins. Each question has one universe dataset per identity and one column set on each join, so the datasets and the relationship path are fixed by the metadata. Quantity, price, and amount columns are attributes of a single fact row. The catalog does not store row counts or distributions.
 
-The business narrative and the full relationship table are in `business-model.md`. Loadable YAML is in `yaml/`.
+The business narrative and the full relationship table are in `business-model.md`.
 
 ## BI questions
 

@@ -6,7 +6,7 @@ Northline Mobile operates a national mobile network. The catalog `telecom-mobile
 
 A subscription belongs to a subscriber and a billing account. Packet, voice, message, and content usage land as separate CDR facts. Online charging events, reservations, and debits are finer than a closed CDR. TAP-out and TAP-in hold roaming interchange. Cell counters are one row per cell per 15-minute interval. The questions below use the authored identities and joins. Synthetic row counts and fan-out for a 30-day window are listed with the major fact tables.
 
-The business narrative and the full relationship table are in `business-model.md`. Loadable YAML is in `yaml/`.
+The business narrative and the full relationship table are in `business-model.md`.
 
 ## BI questions
 
