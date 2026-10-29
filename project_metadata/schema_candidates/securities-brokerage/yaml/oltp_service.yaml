@@ -1,0 +1,212 @@
+schema_version: '4'
+nodes:
+- node_id: sql-database:securities-brokerage.service.digital_session
+  descriptor:
+    qualified_name: securities-brokerage.service.digital_session
+    display_name: Digital session
+    description: Customer web and mobile sessions.
+    synonyms:
+    - login
+    tags:
+    - operational
+    - service
+    - fact
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: oltp.halyard.internal
+      database: brokerage
+      dialect: postgresql
+      schema: service
+      object: digital_session
+  grain:
+    description: One row per digital session.
+    components:
+    - identity_id: session_identity
+      dataset_columns:
+      - session_id
+  columns:
+  - name: session_id
+    description: Session identifier.
+  - name: c_id
+    description: Customer.
+  - name: device_type
+    description: Device.
+    value_description: WEB, IOS, ANDROID
+  - name: started_ts
+    description: Login timestamp.
+  - name: ended_ts
+    description: Logout or timeout timestamp.
+  - name: orders_placed
+    description: Orders placed in the session.
+  entity_definitions:
+  - identity_id: session_identity
+    dataset_columns:
+    - session_id
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[session_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: customer_identity
+    dataset_columns:
+    - c_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[c_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+- node_id: sql-database:securities-brokerage.service.service_interaction
+  descriptor:
+    qualified_name: securities-brokerage.service.service_interaction
+    display_name: Service interaction
+    description: Customer service contacts.
+    synonyms:
+    - call
+    - contact
+    tags:
+    - operational
+    - service
+    - fact
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: oltp.halyard.internal
+      database: brokerage
+      dialect: postgresql
+      schema: service
+      object: service_interaction
+  grain:
+    description: One row per service interaction.
+    components:
+    - identity_id: interaction_identity
+      dataset_columns:
+      - interaction_id
+  columns:
+  - name: interaction_id
+  - name: c_id
+    description: Customer.
+  - name: employee_id
+    description: Handling employee.
+    value_description: null for chatbot contacts
+  - name: channel
+    description: Channel.
+    value_description: PHONE, CHAT, EMAIL, BRANCH
+  - name: contact_ts
+    description: Contact timestamp.
+  - name: reason_code
+    description: Reason.
+    value_description: PASSWORD, TRANSFER, TRADE_QUESTION, TAX_FORM, COMPLAINT
+  - name: complaint_id
+    description: Complaint logged from the contact.
+    value_description: null when none was logged
+  entity_definitions:
+  - identity_id: interaction_identity
+    dataset_columns:
+    - interaction_id
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[interaction_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: customer_identity
+    dataset_columns:
+    - c_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[c_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: employee_identity
+    dataset_columns:
+    - employee_id
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[employee_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: complaint_identity
+    dataset_columns:
+    - complaint_id
+    entity_universe: partial
+    unique: true
+    total: false
+    conforms: true
+    entity_expression:
+    - '[complaint_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+- node_id: sql-database:securities-brokerage.service.statement
+  descriptor:
+    qualified_name: securities-brokerage.service.statement
+    display_name: Account statement
+    description: Periodic account statements and delivery status.
+    synonyms: []
+    tags:
+    - operational
+    - service
+    - fact
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: oltp.halyard.internal
+      database: brokerage
+      dialect: postgresql
+      schema: service
+      object: statement
+  grain:
+    description: One row per account statement.
+    components:
+    - identity_id: statement_identity
+      dataset_columns:
+      - statement_id
+  columns:
+  - name: statement_id
+    description: Statement identifier.
+  - name: ca_id
+    description: Account.
+  - name: period_end_date
+    description: Statement period end.
+  - name: delivery_channel
+    description: Delivery channel.
+    value_description: EDELIVERY or PAPER
+  - name: delivered_ts
+    description: Delivery timestamp.
+  entity_definitions:
+  - identity_id: statement_identity
+    dataset_columns:
+    - statement_id
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[statement_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: account_identity
+    dataset_columns:
+    - ca_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[ca_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference

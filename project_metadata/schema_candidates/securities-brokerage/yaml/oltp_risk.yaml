@@ -1,0 +1,185 @@
+schema_version: '4'
+nodes:
+- node_id: sql-database:securities-brokerage.risk.account_risk_daily
+  descriptor:
+    qualified_name: securities-brokerage.risk.account_risk_daily
+    display_name: Account risk daily
+    description: End-of-day margin and risk measures per margin account.
+    synonyms: []
+    tags:
+    - operational
+    - risk
+    - fact
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: oltp.halyard.internal
+      database: brokerage
+      dialect: postgresql
+      schema: risk
+      object: account_risk_daily
+  grain:
+    description: One row per margin account per business date.
+    components:
+    - dataset_columns:
+      - as_of_date
+      - ca_id
+  columns:
+  - name: ca_id
+    description: Account.
+  - name: as_of_date
+    description: Business date.
+  - name: equity
+    description: Account equity.
+    value_description: USD
+  - name: debit_balance
+    description: Margin debit balance.
+  - name: sma
+    description: Special memorandum account balance.
+    value_description: USD
+  - name: maint_excess
+    description: Equity above the maintenance requirement.
+    value_description: USD; negative means a call
+  - name: var_1d_99
+    description: One-day 99 percent value at risk.
+    value_description: USD
+  - name: top_s_symb
+    description: Largest position by market value.
+  entity_definitions:
+  - identity_id: account_identity
+    dataset_columns:
+    - ca_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[ca_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: security_identity
+    dataset_columns:
+    - top_s_symb
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[top_s_symb]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+- node_id: sql-database:securities-brokerage.risk.margin_account
+  descriptor:
+    qualified_name: securities-brokerage.risk.margin_account
+    display_name: Margin account
+    description: Margin agreement terms for accounts approved for margin.
+    synonyms: []
+    tags:
+    - operational
+    - risk
+    - master
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: oltp.halyard.internal
+      database: brokerage
+      dialect: postgresql
+      schema: risk
+      object: margin_account
+  grain:
+    description: One row per margin account.
+    components:
+    - identity_id: account_identity
+      dataset_columns:
+      - ca_id
+  columns:
+  - name: ca_id
+  - name: agreement_date
+    description: Margin agreement signing date.
+  - name: house_maint_pct
+    description: House maintenance requirement.
+    value_description: percent of long market value, at least 25
+  - name: options_level
+    description: Options approval level.
+    value_description: 0 none to 4 uncovered
+  - name: pattern_day_trader
+    description: Whether the account is flagged as a pattern day trader.
+  entity_definitions:
+  - identity_id: account_identity
+    dataset_columns:
+    - ca_id
+    entity_universe: partial
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[ca_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+- node_id: sql-database:securities-brokerage.risk.margin_call
+  descriptor:
+    qualified_name: securities-brokerage.risk.margin_call
+    display_name: Margin call
+    description: Margin calls issued to accounts.
+    synonyms: []
+    tags:
+    - operational
+    - risk
+    - fact
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: oltp.halyard.internal
+      database: brokerage
+      dialect: postgresql
+      schema: risk
+      object: margin_call
+  grain:
+    description: One row per margin call.
+    components:
+    - identity_id: margin_call_identity
+      dataset_columns:
+      - call_id
+  columns:
+  - name: call_id
+    description: Margin call identifier.
+  - name: ca_id
+    description: Account called.
+  - name: call_type
+    description: Call type.
+    value_description: REGT Regulation T, MAINT maintenance, HOUSE house, DAY_TRADE day trading
+  - name: issued_date
+    description: Issue date.
+  - name: due_date
+    description: Due date.
+  - name: call_amount
+    description: Amount due.
+    value_description: USD
+  - name: status
+    description: Call status.
+    value_description: OPEN, MET, LIQUIDATED, EXTENDED
+  - name: met_date
+    description: Date the call was met.
+  entity_definitions:
+  - identity_id: margin_call_identity
+    dataset_columns:
+    - call_id
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[call_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: account_identity
+    dataset_columns:
+    - ca_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[ca_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference

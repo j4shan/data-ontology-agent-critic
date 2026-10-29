@@ -1,0 +1,282 @@
+schema_version: '4'
+nodes:
+- node_id: sql-database:securities-brokerage.cashier.acats_asset
+  descriptor:
+    qualified_name: securities-brokerage.cashier.acats_asset
+    display_name: ACATS asset
+    description: Securities and cash lines of each ACATS transfer.
+    synonyms: []
+    tags:
+    - operational
+    - cashier
+    - fact
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: oltp.halyard.internal
+      database: brokerage
+      dialect: postgresql
+      schema: cashier
+      object: acats_asset
+  grain:
+    description: One row per transfer asset line.
+    components:
+    - dataset_columns:
+      - acats_id
+      - line_no
+  columns:
+  - name: acats_id
+    description: ACATS transfer.
+  - name: line_no
+    description: Asset line.
+  - name: s_symb
+    description: Security transferred.
+    value_description: null for cash lines
+  - name: qty
+    description: Shares transferred.
+  - name: cash_amount
+    value_description: USD
+  entity_definitions:
+  - identity_id: acats_transfer_identity
+    dataset_columns:
+    - acats_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[acats_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: security_identity
+    dataset_columns:
+    - s_symb
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: unknown
+    entity_expression:
+    - '[s_symb]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+    description: Securities from other firms may not be listed on a supported exchange.
+- node_id: sql-database:securities-brokerage.cashier.acats_transfer
+  descriptor:
+    qualified_name: securities-brokerage.cashier.acats_transfer
+    display_name: ACATS transfer
+    description: Full and partial account transfers with other firms.
+    synonyms:
+    - account transfer
+    tags:
+    - operational
+    - cashier
+    - fact
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: oltp.halyard.internal
+      database: brokerage
+      dialect: postgresql
+      schema: cashier
+      object: acats_transfer
+  grain:
+    description: One row per acats transfer.
+    components:
+    - identity_id: acats_transfer_identity
+      dataset_columns:
+      - acats_id
+  columns:
+  - name: acats_id
+    description: ACATS control number.
+  - name: ca_id
+    description: Account at this firm.
+  - name: direction
+    description: Direction.
+    value_description: IN transfer to this firm, OUT transfer away
+  - name: contra_dtc_number
+    description: DTC participant number of the other firm.
+  - name: transfer_type
+    description: Transfer type.
+    value_description: FULL or PARTIAL
+  - name: requested_date
+    description: Request date.
+  - name: completed_date
+    description: Completion date.
+    value_description: null while open
+  - name: status
+    description: Status.
+    value_description: REQUEST, REVIEW, SETTLE_PREP, SETTLED, REJECTED
+  entity_definitions:
+  - identity_id: acats_transfer_identity
+    dataset_columns:
+    - acats_id
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[acats_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: account_identity
+    dataset_columns:
+    - ca_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[ca_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+- node_id: sql-database:securities-brokerage.cashier.bank_link
+  descriptor:
+    qualified_name: securities-brokerage.cashier.bank_link
+    display_name: Bank link
+    description: External bank accounts linked by customers.
+    synonyms: []
+    tags:
+    - operational
+    - cashier
+    - master
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: oltp.halyard.internal
+      database: brokerage
+      dialect: postgresql
+      schema: cashier
+      object: bank_link
+  grain:
+    description: One row per bank link.
+    components:
+    - identity_id: bank_link_identity
+      dataset_columns:
+      - bank_link_id
+  columns:
+  - name: bank_link_id
+    description: Bank link identifier.
+  - name: c_id
+    description: Customer.
+  - name: routing_number
+    description: ABA routing number.
+  - name: account_last4
+    description: Last four digits of the bank account.
+  - name: bank_account_type
+    description: Bank account type.
+    value_description: CHECKING or SAVINGS
+  - name: verified_ts
+    description: Verification timestamp.
+    value_description: null until verified
+  - name: link_status
+    description: Link status.
+    value_description: PENDING, ACTIVE, REMOVED
+  entity_definitions:
+  - identity_id: bank_link_identity
+    dataset_columns:
+    - bank_link_id
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[bank_link_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: customer_identity
+    dataset_columns:
+    - c_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[c_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+- node_id: sql-database:securities-brokerage.cashier.funding_transfer
+  descriptor:
+    qualified_name: securities-brokerage.cashier.funding_transfer
+    display_name: Funding transfer
+    description: Deposits and withdrawals between accounts and banks.
+    synonyms:
+    - deposit
+    - withdrawal
+    - money movement
+    tags:
+    - operational
+    - cashier
+    - fact
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: oltp.halyard.internal
+      database: brokerage
+      dialect: postgresql
+      schema: cashier
+      object: funding_transfer
+  grain:
+    description: One row per funding transfer.
+    components:
+    - identity_id: transfer_identity
+      dataset_columns:
+      - transfer_id
+  columns:
+  - name: transfer_id
+    description: Transfer identifier.
+  - name: ca_id
+    description: Brokerage account.
+  - name: bank_link_id
+    description: Bank link used.
+    value_description: null for checks and incoming wires
+  - name: direction
+    description: Direction.
+    value_description: IN deposit, OUT withdrawal
+  - name: method
+    description: Method.
+    value_description: ACH, WIRE, CHECK, JOURNAL
+  - name: amount
+    description: Amount.
+    value_description: USD
+  - name: initiated_ts
+    description: Initiation timestamp.
+  - name: settled_ts
+    description: Settlement timestamp.
+    value_description: null while pending
+  - name: status
+    description: Transfer status.
+    value_description: PENDING, SETTLED, RETURNED, CANCELED
+  entity_definitions:
+  - identity_id: transfer_identity
+    dataset_columns:
+    - transfer_id
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[transfer_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: account_identity
+    dataset_columns:
+    - ca_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[ca_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: bank_link_identity
+    dataset_columns:
+    - bank_link_id
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[bank_link_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference

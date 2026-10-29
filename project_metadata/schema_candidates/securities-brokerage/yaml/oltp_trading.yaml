@@ -1,0 +1,572 @@
+schema_version: '4'
+nodes:
+- node_id: sql-database:securities-brokerage.trading.cash_transaction
+  descriptor:
+    qualified_name: securities-brokerage.trading.cash_transaction
+    display_name: Cash transaction
+    description: Cash ledger entries for completed cash trades.
+    synonyms:
+    - cash ledger
+    tags:
+    - operational
+    - trading
+    - fact
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: oltp.halyard.internal
+      database: brokerage
+      dialect: postgresql
+      schema: trading
+      object: cash_transaction
+  grain:
+    description: One row per cash transaction.
+    components:
+    - identity_id: trade_identity
+      dataset_columns:
+      - ct_t_id
+  columns:
+  - name: ct_t_id
+    description: Trade that created the entry.
+  - name: ct_dts
+    description: Entry timestamp.
+  - name: ct_amt
+    description: Amount.
+    value_description: USD
+  - name: ct_name
+    description: Entry description.
+  entity_definitions:
+  - identity_id: trade_identity
+    dataset_columns:
+    - ct_t_id
+    entity_universe: partial
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[ct_t_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+- node_id: sql-database:securities-brokerage.trading.holding
+  descriptor:
+    qualified_name: securities-brokerage.trading.holding
+    display_name: Holding
+    description: Open tax lots, one per opening trade.
+    synonyms:
+    - tax lot
+    - lot
+    tags:
+    - operational
+    - trading
+    - fact
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: oltp.halyard.internal
+      database: brokerage
+      dialect: postgresql
+      schema: trading
+      object: holding
+  grain:
+    description: One row per holding.
+    components:
+    - identity_id: trade_identity
+      dataset_columns:
+      - h_t_id
+  columns:
+  - name: h_t_id
+    description: Trade that opened the lot.
+  - name: h_ca_id
+    description: Account.
+  - name: h_s_symb
+    description: Security.
+  - name: h_dts
+    description: Lot open timestamp.
+  - name: h_price
+    description: Lot cost per share.
+    value_description: USD
+  - name: h_qty
+    description: Remaining shares.
+    value_description: negative for a short lot
+  entity_definitions:
+  - identity_id: trade_identity
+    dataset_columns:
+    - h_t_id
+    entity_universe: partial
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[h_t_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+    description: The trade that opened the lot.
+  - identity_id: account_identity
+    dataset_columns:
+    - h_ca_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[h_ca_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: security_identity
+    dataset_columns:
+    - h_s_symb
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[h_s_symb]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: position_identity
+    dataset_columns:
+    - h_ca_id
+    - h_s_symb
+    entity_universe: complete
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[h_ca_id, h_s_symb]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+    description: The account position the lot belongs to.
+- node_id: sql-database:securities-brokerage.trading.holding_history
+  descriptor:
+    qualified_name: securities-brokerage.trading.holding_history
+    display_name: Holding history
+    description: Changes to tax lots caused by later trades.
+    synonyms: []
+    tags:
+    - operational
+    - trading
+    - fact
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: oltp.halyard.internal
+      database: brokerage
+      dialect: postgresql
+      schema: trading
+      object: holding_history
+  grain:
+    components:
+    - dataset_columns:
+      - hh_h_t_id
+      - hh_t_id
+  columns:
+  - name: hh_h_t_id
+    description: Trade that opened the lot.
+  - name: hh_t_id
+    description: Trade that changed the lot.
+  - name: hh_before_qty
+    description: Lot quantity before the change.
+  - name: hh_after_qty
+    description: Lot quantity after the change.
+  entity_definitions:
+  - identity_id: trade_identity
+    dataset_columns:
+    - hh_h_t_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[hh_h_t_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+    description: The trade that opened the lot.
+  - identity_id: trade_identity
+    dataset_columns:
+    - hh_t_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[hh_t_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+    description: The trade that changed the lot.
+- node_id: sql-database:securities-brokerage.trading.holding_summary
+  descriptor:
+    qualified_name: securities-brokerage.trading.holding_summary
+    display_name: Holding summary
+    description: Net position per account and security.
+    synonyms:
+    - position
+    tags:
+    - operational
+    - trading
+    - fact
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: oltp.halyard.internal
+      database: brokerage
+      dialect: postgresql
+      schema: trading
+      object: holding_summary
+  grain:
+    description: One row per holding summary.
+    components:
+    - identity_id: position_identity
+      dataset_columns:
+      - hs_ca_id
+      - hs_s_symb
+  columns:
+  - name: hs_ca_id
+    description: Account.
+  - name: hs_s_symb
+    description: Security.
+  - name: hs_qty
+    description: Net shares held.
+  entity_definitions:
+  - identity_id: position_identity
+    dataset_columns:
+    - hs_ca_id
+    - hs_s_symb
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[hs_ca_id, hs_s_symb]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+    description: The account position.
+  - identity_id: account_identity
+    dataset_columns:
+    - hs_ca_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[hs_ca_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: security_identity
+    dataset_columns:
+    - hs_s_symb
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[hs_s_symb]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+- node_id: sql-database:securities-brokerage.trading.settlement
+  descriptor:
+    qualified_name: securities-brokerage.trading.settlement
+    display_name: Settlement
+    description: Cash settlement of completed trades.
+    synonyms: []
+    tags:
+    - operational
+    - trading
+    - fact
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: oltp.halyard.internal
+      database: brokerage
+      dialect: postgresql
+      schema: trading
+      object: settlement
+  grain:
+    description: One row per settlement.
+    components:
+    - identity_id: trade_identity
+      dataset_columns:
+      - se_t_id
+  columns:
+  - name: se_t_id
+    description: Settled trade.
+  - name: se_cash_type
+    description: Settlement type.
+    value_description: Cash Account or Margin
+  - name: se_cash_due_date
+    description: Settlement due date.
+    value_description: trade date plus one business day under T+1
+  - name: se_amt
+    description: Settlement amount.
+    value_description: USD; positive is a credit to the account
+  entity_definitions:
+  - identity_id: trade_identity
+    dataset_columns:
+    - se_t_id
+    entity_universe: partial
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[se_t_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+- node_id: sql-database:securities-brokerage.trading.trade
+  descriptor:
+    qualified_name: securities-brokerage.trading.trade
+    display_name: Trade
+    description: Customer trades with type, price, fees, and status.
+    synonyms:
+    - order
+    - ticket
+    tags:
+    - operational
+    - trading
+    - fact
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: oltp.halyard.internal
+      database: brokerage
+      dialect: postgresql
+      schema: trading
+      object: trade
+  grain:
+    description: One row per trade.
+    components:
+    - identity_id: trade_identity
+      dataset_columns:
+      - t_id
+  columns:
+  - name: t_id
+    description: Trade identifier.
+  - name: t_dts
+    description: Timestamp of the latest status change.
+  - name: t_st_id
+    value_description: SBMT submitted, PNDG pending limit, CMPT completed, CNCL canceled
+  - name: t_tt_id
+    description: Trade type.
+  - name: t_is_cash
+    description: Whether the trade is a cash trade.
+    value_description: 1 cash, 0 margin
+  - name: t_s_symb
+    description: Traded security.
+  - name: t_qty
+    description: Shares traded.
+  - name: t_bid_price
+    description: Requested price.
+    value_description: USD per share
+  - name: t_ca_id
+    description: Account that placed the trade.
+  - name: t_exec_name
+    description: Name of the person who executed the trade.
+  - name: t_trade_price
+    description: Execution price.
+    value_description: USD per share; null until completed
+  - name: t_chrg
+    description: Flat charge.
+    value_description: USD
+  - name: t_comm
+    description: Commission.
+    value_description: USD
+  - name: t_tax
+    description: Tax withheld.
+    value_description: USD
+  - name: t_lifo
+    description: Whether holdings are relieved last-in first-out.
+    value_description: 1 LIFO, 0 FIFO
+  entity_definitions:
+  - identity_id: trade_identity
+    dataset_columns:
+    - t_id
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[t_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: status_type_identity
+    dataset_columns:
+    - t_st_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[t_st_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: trade_type_identity
+    dataset_columns:
+    - t_tt_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[t_tt_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: security_identity
+    dataset_columns:
+    - t_s_symb
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[t_s_symb]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: account_identity
+    dataset_columns:
+    - t_ca_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[t_ca_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+- node_id: sql-database:securities-brokerage.trading.trade_history
+  descriptor:
+    qualified_name: securities-brokerage.trading.trade_history
+    display_name: Trade history
+    description: Status history of each trade.
+    synonyms: []
+    tags:
+    - operational
+    - trading
+    - fact
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: oltp.halyard.internal
+      database: brokerage
+      dialect: postgresql
+      schema: trading
+      object: trade_history
+  grain:
+    description: One row per trade and status entered.
+    components:
+    - dataset_columns:
+      - th_st_id
+      - th_t_id
+  columns:
+  - name: th_t_id
+    description: Trade.
+  - name: th_dts
+    description: Timestamp of the status change.
+  - name: th_st_id
+    description: Status entered.
+  entity_definitions:
+  - identity_id: trade_identity
+    dataset_columns:
+    - th_t_id
+    entity_universe: complete
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[th_t_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: status_type_identity
+    dataset_columns:
+    - th_st_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[th_st_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+- node_id: sql-database:securities-brokerage.trading.trade_request
+  descriptor:
+    qualified_name: securities-brokerage.trading.trade_request
+    display_name: Trade request
+    description: Pending limit and stop orders waiting for a trigger price.
+    synonyms:
+    - pending order
+    - limit book
+    tags:
+    - operational
+    - trading
+    - fact
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: oltp.halyard.internal
+      database: brokerage
+      dialect: postgresql
+      schema: trading
+      object: trade_request
+  grain:
+    description: One row per trade request.
+    components:
+    - identity_id: trade_identity
+      dataset_columns:
+      - tr_t_id
+  columns:
+  - name: tr_t_id
+    description: Pending trade.
+  - name: tr_tt_id
+    description: Trade type.
+  - name: tr_s_symb
+    description: Security.
+  - name: tr_qty
+    description: Shares requested.
+  - name: tr_bid_price
+    description: Trigger price.
+    value_description: USD per share
+  - name: tr_b_id
+    description: Broker handling the request.
+  entity_definitions:
+  - identity_id: trade_identity
+    dataset_columns:
+    - tr_t_id
+    entity_universe: partial
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[tr_t_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+    description: The pending trade waiting for its trigger.
+  - identity_id: trade_type_identity
+    dataset_columns:
+    - tr_tt_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[tr_tt_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: security_identity
+    dataset_columns:
+    - tr_s_symb
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[tr_s_symb]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: broker_identity
+    dataset_columns:
+    - tr_b_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[tr_b_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
