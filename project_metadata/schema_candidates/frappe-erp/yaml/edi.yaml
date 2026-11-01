@@ -1,0 +1,244 @@
+schema_version: '4'
+nodes:
+- node_id: sql-database:frappe-erp.edi.code_list
+  descriptor:
+    qualified_name: frappe-erp.edi.code_list
+    display_name: Code List
+    description: A published list of codes, like units or tax categories, used in e-invoicing.
+    synonyms:
+    - tabCode List
+    tags:
+    - edi
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: edi
+      object: tabCode List
+  grain:
+    description: One row per Code List document.
+    components:
+    - identity_id: code_list_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: title
+    description: Title
+    value_description: Data
+  - name: canonical_uri
+    description: Canonical URI
+    value_description: Data
+  - name: url
+    description: URL
+    value_description: Data
+  - name: default_common_code
+    description: Default Common Code. This value shall be used when no matching Common Code for a record
+      is found.
+    value_description: Link
+  - name: version
+    description: Version
+    value_description: Data
+  - name: publisher
+    value_description: Data
+  - name: publisher_id
+    description: Publisher ID
+    value_description: Data
+  - name: description
+    description: Description
+    value_description: Small Text
+  - name: name
+    description: Primary key of the Code List document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+  entity_definitions:
+  - identity_id: common_code_identity
+    dataset_columns:
+    - default_common_code
+    entity_universe: partial
+    unique: unknown
+    total: false
+    conforms: true
+    entity_expression:
+    - '[default_common_code]'
+    description: Reference to a Common Code document.
+  - identity_id: code_list_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Code List.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.edi.common_code
+  descriptor:
+    qualified_name: frappe-erp.edi.common_code
+    display_name: Common Code
+    description: A code from a code list and what it maps to.
+    synonyms:
+    - tabCommon Code
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: edi
+      object: tabCommon Code
+  grain:
+    components:
+    - identity_id: common_code_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: code_list
+    description: Code List
+    value_description: Link
+  - name: canonical_uri
+    description: Canonical URI
+  - name: title
+    value_description: Data
+  - name: common_code
+    description: Common Code
+    value_description: Data
+  - name: description
+    description: Description
+    value_description: Small Text
+  - name: additional_data
+    description: Additional Data
+    value_description: Code
+  - name: name
+    description: Primary key of the Common Code document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+  entity_definitions:
+  - identity_id: code_list_identity
+    dataset_columns:
+    - code_list
+    entity_universe: unknown
+    unique: false
+    total: true
+    conforms: unknown
+    entity_expression:
+    - '[code_list]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Code List document.
+  - identity_id: common_code_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: unknown
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Common Code.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.

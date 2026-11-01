@@ -1,0 +1,6434 @@
+schema_version: '4'
+nodes:
+- node_id: sql-database:frappe-erp.setup.authorization_rule
+  descriptor:
+    qualified_name: frappe-erp.setup.authorization_rule
+    display_name: Authorization Rule
+    description: Requires approval for transactions above a limit.
+    tags:
+    - setup
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: setup
+      object: tabAuthorization Rule
+  grain:
+    description: One row per Authorization Rule document.
+    components:
+    - identity_id: authorization_rule_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: transaction
+    description: Transaction
+    value_description: Sales Order, Purchase Order, Quotation, Delivery Note, Sales Invoice, Purchase
+      Invoice, Purchase Receipt
+  - name: based_on
+    description: Based On
+    value_description: Grand Total, Average Discount, Customerwise Discount, Itemwise Discount, Item Group
+      wise Discount, Not Applicable
+  - name: customer_or_item
+    description: Customer or Item
+    value_description: Customer, Item, Item Group
+  - name: master_name
+    description: Customer / Item / Item Group
+    value_description: Dynamic Link
+  - name: company
+    description: Company
+  - name: value
+    description: Authorized Value
+    value_description: Float
+  - name: system_role
+    value_description: Link
+  - name: to_emp
+    description: Applicable To (Employee)
+    value_description: Link
+  - name: system_user
+    description: Applicable To (User)
+    value_description: Link
+  - name: to_designation
+    description: Applicable To (Designation)
+    value_description: Link
+  - name: approving_role
+    description: Approving Role (above authorized value)
+    value_description: Link
+  - name: approving_user
+    value_description: Link
+  - name: name
+    description: Primary key of the Authorization Rule document.
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+  entity_definitions:
+  - identity_id: company_identity
+    dataset_columns:
+    - company
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[company]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Company document.
+  - identity_id: role_identity
+    dataset_columns:
+    - system_role
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[system_role]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Role document.
+  - identity_id: employee_identity
+    dataset_columns:
+    - to_emp
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[to_emp]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Employee document.
+  - identity_id: user_identity
+    dataset_columns:
+    - system_user
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[system_user]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+  - identity_id: designation_identity
+    dataset_columns:
+    - to_designation
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[to_designation]'
+    description: Reference to a Designation document.
+  - identity_id: role_identity
+    dataset_columns:
+    - approving_role
+    entity_universe: unknown
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[approving_role]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Role document.
+  - identity_id: user_identity
+    dataset_columns:
+    - approving_user
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[approving_user]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a User document.
+  - identity_id: authorization_rule_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Authorization Rule.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: unknown
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.setup.branch
+  descriptor:
+    qualified_name: frappe-erp.setup.branch
+    display_name: Branch
+    description: A branch of your company.
+    synonyms:
+    - tabBranch
+    tags:
+    - setup
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: setup
+      object: tabBranch
+  grain:
+    description: One row per Branch document.
+    components:
+    - identity_id: branch_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: branch
+    description: Branch
+    value_description: Data
+  - name: name
+    description: Primary key of the Branch document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: branch_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Branch.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.setup.brand
+  descriptor:
+    qualified_name: frappe-erp.setup.brand
+    display_name: Brand
+    description: A brand your items are sold under.
+    synonyms:
+    - tabBrand
+    tags:
+    - setup
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: setup
+      object: tabBrand
+  grain:
+    description: One row per Brand document.
+    components:
+    - identity_id: brand_identity
+      dataset_columns:
+      - name
+  columns:
+  - name: brand
+    description: Brand Name
+    value_description: Data
+  - name: image
+    description: Image
+    value_description: Attach Image
+  - name: description
+    description: Description
+    value_description: Text
+  - name: name
+    description: Primary key of the Brand document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: brand_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Brand.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.setup.company
+  descriptor:
+    qualified_name: frappe-erp.setup.company
+    display_name: Company
+    description: A legal entity with its own books, like your business or a subsidiary.
+    tags:
+    - setup
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: setup
+      object: tabCompany
+  grain:
+    description: One row per Company document.
+    components:
+    - identity_id: company_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: company_name
+    description: Company
+  - name: abbr
+    description: Abbr
+    value_description: Data
+  - name: default_currency
+    description: Default Currency
+    value_description: Link
+  - name: country
+    value_description: Link
+  - name: is_group
+    description: Is Group
+    value_description: Check
+  - name: default_holiday_list
+    description: Default Holiday List
+  - name: tax_id
+    description: Tax ID
+    value_description: Data
+  - name: domain
+    description: Domain
+    value_description: Data
+  - name: date_of_establishment
+    description: Date of Establishment
+    value_description: Date
+  - name: parent_company
+    description: Parent Company
+    value_description: Link
+  - name: reporting_currency
+    description: Reporting Currency
+    value_description: Link
+  - name: default_letter_head
+    description: Default Letter Head (DocType)
+  - name: default_letter_head_report
+    description: Default Letter Head (Report)
+  - name: company_logo
+    description: Company Logo
+  - name: date_of_incorporation
+    description: Date of Incorporation
+    value_description: Date
+  - name: phone_no
+    description: Phone No
+    value_description: Data
+  - name: email
+    description: Email
+    value_description: Data
+  - name: company_description
+    description: Company Description
+    value_description: Text Editor
+  - name: date_of_commencement
+    value_description: Date
+  - name: fax
+    description: Fax
+    value_description: Data
+  - name: website
+    description: Website
+    value_description: Data
+  - name: registration_details
+    description: Registration Details. Company registration numbers for your reference. Tax numbers etc.
+    value_description: Code
+  - name: lft
+    description: Lft
+    value_description: Int
+  - name: rgt
+    description: Rgt
+    value_description: Int
+  - name: old_parent
+    description: old_parent
+    value_description: Data
+  - name: create_chart_of_accounts_based_on
+    description: Create Chart Of Accounts Based On
+  - name: existing_company
+    description: Existing Company
+    value_description: Link
+  - name: chart_of_accounts
+    description: Chart Of Accounts Template
+    value_description: Select
+  - name: default_bank_account
+    description: Default Bank Account
+    value_description: Link
+  - name: default_cash_account
+    description: Default Cash Account
+  - name: default_receivable_account
+    description: Default Receivable Account
+    value_description: Link
+  - name: default_payable_account
+    description: Default Payable Account
+    value_description: Link
+  - name: write_off_account
+    description: Write Off Account
+    value_description: Link
+  - name: bank_charges_account
+    description: Bank Charges Account
+    value_description: Link
+  - name: unrealized_profit_loss_account
+    description: Unrealized Profit / Loss Account
+    value_description: Link
+  - name: allow_account_creation_against_child_company
+    description: Allow Account Creation Against Child Company
+    value_description: Check
+  - name: default_expense_account
+    description: Default Cost of Goods Sold Account
+    value_description: Link
+  - name: default_income_account
+    description: Default Income Account
+    value_description: Link
+  - name: default_discount_account
+    description: Default Payment Discount Account
+    value_description: Link
+  - name: payment_terms
+    description: Default Payment Terms Template
+    value_description: Link
+  - name: cost_center
+    description: Default Cost Center
+    value_description: Link
+  - name: default_finance_book
+    description: Default Finance Book
+    value_description: Link
+  - name: exchange_gain_loss_account
+    description: Exchange Gain / Loss Account
+    value_description: Link
+  - name: exchange_gain_account
+    description: Exchange Gain Account
+    value_description: Link
+  - name: exchange_loss_account
+    description: Exchange Loss Account
+    value_description: Link
+  - name: unrealized_exchange_gain_loss_account
+    description: Unrealized Exchange Gain/Loss Account
+    value_description: Link
+  - name: round_off_account
+    description: Round Off Account
+    value_description: Link
+  - name: round_off_cost_center
+    description: Round Off Cost Center
+    value_description: Link
+  - name: round_off_for_opening
+    description: Round Off for Opening
+    value_description: Link
+  - name: default_deferred_revenue_account
+    description: Default Deferred Revenue Account
+    value_description: Link
+  - name: default_deferred_expense_account
+    description: Default Deferred Expense Account
+    value_description: Link
+  - name: book_advance_payments_in_separate_party_account
+    description: Book Advance Payments in Separate Party Account. Enabling this option will allow you
+      to record - 1. Advances Received in a Liability Account instead of the Asset Account 2. Advances
+      Paid in an Asset Account instead of the Liability Account
+    value_description: Check
+  - name: reconcile_on_advance_payment_date
+    description: 'Reconcile on Advance Payment Date. If Enabled - Reconciliation happens on the Advance
+      Payment posting date If Disabled - Reconciliation happens on oldest of 2 Dates: Invoice Date or
+      the Advance Payment posting date'
+    value_description: Check
+  - name: reconciliation_takes_effect_on
+    description: Reconciliation Takes Effect On
+    value_description: Advance Payment Date, Oldest Of Invoice Or Advance, Reconciliation Date
+  - name: default_advance_received_account
+    description: Default Advance Received Account. Only 'Payment Entries' made against this advance account
+      are supported.
+    value_description: Link
+  - name: default_advance_paid_account
+    description: Default Advance Paid Account. Only 'Payment Entries' made against this advance account
+      are supported.
+    value_description: Link
+  - name: auto_exchange_rate_revaluation
+    description: Auto Create Exchange Rate Revaluation
+    value_description: Check
+  - name: auto_err_frequency
+    value_description: Daily, Weekly, Monthly
+  - name: submit_err_jv
+    description: Submit ERR Journals?. Upon enabling this, the JV will be submitted for a different exchange
+      rate.
+  - name: exception_budget_approver_role
+    description: Exception Budget Approver Role
+    value_description: Link
+  - name: accumulated_depreciation_account
+    description: Accumulated Depreciation Account
+    value_description: Link
+  - name: depreciation_expense_account
+    value_description: Link
+  - name: series_for_depreciation_entry
+    description: Series for Asset Depreciation Entry (Journal Entry)
+    value_description: Data
+  - name: disposal_account
+    description: Gain/Loss Account on Asset Disposal
+    value_description: Link
+  - name: depreciation_cost_center
+    description: Asset Depreciation Cost Center
+    value_description: Link
+  - name: capital_work_in_progress_account
+    description: Capital Work In Progress Account
+    value_description: Link
+  - name: asset_received_but_not_billed
+    description: Asset Received But Not Billed
+    value_description: Link
+  - name: accounts_frozen_till_date
+  - name: role_allowed_for_frozen_entries
+    description: Roles Allowed to Set and Edit Frozen Account Entries
+    value_description: Link
+  - name: default_buying_terms
+    description: Default Buying Terms
+    value_description: Link
+  - name: sales_monthly_history
+    description: Sales Monthly History
+    value_description: Small Text
+  - name: monthly_sales_target
+    description: Monthly Sales Target
+    value_description: Currency
+  - name: total_monthly_sales
+    description: Total Monthly Sales
+  - name: default_selling_terms
+    description: Default Selling Terms
+    value_description: Link
+  - name: default_sales_contact
+    description: Default Sales Contact
+    value_description: Link
+  - name: credit_limit
+    description: Credit Limit
+    value_description: Currency
+  - name: transactions_annual_history
+    description: Transactions Annual History
+    value_description: Code
+  - name: purchase_expense_account
+    description: Purchase Expense Account
+  - name: service_expense_account
+    description: Service Expense Account. For service item
+    value_description: Link
+  - name: purchase_expense_contra_account
+    description: Purchase Expense Contra Account
+    value_description: Link
+  - name: expenses_added_to_stock_account
+    description: Expenses Added To Stock Account
+    value_description: Link
+  - name: expenses_added_to_stock_contra_account
+    description: Expenses Added To Stock Contra Account
+    value_description: Link
+  - name: enable_perpetual_inventory
+    description: Enable Perpetual Inventory
+    value_description: Check
+  - name: enable_item_wise_inventory_account
+    description: Enable Item-wise Inventory Account. If enabled, the system will use the inventory account
+      set in the Item Master or Item Group or Brand. Otherwise, it will use the inventory account set
+      in the Warehouse.
+    value_description: Check
+    synonyms:
+    - Enable Item-wise Inventory Account
+  - name: enable_provisional_accounting_for_non_stock_items
+    description: Enable Provisional Accounting For Non Stock Items
+    value_description: Check
+  - name: default_inventory_account
+    description: Default Inventory Account
+    value_description: Link
+  - name: valuation_method
+    description: Default Stock Valuation Method
+    value_description: FIFO, Moving Average, LIFO
+  - name: stock_adjustment_account
+    description: Stock Adjustment Account
+    value_description: Link
+  - name: default_purchase_price_variance_account
+    description: 'Default Purchase Price Variance Account. Used for items valued at Standard Cost: the
+      difference between the purchase price and the standard rate is booked here.'
+    value_description: Link
+  - name: default_manufacturing_variance_account
+    description: 'Default Manufacturing Variance Account. For Standard Cost items: the Manufacture/Repack
+      consumed cost vs standard rate difference is booked here.'
+  - name: stock_received_but_not_billed
+    value_description: Link
+  - name: enable_stock_delivered_but_not_billed
+    description: Enable Stock Delivered But Not Billed. If enabled, the value of goods delivered before
+      invoicing will be recorded in the Stock Delivered But Not Billed account.
+  - name: stock_delivered_but_not_billed
+    description: Stock Delivered But Not Billed
+    value_description: Link
+  - name: disable_sdbnb_in_sr
+    description: Disable Stock Delivered But Not Billed in Sales Return
+    value_description: Check
+  - name: default_provisional_account
+    description: Default Provisional Account
+    value_description: Link
+  - name: default_operating_cost_account
+    description: Default Operating Cost Account
+    value_description: Link
+  - name: default_warehouse
+    description: Default Warehouse
+    value_description: Link
+  - name: sample_retention_warehouse
+    description: Sample Retention Warehouse
+    value_description: Link
+  - name: default_in_transit_warehouse
+    description: Default In-Transit Warehouse
+    value_description: Link
+  - name: default_warehouse_for_sales_return
+    description: Default Warehouse for Sales Return
+    value_description: Link
+  - name: default_wip_warehouse
+    description: Default Work In Progress Warehouse
+    value_description: Link
+  - name: default_fg_warehouse
+    description: Default Finished Goods Warehouse
+    value_description: Link
+  - name: default_scrap_warehouse
+    description: Default Scrap Warehouse
+    value_description: Link
+  - name: name
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: currency_identity
+    dataset_columns:
+    - default_currency
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[default_currency]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Currency document.
+  - identity_id: country_identity
+    dataset_columns:
+    - country
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[country]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Country document.
+  - identity_id: holiday_list_identity
+    dataset_columns:
+    - default_holiday_list
+    entity_universe: unknown
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[default_holiday_list]'
+    description: Reference to a Holiday List document.
+  - identity_id: company_identity
+    dataset_columns:
+    - parent_company
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[parent_company]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Company document.
+  - identity_id: currency_identity
+    dataset_columns:
+    - reporting_currency
+    entity_universe: partial
+    unique: unknown
+    total: false
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Currency document.
+  - identity_id: letter_head_identity
+    dataset_columns:
+    - default_letter_head
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[default_letter_head]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Letter Head document.
+  - identity_id: letter_head_identity
+    dataset_columns:
+    - default_letter_head_report
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[default_letter_head_report]'
+    description: Reference to a Letter Head document.
+  - identity_id: company_identity
+    dataset_columns:
+    - existing_company
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[existing_company]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Company document.
+  - identity_id: account_identity
+    dataset_columns:
+    - default_bank_account
+    entity_universe: partial
+    unique: unknown
+    total: false
+    conforms: true
+    entity_expression:
+    - '[default_bank_account]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Account document.
+  - identity_id: account_identity
+    dataset_columns:
+    - default_cash_account
+    entity_universe: partial
+    unique: unknown
+    total: false
+    conforms: true
+    entity_expression:
+    - '[default_cash_account]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Account document.
+  - identity_id: account_identity
+    dataset_columns:
+    - default_receivable_account
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: unknown
+    entity_expression:
+    - '[default_receivable_account]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+  - identity_id: account_identity
+    dataset_columns:
+    - default_payable_account
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[default_payable_account]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Account document.
+  - identity_id: account_identity
+    dataset_columns:
+    - write_off_account
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[write_off_account]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Account document.
+  - identity_id: account_identity
+    dataset_columns:
+    - bank_charges_account
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[bank_charges_account]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Account document.
+  - identity_id: account_identity
+    dataset_columns:
+    - unrealized_profit_loss_account
+    entity_universe: unknown
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[unrealized_profit_loss_account]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+  - identity_id: account_identity
+    dataset_columns:
+    - default_expense_account
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[default_expense_account]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Account document.
+  - identity_id: account_identity
+    dataset_columns:
+    - default_income_account
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[default_income_account]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Account document.
+  - identity_id: account_identity
+    dataset_columns:
+    - default_discount_account
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: unknown
+    entity_expression:
+    - '[default_discount_account]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Account document.
+  - identity_id: payment_terms_template_identity
+    dataset_columns:
+    - payment_terms
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Payment Terms Template document.
+  - identity_id: cost_center_identity
+    dataset_columns:
+    - cost_center
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[cost_center]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Cost Center document.
+  - identity_id: finance_book_identity
+    dataset_columns:
+    - default_finance_book
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[default_finance_book]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Finance Book document.
+  - identity_id: account_identity
+    dataset_columns:
+    - exchange_gain_loss_account
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[exchange_gain_loss_account]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Account document.
+  - identity_id: account_identity
+    dataset_columns:
+    - exchange_gain_account
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[exchange_gain_account]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Account document.
+  - identity_id: account_identity
+    dataset_columns:
+    - exchange_loss_account
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[exchange_loss_account]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Account document.
+  - identity_id: account_identity
+    dataset_columns:
+    - unrealized_exchange_gain_loss_account
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[unrealized_exchange_gain_loss_account]'
+    description: Reference to a Account document.
+  - identity_id: account_identity
+    dataset_columns:
+    - round_off_account
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[round_off_account]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Account document.
+  - identity_id: cost_center_identity
+    dataset_columns:
+    - round_off_cost_center
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[round_off_cost_center]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Cost Center document.
+  - identity_id: account_identity
+    dataset_columns:
+    - round_off_for_opening
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+  - identity_id: account_identity
+    dataset_columns:
+    - default_deferred_revenue_account
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[default_deferred_revenue_account]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Account document.
+  - identity_id: account_identity
+    dataset_columns:
+    - default_deferred_expense_account
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Account document.
+  - identity_id: account_identity
+    dataset_columns:
+    - default_advance_received_account
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[default_advance_received_account]'
+    description: Reference to a Account document.
+  - identity_id: account_identity
+    dataset_columns:
+    - default_advance_paid_account
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[default_advance_paid_account]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Account document.
+  - identity_id: role_identity
+    dataset_columns:
+    - exception_budget_approver_role
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[exception_budget_approver_role]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Role document.
+  - identity_id: account_identity
+    dataset_columns:
+    - accumulated_depreciation_account
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[accumulated_depreciation_account]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+  - identity_id: account_identity
+    dataset_columns:
+    - depreciation_expense_account
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[depreciation_expense_account]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Account document.
+  - identity_id: account_identity
+    dataset_columns:
+    - disposal_account
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Account document.
+  - identity_id: cost_center_identity
+    dataset_columns:
+    - depreciation_cost_center
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Cost Center document.
+  - identity_id: account_identity
+    dataset_columns:
+    - capital_work_in_progress_account
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[capital_work_in_progress_account]'
+    description: Reference to a Account document.
+  - identity_id: account_identity
+    dataset_columns:
+    - asset_received_but_not_billed
+    entity_universe: unknown
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[asset_received_but_not_billed]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Account document.
+  - identity_id: role_identity
+    dataset_columns:
+    - role_allowed_for_frozen_entries
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[role_allowed_for_frozen_entries]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Role document.
+  - identity_id: terms_and_conditions_identity
+    dataset_columns:
+    - default_buying_terms
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Terms and Conditions document.
+  - identity_id: terms_and_conditions_identity
+    dataset_columns:
+    - default_selling_terms
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[default_selling_terms]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Terms and Conditions document.
+  - identity_id: contact_identity
+    dataset_columns:
+    - default_sales_contact
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[default_sales_contact]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Contact document.
+  - identity_id: account_identity
+    dataset_columns:
+    - purchase_expense_account
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Account document.
+  - identity_id: account_identity
+    dataset_columns:
+    - service_expense_account
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[service_expense_account]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Account document.
+  - identity_id: account_identity
+    dataset_columns:
+    - purchase_expense_contra_account
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Account document.
+  - identity_id: account_identity
+    dataset_columns:
+    - expenses_added_to_stock_account
+    entity_universe: unknown
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[expenses_added_to_stock_account]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Account document.
+  - identity_id: account_identity
+    dataset_columns:
+    - expenses_added_to_stock_contra_account
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: unknown
+    entity_expression:
+    - '[expenses_added_to_stock_contra_account]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Account document.
+  - identity_id: account_identity
+    dataset_columns:
+    - default_inventory_account
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[default_inventory_account]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Account document.
+  - identity_id: account_identity
+    dataset_columns:
+    - stock_adjustment_account
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[stock_adjustment_account]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Account document.
+  - identity_id: account_identity
+    dataset_columns:
+    - default_purchase_price_variance_account
+    entity_universe: unknown
+    unique: false
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[default_purchase_price_variance_account]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Account document.
+  - identity_id: account_identity
+    dataset_columns:
+    - default_manufacturing_variance_account
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[default_manufacturing_variance_account]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Account document.
+  - identity_id: account_identity
+    dataset_columns:
+    - stock_received_but_not_billed
+    entity_universe: partial
+    unique: unknown
+    total: unknown
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Account document.
+  - identity_id: account_identity
+    dataset_columns:
+    - stock_delivered_but_not_billed
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[stock_delivered_but_not_billed]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Account document.
+  - identity_id: account_identity
+    dataset_columns:
+    - default_provisional_account
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: unknown
+    entity_expression:
+    - '[default_provisional_account]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Account document.
+  - identity_id: account_identity
+    dataset_columns:
+    - default_operating_cost_account
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[default_operating_cost_account]'
+    description: Reference to a Account document.
+  - identity_id: warehouse_identity
+    dataset_columns:
+    - default_warehouse
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[default_warehouse]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+  - identity_id: warehouse_identity
+    dataset_columns:
+    - sample_retention_warehouse
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[sample_retention_warehouse]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+  - identity_id: warehouse_identity
+    dataset_columns:
+    - default_in_transit_warehouse
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[default_in_transit_warehouse]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Warehouse document.
+  - identity_id: warehouse_identity
+    dataset_columns:
+    - default_warehouse_for_sales_return
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Warehouse document.
+  - identity_id: warehouse_identity
+    dataset_columns:
+    - default_wip_warehouse
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[default_wip_warehouse]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Warehouse document.
+  - identity_id: warehouse_identity
+    dataset_columns:
+    - default_fg_warehouse
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[default_fg_warehouse]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Warehouse document.
+  - identity_id: warehouse_identity
+    dataset_columns:
+    - default_scrap_warehouse
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[default_scrap_warehouse]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Warehouse document.
+  - identity_id: company_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    description: Primary key and complete population of Company.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: unknown
+    total: true
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.setup.currency_exchange
+  descriptor:
+    qualified_name: frappe-erp.setup.currency_exchange
+    display_name: Currency Exchange
+    description: The rate to convert one currency into another.
+    synonyms:
+    - tabCurrency Exchange
+    tags:
+    - setup
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: setup
+      object: tabCurrency Exchange
+  grain:
+    description: One row per Currency Exchange document.
+    components:
+    - identity_id: currency_exchange_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: date
+    description: Date
+    value_description: Date
+  - name: from_currency
+    description: From Currency
+    value_description: Link
+  - name: to_currency
+    description: To Currency
+    value_description: Link
+  - name: exchange_rate
+    description: Exchange Rate
+    value_description: Float
+  - name: for_buying
+    description: For Buying
+  - name: for_selling
+    description: For Selling
+    value_description: Check
+  - name: name
+    description: Primary key of the Currency Exchange document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: currency_identity
+    dataset_columns:
+    - from_currency
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[from_currency]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Currency document.
+  - identity_id: currency_identity
+    dataset_columns:
+    - to_currency
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[to_currency]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Currency document.
+  - identity_id: currency_exchange_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.setup.customer_group
+  descriptor:
+    qualified_name: frappe-erp.setup.customer_group
+    display_name: Customer Group
+    description: Groups customers, for pricing and reporting.
+    synonyms:
+    - tabCustomer Group
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: setup
+      object: tabCustomer Group
+  grain:
+    description: One row per Customer Group document.
+    components:
+    - identity_id: customer_group_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: customer_group_name
+    description: Customer Group Name
+    value_description: Data
+  - name: parent_customer_group
+    description: Parent Customer Group
+  - name: is_group
+    description: Is Group. Only leaf nodes are allowed in transaction
+    value_description: Check
+  - name: default_price_list
+    description: Default Price List
+    value_description: Link
+  - name: payment_terms
+    description: Default Payment Terms Template
+    value_description: Link
+  - name: lft
+    description: lft
+    value_description: Int
+  - name: rgt
+    description: rgt
+    value_description: Int
+  - name: old_parent
+    description: old_parent
+    value_description: Link
+  - name: name
+    description: Primary key of the Customer Group document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: customer_group_identity
+    dataset_columns:
+    - parent_customer_group
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[parent_customer_group]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Customer Group document.
+  - identity_id: price_list_identity
+    dataset_columns:
+    - default_price_list
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[default_price_list]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Price List document.
+  - identity_id: payment_terms_template_identity
+    dataset_columns:
+    - payment_terms
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[payment_terms]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Payment Terms Template document.
+  - identity_id: customer_group_identity
+    dataset_columns:
+    - old_parent
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[old_parent]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Customer Group document.
+  - identity_id: customer_group_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Customer Group.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: unknown
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.setup.department
+  descriptor:
+    qualified_name: frappe-erp.setup.department
+    display_name: Department
+    description: A department of your company.
+    tags:
+    - setup
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: setup
+      object: tabDepartment
+  grain:
+    description: One row per Department document.
+    components:
+    - identity_id: null
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: department_name
+    description: Department
+    value_description: Data
+  - name: parent_department
+    description: Parent Department
+    value_description: Link
+  - name: company
+    description: Company
+    value_description: Link
+  - name: is_group
+    description: Is Group
+    value_description: Check
+  - name: disabled
+    description: Disabled
+    value_description: Check
+  - name: lft
+    description: lft
+    value_description: Int
+  - name: rgt
+    description: rgt
+    value_description: Int
+  - name: old_parent
+    description: Old Parent
+    value_description: Data
+  - name: name
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: department_identity
+    dataset_columns:
+    - parent_department
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[parent_department]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Department document.
+  - identity_id: company_identity
+    dataset_columns:
+    - company
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[company]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+  - identity_id: department_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Department.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: unknown
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.setup.designation
+  descriptor:
+    qualified_name: frappe-erp.setup.designation
+    display_name: Designation
+    description: A job title, like manager or accountant.
+    synonyms:
+    - tabDesignation
+    tags:
+    - setup
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: setup
+      object: tabDesignation
+  grain:
+    description: One row per Designation document.
+    components:
+    - identity_id: designation_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: designation_name
+    description: Designation
+    value_description: Data
+  - name: description
+    description: Description
+    value_description: Text
+  - name: name
+    description: Primary key of the Designation document.
+    value_description: Data
+  - name: owner
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: designation_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Designation.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: unknown
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.setup.driver
+  descriptor:
+    qualified_name: frappe-erp.setup.driver
+    display_name: Driver
+    description: The Driver document in the Setup module.
+    synonyms:
+    - tabDriver
+    tags:
+    - setup
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: setup
+      object: tabDriver
+  grain:
+    description: One row per Driver document.
+    components:
+    - identity_id: driver_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: naming_series
+    description: Series
+    value_description: HR-DRI-.YYYY.-
+  - name: full_name
+    description: Full Name
+    value_description: Data
+  - name: status
+    value_description: Active, Suspended, Left
+  - name: transporter
+    description: Transporter. Applicable for external driver
+    value_description: Link
+  - name: employee
+    description: Employee
+  - name: cell_number
+    description: Cellphone Number
+    value_description: Data
+  - name: address
+    value_description: Link
+  - name: user
+    description: User
+    value_description: Link
+  - name: license_number
+    description: License Number
+  - name: issuing_date
+    description: Issuing Date
+    value_description: Date
+  - name: expiry_date
+    description: Expiry Date
+    value_description: Date
+  - name: name
+    description: Primary key of the Driver document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: supplier_identity
+    dataset_columns:
+    - transporter
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[transporter]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Supplier document.
+  - identity_id: employee_identity
+    dataset_columns:
+    - employee
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[employee]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Employee document.
+  - identity_id: address_identity
+    dataset_columns:
+    - address
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[address]'
+    description: Reference to a Address document.
+  - identity_id: user_identity
+    dataset_columns:
+    - user
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[user]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a User document.
+  - identity_id: driver_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Driver.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.setup.driving_license_category
+  descriptor:
+    qualified_name: frappe-erp.setup.driving_license_category
+    display_name: Driving License Category
+    description: The Driving License Category child table in the Setup module.
+    tags:
+    - setup
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: setup
+      object: tabDriving License Category
+  grain:
+    description: One row per Driving License Category document.
+    components:
+    - identity_id: driving_license_category_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: class
+    description: Driver licence class
+    value_description: Data
+  - name: description
+    description: Description
+    value_description: Data
+  - name: issuing_date
+    description: Issuing Date
+    value_description: Date
+  - name: expiry_date
+    description: Expiry Date
+    value_description: Date
+  - name: name
+    description: Primary key of the Driving License Category document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  - name: parent
+    description: Name of the parent Driver document.
+    value_description: Data
+  - name: parentfield
+    value_description: Data
+    synonyms:
+    - Parent Field
+  - name: parenttype
+    description: DocType name of the parent document.
+    value_description: Data
+    synonyms:
+    - Parent Type
+  entity_definitions:
+  - identity_id: driving_license_category_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: unknown
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Driving License Category.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+  - identity_id: driver_identity
+    dataset_columns:
+    - parent
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    description: Parent Driver document that owns this row.
+- node_id: sql-database:frappe-erp.setup.email_digest
+  descriptor:
+    qualified_name: frappe-erp.setup.email_digest
+    display_name: Email Digest
+    description: A regular email summing up how the business is doing.
+    synonyms:
+    - tabEmail Digest
+    tags:
+    - setup
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: setup
+      object: tabEmail Digest
+  grain:
+    description: One row per Email Digest document.
+    components:
+    - identity_id: email_digest_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: enabled
+    description: Enabled
+    value_description: Check
+  - name: company
+    description: For Company
+    value_description: Link
+  - name: frequency
+    description: How frequently?
+    value_description: Daily, Weekly, Monthly
+  - name: next_send
+    description: 'Next email will be sent on:'
+    value_description: Data
+  - name: income
+    value_description: Check
+  - name: expenses_booked
+    description: New Expenses
+  - name: income_year_to_date
+    description: Annual Income
+    value_description: Check
+  - name: expense_year_to_date
+    description: Annual Expenses
+    value_description: Check
+  - name: bank_balance
+    description: Bank Balance
+  - name: credit_balance
+    description: Bank Credit Balance
+    value_description: Check
+  - name: invoiced_amount
+    description: Receivables
+  - name: payables
+    description: Payables
+    value_description: Check
+  - name: sales_orders_to_bill
+    description: Sales Orders to Bill
+    value_description: Check
+  - name: purchase_orders_to_bill
+    description: Purchase Orders to Bill
+    value_description: Check
+  - name: sales_order
+    description: New Sales Orders
+  - name: purchase_order
+    description: New Purchase Orders
+    value_description: Check
+  - name: sales_orders_to_deliver
+    description: Sales Orders to Deliver
+    value_description: Check
+  - name: purchase_orders_to_receive
+    description: Purchase Orders to Receive
+    value_description: Check
+  - name: sales_invoice
+    description: New Sales Invoice
+    value_description: Check
+  - name: purchase_invoice
+    description: New Purchase Invoice
+    value_description: Check
+  - name: new_quotations
+    description: New Quotations
+  - name: pending_quotations
+    description: Open Quotations
+    value_description: Check
+  - name: issue
+    description: Open Issues
+    value_description: Check
+  - name: project
+    description: Open Projects
+    value_description: Check
+  - name: purchase_orders_items_overdue
+    description: Purchase Orders Items Overdue
+    value_description: Check
+  - name: calendar_events
+    description: Upcoming Calendar Events
+    value_description: Check
+  - name: todo_list
+    description: Open To Do
+    value_description: Check
+  - name: notifications
+    description: Open Notifications
+    value_description: Check
+  - name: add_quote
+    description: Add Quote
+  - name: name
+    description: Primary key of the Email Digest document.
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: company_identity
+    dataset_columns:
+    - company
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[company]'
+    description: Reference to a Company document.
+  - identity_id: email_digest_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Email Digest.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.setup.email_digest_recipient
+  descriptor:
+    qualified_name: frappe-erp.setup.email_digest_recipient
+    display_name: Email Digest Recipient
+    description: The Email Digest Recipient child table in the Setup module.
+    synonyms:
+    - tabEmail Digest Recipient
+    tags:
+    - setup
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: setup
+      object: tabEmail Digest Recipient
+  grain: unknown
+  columns:
+  - name: recipient
+    description: Recipient
+    value_description: Link
+  - name: name
+    description: Primary key of the Email Digest Recipient document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+  - name: modified_by
+    description: User who last updated the document.
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  - name: parent
+    description: Name of the parent document.
+    value_description: Data
+  - name: parentfield
+    description: Fieldname of the parent table that contains this row.
+    value_description: Data
+    synonyms:
+    - Parent Field
+  - name: parenttype
+    description: DocType name of the parent document.
+    value_description: Data
+  entity_definitions:
+  - identity_id: user_identity
+    dataset_columns:
+    - recipient
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a User document.
+  - identity_id: email_digest_recipient_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Email Digest Recipient.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.setup.employee
+  descriptor:
+    qualified_name: frappe-erp.setup.employee
+    display_name: Employee
+    description: The Employee document in the Setup module.
+    synonyms:
+    - tabEmployee
+    tags:
+    - setup
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: setup
+      object: tabEmployee
+  grain:
+    description: One row per Employee document.
+    components:
+    - identity_id: employee_identity
+      dataset_columns:
+      - name
+  columns:
+  - name: employee
+    description: Employee
+    value_description: Data
+  - name: naming_series
+    description: Series
+    value_description: HR-EMP-
+  - name: first_name
+    description: First Name
+  - name: middle_name
+    description: Middle Name
+  - name: last_name
+    description: Last Name
+    value_description: Data
+  - name: employee_name
+    value_description: Data
+  - name: gender
+    description: Gender
+    value_description: Link
+  - name: date_of_birth
+    value_description: Date
+  - name: salutation
+    description: Salutation
+    value_description: Link
+  - name: date_of_joining
+    description: Date of Joining
+    value_description: Date
+  - name: image
+    description: Image
+    value_description: Attach Image
+  - name: status
+    description: Status
+    value_description: Active, Inactive, Suspended, Left
+  - name: user_id
+    description: User ID. System User (login) ID. If set, it will become default for all HR forms.
+    value_description: Link
+  - name: create_user_permission
+    description: Create User Permission. This will restrict user access to other employee records
+    value_description: Check
+  - name: create_user_automatically
+    description: Create User Automatically. Creates a User account for this employee using the Preferred,
+      Company, or Personal email.
+    value_description: Check
+  - name: company
+    description: Company
+    value_description: Link
+  - name: department
+    description: Department
+    value_description: Link
+  - name: employee_number
+    description: Employee Number
+    value_description: Data
+  - name: designation
+    description: Designation
+    value_description: Link
+  - name: reports_to
+    description: Reports to
+    value_description: Link
+  - name: branch
+    description: Branch
+    value_description: Link
+  - name: cell_number
+    description: Mobile
+    value_description: Data
+  - name: company_email
+    description: Company Email. Provide Email Address registered in company
+    value_description: Data
+  - name: personal_email
+    description: Personal Email
+    value_description: Data
+  - name: prefered_contact_email
+    value_description: Company Email, Personal Email, User ID
+  - name: prefered_email
+    description: Preferred Email
+    value_description: Data
+  - name: unsubscribed
+    value_description: Check
+  - name: current_address
+    description: Current Address
+    value_description: Small Text
+  - name: current_accommodation_type
+    description: Current Address Is
+    value_description: Rented, Owned
+  - name: permanent_address
+    description: Permanent Address
+    value_description: Small Text
+  - name: permanent_accommodation_type
+    description: Permanent Address Is
+    value_description: Rented, Owned
+  - name: person_to_be_contacted
+    description: Emergency Contact Name
+    value_description: Data
+  - name: emergency_phone_number
+    description: Emergency Phone
+    value_description: Data
+  - name: relation
+    description: Relation
+    value_description: Data
+  - name: attendance_device_id
+    value_description: Data
+  - name: holiday_list
+    description: Holiday List. Applicable Holiday List
+    value_description: Link
+  - name: ctc
+    description: Cost to Company (CTC)
+    value_description: Currency
+  - name: salary_currency
+    description: Salary Currency
+    value_description: Link
+  - name: salary_mode
+    description: Salary Mode
+    value_description: Bank, Cash, Cheque
+  - name: bank_name
+    description: Bank Name
+    value_description: Data
+  - name: bank_ac_no
+    description: Bank A/C No.
+    value_description: Data
+  - name: iban
+    description: IBAN
+    value_description: Data
+  - name: marital_status
+    description: Marital Status
+    value_description: Single, Married, Divorced, Widowed
+  - name: family_background
+    description: Family Background. Here you can maintain family details like name and occupation of parent,
+      spouse and children
+  - name: blood_group
+    description: Blood Group
+    value_description: A+, A-, B+, B-, AB+, AB-, O+, O-
+  - name: health_details
+    description: Health Details. Here you can maintain height, weight, allergies, medical concerns etc
+  - name: passport_number
+    description: Passport Number
+    value_description: Data
+  - name: valid_upto
+    description: Valid Up To
+    value_description: Date
+  - name: date_of_issue
+    description: Date of Issue
+    value_description: Date
+  - name: place_of_issue
+    description: Place of Issue
+    value_description: Data
+  - name: bio
+    description: Bio / Cover Letter. Short biography for website and other publications.
+    value_description: Text Editor
+    synonyms:
+    - Bio / Cover Letter
+  - name: scheduled_confirmation_date
+    description: Offer Date
+    value_description: Date
+  - name: final_confirmation_date
+    description: Confirmation Date
+    value_description: Date
+  - name: contract_end_date
+    description: Contract End Date
+    value_description: Date
+  - name: notice_number_of_days
+    description: Notice (days)
+    value_description: Int
+  - name: date_of_retirement
+    description: Date Of Retirement
+    value_description: Date
+  - name: resignation_letter_date
+    description: Resignation Letter Date
+    value_description: Date
+  - name: relieving_date
+    description: Relieving Date
+    value_description: Date
+  - name: held_on
+    value_description: Date
+  - name: new_workplace
+    value_description: Data
+  - name: leave_encashed
+    description: Leave Encashed?
+    value_description: Yes, No
+  - name: encashment_date
+    description: Encashment Date
+    value_description: Date
+  - name: reason_for_leaving
+    description: Reason for Leaving
+    value_description: Small Text
+  - name: feedback
+    description: Feedback
+  - name: lft
+    description: lft
+    value_description: Int
+  - name: rgt
+    description: rgt
+    value_description: Int
+  - name: old_parent
+    description: Old Parent
+  - name: name
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: gender_identity
+    dataset_columns:
+    - gender
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[gender]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Gender document.
+  - identity_id: salutation_identity
+    dataset_columns:
+    - salutation
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Salutation document.
+  - identity_id: user_identity
+    dataset_columns:
+    - user_id
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[user_id]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a User document.
+  - identity_id: company_identity
+    dataset_columns:
+    - company
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: unknown
+    entity_expression:
+    - '[company]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Company document.
+  - identity_id: department_identity
+    dataset_columns:
+    - department
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[department]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Department document.
+  - identity_id: designation_identity
+    dataset_columns:
+    - designation
+    entity_universe: unknown
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[designation]'
+    description: Reference to a Designation document.
+  - identity_id: employee_identity
+    dataset_columns:
+    - reports_to
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[reports_to]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Employee document.
+  - identity_id: branch_identity
+    dataset_columns:
+    - branch
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[branch]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Branch document.
+  - identity_id: holiday_list_identity
+    dataset_columns:
+    - holiday_list
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[holiday_list]'
+    description: Reference to a Holiday List document.
+  - identity_id: currency_identity
+    dataset_columns:
+    - salary_currency
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[salary_currency]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Currency document.
+  - identity_id: employee_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: unknown
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    description: Primary key and complete population of Employee.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: unknown
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.setup.employee_education
+  descriptor:
+    qualified_name: frappe-erp.setup.employee_education
+    display_name: Employee Education
+    description: The Employee Education child table in the Setup module.
+    synonyms:
+    - tabEmployee Education
+    tags:
+    - setup
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: setup
+      object: tabEmployee Education
+  grain:
+    description: One row per Employee Education document.
+    components:
+    - identity_id: employee_education_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: school_univ
+    description: School/University
+    value_description: Small Text
+  - name: qualification
+    description: Qualification
+    value_description: Data
+  - name: level
+    description: Level
+    value_description: Graduate, Post Graduate, Under Graduate
+  - name: year_of_passing
+    description: Year of Passing
+    value_description: Int
+  - name: class_per
+    description: Class / Percentage
+    value_description: Data
+  - name: maj_opt_subj
+    description: Major/Optional Subjects
+  - name: name
+    description: Primary key of the Employee Education document.
+    value_description: Data
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+  - name: docstatus
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+  - name: parent
+    description: Name of the parent Employee document.
+    value_description: Data
+  - name: parentfield
+    description: Fieldname of the parent table that contains this row.
+    value_description: Data
+    synonyms:
+    - Parent Field
+  - name: parenttype
+    description: DocType name of the parent document.
+    value_description: Data
+    synonyms:
+    - Parent Type
+  entity_definitions:
+  - identity_id: employee_education_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Employee Education.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+  - identity_id: employee_identity
+    dataset_columns:
+    - parent
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[parent]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Parent Employee document that owns this row.
+- node_id: sql-database:frappe-erp.setup.employee_external_work_history
+  descriptor:
+    qualified_name: frappe-erp.setup.employee_external_work_history
+    display_name: Employee External Work History
+    description: The Employee External Work History child table in the Setup module.
+    synonyms:
+    - tabEmployee External Work History
+    tags:
+    - setup
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: setup
+      object: tabEmployee External Work History
+  grain:
+    description: One row per Employee External Work History document.
+    components:
+    - identity_id: employee_external_work_history_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: company_name
+    description: Company
+    value_description: Data
+  - name: designation
+    description: Designation
+  - name: salary
+    description: Salary
+    value_description: Currency
+  - name: address
+    description: Address
+  - name: contact
+    description: Contact
+    value_description: Data
+  - name: total_experience
+    description: Total Experience
+    value_description: Data
+  - name: name
+    description: Primary key of the Employee External Work History document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    value_description: Link
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  - name: parent
+    description: Name of the parent Employee document.
+    value_description: Data
+  - name: parentfield
+    description: Fieldname of the parent table that contains this row.
+    value_description: Data
+  - name: parenttype
+    description: DocType name of the parent document.
+    value_description: Data
+    synonyms:
+    - Parent Type
+  entity_definitions:
+  - identity_id: employee_external_work_history_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: unknown
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Employee External Work History.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+  - identity_id: employee_identity
+    dataset_columns:
+    - parent
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[parent]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Parent Employee document that owns this row.
+- node_id: sql-database:frappe-erp.setup.employee_group
+  descriptor:
+    qualified_name: frappe-erp.setup.employee_group
+    display_name: Employee Group
+    description: The Employee Group document in the Setup module.
+    tags:
+    - setup
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: setup
+      object: tabEmployee Group
+  grain:
+    description: One row per Employee Group document.
+    components:
+    - identity_id: employee_group_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: employee_group_name
+    description: Name
+    value_description: Data
+  - name: name
+    description: Primary key of the Employee Group document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+  - name: creation
+    description: Datetime when the document was created.
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+  entity_definitions:
+  - identity_id: employee_group_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.setup.employee_group_table
+  descriptor:
+    qualified_name: frappe-erp.setup.employee_group_table
+    display_name: Employee Group Table
+    description: The Employee Group Table child table in the Setup module.
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: setup
+      object: tabEmployee Group Table
+  grain:
+    description: One row per Employee Group Table document.
+    components:
+    - identity_id: employee_group_table_identity
+      dataset_columns:
+      - name
+  columns:
+  - name: employee
+    description: Employee
+    value_description: Link
+  - name: employee_name
+    description: Employee Name
+    value_description: Data
+  - name: user_id
+    description: ERPNext User ID
+  - name: name
+    description: Primary key of the Employee Group Table document.
+    value_description: Data
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  - name: parent
+    description: Name of the parent Employee Group document.
+    value_description: Data
+  - name: parentfield
+    description: Fieldname of the parent table that contains this row.
+    value_description: Data
+    synonyms:
+    - Parent Field
+  - name: parenttype
+    description: DocType name of the parent document.
+    value_description: Data
+    synonyms:
+    - Parent Type
+  entity_definitions:
+  - identity_id: employee_identity
+    dataset_columns:
+    - employee
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[employee]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Employee document.
+  - identity_id: employee_group_table_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Employee Group Table.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+  - identity_id: employee_group_identity
+    dataset_columns:
+    - parent
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[parent]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Parent Employee Group document that owns this row.
+- node_id: sql-database:frappe-erp.setup.employee_internal_work_history
+  descriptor:
+    qualified_name: frappe-erp.setup.employee_internal_work_history
+    display_name: Employee Internal Work History
+    description: The Employee Internal Work History child table in the Setup module.
+    synonyms:
+    - tabEmployee Internal Work History
+    tags:
+    - setup
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: setup
+      object: tabEmployee Internal Work History
+  grain:
+    description: One row per Employee Internal Work History document.
+    components:
+    - identity_id: employee_internal_work_history_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: branch
+    description: Branch
+    value_description: Link
+  - name: department
+    description: Department
+    value_description: Link
+  - name: designation
+    description: Designation
+    value_description: Link
+  - name: from_date
+    description: From Date
+    value_description: Date
+  - name: to_date
+  - name: name
+    description: Primary key of the Employee Internal Work History document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  - name: parent
+    description: Name of the parent Employee document.
+    value_description: Data
+  - name: parentfield
+    description: Fieldname of the parent table that contains this row.
+    value_description: Data
+    synonyms:
+    - Parent Field
+  - name: parenttype
+    description: DocType name of the parent document.
+    value_description: Data
+    synonyms:
+    - Parent Type
+  entity_definitions:
+  - identity_id: branch_identity
+    dataset_columns:
+    - branch
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[branch]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Branch document.
+  - identity_id: department_identity
+    dataset_columns:
+    - department
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[department]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Department document.
+  - identity_id: designation_identity
+    dataset_columns:
+    - designation
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[designation]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Designation document.
+  - identity_id: employee_internal_work_history_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Employee Internal Work History.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: unknown
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+  - identity_id: employee_identity
+    dataset_columns:
+    - parent
+    entity_universe: unknown
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[parent]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Parent Employee document that owns this row.
+- node_id: sql-database:frappe-erp.setup.global_defaults
+  descriptor:
+    qualified_name: frappe-erp.setup.global_defaults
+    display_name: Global Defaults
+    tags:
+    - setup
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: setup
+      object: tabGlobal Defaults
+  grain: unknown
+  columns:
+  - name: default_company
+    description: Default Company
+    value_description: Link
+  - name: country
+    description: Default Country
+    value_description: Link
+  - name: default_currency
+    description: Default Currency
+    value_description: Link
+  - name: default_distance_unit
+    description: Default Distance Unit
+    value_description: Link
+  - name: demo_company
+    description: Demo Company
+    value_description: Link
+  - name: hide_currency_symbol
+    description: Hide Currency Symbol. Do not show any symbol like $ etc next to currencies.
+    value_description: Check
+  - name: disable_rounded_total
+    description: Disable Rounded Total. If disable, 'Rounded Total' field will not be visible in any transaction
+    value_description: Check
+  - name: disable_in_words
+    description: Disable In Words. If disable, 'In Words' field will not be visible in any transaction
+    value_description: Check
+  - name: use_posting_datetime_for_naming_documents
+    description: Use Posting Date for Naming Documents. When checked, the system will use the posting
+      date of the document for naming instead of the creation date.
+    value_description: Check
+  - name: enable_item_search_index
+    description: 'Enable Item Search Index. Speeds up Item search on large catalogues. Requires a single
+      app server: the index is a file on that server''s disk, and several servers would each answer from
+      a different copy. Building it takes about 20 minutes for 3 million items, and runs in the background.'
+    value_description: Check
+  entity_definitions:
+  - identity_id: company_identity
+    dataset_columns:
+    - default_company
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: unknown
+    entity_expression:
+    - '[default_company]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Company document.
+  - identity_id: country_identity
+    dataset_columns:
+    - country
+    entity_universe: partial
+    unique: unknown
+    total: false
+    conforms: true
+    entity_expression:
+    - '[country]'
+    description: Reference to a Country document.
+  - identity_id: currency_identity
+    dataset_columns:
+    - default_currency
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    description: Reference to a Currency document.
+  - identity_id: uom_identity
+    dataset_columns:
+    - default_distance_unit
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[default_distance_unit]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+  - identity_id: company_identity
+    dataset_columns:
+    - demo_company
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Company document.
+- node_id: sql-database:frappe-erp.setup.holiday
+  descriptor:
+    qualified_name: frappe-erp.setup.holiday
+    display_name: Holiday
+    description: The Holiday child table in the Setup module.
+    synonyms:
+    - tabHoliday
+    tags:
+    - setup
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: setup
+      object: tabHoliday
+  grain:
+    description: One row per Holiday document.
+    components:
+    - identity_id: holiday_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: holiday_date
+    description: Date
+    value_description: Date
+  - name: weekly_off
+    description: Weekly Off
+    value_description: Check
+  - name: description
+    description: Description
+    value_description: Text Editor
+  - name: is_half_day
+    description: Is Half Day
+    value_description: Check
+  - name: name
+    description: Primary key of the Holiday document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+  - name: parent
+    description: Name of the parent Holiday List document.
+    value_description: Data
+  - name: parentfield
+    description: Fieldname of the parent table that contains this row.
+    value_description: Data
+    synonyms:
+    - Parent Field
+  - name: parenttype
+    description: DocType name of the parent document.
+  entity_definitions:
+  - identity_id: holiday_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Holiday.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: unknown
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: unknown
+    unique: unknown
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+  - identity_id: holiday_list_identity
+    dataset_columns:
+    - parent
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Parent Holiday List document that owns this row.
+- node_id: sql-database:frappe-erp.setup.holiday_list
+  descriptor:
+    qualified_name: frappe-erp.setup.holiday_list
+    display_name: Holiday List
+    description: The holidays and weekly offs of a company or employee.
+    synonyms:
+    - tabHoliday List
+    tags:
+    - setup
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: setup
+      object: tabHoliday List
+  grain:
+    description: One row per Holiday List document.
+    components:
+    - identity_id: holiday_list_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: holiday_list_name
+    description: Holiday List Name
+    value_description: Data
+  - name: from_date
+    description: From Date
+  - name: to_date
+    value_description: Date
+  - name: total_holidays
+    description: Total Holidays
+    value_description: Float
+  - name: weekly_off
+  - name: is_half_day
+    description: Is Half Day
+    value_description: Check
+  - name: country
+    value_description: Autocomplete
+  - name: subdivision
+    description: Subdivision
+  - name: color
+    description: Color
+    value_description: Color
+  - name: name
+    description: Primary key of the Holiday List document.
+    value_description: Data
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: holiday_list_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Holiday List.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.setup.incoterm
+  descriptor:
+    qualified_name: frappe-erp.setup.incoterm
+    display_name: Incoterm
+    description: The Incoterm document in the Setup module.
+    tags:
+    - setup
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: setup
+      object: tabIncoterm
+  grain:
+    description: One row per Incoterm document.
+    components:
+    - identity_id: incoterm_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: code
+    description: Code
+    value_description: Data
+  - name: title
+    description: Title
+  - name: description
+    description: Description
+    value_description: Long Text
+  - name: name
+    description: Primary key of the Incoterm document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: incoterm_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: unknown
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Incoterm.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: unknown
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: unknown
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.setup.item_group
+  descriptor:
+    qualified_name: frappe-erp.setup.item_group
+    display_name: Item Group
+    description: Groups items, for pricing, defaults and reporting.
+    tags:
+    - setup
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: setup
+      object: tabItem Group
+  grain:
+    description: One row per Item Group document.
+    components:
+    - identity_id: item_group_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: item_group_name
+    description: Item Group Name
+    value_description: Data
+  - name: parent_item_group
+    description: Parent Item Group
+    value_description: Link
+  - name: is_group
+    description: Is Group. Only leaf nodes are allowed in transaction
+    value_description: Check
+  - name: image
+    description: Image
+    value_description: Attach Image
+  - name: lft
+    description: lft
+    value_description: Int
+  - name: old_parent
+    description: old_parent
+    value_description: Link
+  - name: rgt
+    description: rgt
+    value_description: Int
+  - name: name
+    description: Primary key of the Item Group document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: item_group_identity
+    dataset_columns:
+    - parent_item_group
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: unknown
+    entity_expression:
+    - '[parent_item_group]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Item Group document.
+  - identity_id: item_group_identity
+    dataset_columns:
+    - old_parent
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[old_parent]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Item Group document.
+  - identity_id: item_group_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Item Group.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.setup.party_type
+  descriptor:
+    qualified_name: frappe-erp.setup.party_type
+    display_name: Party Type
+    description: The Party Type document in the Setup module.
+    synonyms:
+    - tabParty Type
+    tags:
+    - setup
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: setup
+      object: tabParty Type
+  grain:
+    description: One row per Party Type document.
+    components:
+    - identity_id: party_type_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: party_type
+    description: Party Type
+    value_description: Link
+  - name: account_type
+    description: Account Type
+  - name: name
+    description: Primary key of the Party Type document.
+    value_description: Data
+  - name: owner
+    value_description: Link
+  - name: creation
+    value_description: Datetime
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: doctype_identity
+    dataset_columns:
+    - party_type
+    entity_universe: partial
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[party_type]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a DocType document.
+  - identity_id: party_type_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Party Type.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.setup.quotation_lost_reason
+  descriptor:
+    qualified_name: frappe-erp.setup.quotation_lost_reason
+    display_name: Quotation Lost Reason
+    description: The Quotation Lost Reason document in the Setup module.
+    synonyms:
+    - tabQuotation Lost Reason
+    tags:
+    - setup
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: setup
+      object: tabQuotation Lost Reason
+  grain:
+    description: One row per Quotation Lost Reason document.
+    components:
+    - identity_id: quotation_lost_reason_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: order_lost_reason
+    description: Quotation Lost Reason
+    value_description: Data
+  - name: name
+    description: Primary key of the Quotation Lost Reason document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: quotation_lost_reason_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Quotation Lost Reason.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: unknown
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.setup.quotation_lost_reason_detail
+  descriptor:
+    qualified_name: frappe-erp.setup.quotation_lost_reason_detail
+    display_name: Quotation Lost Reason Detail
+    synonyms:
+    - tabQuotation Lost Reason Detail
+    tags:
+    - setup
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: setup
+      object: tabQuotation Lost Reason Detail
+  grain:
+    description: One row per Quotation Lost Reason Detail document.
+    components:
+    - identity_id: quotation_lost_reason_detail_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: lost_reason
+    description: Quotation Lost Reason
+  - name: name
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  - name: parent
+    description: Name of the parent document.
+    value_description: Data
+  - name: parentfield
+    description: Fieldname of the parent table that contains this row.
+    value_description: Data
+    synonyms:
+    - Parent Field
+  - name: parenttype
+    description: DocType name of the parent document.
+    value_description: Data
+  entity_definitions:
+  - identity_id: quotation_lost_reason_identity
+    dataset_columns:
+    - lost_reason
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[lost_reason]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Quotation Lost Reason document.
+  - identity_id: quotation_lost_reason_detail_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: unknown
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.setup.sales_partner
+  descriptor:
+    qualified_name: frappe-erp.setup.sales_partner
+    display_name: Sales Partner
+    description: A distributor, dealer or reseller who sells for you on commission.
+    synonyms:
+    - tabSales Partner
+    tags:
+    - setup
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: setup
+      object: tabSales Partner
+  grain:
+    description: One row per Sales Partner document.
+    components:
+    - identity_id: sales_partner_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: partner_name
+    description: Sales Partner Name
+  - name: partner_type
+    description: Partner Type
+    value_description: Link
+  - name: territory
+    description: Territory
+    value_description: Link
+  - name: commission_rate
+    description: Commission Rate
+  - name: show_in_website
+    description: Show In Website
+    value_description: Check
+  - name: referral_code
+    description: Referral Code. To Track inbound purchase
+    value_description: Data
+  - name: route
+    description: Route
+  - name: logo
+    description: Logo
+    value_description: Attach
+  - name: partner_website
+    description: Partner website
+  - name: introduction
+    description: Introduction
+    value_description: Text
+  - name: description
+    description: Description
+    value_description: Text Editor
+  - name: name
+    description: Primary key of the Sales Partner document.
+    value_description: Data
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+  - name: modified_by
+    description: User who last updated the document.
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: sales_partner_type_identity
+    dataset_columns:
+    - partner_type
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[partner_type]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Sales Partner Type document.
+  - identity_id: territory_identity
+    dataset_columns:
+    - territory
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: unknown
+    entity_expression:
+    - '[territory]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+  - identity_id: sales_partner_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: unknown
+    total: true
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.setup.sales_person
+  descriptor:
+    qualified_name: frappe-erp.setup.sales_person
+    display_name: Sales Person
+    description: Someone who sells for you, with targets and commission.
+    tags:
+    - setup
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: setup
+      object: tabSales Person
+  grain:
+    description: One row per Sales Person document.
+    components:
+    - identity_id: sales_person_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: sales_person_name
+    description: Sales Person Name
+    value_description: Data
+  - name: parent_sales_person
+    description: Parent Sales Person. Select company name first.
+    value_description: Link
+  - name: commission_rate
+    value_description: Percent
+  - name: is_group
+    description: Is Group
+    value_description: Check
+  - name: enabled
+    description: Enabled
+    value_description: Check
+  - name: employee
+    description: Employee
+    value_description: Link
+  - name: department
+    description: Department
+    value_description: Link
+  - name: lft
+    description: lft
+    value_description: Int
+  - name: rgt
+    description: rgt
+  - name: old_parent
+    description: old_parent
+    value_description: Data
+  - name: name
+    description: Primary key of the Sales Person document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: sales_person_identity
+    dataset_columns:
+    - parent_sales_person
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[parent_sales_person]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Sales Person document.
+  - identity_id: employee_identity
+    dataset_columns:
+    - employee
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[employee]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+  - identity_id: department_identity
+    dataset_columns:
+    - department
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[department]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Department document.
+  - identity_id: sales_person_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Sales Person.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.setup.supplier_group
+  descriptor:
+    qualified_name: frappe-erp.setup.supplier_group
+    display_name: Supplier Group
+    description: Groups suppliers, for terms and reporting.
+    synonyms:
+    - tabSupplier Group
+    tags:
+    - setup
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: setup
+      object: tabSupplier Group
+  grain:
+    components:
+    - identity_id: supplier_group_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: supplier_group_name
+    description: Supplier Group Name
+    value_description: Data
+  - name: parent_supplier_group
+    description: Parent Supplier Group
+    value_description: Link
+  - name: is_group
+    description: Is Group. Only leaf nodes are allowed in transaction
+    value_description: Check
+  - name: payment_terms
+    description: Default Payment Terms Template
+    value_description: Link
+  - name: lft
+    description: lft
+    value_description: Int
+  - name: rgt
+    description: rgt
+    value_description: Int
+  - name: old_parent
+    description: Old Parent
+    value_description: Link
+  - name: name
+    description: Primary key of the Supplier Group document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: supplier_group_identity
+    dataset_columns:
+    - parent_supplier_group
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[parent_supplier_group]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Supplier Group document.
+  - identity_id: payment_terms_template_identity
+    dataset_columns:
+    - payment_terms
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[payment_terms]'
+    description: Reference to a Payment Terms Template document.
+  - identity_id: supplier_group_identity
+    dataset_columns:
+    - old_parent
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[old_parent]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Supplier Group document.
+  - identity_id: supplier_group_identity
+    dataset_columns:
+    - name
+    entity_universe: unknown
+    unique: true
+    total: true
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.setup.target_detail
+  descriptor:
+    qualified_name: frappe-erp.setup.target_detail
+    display_name: Target Detail
+    description: The Target Detail child table in the Setup module.
+    synonyms:
+    - tabTarget Detail
+    tags:
+    - setup
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: setup
+      object: tabTarget Detail
+  grain:
+    description: One row per Target Detail document.
+    components:
+    - identity_id: target_detail_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: item_group
+    description: Item Group
+    value_description: Link
+  - name: fiscal_year
+    description: Fiscal Year
+  - name: target_qty
+    description: Target Qty
+    value_description: Float
+  - name: target_amount
+    description: Target Amount
+    value_description: Float
+  - name: distribution_id
+    description: Target Distribution
+    value_description: Link
+  - name: name
+    description: Primary key of the Target Detail document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    synonyms:
+    - Index
+  - name: parent
+    description: Name of the parent document.
+    value_description: Data
+  - name: parentfield
+    description: Fieldname of the parent table that contains this row.
+    value_description: Data
+  - name: parenttype
+    description: DocType name of the parent document.
+    synonyms:
+    - Parent Type
+  entity_definitions:
+  - identity_id: item_group_identity
+    dataset_columns:
+    - item_group
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[item_group]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Item Group document.
+  - identity_id: fiscal_year_identity
+    dataset_columns:
+    - fiscal_year
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Fiscal Year document.
+  - identity_id: monthly_distribution_identity
+    dataset_columns:
+    - distribution_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[distribution_id]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Monthly Distribution document.
+  - identity_id: target_detail_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.setup.terms_and_conditions
+  descriptor:
+    qualified_name: frappe-erp.setup.terms_and_conditions
+    display_name: Terms and Conditions
+    description: Standard terms to add to quotes, orders and invoices.
+    synonyms:
+    - tabTerms and Conditions
+    tags:
+    - setup
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: setup
+      object: tabTerms and Conditions
+  grain:
+    description: One row per Terms and Conditions document.
+    components:
+    - identity_id: terms_and_conditions_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: title
+    description: Title
+    value_description: Data
+  - name: disabled
+    description: Disabled
+    value_description: Check
+  - name: copy_attachments_to_transaction
+    description: Copy Attachments to Transaction
+    value_description: Check
+  - name: selling
+    description: Selling
+    value_description: Check
+  - name: buying
+    description: Buying
+    value_description: Check
+  - name: terms
+    value_description: Text Editor
+  - name: name
+    description: Primary key of the Terms and Conditions document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+  - name: creation
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: terms_and_conditions_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    description: Primary key and complete population of Terms and Conditions.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.setup.territory
+  descriptor:
+    qualified_name: frappe-erp.setup.territory
+    display_name: Territory
+    description: A region you sell in, to group customers and set targets.
+    synonyms:
+    - tabTerritory
+    tags:
+    - setup
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: setup
+      object: tabTerritory
+  grain:
+    description: One row per Territory document.
+    components:
+    - identity_id: territory_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: territory_name
+    description: Territory Name
+    value_description: Data
+  - name: parent_territory
+    description: Parent Territory
+    value_description: Link
+  - name: is_group
+    description: Is Group. Only leaf nodes are allowed in transaction
+    value_description: Check
+  - name: territory_manager
+    value_description: Link
+  - name: lft
+    description: lft
+    value_description: Int
+  - name: rgt
+    description: rgt
+  - name: old_parent
+    description: old_parent
+    value_description: Link
+  - name: name
+    description: Primary key of the Territory document.
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: territory_identity
+    dataset_columns:
+    - parent_territory
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[parent_territory]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Territory document.
+  - identity_id: sales_person_identity
+    dataset_columns:
+    - territory_manager
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[territory_manager]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Sales Person document.
+  - identity_id: territory_identity
+    dataset_columns:
+    - old_parent
+    entity_universe: partial
+    unique: unknown
+    total: false
+    conforms: true
+    entity_expression:
+    - '[old_parent]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Territory document.
+  - identity_id: territory_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Territory.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.setup.transaction_deletion_record
+  descriptor:
+    qualified_name: frappe-erp.setup.transaction_deletion_record
+    display_name: Transaction Deletion Record
+    description: Deletes a company's transactions, keeping its masters.
+    synonyms:
+    - tabTransaction Deletion Record
+    tags:
+    - setup
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: setup
+      object: tabTransaction Deletion Record
+  grain:
+    description: One row per Transaction Deletion Record document.
+    components:
+    - identity_id: transaction_deletion_record_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: company
+    description: Company
+    value_description: Link
+  - name: status
+    description: Status
+    value_description: Queued, Running, Failed, Completed, Cancelled
+  - name: error_log
+    description: Error Log
+    value_description: Long Text
+  - name: delete_bin_data_status
+    description: Delete Bins
+    value_description: Pending, Completed, Skipped
+  - name: delete_leads_and_addresses_status
+    description: Delete Leads and Addresses
+    value_description: Pending, Completed, Skipped
+  - name: reset_company_default_values_status
+    description: Reset Company Default Values
+    value_description: Pending, Completed, Skipped
+  - name: clear_notifications_status
+    description: Clear Notifications
+    value_description: Pending, Completed, Skipped
+  - name: initialize_doctypes_table_status
+    description: Initialize Summary Table
+    value_description: Pending, Completed, Skipped
+  - name: delete_transactions_status
+    description: Delete Transactions
+    value_description: Pending, Completed, Skipped
+  - name: amended_from
+    description: Amended From
+    value_description: Link
+  - name: process_in_single_transaction
+    description: Process in Single Transaction
+    value_description: Check
+  - name: name
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+  entity_definitions:
+  - identity_id: company_identity
+    dataset_columns:
+    - company
+    entity_universe: partial
+    unique: unknown
+    total: true
+    conforms: true
+    entity_expression:
+    - '[company]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Company document.
+  - identity_id: transaction_deletion_record_identity
+    dataset_columns:
+    - amended_from
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[amended_from]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Transaction Deletion Record document.
+  - identity_id: transaction_deletion_record_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.setup.transaction_deletion_record_item
+  descriptor:
+    qualified_name: frappe-erp.setup.transaction_deletion_record_item
+    display_name: Transaction Deletion Record Item
+    description: The Transaction Deletion Record Item child table in the Setup module.
+    synonyms:
+    - tabTransaction Deletion Record Item
+    tags:
+    - setup
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: setup
+      object: tabTransaction Deletion Record Item
+  grain:
+    description: One row per Transaction Deletion Record Item document.
+    components:
+    - identity_id: transaction_deletion_record_item_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: doctype_name
+    description: DocType
+    value_description: Link
+  - name: name
+    description: Primary key of the Transaction Deletion Record Item document.
+    value_description: Data
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  - name: parent
+    description: Name of the parent Transaction Deletion Record document.
+    value_description: Data
+  - name: parentfield
+    description: Fieldname of the parent table that contains this row.
+    value_description: Data
+    synonyms:
+    - Parent Field
+  - name: parenttype
+    value_description: Data
+    synonyms:
+    - Parent Type
+  entity_definitions:
+  - identity_id: doctype_identity
+    dataset_columns:
+    - doctype_name
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[doctype_name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a DocType document.
+  - identity_id: transaction_deletion_record_item_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: unknown
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+  - identity_id: transaction_deletion_record_identity
+    dataset_columns:
+    - parent
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Parent Transaction Deletion Record document that owns this row.
+- node_id: sql-database:frappe-erp.setup.transaction_deletion_record_to_delete
+  descriptor:
+    qualified_name: frappe-erp.setup.transaction_deletion_record_to_delete
+    display_name: Transaction Deletion Record To Delete
+    description: The Transaction Deletion Record To Delete child table in the Setup module.
+    synonyms:
+    - tabTransaction Deletion Record To Delete
+    tags:
+    - setup
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: setup
+      object: tabTransaction Deletion Record To Delete
+  grain:
+    description: One row per Transaction Deletion Record To Delete document.
+    components:
+    - identity_id: transaction_deletion_record_to_delete_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: doctype_name
+    description: DocType
+    value_description: Link
+  - name: company_field
+    description: Company Field. Company link field name used for filtering (optional - leave empty to
+      delete all records)
+    value_description: Data
+  - name: document_count
+    description: Document Count
+    value_description: Int
+  - name: child_doctypes
+    description: Child DocTypes. Child tables that will also be deleted
+    value_description: Small Text
+  - name: deleted
+    value_description: Check
+  - name: name
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  - name: parent
+    description: Name of the parent Transaction Deletion Record document.
+    value_description: Data
+  - name: parentfield
+    description: Fieldname of the parent table that contains this row.
+    value_description: Data
+    synonyms:
+    - Parent Field
+  - name: parenttype
+    description: DocType name of the parent document.
+    value_description: Data
+  entity_definitions:
+  - identity_id: doctype_identity
+    dataset_columns:
+    - doctype_name
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a DocType document.
+  - identity_id: transaction_deletion_record_to_delete_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Transaction Deletion Record To Delete.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+  - identity_id: transaction_deletion_record_identity
+    dataset_columns:
+    - parent
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[parent]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Parent Transaction Deletion Record document that owns this row.
+- node_id: sql-database:frappe-erp.setup.uom
+  descriptor:
+    qualified_name: frappe-erp.setup.uom
+    display_name: UOM
+    description: A unit you measure items in, like kg or box.
+    synonyms:
+    - tabUOM
+    tags:
+    - setup
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: setup
+      object: tabUOM
+  grain:
+    description: One row per UOM document.
+    components:
+    - identity_id: uom_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: uom_name
+    description: UOM Name
+    value_description: Data
+  - name: symbol
+    description: Symbol
+    value_description: Data
+  - name: common_code
+    description: Common Code. According to CEFACT/ICG/2010/IC013 or CEFACT/ICG/2010/IC010
+    value_description: Data
+  - name: description
+    description: Description
+    value_description: Small Text
+  - name: category
+    value_description: Link
+  - name: enabled
+    description: Enabled
+    value_description: Check
+  - name: must_be_whole_number
+    description: Must be Whole Number. Check this to disallow fractions. (for Nos)
+    value_description: Check
+  - name: name
+    description: Primary key of the UOM document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: uom_category_identity
+    dataset_columns:
+    - category
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a UOM Category document.
+  - identity_id: uom_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of UOM.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+- node_id: sql-database:frappe-erp.setup.uom_conversion_factor
+  descriptor:
+    qualified_name: frappe-erp.setup.uom_conversion_factor
+    display_name: UOM Conversion Factor
+    description: How many of one unit make another, like 1000 g in a kg.
+    synonyms:
+    - tabUOM Conversion Factor
+    tags:
+    - setup
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: setup
+      object: tabUOM Conversion Factor
+  grain:
+    description: One row per UOM Conversion Factor document.
+    components:
+    - identity_id: uom_conversion_factor_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: category
+    description: Category
+    value_description: Link
+  - name: from_uom
+    description: From
+    value_description: Link
+  - name: to_uom
+    description: To
+    value_description: Link
+  - name: value
+    description: Value
+    value_description: Float
+  - name: name
+    description: Primary key of the UOM Conversion Factor document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: uom_category_identity
+    dataset_columns:
+    - category
+    entity_universe: partial
+    unique: unknown
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[category]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a UOM Category document.
+  - identity_id: uom_identity
+    dataset_columns:
+    - from_uom
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[from_uom]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a UOM document.
+  - identity_id: uom_identity
+    dataset_columns:
+    - to_uom
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[to_uom]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a UOM document.
+  - identity_id: uom_conversion_factor_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    description: Primary key and complete population of UOM Conversion Factor.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.setup.vehicle
+  descriptor:
+    qualified_name: frappe-erp.setup.vehicle
+    display_name: Vehicle
+    description: The Vehicle document in the Setup module.
+    synonyms:
+    - tabVehicle
+    tags:
+    - setup
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: setup
+      object: tabVehicle
+  grain:
+    description: One row per Vehicle document.
+    components:
+    - identity_id: vehicle_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: license_plate
+    description: License Plate
+    value_description: Data
+  - name: make
+    description: Make
+    value_description: Data
+  - name: model
+    description: Model
+    value_description: Data
+  - name: company
+    description: Company
+    value_description: Link
+  - name: last_odometer
+    description: Odometer Value (Last)
+    value_description: Int
+  - name: acquisition_date
+    description: Acquisition Date
+    value_description: Date
+  - name: location
+    description: Location
+    value_description: Data
+  - name: chassis_no
+    description: Chassis No
+    value_description: Data
+  - name: vehicle_value
+    description: Vehicle Value
+    value_description: Currency
+  - name: employee
+    description: Employee
+  - name: insurance_company
+    description: Insurance Company
+    value_description: Data
+  - name: policy_no
+    description: Policy No
+  - name: start_date
+    description: Start Date
+    value_description: Date
+  - name: end_date
+    description: End Date
+    value_description: Date
+  - name: fuel_type
+    description: Fuel Type
+    value_description: Petrol, Diesel, Natural Gas, Electric
+  - name: uom
+    description: Fuel UOM
+    value_description: Link
+  - name: carbon_check_date
+    description: Last Carbon Check
+    value_description: Date
+  - name: color
+    description: Color
+    value_description: Data
+  - name: wheels
+    description: Wheels
+    value_description: Int
+  - name: doors
+    description: Doors
+    value_description: Int
+  - name: amended_from
+    description: Amended From
+    value_description: Link
+  - name: name
+    description: Primary key of the Vehicle document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: company_identity
+    dataset_columns:
+    - company
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[company]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Company document.
+  - identity_id: employee_identity
+    dataset_columns:
+    - employee
+    entity_universe: unknown
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[employee]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Employee document.
+  - identity_id: uom_identity
+    dataset_columns:
+    - uom
+    entity_universe: unknown
+    unique: false
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[uom]'
+    description: Reference to a UOM document.
+  - identity_id: vehicle_identity
+    dataset_columns:
+    - amended_from
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[amended_from]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Vehicle document.
+  - identity_id: vehicle_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Vehicle.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.setup.website_item_group
+  descriptor:
+    qualified_name: frappe-erp.setup.website_item_group
+    display_name: Website Item Group
+    description: Cross Listing of Item in multiple groups
+    synonyms:
+    - tabWebsite Item Group
+    tags:
+    - setup
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: setup
+      object: tabWebsite Item Group
+  grain:
+    description: One row per Website Item Group document.
+    components:
+    - identity_id: website_item_group_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: item_group
+    description: Item Group
+    value_description: Link
+  - name: name
+    description: Primary key of the Website Item Group document.
+    value_description: Data
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+  - name: parent
+    description: Name of the parent document.
+  - name: parentfield
+    value_description: Data
+    synonyms:
+    - Parent Field
+  - name: parenttype
+    description: DocType name of the parent document.
+    value_description: Data
+    synonyms:
+    - Parent Type
+  entity_definitions:
+  - identity_id: item_group_identity
+    dataset_columns:
+    - item_group
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[item_group]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Item Group document.
+  - identity_id: website_item_group_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Website Item Group.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.

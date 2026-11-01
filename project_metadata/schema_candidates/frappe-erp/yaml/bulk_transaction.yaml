@@ -1,0 +1,248 @@
+schema_version: '4'
+nodes:
+- node_id: sql-database:frappe-erp.bulk_transaction.bulk_transaction_log
+  descriptor:
+    qualified_name: frappe-erp.bulk_transaction.bulk_transaction_log
+    display_name: Bulk Transaction Log
+    description: The result of creating or submitting many documents at once.
+    synonyms:
+    - tabBulk Transaction Log
+    tags:
+    - bulk_transaction
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: bulk_transaction
+      object: tabBulk Transaction Log
+  grain:
+    description: One row per Bulk Transaction Log document.
+    components:
+    - identity_id: null
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: date
+    description: Date
+    value_description: Date
+  - name: log_entries
+    description: Log Entries
+  - name: succeeded
+    description: Succeeded
+    value_description: Int
+  - name: failed
+    description: Failed
+    value_description: Int
+  - name: name
+    description: Primary key of the Bulk Transaction Log document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: bulk_transaction_log_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Bulk Transaction Log.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.bulk_transaction.bulk_transaction_log_detail
+  descriptor:
+    qualified_name: frappe-erp.bulk_transaction.bulk_transaction_log_detail
+    display_name: Bulk Transaction Log Detail
+    description: The Bulk Transaction Log Detail document in the Bulk Transaction module.
+    tags:
+    - bulk_transaction
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: bulk_transaction
+      object: tabBulk Transaction Log Detail
+  grain:
+    description: One row per Bulk Transaction Log Detail document.
+    components:
+    - identity_id: bulk_transaction_log_detail_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: from_doctype
+    description: From Doctype
+    value_description: Link
+  - name: transaction_name
+    description: Name
+  - name: date
+    description: Date
+    value_description: Date
+  - name: time
+    description: Time
+    value_description: Time
+  - name: transaction_status
+    value_description: Data
+  - name: error_description
+    description: Error Description
+    value_description: Long Text
+  - name: to_doctype
+    description: To Doctype
+    value_description: Link
+  - name: retried
+    description: Retried
+    value_description: Int
+  - name: name
+    description: Primary key of the Bulk Transaction Log Detail document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: doctype_identity
+    dataset_columns:
+    - from_doctype
+    entity_universe: unknown
+    unique: unknown
+    total: false
+    conforms: true
+    entity_expression:
+    - '[from_doctype]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a DocType document.
+  - identity_id: doctype_identity
+    dataset_columns:
+    - to_doctype
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[to_doctype]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a DocType document.
+  - identity_id: bulk_transaction_log_detail_identity
+    dataset_columns:
+    - name
+    entity_universe: unknown
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Bulk Transaction Log Detail.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.

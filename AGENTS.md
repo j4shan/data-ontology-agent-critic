@@ -21,5 +21,6 @@ Authored assets that belong to one business domain must not share a file with an
   No suite, case, or gold AKG is derived from generated output.
 - Suites and gold AKGs are also organized per domain.
 - Current domains are `healthcare-payer`, `telecom-mobile`, `manufacturing-discrete`,
-  `retail-grocery`, `commerce-marketplace`, and `securities-brokerage`.
+  `retail-grocery`, `commerce-marketplace`, `securities-brokerage`, `frappe-erp`, and
+  `apache-ofbiz`.
 - Do not add another assessment domain without explicit direction.
