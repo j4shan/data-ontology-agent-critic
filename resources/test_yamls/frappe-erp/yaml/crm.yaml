@@ -1,0 +1,4008 @@
+schema_version: '4'
+nodes:
+- node_id: sql-database:frappe-erp.crm.appointment
+  descriptor:
+    qualified_name: frappe-erp.crm.appointment
+    display_name: Appointment
+    synonyms:
+    - tabAppointment
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: crm
+      object: tabAppointment
+  grain:
+    description: One row per Appointment document.
+    components:
+    - identity_id: appointment_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: scheduled_time
+    description: Scheduled Time
+  - name: status
+    description: Status
+    value_description: Open, Unverified, Closed
+  - name: created_through_portal
+    description: Created through Portal
+    value_description: Check
+  - name: email_verified
+    description: Email Verified
+    value_description: Check
+  - name: verification_token
+    description: Verification Token
+    value_description: Data
+  - name: customer_name
+    description: Name
+    value_description: Data
+  - name: customer_phone_number
+    description: Phone Number
+    value_description: Data
+  - name: customer_skype
+    description: Skype ID
+    value_description: Data
+  - name: customer_email
+    description: Email
+    value_description: Data
+  - name: customer_details
+    description: Details
+    value_description: Long Text
+  - name: appointment_with
+    description: Appointment With
+    value_description: Link
+  - name: party
+    description: Party
+    value_description: Dynamic Link
+  - name: calendar_event
+    description: Calendar Event
+    value_description: Link
+  - name: name
+    description: Primary key of the Appointment document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+  entity_definitions:
+  - identity_id: doctype_identity
+    dataset_columns:
+    - appointment_with
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: unknown
+    entity_expression:
+    - '[appointment_with]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a DocType document.
+  - identity_id: event_identity
+    dataset_columns:
+    - calendar_event
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: unknown
+    entity_expression:
+    - '[calendar_event]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Event document.
+  - identity_id: appointment_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: unknown
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Appointment.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.crm.appointment_booking_settings
+  descriptor:
+    qualified_name: frappe-erp.crm.appointment_booking_settings
+    display_name: Appointment Booking Settings
+    tags:
+    - crm
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: crm
+      object: tabAppointment Booking Settings
+  grain: unknown
+  columns:
+  - name: appointment_duration
+    description: Appointment Duration (In Minutes)
+  - name: email_reminders
+    description: Notify Via Email. Notify customer and agent via email on the day of the appointment.
+    value_description: Check
+    synonyms:
+    - Notify Via Email
+  - name: number_of_agents
+    description: Number of Concurrent Appointments
+    value_description: Int
+  - name: enable_scheduling
+    description: Enable Appointment Scheduling
+    value_description: Check
+  - name: advance_booking_days
+    description: Number of days appointments can be booked in advance
+    value_description: Int
+  - name: holiday_list
+    description: Holiday List
+    value_description: Link
+  - name: enable_appointment_portal
+    description: Enable Appointment Booking Through Portal
+    value_description: Check
+  - name: verification_link_expiry_duration
+    description: 'Verification Link Expiry Duration. In Minutes (min: 15 mins, max: 60 mins)'
+    value_description: Int
+  - name: success_redirect_url
+    description: Success Redirect URL. Leave blank for home. This is relative to site URL, for example
+      "about" will redirect to "https://yoursitename.com/about"
+    value_description: Data
+  - name: action_for_expired_unverified_appointments
+    description: Action for Expired Unverified Appointments
+    value_description: Mark as Closed, Delete Permanently
+  entity_definitions:
+  - identity_id: holiday_list_identity
+    dataset_columns:
+    - holiday_list
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[holiday_list]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Holiday List document.
+- node_id: sql-database:frappe-erp.crm.appointment_booking_slots
+  descriptor:
+    qualified_name: frappe-erp.crm.appointment_booking_slots
+    display_name: Appointment Booking Slots
+    description: The Appointment Booking Slots child table in the CRM module.
+    synonyms:
+    - tabAppointment Booking Slots
+    tags:
+    - crm
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: crm
+      object: tabAppointment Booking Slots
+  grain:
+    description: One row per Appointment Booking Slots document.
+    components:
+    - identity_id: appointment_booking_slots_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: day_of_week
+    description: Day Of Week
+    value_description: Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday
+  - name: from_time
+    description: From Time
+    value_description: Time
+  - name: to_time
+    description: To Time
+    value_description: Time
+  - name: name
+    description: Primary key of the Appointment Booking Slots document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  - name: parent
+    description: Name of the parent Appointment Booking Settings document.
+    value_description: Data
+  - name: parentfield
+    description: Fieldname of the parent table that contains this row.
+    value_description: Data
+    synonyms:
+    - Parent Field
+  - name: parenttype
+    description: DocType name of the parent document.
+    value_description: Data
+    synonyms:
+    - Parent Type
+  entity_definitions:
+  - identity_id: appointment_booking_slots_identity
+    dataset_columns:
+    - name
+    entity_universe: unknown
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+  - identity_id: appointment_booking_settings_identity
+    dataset_columns:
+    - parent
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[parent]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Parent Appointment Booking Settings document that owns this row.
+- node_id: sql-database:frappe-erp.crm.availability_of_slots
+  descriptor:
+    qualified_name: frappe-erp.crm.availability_of_slots
+    display_name: Availability Of Slots
+    description: The Availability Of Slots child table in the CRM module.
+    synonyms:
+    - tabAvailability Of Slots
+    tags:
+    - crm
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: crm
+      object: tabAvailability Of Slots
+  grain:
+    description: One row per Availability Of Slots document.
+    components:
+    - identity_id: availability_of_slots_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: day_of_week
+    description: Day Of Week
+    value_description: Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday
+  - name: from_time
+    description: From Time
+    value_description: Time
+  - name: to_time
+    description: To Time
+    value_description: Time
+  - name: name
+    description: Primary key of the Availability Of Slots document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  - name: parent
+    description: Name of the parent document.
+    value_description: Data
+  - name: parentfield
+    description: Fieldname of the parent table that contains this row.
+    value_description: Data
+    synonyms:
+    - Parent Field
+  - name: parenttype
+    description: DocType name of the parent document.
+    value_description: Data
+    synonyms:
+    - Parent Type
+  entity_definitions:
+  - identity_id: availability_of_slots_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.crm.campaign
+  descriptor:
+    qualified_name: frappe-erp.crm.campaign
+    display_name: Campaign
+    synonyms:
+    - tabCampaign
+    tags:
+    - crm
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: crm
+      object: tabCampaign
+  grain: unknown
+  columns:
+  - name: campaign_name
+    description: Campaign Name
+    value_description: Data
+  - name: naming_series
+    value_description: SAL-CAM-.YYYY.-
+  - name: description
+    value_description: Text
+  - name: name
+    description: Primary key of the Campaign document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: campaign_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: unknown
+    conforms: unknown
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Campaign.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.crm.campaign_email_schedule
+  descriptor:
+    qualified_name: frappe-erp.crm.campaign_email_schedule
+    display_name: Campaign Email Schedule
+    description: The Campaign Email Schedule child table in the CRM module.
+    synonyms:
+    - tabCampaign Email Schedule
+    tags:
+    - crm
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: crm
+      object: tabCampaign Email Schedule
+  grain:
+    description: One row per Campaign Email Schedule document.
+    components:
+    - identity_id: campaign_email_schedule_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: email_template
+    description: Email Template
+    value_description: Link
+  - name: send_after_days
+    description: Send After (days)
+    value_description: Int
+  - name: name
+    description: Primary key of the Campaign Email Schedule document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  - name: parent
+    description: Name of the parent Campaign document.
+    value_description: Data
+  - name: parentfield
+    description: Fieldname of the parent table that contains this row.
+    synonyms:
+    - Parent Field
+  - name: parenttype
+    description: DocType name of the parent document.
+    value_description: Data
+    synonyms:
+    - Parent Type
+  entity_definitions:
+  - identity_id: email_template_identity
+    dataset_columns:
+    - email_template
+    entity_universe: unknown
+    unique: false
+    total: true
+    conforms: true
+    description: Reference to a Email Template document.
+  - identity_id: campaign_email_schedule_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+  - identity_id: campaign_identity
+    dataset_columns:
+    - parent
+    entity_universe: unknown
+    unique: false
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[parent]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Parent Campaign document that owns this row.
+- node_id: sql-database:frappe-erp.crm.competitor
+  descriptor:
+    qualified_name: frappe-erp.crm.competitor
+    display_name: Competitor
+    description: The Competitor document in the CRM module.
+    synonyms:
+    - tabCompetitor
+    tags:
+    - crm
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: crm
+      object: tabCompetitor
+  grain:
+    description: One row per Competitor document.
+    components:
+    - identity_id: competitor_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: competitor_name
+    description: Competitor Name
+    value_description: Data
+  - name: website
+    description: Website
+    value_description: Data
+  - name: name
+    description: Primary key of the Competitor document.
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: competitor_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Competitor.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.crm.competitor_detail
+  descriptor:
+    qualified_name: frappe-erp.crm.competitor_detail
+    display_name: Competitor Detail
+    description: The Competitor Detail child table in the CRM module.
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: crm
+      object: tabCompetitor Detail
+  grain:
+    description: One row per Competitor Detail document.
+    components:
+    - identity_id: competitor_detail_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: competitor
+    description: Competitor
+    value_description: Link
+  - name: name
+    description: Primary key of the Competitor Detail document.
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  - name: parent
+    description: Name of the parent document.
+    value_description: Data
+  - name: parentfield
+    description: Fieldname of the parent table that contains this row.
+    value_description: Data
+    synonyms:
+    - Parent Field
+  - name: parenttype
+    description: DocType name of the parent document.
+    value_description: Data
+    synonyms:
+    - Parent Type
+  entity_definitions:
+  - identity_id: competitor_identity
+    dataset_columns:
+    - competitor
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[competitor]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+  - identity_id: competitor_detail_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: unknown
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Competitor Detail.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: unknown
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.crm.contract
+  descriptor:
+    qualified_name: frappe-erp.crm.contract
+    display_name: Contract
+    synonyms:
+    - tabContract
+    tags:
+    - crm
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: crm
+      object: tabContract
+  grain:
+    description: One row per Contract document.
+    components:
+    - identity_id: contract_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: party_type
+    description: Party Type
+    value_description: Customer, Supplier, Employee
+  - name: is_signed
+    description: Signed
+    value_description: Check
+  - name: party_name
+    description: Party Name
+    value_description: Dynamic Link
+  - name: party_user
+    description: Party User
+    value_description: Link
+  - name: status
+    description: Status
+    value_description: Unsigned, Active, Inactive, Cancelled
+  - name: fulfilment_status
+    description: Fulfilment Status
+  - name: party_full_name
+    description: Party Full Name
+  - name: start_date
+    description: Start Date
+    value_description: Date
+  - name: end_date
+    description: End Date
+    value_description: Date
+  - name: signee
+    description: Signee
+    value_description: Data
+  - name: signed_on
+    description: Signed On
+    value_description: Datetime
+  - name: ip_address
+    value_description: Data
+  - name: contract_template
+    description: Contract Template
+    value_description: Link
+  - name: contract_terms
+    description: Contract Terms
+    value_description: Text Editor
+  - name: requires_fulfilment
+    description: Requires Fulfilment
+  - name: fulfilment_deadline
+    description: Fulfilment Deadline
+    value_description: Date
+  - name: signee_company
+    description: Signee (Company)
+    value_description: Signature
+  - name: signed_by_company
+    description: Signed By (Company)
+    value_description: Link
+  - name: document_type
+    description: Document Type
+    value_description: Quotation, Project, Sales Order, Purchase Order, Sales Invoice, Purchase Invoice
+  - name: document_name
+    description: Document Name
+    value_description: Dynamic Link
+  - name: amended_from
+    description: Amended From
+    value_description: Link
+  - name: name
+    description: Primary key of the Contract document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: user_identity
+    dataset_columns:
+    - party_user
+    entity_universe: unknown
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[party_user]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a User document.
+  - identity_id: contract_template_identity
+    dataset_columns:
+    - contract_template
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[contract_template]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Contract Template document.
+  - identity_id: user_identity
+    dataset_columns:
+    - signed_by_company
+    entity_universe: partial
+    unique: unknown
+    total: false
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a User document.
+  - identity_id: contract_identity
+    dataset_columns:
+    - amended_from
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[amended_from]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Contract document.
+  - identity_id: contract_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Contract.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+- node_id: sql-database:frappe-erp.crm.contract_fulfilment_checklist
+  descriptor:
+    qualified_name: frappe-erp.crm.contract_fulfilment_checklist
+    display_name: Contract Fulfilment Checklist
+    description: The Contract Fulfilment Checklist child table in the CRM module.
+    synonyms:
+    - tabContract Fulfilment Checklist
+    tags:
+    - crm
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: crm
+      object: tabContract Fulfilment Checklist
+  grain:
+    description: One row per Contract Fulfilment Checklist document.
+    components:
+    - identity_id: contract_fulfilment_checklist_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: fulfilled
+    description: Fulfilled
+    value_description: Check
+  - name: requirement
+    description: Requirement
+    value_description: Data
+  - name: notes
+  - name: amended_from
+    description: Amended From
+    value_description: Link
+  - name: name
+    description: Primary key of the Contract Fulfilment Checklist document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  - name: parent
+    description: Name of the parent Contract document.
+    value_description: Data
+  - name: parentfield
+    description: Fieldname of the parent table that contains this row.
+    value_description: Data
+    synonyms:
+    - Parent Field
+  - name: parenttype
+    description: DocType name of the parent document.
+    synonyms:
+    - Parent Type
+  entity_definitions:
+  - identity_id: contract_fulfilment_checklist_identity
+    dataset_columns:
+    - amended_from
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[amended_from]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Contract Fulfilment Checklist document.
+  - identity_id: contract_fulfilment_checklist_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Contract Fulfilment Checklist.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: unknown
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+  - identity_id: contract_identity
+    dataset_columns:
+    - parent
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[parent]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Parent Contract document that owns this row.
+- node_id: sql-database:frappe-erp.crm.contract_template
+  descriptor:
+    qualified_name: frappe-erp.crm.contract_template
+    display_name: Contract Template
+    description: The Contract Template document in the CRM module.
+    synonyms:
+    - tabContract Template
+    tags:
+    - crm
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: crm
+      object: tabContract Template
+  grain:
+    description: One row per Contract Template document.
+    components:
+    - identity_id: contract_template_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: title
+    description: Title
+    value_description: Data
+  - name: contract_terms
+    description: Contract Terms and Conditions
+  - name: requires_fulfilment
+    description: Requires Fulfilment
+    value_description: Check
+  - name: name
+    description: Primary key of the Contract Template document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: contract_template_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Contract Template.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.crm.contract_template_fulfilment_terms
+  descriptor:
+    qualified_name: frappe-erp.crm.contract_template_fulfilment_terms
+    display_name: Contract Template Fulfilment Terms
+    description: The Contract Template Fulfilment Terms child table in the CRM module.
+    synonyms:
+    - tabContract Template Fulfilment Terms
+    tags:
+    - crm
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: crm
+      object: tabContract Template Fulfilment Terms
+  grain:
+    description: One row per Contract Template Fulfilment Terms document.
+    components:
+    - identity_id: contract_template_fulfilment_terms_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: requirement
+    description: Requirement
+    value_description: Data
+  - name: name
+    description: Primary key of the Contract Template Fulfilment Terms document.
+    value_description: Data
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+  - name: idx
+    description: Row index among sibling rows.
+    synonyms:
+    - Index
+  - name: parent
+    description: Name of the parent Contract Template document.
+    value_description: Data
+  - name: parentfield
+    description: Fieldname of the parent table that contains this row.
+    value_description: Data
+    synonyms:
+    - Parent Field
+  - name: parenttype
+    description: DocType name of the parent document.
+    value_description: Data
+    synonyms:
+    - Parent Type
+  entity_definitions:
+  - identity_id: contract_template_fulfilment_terms_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Contract Template Fulfilment Terms.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+  - identity_id: contract_template_identity
+    dataset_columns:
+    - parent
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[parent]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Parent Contract Template document that owns this row.
+- node_id: sql-database:frappe-erp.crm.crm_note
+  descriptor:
+    qualified_name: frappe-erp.crm.crm_note
+    display_name: CRM Note
+    description: The CRM Note child table in the CRM module.
+    synonyms:
+    - tabCRM Note
+    tags:
+    - crm
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: crm
+      object: tabCRM Note
+  grain:
+    description: One row per CRM Note document.
+    components:
+    - identity_id: crm_note_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: note
+    description: Note
+  - name: added_by
+    description: Added By
+    value_description: Link
+  - name: added_on
+    description: Added On
+    value_description: Datetime
+  - name: name
+    description: Primary key of the CRM Note document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  - name: parent
+    description: Name of the parent document.
+    value_description: Data
+  - name: parentfield
+    description: Fieldname of the parent table that contains this row.
+    synonyms:
+    - Parent Field
+  - name: parenttype
+    description: DocType name of the parent document.
+    value_description: Data
+    synonyms:
+    - Parent Type
+  entity_definitions:
+  - identity_id: user_identity
+    dataset_columns:
+    - added_by
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[added_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a User document.
+  - identity_id: crm_note_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: unknown
+    entity_expression:
+    - '[name]'
+    description: Primary key and complete population of CRM Note.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.crm.crm_settings
+  descriptor:
+    qualified_name: frappe-erp.crm.crm_settings
+    display_name: CRM Settings
+    description: How leads, opportunities and appointments work.
+    tags:
+    - crm
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: crm
+      object: tabCRM Settings
+  grain: unknown
+  columns:
+  - name: campaign_naming_by
+    description: Campaign Naming By
+    value_description: Campaign Name, Naming Series
+  - name: allow_lead_duplication_based_on_emails
+    description: Allow Lead Duplication based on Emails
+    value_description: Check
+  - name: auto_creation_of_contact
+    description: Auto Creation of Contact
+    value_description: Check
+  - name: close_opportunity_after_days
+    description: Close Replied Opportunity After Days. Auto close Opportunity Replied after the no. of
+      days mentioned above
+    value_description: Int
+  - name: enable_opportunity_creation_from_contact_us
+    description: Enable Opportunity Creation from Contact Us
+    value_description: Check
+  - name: default_valid_till
+    description: Default Quotation Validity Days
+  - name: carry_forward_communication_and_comments
+    description: Carry Forward Communication and Comments. All the Comments and Emails will be copied
+      from one document to another newly created document(Lead -> Opportunity -> Quotation) throughout
+      the CRM documents.
+    value_description: Check
+  - name: update_timestamp_on_new_communication
+    description: Update timestamp on new communication. Update the modified timestamp on new communications
+      received in Lead & Opportunity.
+    value_description: Check
+  - name: enable_frappe_crm_data_synchronization
+    description: Enable Frappe CRM Data Synchronization
+  entity_definitions: []
+- node_id: sql-database:frappe-erp.crm.email_campaign
+  descriptor:
+    qualified_name: frappe-erp.crm.email_campaign
+    display_name: Email Campaign
+    description: A series of emails sent to leads or contacts on a schedule.
+    synonyms:
+    - tabEmail Campaign
+    tags:
+    - crm
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: crm
+      object: tabEmail Campaign
+  grain:
+    description: One row per Email Campaign document.
+    components:
+    - identity_id: email_campaign_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: campaign_name
+    description: Campaign
+    value_description: Link
+  - name: email_campaign_for
+    description: Email Campaign For
+    value_description: Lead, Contact, Email Group
+  - name: recipient
+    description: Recipient
+    value_description: Dynamic Link
+  - name: sender
+    description: Sender
+    value_description: Link
+  - name: start_date
+    description: Start Date
+    value_description: Date
+  - name: end_date
+    description: End Date
+    value_description: Date
+  - name: status
+    description: Status
+    value_description: Scheduled, In Progress, Completed, Unsubscribed
+  - name: name
+    description: Primary key of the Email Campaign document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: campaign_identity
+    dataset_columns:
+    - campaign_name
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[campaign_name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Campaign document.
+  - identity_id: user_identity
+    dataset_columns:
+    - sender
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[sender]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a User document.
+  - identity_id: email_campaign_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Email Campaign.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.crm.frappe_crm_allowed_user
+  descriptor:
+    qualified_name: frappe-erp.crm.frappe_crm_allowed_user
+    display_name: Frappe CRM Allowed User
+    description: The Frappe CRM Allowed User child table in the CRM module.
+    synonyms:
+    - tabFrappe CRM Allowed User
+    tags:
+    - crm
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: crm
+      object: tabFrappe CRM Allowed User
+  grain:
+    description: One row per Frappe CRM Allowed User document.
+    components:
+    - identity_id: frappe_crm_allowed_user_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: user
+    description: User
+    value_description: Link
+  - name: name
+    description: Primary key of the Frappe CRM Allowed User document.
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    synonyms:
+    - Document Status
+  - name: idx
+    value_description: Int
+    synonyms:
+    - Index
+  - name: parent
+    description: Name of the parent document.
+    value_description: Data
+  - name: parentfield
+    description: Fieldname of the parent table that contains this row.
+    value_description: Data
+    synonyms:
+    - Parent Field
+  - name: parenttype
+    description: DocType name of the parent document.
+    value_description: Data
+    synonyms:
+    - Parent Type
+  entity_definitions:
+  - identity_id: user_identity
+    dataset_columns:
+    - user
+    entity_universe: partial
+    unique: unknown
+    total: true
+    conforms: true
+    entity_expression:
+    - '[user]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a User document.
+  - identity_id: frappe_crm_allowed_user_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Frappe CRM Allowed User.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.crm.lead
+  descriptor:
+    qualified_name: frappe-erp.crm.lead
+    display_name: Lead
+    description: Someone who might buy from you.
+    synonyms:
+    - tabLead
+    tags:
+    - crm
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: crm
+      object: tabLead
+  grain:
+    description: One row per Lead document.
+    components:
+    - identity_id: lead_identity
+      dataset_columns:
+      - name
+  columns:
+  - name: naming_series
+    value_description: CRM-LEAD-.YYYY.-
+  - name: salutation
+    description: Salutation
+  - name: first_name
+    value_description: Data
+  - name: middle_name
+    value_description: Data
+  - name: last_name
+    description: Last Name
+  - name: lead_name
+    description: Full Name
+    value_description: Data
+  - name: job_title
+    description: Job Title
+    value_description: Data
+  - name: gender
+    description: Gender
+    value_description: Link
+  - name: lead_owner
+    description: Lead Owner
+    value_description: Link
+  - name: status
+    description: Status
+    value_description: Lead, Open, Replied, Opportunity, Quotation, Lost Quotation, Interested, Converted,
+      Do Not Contact
+  - name: customer
+    description: From Customer
+  - name: type
+    description: Lead Type
+    value_description: Client, Channel Partner, Consultant
+  - name: request_type
+    description: Request Type
+    value_description: Product Enquiry, Request for Information, Suggestions, Other
+  - name: email_id
+    description: Email
+    value_description: Data
+  - name: website
+    description: Website
+    value_description: Data
+  - name: mobile_no
+    description: Mobile No
+  - name: whatsapp_no
+    description: WhatsApp
+    value_description: Data
+  - name: phone
+    description: Phone
+  - name: phone_ext
+    description: Phone Ext.
+    value_description: Data
+  - name: company_name
+    description: Organization Name
+    value_description: Data
+  - name: no_of_employees
+    description: No of Employees
+    value_description: 1-10, 11-50, 51-200, 201-500, 501-1000, 1000+
+  - name: annual_revenue
+    description: Annual Revenue
+  - name: industry
+    description: Industry
+    value_description: Link
+  - name: market_segment
+    description: Market Segment
+    value_description: Link
+  - name: territory
+    description: Territory
+    value_description: Link
+  - name: fax
+    description: Fax
+    value_description: Data
+  - name: city
+    description: City
+    value_description: Data
+  - name: state
+    description: State/Province
+    value_description: Data
+  - name: country
+    value_description: Link
+  - name: utm_source
+    description: Source
+    value_description: Link
+  - name: utm_medium
+    description: Medium
+    value_description: Link
+  - name: utm_campaign
+    description: Campaign
+    value_description: Link
+  - name: utm_content
+    description: Content
+    value_description: Data
+  - name: qualification_status
+    description: Qualification Status
+    value_description: Unqualified, In Process, Qualified
+  - name: qualified_by
+    description: Qualified By
+    value_description: Link
+  - name: qualified_on
+    value_description: Date
+  - name: company
+    description: Company
+    value_description: Link
+  - name: language
+    description: Print Language
+    value_description: Link
+  - name: image
+    description: Image
+  - name: title
+    description: Title
+    value_description: Data
+  - name: disabled
+    description: Disabled
+    value_description: Check
+  - name: unsubscribed
+    description: Unsubscribed
+    value_description: Check
+  - name: blog_subscriber
+    description: Blog Subscriber
+    value_description: Check
+  - name: name
+    description: Primary key of the Lead document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: salutation_identity
+    dataset_columns:
+    - salutation
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Salutation document.
+  - identity_id: gender_identity
+    dataset_columns:
+    - gender
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[gender]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Gender document.
+  - identity_id: user_identity
+    dataset_columns:
+    - lead_owner
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[lead_owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a User document.
+  - identity_id: customer_identity
+    dataset_columns:
+    - customer
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[customer]'
+    description: Reference to a Customer document.
+  - identity_id: industry_type_identity
+    dataset_columns:
+    - industry
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: unknown
+    entity_expression:
+    - '[industry]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Industry Type document.
+  - identity_id: market_segment_identity
+    dataset_columns:
+    - market_segment
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[market_segment]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Market Segment document.
+  - identity_id: territory_identity
+    dataset_columns:
+    - territory
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[territory]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Territory document.
+  - identity_id: country_identity
+    dataset_columns:
+    - country
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: unknown
+    entity_expression:
+    - '[country]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Country document.
+  - identity_id: utm_source_identity
+    dataset_columns:
+    - utm_source
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[utm_source]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a UTM Source document.
+  - identity_id: utm_medium_identity
+    dataset_columns:
+    - utm_medium
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[utm_medium]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a UTM Medium document.
+  - identity_id: utm_campaign_identity
+    dataset_columns:
+    - utm_campaign
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[utm_campaign]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a UTM Campaign document.
+  - identity_id: user_identity
+    dataset_columns:
+    - qualified_by
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[qualified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a User document.
+  - identity_id: company_identity
+    dataset_columns:
+    - company
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[company]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Company document.
+  - identity_id: language_identity
+    dataset_columns:
+    - language
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[language]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Language document.
+  - identity_id: lead_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Lead.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: unknown
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.crm.lost_reason_detail
+  descriptor:
+    qualified_name: frappe-erp.crm.lost_reason_detail
+    display_name: Lost Reason Detail
+    description: The Lost Reason Detail child table in the CRM module.
+    synonyms:
+    - tabLost Reason Detail
+    tags:
+    - crm
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: crm
+      object: tabLost Reason Detail
+  grain:
+    description: One row per Lost Reason Detail document.
+    components:
+    - identity_id: lost_reason_detail_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: lost_reason
+    description: Opportunity Lost Reason
+  - name: name
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+  - name: modified_by
+    description: User who last updated the document.
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  - name: parent
+    description: Name of the parent document.
+    value_description: Data
+  - name: parentfield
+    description: Fieldname of the parent table that contains this row.
+    value_description: Data
+    synonyms:
+    - Parent Field
+  - name: parenttype
+    description: DocType name of the parent document.
+    value_description: Data
+    synonyms:
+    - Parent Type
+  entity_definitions:
+  - identity_id: opportunity_lost_reason_identity
+    dataset_columns:
+    - lost_reason
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[lost_reason]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Opportunity Lost Reason document.
+  - identity_id: lost_reason_detail_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: unknown
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Lost Reason Detail.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: unknown
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.crm.market_segment
+  descriptor:
+    qualified_name: frappe-erp.crm.market_segment
+    display_name: Market Segment
+    description: The Market Segment document in the CRM module.
+    synonyms:
+    - tabMarket Segment
+    tags:
+    - crm
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: crm
+      object: tabMarket Segment
+  grain:
+    description: One row per Market Segment document.
+    components:
+    - identity_id: market_segment_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: market_segment
+    description: Market Segment
+    value_description: Data
+  - name: name
+    description: Primary key of the Market Segment document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: market_segment_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Market Segment.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.crm.opportunity
+  descriptor:
+    qualified_name: frappe-erp.crm.opportunity
+    display_name: Opportunity
+    description: A potential sale to a lead or customer.
+    synonyms:
+    - tabOpportunity
+    tags:
+    - crm
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: crm
+      object: tabOpportunity
+  grain:
+    description: One row per Opportunity document.
+    components:
+    - identity_id: opportunity_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: naming_series
+    description: Series
+    value_description: CRM-OPP-.YYYY.-
+  - name: opportunity_from
+    description: Opportunity From
+    value_description: Link
+  - name: party_name
+    value_description: Dynamic Link
+  - name: customer_name
+    description: Customer Name
+    value_description: Data
+  - name: status
+    description: Status
+    value_description: Open, Quotation, Converted, Lost, Replied, Closed
+  - name: opportunity_type
+    description: Opportunity Type
+    value_description: Link
+  - name: opportunity_owner
+    description: Opportunity Owner
+    value_description: Link
+  - name: sales_stage
+    description: Sales Stage
+    value_description: Link
+  - name: expected_closing
+    description: Expected Closing Date
+    value_description: Date
+  - name: probability
+    description: Probability (%)
+    value_description: Percent
+  - name: no_of_employees
+    description: No of Employees
+    value_description: 1-10, 11-50, 51-200, 201-500, 501-1000, 1000+
+  - name: annual_revenue
+    description: Annual Revenue
+    value_description: Currency
+  - name: customer_group
+    value_description: Link
+  - name: industry
+    description: Industry
+  - name: market_segment
+    description: Market Segment
+  - name: website
+    description: Website
+  - name: city
+    description: City
+    value_description: Data
+  - name: state
+    description: State/Province
+  - name: country
+    description: Country
+    value_description: Link
+  - name: territory
+    description: Territory
+    value_description: Link
+  - name: currency
+    description: Currency
+    value_description: Link
+  - name: conversion_rate
+    description: Exchange Rate
+    value_description: Float
+  - name: opportunity_amount
+    description: Opportunity Amount
+    value_description: Currency
+  - name: base_opportunity_amount
+    description: Opportunity Amount (Company Currency)
+    value_description: Currency
+  - name: utm_source
+    description: Source
+    value_description: Link
+  - name: utm_medium
+    description: Medium
+    value_description: Link
+  - name: utm_campaign
+    description: Campaign
+    value_description: Link
+  - name: utm_content
+    description: Content
+    value_description: Data
+  - name: company
+    description: Company
+    value_description: Link
+  - name: transaction_date
+    description: Opportunity Date
+    value_description: Date
+  - name: language
+    description: Print Language
+    value_description: Link
+  - name: amended_from
+    description: Amended From
+    value_description: Link
+  - name: title
+    description: Title
+    value_description: Data
+  - name: first_response_time
+    description: First Response Time
+    value_description: Duration
+  - name: order_lost_reason
+    description: Detailed Reason
+    value_description: Small Text
+  - name: lost_on
+    description: Lost On
+    value_description: Date
+  - name: contact_person
+    description: Contact Person
+  - name: job_title
+    description: Job Title
+    value_description: Data
+  - name: contact_email
+    description: Contact Email
+    value_description: Data
+  - name: contact_mobile
+    description: Contact Mobile
+    value_description: Data
+  - name: whatsapp
+    description: WhatsApp
+    value_description: Data
+  - name: phone
+    description: Phone
+    value_description: Data
+  - name: phone_ext
+    description: Phone Ext.
+    value_description: Data
+  - name: customer_address
+    description: Customer / Lead Address
+    value_description: Link
+  - name: address_display
+    description: Address
+    value_description: Text Editor
+  - name: contact_display
+    description: Contact
+    value_description: Small Text
+  - name: base_total
+    description: Total (Company Currency)
+    value_description: Currency
+  - name: total
+    description: Total
+    value_description: Currency
+  - name: name
+    description: Primary key of the Opportunity document.
+    value_description: Data
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: doctype_identity
+    dataset_columns:
+    - opportunity_from
+    entity_universe: unknown
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[opportunity_from]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a DocType document.
+  - identity_id: opportunity_type_identity
+    dataset_columns:
+    - opportunity_type
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Opportunity Type document.
+  - identity_id: user_identity
+    dataset_columns:
+    - opportunity_owner
+    entity_universe: partial
+    unique: unknown
+    total: false
+    conforms: true
+    entity_expression:
+    - '[opportunity_owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+  - identity_id: sales_stage_identity
+    dataset_columns:
+    - sales_stage
+    entity_universe: unknown
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[sales_stage]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Sales Stage document.
+  - identity_id: customer_group_identity
+    dataset_columns:
+    - customer_group
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Customer Group document.
+  - identity_id: industry_type_identity
+    dataset_columns:
+    - industry
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[industry]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Industry Type document.
+  - identity_id: market_segment_identity
+    dataset_columns:
+    - market_segment
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[market_segment]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Market Segment document.
+  - identity_id: country_identity
+    dataset_columns:
+    - country
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[country]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Country document.
+  - identity_id: territory_identity
+    dataset_columns:
+    - territory
+    entity_universe: unknown
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[territory]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Territory document.
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency
+    entity_universe: unknown
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[currency]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Currency document.
+  - identity_id: utm_source_identity
+    dataset_columns:
+    - utm_source
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[utm_source]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a UTM Source document.
+  - identity_id: utm_medium_identity
+    dataset_columns:
+    - utm_medium
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[utm_medium]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a UTM Medium document.
+  - identity_id: utm_campaign_identity
+    dataset_columns:
+    - utm_campaign
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[utm_campaign]'
+    description: Reference to a UTM Campaign document.
+  - identity_id: company_identity
+    dataset_columns:
+    - company
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[company]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Company document.
+  - identity_id: language_identity
+    dataset_columns:
+    - language
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[language]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Language document.
+  - identity_id: opportunity_identity
+    dataset_columns:
+    - amended_from
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[amended_from]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+  - identity_id: contact_identity
+    dataset_columns:
+    - contact_person
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[contact_person]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Contact document.
+  - identity_id: address_identity
+    dataset_columns:
+    - customer_address
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Address document.
+  - identity_id: opportunity_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Opportunity.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: unknown
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.crm.opportunity_item
+  descriptor:
+    qualified_name: frappe-erp.crm.opportunity_item
+    display_name: Opportunity Item
+    description: The Opportunity Item child table in the CRM module.
+    synonyms:
+    - tabOpportunity Item
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: crm
+      object: tabOpportunity Item
+  grain:
+    description: One row per Opportunity Item document.
+    components:
+    - identity_id: opportunity_item_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: item_code
+    description: Item Code
+    value_description: Link
+  - name: item_name
+    description: Item Name
+    value_description: Data
+  - name: uom
+    description: UOM
+    value_description: Link
+  - name: qty
+    description: Qty
+    value_description: Float
+  - name: brand
+    description: Brand
+  - name: item_group
+    description: Item Group
+    value_description: Link
+  - name: description
+    description: Description
+    value_description: Text Editor
+  - name: image
+  - name: base_rate
+    value_description: Currency
+  - name: base_amount
+    description: Amount (Company Currency)
+    value_description: Currency
+  - name: rate
+    description: Rate
+    value_description: Currency
+  - name: amount
+    description: Amount
+    value_description: Currency
+  - name: name
+    description: Primary key of the Opportunity Item document.
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  - name: parent
+    description: Name of the parent Opportunity document.
+    value_description: Data
+  - name: parentfield
+    description: Fieldname of the parent table that contains this row.
+  - name: parenttype
+    description: DocType name of the parent document.
+    value_description: Data
+  entity_definitions:
+  - identity_id: item_identity
+    dataset_columns:
+    - item_code
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[item_code]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Item document.
+  - identity_id: uom_identity
+    dataset_columns:
+    - uom
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[uom]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a UOM document.
+  - identity_id: brand_identity
+    dataset_columns:
+    - brand
+    entity_universe: unknown
+    unique: false
+    total: false
+    conforms: unknown
+    entity_expression:
+    - '[brand]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Brand document.
+  - identity_id: item_group_identity
+    dataset_columns:
+    - item_group
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[item_group]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+  - identity_id: opportunity_item_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Opportunity Item.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: unknown
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: unknown
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+  - identity_id: opportunity_identity
+    dataset_columns:
+    - parent
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[parent]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Parent Opportunity document that owns this row.
+- node_id: sql-database:frappe-erp.crm.opportunity_lost_reason
+  descriptor:
+    qualified_name: frappe-erp.crm.opportunity_lost_reason
+    display_name: Opportunity Lost Reason
+    description: The Opportunity Lost Reason document in the CRM module.
+    synonyms:
+    - tabOpportunity Lost Reason
+    tags:
+    - crm
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: crm
+      object: tabOpportunity Lost Reason
+  grain:
+    description: One row per Opportunity Lost Reason document.
+    components:
+    - identity_id: opportunity_lost_reason_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: lost_reason
+    description: Lost Reason
+    value_description: Data
+  - name: name
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: opportunity_lost_reason_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Opportunity Lost Reason.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.crm.opportunity_lost_reason_detail
+  descriptor:
+    qualified_name: frappe-erp.crm.opportunity_lost_reason_detail
+    display_name: Opportunity Lost Reason Detail
+    synonyms:
+    - tabOpportunity Lost Reason Detail
+    tags:
+    - crm
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: crm
+      object: tabOpportunity Lost Reason Detail
+  grain:
+    description: One row per Opportunity Lost Reason Detail document.
+    components:
+    - identity_id: opportunity_lost_reason_detail_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: lost_reason
+    value_description: Link
+  - name: name
+    description: Primary key of the Opportunity Lost Reason Detail document.
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  - name: parent
+    description: Name of the parent document.
+    value_description: Data
+  - name: parentfield
+    description: Fieldname of the parent table that contains this row.
+    value_description: Data
+  - name: parenttype
+    description: DocType name of the parent document.
+    value_description: Data
+  entity_definitions:
+  - identity_id: opportunity_lost_reason_identity
+    dataset_columns:
+    - lost_reason
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[lost_reason]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Opportunity Lost Reason document.
+  - identity_id: opportunity_lost_reason_detail_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Opportunity Lost Reason Detail.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.crm.opportunity_type
+  descriptor:
+    qualified_name: frappe-erp.crm.opportunity_type
+    display_name: Opportunity Type
+    synonyms:
+    - tabOpportunity Type
+    tags:
+    - crm
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: crm
+      object: tabOpportunity Type
+  grain:
+    description: One row per Opportunity Type document.
+    components:
+    - identity_id: opportunity_type_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: description
+    description: Description
+    value_description: Small Text
+  - name: name
+    description: Primary key of the Opportunity Type document.
+    value_description: Data
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: opportunity_type_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Opportunity Type.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.crm.prospect
+  descriptor:
+    qualified_name: frappe-erp.crm.prospect
+    display_name: Prospect
+    description: A company you are trying to win as a customer, with its leads.
+    synonyms:
+    - tabProspect
+    tags:
+    - crm
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: crm
+      object: tabProspect
+  grain:
+    components:
+    - identity_id: prospect_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: company_name
+    description: Company Name
+    value_description: Data
+  - name: customer_group
+    description: Customer Group
+    value_description: Link
+  - name: no_of_employees
+    description: No. of Employees
+    value_description: 1-10, 11-50, 51-200, 201-500, 501-1000, 1000+
+  - name: annual_revenue
+    description: Annual Revenue
+    value_description: Currency
+  - name: market_segment
+    description: Market Segment
+    value_description: Link
+  - name: industry
+    description: Industry
+    value_description: Link
+  - name: territory
+    description: Territory
+  - name: prospect_owner
+    description: Prospect Owner
+    value_description: Link
+  - name: website
+    description: Website
+    value_description: Data
+  - name: fax
+    value_description: Data
+  - name: company
+    description: Company
+  - name: name
+    description: Primary key of the Prospect document.
+    value_description: Data
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: customer_group_identity
+    dataset_columns:
+    - customer_group
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[customer_group]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Customer Group document.
+  - identity_id: market_segment_identity
+    dataset_columns:
+    - market_segment
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[market_segment]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Market Segment document.
+  - identity_id: industry_type_identity
+    dataset_columns:
+    - industry
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[industry]'
+    description: Reference to a Industry Type document.
+  - identity_id: territory_identity
+    dataset_columns:
+    - territory
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[territory]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Territory document.
+  - identity_id: user_identity
+    dataset_columns:
+    - prospect_owner
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[prospect_owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a User document.
+  - identity_id: company_identity
+    dataset_columns:
+    - company
+    entity_universe: partial
+    unique: unknown
+    total: true
+    conforms: unknown
+    entity_expression:
+    - '[company]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Company document.
+  - identity_id: prospect_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: unknown
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Prospect.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: unknown
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.crm.prospect_lead
+  descriptor:
+    qualified_name: frappe-erp.crm.prospect_lead
+    display_name: Prospect Lead
+    description: The Prospect Lead child table in the CRM module.
+    synonyms:
+    - tabProspect Lead
+    tags:
+    - crm
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: crm
+      object: tabProspect Lead
+  grain:
+    description: One row per Prospect Lead document.
+    components:
+    - identity_id: prospect_lead_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: lead
+    description: Lead
+    value_description: Link
+  - name: lead_name
+    description: Lead Name
+    value_description: Data
+  - name: email
+    description: Email
+    value_description: Data
+  - name: mobile_no
+    description: Mobile No
+  - name: lead_owner
+  - name: status
+    description: Status
+    value_description: Data
+  - name: name
+    description: Primary key of the Prospect Lead document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    synonyms:
+    - Document Status
+  - name: idx
+  - name: parent
+    description: Name of the parent Prospect document.
+    value_description: Data
+  - name: parentfield
+    description: Fieldname of the parent table that contains this row.
+    value_description: Data
+    synonyms:
+    - Parent Field
+  - name: parenttype
+    description: DocType name of the parent document.
+    value_description: Data
+    synonyms:
+    - Parent Type
+  entity_definitions:
+  - identity_id: lead_identity
+    dataset_columns:
+    - lead
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: unknown
+    entity_expression:
+    - '[lead]'
+    description: Reference to a Lead document.
+  - identity_id: prospect_lead_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Prospect Lead.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: unknown
+    unique: unknown
+    total: true
+    conforms: unknown
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+  - identity_id: prospect_identity
+    dataset_columns:
+    - parent
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[parent]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Parent Prospect document that owns this row.
+- node_id: sql-database:frappe-erp.crm.prospect_opportunity
+  descriptor:
+    qualified_name: frappe-erp.crm.prospect_opportunity
+    display_name: Prospect Opportunity
+    description: The Prospect Opportunity child table in the CRM module.
+    synonyms:
+    - tabProspect Opportunity
+    tags:
+    - crm
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: crm
+      object: tabProspect Opportunity
+  grain:
+    description: One row per Prospect Opportunity document.
+    components:
+    - identity_id: prospect_opportunity_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: opportunity
+    value_description: Link
+  - name: amount
+    description: Amount
+  - name: stage
+    description: Stage
+    value_description: Data
+  - name: deal_owner
+    description: Deal Owner
+    value_description: Data
+  - name: probability
+    description: Probability
+    value_description: Percent
+  - name: expected_closing
+    description: Closing
+    value_description: Date
+  - name: currency
+    description: Currency
+    value_description: Link
+  - name: contact_person
+    description: Contact Person
+    value_description: Link
+  - name: name
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  - name: parent
+    value_description: Data
+  - name: parentfield
+    description: Fieldname of the parent table that contains this row.
+    value_description: Data
+    synonyms:
+    - Parent Field
+  - name: parenttype
+    description: DocType name of the parent document.
+    value_description: Data
+    synonyms:
+    - Parent Type
+  entity_definitions:
+  - identity_id: opportunity_identity
+    dataset_columns:
+    - opportunity
+    entity_universe: partial
+    unique: unknown
+    total: false
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Opportunity document.
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[currency]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Currency document.
+  - identity_id: contact_identity
+    dataset_columns:
+    - contact_person
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: unknown
+    entity_expression:
+    - '[contact_person]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Contact document.
+  - identity_id: prospect_opportunity_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Prospect Opportunity.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: unknown
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+  - identity_id: prospect_identity
+    dataset_columns:
+    - parent
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[parent]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Parent Prospect document that owns this row.
+- node_id: sql-database:frappe-erp.crm.sales_stage
+  descriptor:
+    qualified_name: frappe-erp.crm.sales_stage
+    display_name: Sales Stage
+    description: A step in your sales process, like qualification or negotiation.
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: crm
+      object: tabSales Stage
+  grain:
+    description: One row per Sales Stage document.
+    components:
+    - identity_id: sales_stage_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: stage_name
+    description: Stage Name
+    value_description: Data
+  - name: name
+    description: Primary key of the Sales Stage document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+  entity_definitions:
+  - identity_id: sales_stage_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Sales Stage.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: unknown
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.

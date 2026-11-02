@@ -1,0 +1,25 @@
+# Apache OFBiz operator questions
+
+Catalog: `apache-ofbiz`
+
+These questions use qualified dataset names and column names only. Each one is a check an operator would run across orders, inventory, accounting, manufacturing, or shipments.
+
+1. Which sales orders are still open with money unbilled? On `apache-ofbiz.order.order_header`, compare `orderTypeId`, `statusId`, `orderDate`, `remainingSubTotal`, and `grandTotal`, and list orders whose `remainingSubTotal` is still above zero.
+
+2. Which order lines are short of a reservation? Join `apache-ofbiz.order.order_item` (`orderId`, `orderItemSeqId`, `productId`, `quantity`, `cancelQuantity`, `statusId`) to `apache-ofbiz.order.order_item_ship_grp_inv_res` (`orderId`, `orderItemSeqId`, `shipGroupSeqId`, `inventoryItemId`, `quantity`, `quantityNotAvailable`). Which lines have `quantityNotAvailable` above zero, and in which `facilityId` on `apache-ofbiz.order.order_item_ship_group`?
+
+3. Where does on-hand inventory disagree with its detail history? For each `apache-ofbiz.product.inventory_item` (`inventoryItemId`, `productId`, `facilityId`, `quantityOnHandTotal`, `availableToPromiseTotal`, `accountingQuantityTotal`), compare `quantityOnHandTotal` with the sum of `quantityOnHandDiff` on `apache-ofbiz.product.inventory_item_detail` (`inventoryItemId`, `inventoryItemDetailSeqId`, `effectiveDate`, `quantityOnHandDiff`, `availableToPromiseDiff`, `accountingQuantityDiff`, `orderId`, `shipmentId`, `workEffortId`, `itemIssuanceId`, `receiptId`).
+
+4. Which facilities hold stock that is expired or below ATP? On `apache-ofbiz.product.inventory_item`, which `productId` and `facilityId` combinations have `expireDate` in the past or `availableToPromiseTotal` below zero while `quantityOnHandTotal` is still positive? Include `lotId`, `binNumber`, `locationSeqId`, and `unitCost`.
+
+5. Which customer invoices are past due and unpaid? On `apache-ofbiz.accounting.invoice`, use `invoiceTypeId`, `partyId`, `partyIdFrom`, `statusId`, `invoiceDate`, `dueDate`, and `paidDate`. Which invoices have a `dueDate` before today and no `paidDate`? Break the open amount down with `quantity` and `amount` on `apache-ofbiz.accounting.invoice_item` (`invoiceId`, `invoiceItemSeqId`, `productId`, `invoiceItemTypeId`).
+
+6. Which payments are not fully applied to invoices? Compare `amount` and `currencyUomId` on `apache-ofbiz.accounting.payment` (`paymentId`, `partyIdFrom`, `partyIdTo`, `statusId`, `effectiveDate`) with the sum of `amountApplied` on `apache-ofbiz.accounting.payment_application` (`paymentApplicationId`, `paymentId`, `invoiceId`, `invoiceItemSeqId`, `toPaymentId`).
+
+7. Which accounting transactions that name an invoice or a shipment are still unposted? On `apache-ofbiz.accounting.acctg_trans`, filter `isPosted`, `transactionDate`, `postedDate`, `invoiceId`, `paymentId`, `shipmentId`, `receiptId`, `workEffortId`, and `inventoryItemId`. For the unposted ones, which `glAccountId` values on `apache-ofbiz.accounting.acctg_trans_entry` (`acctgTransId`, `acctgTransEntrySeqId`, `debitCreditFlag`, `amount`, `organizationPartyId`, `productId`) are out of balance?
+
+8. Which production runs are short of the quantity they were opened for? On `apache-ofbiz.workeffort.work_effort`, compare `quantityToProduce`, `quantityProduced`, and `quantityRejected` for rows with a `workEffortTypeId` used as a production run, and show `facilityId`, `actualStartDate`, `estimatedCompletionDate`, and `currentStatusId`. Which of those runs also lack a finished-good row on `apache-ofbiz.workeffort.work_effort_good_standard` (`workEffortId`, `productId`, `workEffortGoodStdTypeId`, `fromDate`, `thruDate`, `estimatedQuantity`)?
+
+9. Which MRP runs proposed requirements that the last calendar said the plant could not cover? Join `apache-ofbiz.manufacturing.mrp_run_log` (`mrpRunLogId`, `mrpId`, `facilityId`, `runStatusId`, `proposedRequirementCount`, `failureReason`, `startedAt`, `finishedAt`) to `apache-ofbiz.manufacturing.mrp_event` (`mrpId`, `productId`, `eventDate`, `mrpEventTypeId`, `facilityId`, `quantity`, `isLate`). Which `productId` values are late, and do they have a substitution on `apache-ofbiz.manufacturing.product_manufacturing_rule` (`ruleId`, `productId`, `productIdFor`, `productIdIn`, `productIdInSubst`, `quantity`, `fromDate`, `thruDate`)?
+
+10. Which outbound shipments missed the promise date, and were the units actually issued? On `apache-ofbiz.shipment.shipment`, compare `shipmentTypeId`, `statusId`, `estimatedShipDate`, `originFacilityId`, `destinationFacilityId`, `primaryOrderId`, and `partyIdTo`. Join `apache-ofbiz.shipment.shipment_item` (`shipmentId`, `shipmentItemSeqId`, `productId`, `quantity`) to `apache-ofbiz.shipment.item_issuance` (`itemIssuanceId`, `shipmentId`, `shipmentItemSeqId`, `orderId`, `orderItemSeqId`, `inventoryItemId`, `quantity`, `issuedDateTime`) and to receipts on `apache-ofbiz.shipment.shipment_receipt` (`receiptId`, `shipmentId`, `productId`, `quantityAccepted`, `quantityRejected`, `datetimeReceived`) when the shipment is inbound. Which shipment lines have no issuance, or an issued `quantity` below the shipment item `quantity`?

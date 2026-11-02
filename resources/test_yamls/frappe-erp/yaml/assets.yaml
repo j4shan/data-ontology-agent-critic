@@ -1,0 +1,4567 @@
+schema_version: '4'
+nodes:
+- node_id: sql-database:frappe-erp.assets.asset
+  descriptor:
+    qualified_name: frappe-erp.assets.asset
+    display_name: Asset
+    description: Something your business owns and uses over time, like a machine or a laptop.
+    synonyms:
+    - tabAsset
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: assets
+      object: tabAsset
+  grain:
+    components:
+    - identity_id: asset_identity
+      dataset_columns:
+      - name
+  columns:
+  - name: naming_series
+    description: Series
+  - name: item_code
+    description: Item Code
+    value_description: Link
+  - name: item_name
+    description: Item Name
+    value_description: Read Only
+  - name: asset_name
+    description: Asset Name
+    value_description: Data
+  - name: location
+    description: Location
+    value_description: Link
+  - name: image
+    description: Image
+    value_description: Attach Image
+  - name: company
+    description: Company
+    value_description: Link
+  - name: asset_category
+    description: Asset Category
+    value_description: Link
+  - name: asset_type
+    description: Asset Type
+    value_description: Existing Asset, Composite Asset, Composite Component
+  - name: maintenance_required
+    description: Maintenance Required
+    value_description: Check
+  - name: calculate_depreciation
+    description: Calculate Depreciation
+    value_description: Check
+  - name: purchase_receipt
+    description: Purchase Receipt
+    value_description: Link
+  - name: purchase_receipt_item
+    description: Purchase Receipt Item
+  - name: purchase_invoice
+    description: Purchase Invoice
+    value_description: Link
+  - name: purchase_invoice_item
+    description: Purchase Invoice Item
+    value_description: Data
+  - name: purchase_date
+    description: Purchase Date
+    value_description: Date
+  - name: available_for_use_date
+    description: Available for Use Date
+    value_description: Date
+  - name: disposal_date
+    description: Disposal Date
+  - name: net_purchase_amount
+    description: Net Purchase Amount
+    value_description: Currency
+  - name: purchase_amount
+    description: Purchase Amount
+  - name: asset_quantity
+    description: Asset Quantity
+    value_description: Int
+  - name: additional_asset_cost
+    description: Additional Asset Cost
+    value_description: Currency
+  - name: value_adjustment_amount
+    description: Value Adjustment Amount. Net change from Asset Value Adjustments
+    value_description: Currency
+  - name: total_asset_cost
+    description: Total Asset Cost
+    value_description: Currency
+  - name: opening_accumulated_depreciation
+    description: Opening Accumulated Depreciation
+    value_description: Currency
+  - name: is_fully_depreciated
+    value_description: Check
+  - name: opening_number_of_booked_depreciations
+    description: Opening Number of Booked Depreciations
+    value_description: Int
+  - name: depreciation_method
+    description: Depreciation Method
+    value_description: Straight Line, Double Declining Balance, Written Down Value, Manual
+  - name: value_after_depreciation
+    description: Value After Depreciation
+    value_description: Currency
+  - name: frequency_of_depreciation
+    description: Frequency of Depreciation (Months)
+    value_description: Int
+  - name: next_depreciation_date
+    description: Next Depreciation Date
+  - name: total_number_of_depreciations
+    description: Total Number of Depreciations
+    value_description: Int
+  - name: cost_center
+    description: Cost Center
+  - name: asset_owner
+    description: Asset Owner
+    value_description: Company, Supplier, Customer
+  - name: asset_owner_company
+    description: Asset Owner Company
+    value_description: Link
+  - name: customer
+    description: Customer
+    value_description: Link
+  - name: supplier
+    description: Supplier
+    value_description: Link
+  - name: policy_number
+    description: Policy number
+    value_description: Data
+  - name: insurer
+    description: Insurer
+    value_description: Data
+  - name: insured_value
+    description: Insured value
+    value_description: Data
+  - name: insurance_start_date
+    value_description: Date
+  - name: insurance_end_date
+    description: Insurance End Date
+    value_description: Date
+  - name: comprehensive_insurance
+    value_description: Data
+  - name: status
+    description: Status
+    value_description: Draft, Submitted, Cancelled, Partially Depreciated, Fully Depreciated, Sold, Scrapped,
+      In Maintenance, Out of Order, Issue, Receipt, Capitalized, Work In Progress
+  - name: custodian
+    description: Custodian
+    value_description: Link
+  - name: department
+    description: Department
+    value_description: Link
+  - name: default_finance_book
+    description: Default Finance Book
+    value_description: Link
+  - name: depr_entry_posting_status
+    description: Depreciation Entry Posting Status
+    value_description: Successful, Failed
+  - name: journal_entry_for_scrap
+    description: Journal Entry for Scrap
+    value_description: Link
+  - name: split_from
+    description: Split From
+    value_description: Link
+  - name: amended_from
+    description: Amended From
+    value_description: Link
+  - name: booked_fixed_asset
+    description: Booked Fixed Asset
+    value_description: Check
+  - name: name
+    description: Primary key of the Asset document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: item_identity
+    dataset_columns:
+    - item_code
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[item_code]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Item document.
+  - identity_id: location_identity
+    dataset_columns:
+    - location
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[location]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Location document.
+  - identity_id: company_identity
+    dataset_columns:
+    - company
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[company]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Company document.
+  - identity_id: asset_category_identity
+    dataset_columns:
+    - asset_category
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Asset Category document.
+  - identity_id: purchase_receipt_identity
+    dataset_columns:
+    - purchase_receipt
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[purchase_receipt]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Purchase Receipt document.
+  - identity_id: purchase_invoice_identity
+    dataset_columns:
+    - purchase_invoice
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[purchase_invoice]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Purchase Invoice document.
+  - identity_id: cost_center_identity
+    dataset_columns:
+    - cost_center
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[cost_center]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Cost Center document.
+  - identity_id: company_identity
+    dataset_columns:
+    - asset_owner_company
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Company document.
+  - identity_id: customer_identity
+    dataset_columns:
+    - customer
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[customer]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Customer document.
+  - identity_id: supplier_identity
+    dataset_columns:
+    - supplier
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[supplier]'
+    description: Reference to a Supplier document.
+  - identity_id: employee_identity
+    dataset_columns:
+    - custodian
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[custodian]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Employee document.
+  - identity_id: department_identity
+    dataset_columns:
+    - department
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[department]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Department document.
+  - identity_id: finance_book_identity
+    dataset_columns:
+    - default_finance_book
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Finance Book document.
+  - identity_id: journal_entry_identity
+    dataset_columns:
+    - journal_entry_for_scrap
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[journal_entry_for_scrap]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Journal Entry document.
+  - identity_id: asset_identity
+    dataset_columns:
+    - split_from
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[split_from]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Asset document.
+  - identity_id: asset_identity
+    dataset_columns:
+    - amended_from
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[amended_from]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Asset document.
+  - identity_id: asset_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Asset.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: unknown
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.assets.asset_activity
+  descriptor:
+    qualified_name: frappe-erp.assets.asset_activity
+    display_name: Asset Activity
+    synonyms:
+    - tabAsset Activity
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: assets
+      object: tabAsset Activity
+  grain:
+    description: One row per Asset Activity document.
+    components:
+    - identity_id: asset_activity_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: asset
+    description: Asset
+    value_description: Link
+  - name: date
+    description: Date
+    value_description: Datetime
+  - name: user
+    description: User
+    value_description: Link
+  - name: subject
+    description: Subject
+    value_description: Text Editor
+  - name: name
+    description: Primary key of the Asset Activity document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: asset_identity
+    dataset_columns:
+    - asset
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[asset]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Asset document.
+  - identity_id: user_identity
+    dataset_columns:
+    - user
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[user]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a User document.
+  - identity_id: asset_activity_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Asset Activity.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: unknown
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.assets.asset_capitalization
+  descriptor:
+    qualified_name: frappe-erp.assets.asset_capitalization
+    display_name: Asset Capitalization
+    synonyms:
+    - tabAsset Capitalization
+    tags:
+    - assets
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: assets
+      object: tabAsset Capitalization
+  grain:
+    description: One row per Asset Capitalization document.
+    components:
+    - identity_id: asset_capitalization_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: title
+    description: Title
+    value_description: Data
+  - name: naming_series
+    description: Series
+    value_description: ACC-ASC-.YYYY.-
+  - name: company
+    description: Company
+    value_description: Link
+  - name: target_asset
+    description: Target Asset
+    value_description: Link
+  - name: target_asset_name
+    description: Asset Name
+    value_description: Data
+  - name: finance_book
+    description: Finance Book
+    value_description: Link
+  - name: posting_date
+    description: Posting Date
+    value_description: Date
+  - name: posting_time
+    description: Posting Time
+    value_description: Time
+  - name: set_posting_time
+    description: Edit Posting Date and Time
+    value_description: Check
+  - name: target_item_code
+    description: Target Item Code
+    value_description: Link
+  - name: amended_from
+    description: Amended From
+    value_description: Link
+  - name: stock_items_total
+    description: Consumed Stock Total Value
+  - name: asset_items_total
+    description: Consumed Asset Total Value
+    value_description: Currency
+  - name: service_items_total
+    description: Service Expense Total Amount
+    value_description: Currency
+  - name: total_value
+    description: Total Value
+    value_description: Currency
+  - name: target_incoming_rate
+    description: Target Incoming Rate
+    value_description: Currency
+  - name: cost_center
+    description: Cost Center
+    value_description: Link
+  - name: project
+    description: Project
+  - name: target_fixed_asset_account
+    description: Target Fixed Asset Account
+    value_description: Link
+  - name: name
+    description: Primary key of the Asset Capitalization document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+  - name: creation
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    value_description: Int
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: company_identity
+    dataset_columns:
+    - company
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[company]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Company document.
+  - identity_id: asset_identity
+    dataset_columns:
+    - target_asset
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: unknown
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Asset document.
+  - identity_id: finance_book_identity
+    dataset_columns:
+    - finance_book
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[finance_book]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Finance Book document.
+  - identity_id: item_identity
+    dataset_columns:
+    - target_item_code
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+  - identity_id: asset_capitalization_identity
+    dataset_columns:
+    - amended_from
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[amended_from]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Asset Capitalization document.
+  - identity_id: cost_center_identity
+    dataset_columns:
+    - cost_center
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Cost Center document.
+  - identity_id: project_identity
+    dataset_columns:
+    - project
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[project]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Project document.
+  - identity_id: account_identity
+    dataset_columns:
+    - target_fixed_asset_account
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[target_fixed_asset_account]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Account document.
+  - identity_id: asset_capitalization_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Asset Capitalization.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.assets.asset_capitalization_asset_item
+  descriptor:
+    qualified_name: frappe-erp.assets.asset_capitalization_asset_item
+    display_name: Asset Capitalization Asset Item
+    description: The Asset Capitalization Asset Item child table in the Assets module.
+    synonyms:
+    - tabAsset Capitalization Asset Item
+    tags:
+    - assets
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: assets
+      object: tabAsset Capitalization Asset Item
+  grain:
+    description: One row per Asset Capitalization Asset Item document.
+    components:
+    - identity_id: asset_capitalization_asset_item_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: asset
+    description: Asset
+    value_description: Link
+  - name: asset_name
+    value_description: Data
+  - name: finance_book
+    description: Finance Book
+  - name: item_code
+    description: Item Code
+  - name: item_name
+    description: Item Name
+    value_description: Data
+  - name: current_asset_value
+    description: Current Asset Value
+  - name: asset_value
+    description: Asset Value
+    value_description: Currency
+  - name: cost_center
+    description: Cost Center
+    value_description: Link
+  - name: project
+    description: Project
+    value_description: Link
+  - name: fixed_asset_account
+    value_description: Link
+  - name: name
+    description: Primary key of the Asset Capitalization Asset Item document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  - name: parent
+    value_description: Data
+  - name: parentfield
+    description: Fieldname of the parent table that contains this row.
+    value_description: Data
+    synonyms:
+    - Parent Field
+  - name: parenttype
+    description: DocType name of the parent document.
+    value_description: Data
+    synonyms:
+    - Parent Type
+  entity_definitions:
+  - identity_id: asset_identity
+    dataset_columns:
+    - asset
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: unknown
+    entity_expression:
+    - '[asset]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Asset document.
+  - identity_id: finance_book_identity
+    dataset_columns:
+    - finance_book
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[finance_book]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Finance Book document.
+  - identity_id: item_identity
+    dataset_columns:
+    - item_code
+    entity_universe: partial
+    unique: unknown
+    total: true
+    conforms: true
+    entity_expression:
+    - '[item_code]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Item document.
+  - identity_id: cost_center_identity
+    dataset_columns:
+    - cost_center
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[cost_center]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Cost Center document.
+  - identity_id: project_identity
+    dataset_columns:
+    - project
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[project]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Project document.
+  - identity_id: account_identity
+    dataset_columns:
+    - fixed_asset_account
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[fixed_asset_account]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Account document.
+  - identity_id: asset_capitalization_asset_item_identity
+    dataset_columns:
+    - name
+    entity_universe: unknown
+    unique: true
+    total: true
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Asset Capitalization Asset Item.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: unknown
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+  - identity_id: asset_capitalization_identity
+    dataset_columns:
+    - parent
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[parent]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Parent Asset Capitalization document that owns this row.
+- node_id: sql-database:frappe-erp.assets.asset_capitalization_service_item
+  descriptor:
+    qualified_name: frappe-erp.assets.asset_capitalization_service_item
+    display_name: Asset Capitalization Service Item
+    description: The Asset Capitalization Service Item child table in the Assets module.
+    synonyms:
+    - tabAsset Capitalization Service Item
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: assets
+      object: tabAsset Capitalization Service Item
+  grain:
+    description: One row per Asset Capitalization Service Item document.
+    components:
+    - identity_id: asset_capitalization_service_item_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: item_code
+    description: Item Code
+  - name: item_name
+    description: Item Name
+    value_description: Data
+  - name: expense_account
+    description: Expense Account
+    value_description: Link
+  - name: qty
+    description: Qty
+    value_description: Float
+  - name: uom
+    description: UOM
+    value_description: Link
+  - name: rate
+    description: Rate
+    value_description: Currency
+  - name: amount
+    description: Amount
+    value_description: Currency
+  - name: cost_center
+    description: Cost Center
+    value_description: Link
+  - name: name
+    value_description: Data
+  - name: owner
+    description: User who created the document.
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+  - name: modified
+    description: Datetime when the document was last updated.
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  - name: parent
+    description: Name of the parent Asset Capitalization document.
+    value_description: Data
+  - name: parentfield
+    description: Fieldname of the parent table that contains this row.
+    value_description: Data
+    synonyms:
+    - Parent Field
+  - name: parenttype
+    value_description: Data
+    synonyms:
+    - Parent Type
+  entity_definitions:
+  - identity_id: item_identity
+    dataset_columns:
+    - item_code
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[item_code]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Item document.
+  - identity_id: account_identity
+    dataset_columns:
+    - expense_account
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Account document.
+  - identity_id: uom_identity
+    dataset_columns:
+    - uom
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[uom]'
+    description: Reference to a UOM document.
+  - identity_id: cost_center_identity
+    dataset_columns:
+    - cost_center
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[cost_center]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Cost Center document.
+  - identity_id: asset_capitalization_service_item_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Asset Capitalization Service Item.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: unknown
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+  - identity_id: asset_capitalization_identity
+    dataset_columns:
+    - parent
+    entity_universe: partial
+    unique: unknown
+    total: true
+    conforms: true
+    entity_expression:
+    - '[parent]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Parent Asset Capitalization document that owns this row.
+- node_id: sql-database:frappe-erp.assets.asset_capitalization_stock_item
+  descriptor:
+    qualified_name: frappe-erp.assets.asset_capitalization_stock_item
+    display_name: Asset Capitalization Stock Item
+    description: The Asset Capitalization Stock Item child table in the Assets module.
+    synonyms:
+    - tabAsset Capitalization Stock Item
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: assets
+      object: tabAsset Capitalization Stock Item
+  grain:
+    description: One row per Asset Capitalization Stock Item document.
+    components:
+    - identity_id: asset_capitalization_stock_item_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: item_code
+    description: Item Code
+    value_description: Link
+  - name: item_name
+    description: Item Name
+    value_description: Data
+  - name: warehouse
+    description: Warehouse
+    value_description: Link
+  - name: purchase_receipt_item
+    description: Purchase Receipt Item
+  - name: stock_qty
+    description: Quantity
+    value_description: Float
+  - name: actual_qty
+    value_description: Float
+  - name: valuation_rate
+    description: Valuation Rate
+    value_description: Currency
+  - name: amount
+    description: Amount
+    value_description: Currency
+  - name: stock_uom
+    description: Stock UOM
+    value_description: Link
+  - name: serial_and_batch_bundle
+    value_description: Link
+  - name: use_serial_batch_fields
+    description: Use Serial No / Batch Fields
+    value_description: Check
+  - name: serial_no
+    description: Serial No
+  - name: batch_no
+    description: Batch No
+    value_description: Link
+  - name: cost_center
+    description: Cost Center
+    value_description: Link
+  - name: name
+    description: Primary key of the Asset Capitalization Stock Item document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  - name: parent
+    value_description: Data
+  - name: parentfield
+    description: Fieldname of the parent table that contains this row.
+    value_description: Data
+    synonyms:
+    - Parent Field
+  - name: parenttype
+    description: DocType name of the parent document.
+    synonyms:
+    - Parent Type
+  entity_definitions:
+  - identity_id: item_identity
+    dataset_columns:
+    - item_code
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[item_code]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+  - identity_id: warehouse_identity
+    dataset_columns:
+    - warehouse
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[warehouse]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Warehouse document.
+  - identity_id: uom_identity
+    dataset_columns:
+    - stock_uom
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[stock_uom]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a UOM document.
+  - identity_id: serial_and_batch_bundle_identity
+    dataset_columns:
+    - serial_and_batch_bundle
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[serial_and_batch_bundle]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Serial and Batch Bundle document.
+  - identity_id: batch_identity
+    dataset_columns:
+    - batch_no
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[batch_no]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Batch document.
+  - identity_id: cost_center_identity
+    dataset_columns:
+    - cost_center
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[cost_center]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Cost Center document.
+  - identity_id: asset_capitalization_stock_item_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Asset Capitalization Stock Item.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: unknown
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+  - identity_id: asset_capitalization_identity
+    dataset_columns:
+    - parent
+    entity_universe: unknown
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[parent]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Parent Asset Capitalization document that owns this row.
+- node_id: sql-database:frappe-erp.assets.asset_category
+  descriptor:
+    qualified_name: frappe-erp.assets.asset_category
+    display_name: Asset Category
+    description: Groups assets that share accounts and depreciation rules.
+    synonyms:
+    - tabAsset Category
+    tags:
+    - assets
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: assets
+      object: tabAsset Category
+  grain:
+    description: One row per Asset Category document.
+    components:
+    - identity_id: asset_category_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: asset_category_name
+    description: Asset Category Name
+    value_description: Data
+  - name: enable_cwip_accounting
+    description: Enable Capital Work in Progress Accounting
+    value_description: Check
+  - name: non_depreciable_category
+    description: Non Depreciable Category
+    value_description: Check
+  - name: name
+    description: Primary key of the Asset Category document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: asset_category_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Asset Category.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.assets.asset_category_account
+  descriptor:
+    qualified_name: frappe-erp.assets.asset_category_account
+    display_name: Asset Category Account
+    description: The Asset Category Account child table in the Assets module.
+    synonyms:
+    - tabAsset Category Account
+    tags:
+    - assets
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: assets
+      object: tabAsset Category Account
+  grain:
+    description: One row per Asset Category Account document.
+    components:
+    - identity_id: null
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: company_name
+    description: Company
+    value_description: Link
+  - name: fixed_asset_account
+    description: Fixed Asset Account
+    value_description: Link
+  - name: accumulated_depreciation_account
+    description: Accumulated Depreciation Account
+    value_description: Link
+  - name: depreciation_expense_account
+    description: Depreciation Expense Account
+    value_description: Link
+  - name: capital_work_in_progress_account
+    description: Capital Work In Progress Account
+    value_description: Link
+  - name: name
+    description: Primary key of the Asset Category Account document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  - name: parent
+    description: Name of the parent Asset Category document.
+    value_description: Data
+  - name: parentfield
+    description: Fieldname of the parent table that contains this row.
+    value_description: Data
+  - name: parenttype
+    description: DocType name of the parent document.
+    value_description: Data
+  entity_definitions:
+  - identity_id: company_identity
+    dataset_columns:
+    - company_name
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[company_name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Company document.
+  - identity_id: account_identity
+    dataset_columns:
+    - fixed_asset_account
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[fixed_asset_account]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Account document.
+  - identity_id: account_identity
+    dataset_columns:
+    - accumulated_depreciation_account
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[accumulated_depreciation_account]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Account document.
+  - identity_id: account_identity
+    dataset_columns:
+    - depreciation_expense_account
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[depreciation_expense_account]'
+    description: Reference to a Account document.
+  - identity_id: account_identity
+    dataset_columns:
+    - capital_work_in_progress_account
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[capital_work_in_progress_account]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+  - identity_id: asset_category_account_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    description: Primary key and complete population of Asset Category Account.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: unknown
+    unique: false
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+  - identity_id: asset_category_identity
+    dataset_columns:
+    - parent
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[parent]'
+- node_id: sql-database:frappe-erp.assets.asset_depreciation_schedule
+  descriptor:
+    qualified_name: frappe-erp.assets.asset_depreciation_schedule
+    display_name: Asset Depreciation Schedule
+    description: When an asset depreciates, and by how much.
+    synonyms:
+    - tabAsset Depreciation Schedule
+    tags:
+    - assets
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: assets
+      object: tabAsset Depreciation Schedule
+  grain:
+    description: One row per Asset Depreciation Schedule document.
+    components:
+    - identity_id: asset_depreciation_schedule_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: asset
+    description: Asset
+    value_description: Link
+  - name: naming_series
+    description: Naming Series
+    value_description: ACC-ADS-.YYYY.-
+  - name: company
+    description: Company
+    value_description: Link
+  - name: net_purchase_amount
+    description: Net Purchase Amount
+    value_description: Currency
+  - name: opening_accumulated_depreciation
+    description: Opening Accumulated Depreciation
+    value_description: Currency
+  - name: opening_number_of_booked_depreciations
+    description: Opening Number of Booked Depreciations
+    value_description: Int
+  - name: finance_book
+    description: Finance Book
+    value_description: Link
+  - name: finance_book_id
+    value_description: Int
+  - name: depreciation_method
+    description: Depreciation Method
+    value_description: Straight Line, Double Declining Balance, Written Down Value, Manual
+  - name: total_number_of_depreciations
+    description: Total Number of Depreciations
+    value_description: Int
+  - name: rate_of_depreciation
+    description: Rate of Depreciation. In Percentage
+    value_description: Percent
+  - name: daily_prorata_based
+    description: Depreciate based on daily pro-rata
+    value_description: Check
+  - name: shift_based
+    description: Depreciate based on shifts
+    value_description: Check
+  - name: frequency_of_depreciation
+    description: Frequency of Depreciation (Months)
+    value_description: Int
+  - name: expected_value_after_useful_life
+    description: Expected Value After Useful Life
+    value_description: Currency
+  - name: value_after_depreciation
+    description: Value After Depreciation
+    value_description: Currency
+  - name: notes
+  - name: status
+    description: Status
+    value_description: Draft, Active, Cancelled
+  - name: amended_from
+    description: Amended From
+    value_description: Link
+  - name: name
+    description: Primary key of the Asset Depreciation Schedule document.
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+  - name: modified_by
+    description: User who last updated the document.
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: asset_identity
+    dataset_columns:
+    - asset
+    entity_universe: unknown
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[asset]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Asset document.
+  - identity_id: company_identity
+    dataset_columns:
+    - company
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[company]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Company document.
+  - identity_id: finance_book_identity
+    dataset_columns:
+    - finance_book
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: unknown
+    entity_expression:
+    - '[finance_book]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Finance Book document.
+  - identity_id: asset_depreciation_schedule_identity
+    dataset_columns:
+    - amended_from
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[amended_from]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Asset Depreciation Schedule document.
+  - identity_id: asset_depreciation_schedule_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Asset Depreciation Schedule.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.assets.asset_finance_book
+  descriptor:
+    qualified_name: frappe-erp.assets.asset_finance_book
+    display_name: Asset Finance Book
+    description: The Asset Finance Book child table in the Assets module.
+    synonyms:
+    - tabAsset Finance Book
+    tags:
+    - assets
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: assets
+      object: tabAsset Finance Book
+  grain:
+    description: One row per Asset Finance Book document.
+    components:
+    - identity_id: asset_finance_book_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: finance_book
+    description: Finance Book
+    value_description: Link
+  - name: depreciation_method
+    description: Depreciation Method
+    value_description: Straight Line, Double Declining Balance, Written Down Value, Manual
+  - name: frequency_of_depreciation
+    description: Frequency of Depreciation (Months)
+    value_description: Int
+  - name: total_number_of_depreciations
+    description: Total Number of Depreciations
+    value_description: Int
+  - name: increase_in_asset_life
+    description: Increase In Asset Life (Months). via Asset Repair
+    value_description: Int
+    synonyms:
+    - Increase In Asset Life (Months)
+  - name: depreciation_start_date
+    description: Depreciation Posting Date
+    value_description: Date
+  - name: salvage_value_percentage
+    description: Salvage Value Percentage
+    value_description: Percent
+  - name: expected_value_after_useful_life
+    description: Salvage Value. Expected Value After Useful Life
+    value_description: Currency
+    synonyms:
+    - Salvage Value
+  - name: rate_of_depreciation
+    description: Rate of Depreciation (%)
+    value_description: Percent
+  - name: is_rate_of_depreciation_entered
+    description: Is Rate of Depreciation Entered
+  - name: daily_prorata_based
+    description: Depreciate based on daily pro-rata
+    value_description: Check
+  - name: shift_based
+    description: Depreciate based on shifts
+  - name: value_after_depreciation
+    description: Value After Depreciation
+    value_description: Currency
+  - name: value_adjustment_amount
+    description: Value Adjustment Amount. Net change from Asset Value Adjustments
+    value_description: Currency
+  - name: total_number_of_booked_depreciations
+    description: Total Number of Booked Depreciations
+    value_description: Int
+  - name: name
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+  - name: modified
+    description: Datetime when the document was last updated.
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  - name: parent
+    description: Name of the parent document.
+    value_description: Data
+  - name: parentfield
+    description: Fieldname of the parent table that contains this row.
+    value_description: Data
+    synonyms:
+    - Parent Field
+  - name: parenttype
+    description: DocType name of the parent document.
+    value_description: Data
+    synonyms:
+    - Parent Type
+  entity_definitions:
+  - identity_id: finance_book_identity
+    dataset_columns:
+    - finance_book
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[finance_book]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Finance Book document.
+  - identity_id: asset_finance_book_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Asset Finance Book.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.assets.asset_maintenance
+  descriptor:
+    qualified_name: frappe-erp.assets.asset_maintenance
+    display_name: Asset Maintenance
+    description: The upkeep tasks an asset needs, and who does them.
+    synonyms:
+    - tabAsset Maintenance
+    tags:
+    - assets
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: assets
+      object: tabAsset Maintenance
+  grain:
+    description: One row per Asset Maintenance document.
+    components:
+    - identity_id: asset_maintenance_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: asset_name
+    description: Asset Name
+    value_description: Link
+  - name: asset_category
+    description: Asset Category
+  - name: company
+    value_description: Link
+  - name: item_code
+    description: Item Code
+    value_description: Read Only
+  - name: item_name
+    description: Item Name
+    value_description: Read Only
+  - name: maintenance_team
+    description: Maintenance Team
+  - name: maintenance_manager
+    description: Maintenance Manager
+    value_description: Data
+  - name: maintenance_manager_name
+    description: Maintenance Manager Name
+    value_description: Read Only
+  - name: name
+    description: Primary key of the Asset Maintenance document.
+    value_description: Data
+  - name: owner
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+  entity_definitions:
+  - identity_id: asset_identity
+    dataset_columns:
+    - asset_name
+    entity_universe: partial
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[asset_name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+  - identity_id: asset_category_identity
+    dataset_columns:
+    - asset_category
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[asset_category]'
+    description: Reference to a Asset Category document.
+  - identity_id: company_identity
+    dataset_columns:
+    - company
+    entity_universe: partial
+    unique: unknown
+    total: true
+    conforms: true
+    entity_expression:
+    - '[company]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Company document.
+  - identity_id: asset_maintenance_team_identity
+    dataset_columns:
+    - maintenance_team
+    entity_universe: partial
+    unique: unknown
+    total: true
+    conforms: true
+    entity_expression:
+    - '[maintenance_team]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Asset Maintenance Team document.
+  - identity_id: asset_maintenance_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Asset Maintenance.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.assets.asset_maintenance_log
+  descriptor:
+    qualified_name: frappe-erp.assets.asset_maintenance_log
+    display_name: Asset Maintenance Log
+    synonyms:
+    - tabAsset Maintenance Log
+    tags:
+    - assets
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: assets
+      object: tabAsset Maintenance Log
+  grain:
+    description: One row per Asset Maintenance Log document.
+    components:
+    - identity_id: asset_maintenance_log_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: asset_maintenance
+    description: Asset Maintenance
+    value_description: Link
+  - name: naming_series
+    description: Series
+    value_description: ACC-AML-.YYYY.-
+  - name: asset_name
+    description: Asset Name
+    value_description: Read Only
+  - name: item_code
+  - name: item_name
+    description: Item Name
+    value_description: Read Only
+  - name: task
+    description: Task
+    value_description: Link
+  - name: task_name
+    description: Task Name
+    value_description: Data
+  - name: maintenance_type
+    description: Maintenance Type
+    value_description: Read Only
+  - name: periodicity
+    description: Periodicity
+    value_description: Data
+  - name: has_certificate
+    description: Has Certificate
+    value_description: Check
+  - name: certificate_attachement
+    description: Certificate
+    value_description: Attach
+  - name: maintenance_status
+    description: Maintenance Status
+  - name: assign_to_name
+    description: Assign To
+    value_description: Read Only
+  - name: task_assignee_email
+    description: Task Assignee Email
+    value_description: Data
+  - name: due_date
+    description: Due Date
+    value_description: Date
+  - name: completion_date
+    value_description: Date
+  - name: description
+    description: Description
+    value_description: Read Only
+  - name: actions_performed
+    description: Actions performed
+    value_description: Text Editor
+  - name: amended_from
+    description: Amended From
+    value_description: Link
+  - name: name
+    description: Primary key of the Asset Maintenance Log document.
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: asset_maintenance_identity
+    dataset_columns:
+    - asset_maintenance
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[asset_maintenance]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Asset Maintenance document.
+  - identity_id: asset_maintenance_task_identity
+    dataset_columns:
+    - task
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[task]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Asset Maintenance Task document.
+  - identity_id: asset_maintenance_log_identity
+    dataset_columns:
+    - amended_from
+    entity_universe: partial
+    unique: unknown
+    total: false
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Asset Maintenance Log document.
+  - identity_id: asset_maintenance_log_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Asset Maintenance Log.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.assets.asset_maintenance_task
+  descriptor:
+    qualified_name: frappe-erp.assets.asset_maintenance_task
+    display_name: Asset Maintenance Task
+    description: The Asset Maintenance Task child table in the Assets module.
+    synonyms:
+    - tabAsset Maintenance Task
+    tags:
+    - assets
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: assets
+      object: tabAsset Maintenance Task
+  grain:
+    description: One row per Asset Maintenance Task document.
+    components:
+    - identity_id: asset_maintenance_task_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: maintenance_task
+    description: Maintenance Task
+    value_description: Data
+  - name: maintenance_type
+    description: Maintenance Type
+    value_description: Preventive Maintenance, Calibration
+  - name: maintenance_status
+    description: Maintenance Status
+    value_description: Planned, Overdue, Cancelled
+  - name: start_date
+    description: Start Date
+    value_description: Date
+  - name: periodicity
+    description: Periodicity
+    value_description: Daily, Weekly, Monthly, Quarterly, Half-yearly, Yearly, 2 Yearly, 3 Yearly
+  - name: end_date
+    description: End Date
+  - name: certificate_required
+    description: Certificate Required
+    value_description: Check
+  - name: assign_to
+    description: Assign To
+    value_description: Link
+  - name: assign_to_name
+    description: Assign to Name
+    value_description: Read Only
+  - name: next_due_date
+    description: Next Due Date
+    value_description: Date
+  - name: last_completion_date
+    description: Last Completion Date
+    value_description: Date
+  - name: description
+    description: Description
+    value_description: Text Editor
+  - name: name
+    description: Primary key of the Asset Maintenance Task document.
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+  - name: parent
+    description: Name of the parent Asset Maintenance document.
+    value_description: Data
+  - name: parentfield
+    description: Fieldname of the parent table that contains this row.
+    value_description: Data
+    synonyms:
+    - Parent Field
+  - name: parenttype
+    description: DocType name of the parent document.
+    value_description: Data
+  entity_definitions:
+  - identity_id: user_identity
+    dataset_columns:
+    - assign_to
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[assign_to]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+  - identity_id: asset_maintenance_task_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: unknown
+    total: true
+    conforms: unknown
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Asset Maintenance Task.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+  - identity_id: asset_maintenance_identity
+    dataset_columns:
+    - parent
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[parent]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Parent Asset Maintenance document that owns this row.
+- node_id: sql-database:frappe-erp.assets.asset_maintenance_team
+  descriptor:
+    qualified_name: frappe-erp.assets.asset_maintenance_team
+    display_name: Asset Maintenance Team
+    description: The people responsible for maintaining assets.
+    synonyms:
+    - tabAsset Maintenance Team
+    tags:
+    - assets
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: assets
+      object: tabAsset Maintenance Team
+  grain:
+    description: One row per Asset Maintenance Team document.
+    components:
+    - identity_id: asset_maintenance_team_identity
+      dataset_columns:
+      - name
+  columns:
+  - name: maintenance_team_name
+  - name: maintenance_manager
+    description: Maintenance Manager
+    value_description: Link
+  - name: maintenance_manager_name
+    description: Maintenance Manager Name
+    value_description: Read Only
+  - name: company
+    description: Company
+    value_description: Link
+  - name: name
+    description: Primary key of the Asset Maintenance Team document.
+    value_description: Data
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: user_identity
+    dataset_columns:
+    - maintenance_manager
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[maintenance_manager]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a User document.
+  - identity_id: company_identity
+    dataset_columns:
+    - company
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[company]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Company document.
+  - identity_id: asset_maintenance_team_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Asset Maintenance Team.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: unknown
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.assets.asset_movement
+  descriptor:
+    qualified_name: frappe-erp.assets.asset_movement
+    display_name: Asset Movement
+    description: Moves an asset to another location or person.
+    synonyms:
+    - tabAsset Movement
+    tags:
+    - assets
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: assets
+      object: tabAsset Movement
+  grain:
+    description: One row per Asset Movement document.
+    components:
+    - identity_id: asset_movement_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: company
+    description: Company
+    value_description: Link
+  - name: purpose
+    description: Purpose
+    value_description: Issue, Receipt, Transfer, Transfer and Issue
+  - name: transaction_date
+    description: Transaction Date
+    value_description: Datetime
+  - name: reference_doctype
+    description: Reference Document Type
+  - name: reference_name
+    description: Reference Document Name
+  - name: amended_from
+    description: Amended From
+    value_description: Link
+  - name: name
+    description: Primary key of the Asset Movement document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: company_identity
+    dataset_columns:
+    - company
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[company]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Company document.
+  - identity_id: doctype_identity
+    dataset_columns:
+    - reference_doctype
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[reference_doctype]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a DocType document.
+  - identity_id: asset_movement_identity
+    dataset_columns:
+    - amended_from
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[amended_from]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Asset Movement document.
+  - identity_id: asset_movement_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Asset Movement.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.assets.asset_movement_item
+  descriptor:
+    qualified_name: frappe-erp.assets.asset_movement_item
+    display_name: Asset Movement Item
+    description: The Asset Movement Item child table in the Assets module.
+    synonyms:
+    - tabAsset Movement Item
+    tags:
+    - assets
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: assets
+      object: tabAsset Movement Item
+  grain:
+    description: One row per Asset Movement Item document.
+    components:
+    - identity_id: asset_movement_item_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: company
+    description: Company
+    value_description: Link
+  - name: asset
+    description: Asset
+    value_description: Link
+  - name: source_location
+    description: Source Location
+    value_description: Link
+  - name: from_employee
+    description: From Employee
+    value_description: Link
+  - name: asset_name
+    description: Asset Name
+    value_description: Data
+  - name: target_location
+    description: Target Location
+    value_description: Link
+  - name: to_employee
+    description: To Employee
+    value_description: Link
+  - name: name
+    description: Primary key of the Asset Movement Item document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  - name: parent
+    description: Name of the parent Asset Movement document.
+    value_description: Data
+  - name: parentfield
+    description: Fieldname of the parent table that contains this row.
+    value_description: Data
+    synonyms:
+    - Parent Field
+  - name: parenttype
+    description: DocType name of the parent document.
+    value_description: Data
+  entity_definitions:
+  - identity_id: company_identity
+    dataset_columns:
+    - company
+    entity_universe: unknown
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[company]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Company document.
+  - identity_id: asset_identity
+    dataset_columns:
+    - asset
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[asset]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Asset document.
+  - identity_id: location_identity
+    dataset_columns:
+    - source_location
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[source_location]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Location document.
+  - identity_id: employee_identity
+    dataset_columns:
+    - from_employee
+    entity_universe: unknown
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[from_employee]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Employee document.
+  - identity_id: location_identity
+    dataset_columns:
+    - target_location
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[target_location]'
+    description: Reference to a Location document.
+  - identity_id: employee_identity
+    dataset_columns:
+    - to_employee
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[to_employee]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Employee document.
+  - identity_id: asset_movement_item_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    description: Primary key and complete population of Asset Movement Item.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: unknown
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+  - identity_id: asset_movement_identity
+    dataset_columns:
+    - parent
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[parent]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Parent Asset Movement document that owns this row.
+- node_id: sql-database:frappe-erp.assets.asset_repair
+  descriptor:
+    qualified_name: frappe-erp.assets.asset_repair
+    display_name: Asset Repair
+    description: A repair made to an asset, and what it cost.
+    tags:
+    - assets
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: assets
+      object: tabAsset Repair
+  grain:
+    description: One row per Asset Repair document.
+    components:
+    - identity_id: asset_repair_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: naming_series
+    description: Series
+    value_description: ACC-ASR-.YYYY.-
+  - name: company
+    description: Company
+    value_description: Link
+  - name: asset
+    description: Asset
+  - name: asset_name
+    description: Asset Name
+    value_description: Read Only
+  - name: repair_status
+    description: Repair Status
+  - name: failure_date
+    description: Failure Date
+    value_description: Datetime
+  - name: completion_date
+    description: Completion Date
+    value_description: Datetime
+  - name: downtime
+    description: Downtime
+    value_description: Data
+  - name: amended_from
+    description: Amended From
+    value_description: Link
+  - name: description
+    description: Error Description
+    value_description: Long Text
+  - name: actions_performed
+    description: Actions performed
+    value_description: Long Text
+  - name: repair_cost
+    description: Repair Cost
+    value_description: Currency
+  - name: consumed_items_cost
+    description: Consumed Items Cost
+    value_description: Currency
+  - name: capitalize_repair_cost
+    description: Capitalize Repair Cost
+    value_description: Check
+  - name: increase_in_asset_life
+    description: Increase In Asset Life(Months)
+    value_description: Int
+  - name: asset_value_updated
+    description: Asset Value Updated
+    value_description: Check
+  - name: total_repair_cost
+    description: Total Repair Cost
+    value_description: Currency
+  - name: cost_center
+    description: Cost Center
+    value_description: Link
+  - name: project
+    description: Project
+    value_description: Link
+  - name: name
+    description: Primary key of the Asset Repair document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: company_identity
+    dataset_columns:
+    - company
+    entity_universe: partial
+    unique: unknown
+    total: false
+    conforms: true
+    entity_expression:
+    - '[company]'
+  - identity_id: asset_identity
+    dataset_columns:
+    - asset
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[asset]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Asset document.
+  - identity_id: asset_repair_identity
+    dataset_columns:
+    - amended_from
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[amended_from]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Asset Repair document.
+  - identity_id: cost_center_identity
+    dataset_columns:
+    - cost_center
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[cost_center]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Cost Center document.
+  - identity_id: project_identity
+    dataset_columns:
+    - project
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[project]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Project document.
+  - identity_id: asset_repair_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Asset Repair.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.assets.asset_repair_consumed_item
+  descriptor:
+    qualified_name: frappe-erp.assets.asset_repair_consumed_item
+    display_name: Asset Repair Consumed Item
+    description: The Asset Repair Consumed Item child table in the Assets module.
+    synonyms:
+    - tabAsset Repair Consumed Item
+    tags:
+    - assets
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: assets
+      object: tabAsset Repair Consumed Item
+  grain:
+    description: One row per Asset Repair Consumed Item document.
+    components:
+    - identity_id: null
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: item_code
+    description: Item
+  - name: warehouse
+    description: Warehouse
+  - name: valuation_rate
+    description: Valuation Rate
+    value_description: Currency
+  - name: consumed_quantity
+    description: Consumed Quantity
+    value_description: Data
+  - name: total_value
+    description: Total Value
+    value_description: Currency
+  - name: serial_no
+    description: Serial No
+    value_description: Small Text
+  - name: serial_and_batch_bundle
+    description: Serial and Batch Bundle
+    value_description: Link
+  - name: name
+    description: Primary key of the Asset Repair Consumed Item document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  - name: parent
+    description: Name of the parent Asset Repair document.
+    value_description: Data
+  - name: parentfield
+    description: Fieldname of the parent table that contains this row.
+    value_description: Data
+    synonyms:
+    - Parent Field
+  - name: parenttype
+    description: DocType name of the parent document.
+  entity_definitions:
+  - identity_id: item_identity
+    dataset_columns:
+    - item_code
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[item_code]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Item document.
+  - identity_id: warehouse_identity
+    dataset_columns:
+    - warehouse
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Warehouse document.
+  - identity_id: serial_and_batch_bundle_identity
+    dataset_columns:
+    - serial_and_batch_bundle
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[serial_and_batch_bundle]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Serial and Batch Bundle document.
+  - identity_id: asset_repair_consumed_item_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Asset Repair Consumed Item.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: unknown
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+  - identity_id: asset_repair_identity
+    dataset_columns:
+    - parent
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[parent]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Parent Asset Repair document that owns this row.
+- node_id: sql-database:frappe-erp.assets.asset_repair_purchase_invoice
+  descriptor:
+    qualified_name: frappe-erp.assets.asset_repair_purchase_invoice
+    display_name: Asset Repair Purchase Invoice
+    description: The Asset Repair Purchase Invoice child table in the Assets module.
+    synonyms:
+    - tabAsset Repair Purchase Invoice
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: assets
+      object: tabAsset Repair Purchase Invoice
+  grain:
+    description: One row per Asset Repair Purchase Invoice document.
+    components:
+    - identity_id: asset_repair_purchase_invoice_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: purchase_invoice
+    value_description: Link
+  - name: expense_account
+    description: Expense Account
+    value_description: Link
+  - name: repair_cost
+    value_description: Currency
+  - name: name
+    description: Primary key of the Asset Repair Purchase Invoice document.
+    value_description: Data
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  - name: parent
+    description: Name of the parent Asset Repair document.
+    value_description: Data
+  - name: parentfield
+    description: Fieldname of the parent table that contains this row.
+    value_description: Data
+    synonyms:
+    - Parent Field
+  - name: parenttype
+    description: DocType name of the parent document.
+    value_description: Data
+    synonyms:
+    - Parent Type
+  entity_definitions:
+  - identity_id: purchase_invoice_identity
+    dataset_columns:
+    - purchase_invoice
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[purchase_invoice]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Purchase Invoice document.
+  - identity_id: account_identity
+    dataset_columns:
+    - expense_account
+    entity_universe: unknown
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[expense_account]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Account document.
+  - identity_id: asset_repair_purchase_invoice_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: unknown
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Asset Repair Purchase Invoice.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+  - identity_id: asset_repair_identity
+    dataset_columns:
+    - parent
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[parent]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+- node_id: sql-database:frappe-erp.assets.asset_shift_allocation
+  descriptor:
+    qualified_name: frappe-erp.assets.asset_shift_allocation
+    display_name: Asset Shift Allocation
+    synonyms:
+    - tabAsset Shift Allocation
+    tags:
+    - assets
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: assets
+      object: tabAsset Shift Allocation
+  grain:
+    description: One row per Asset Shift Allocation document.
+    components:
+    - identity_id: asset_shift_allocation_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: asset
+    description: Asset
+    value_description: Link
+  - name: naming_series
+    description: Naming Series
+    value_description: ACC-ASA-.YYYY.-
+  - name: finance_book
+    description: Finance Book
+    value_description: Link
+  - name: amended_from
+    value_description: Link
+  - name: previous_depreciation_schedule
+    description: Previous Depreciation Schedule. The depreciation schedule this allocation replaced, restored
+      when the allocation is cancelled
+    value_description: Link
+  - name: name
+    description: Primary key of the Asset Shift Allocation document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: asset_identity
+    dataset_columns:
+    - asset
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[asset]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Asset document.
+  - identity_id: finance_book_identity
+    dataset_columns:
+    - finance_book
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[finance_book]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Finance Book document.
+  - identity_id: asset_shift_allocation_identity
+    dataset_columns:
+    - amended_from
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[amended_from]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Asset Shift Allocation document.
+  - identity_id: asset_depreciation_schedule_identity
+    dataset_columns:
+    - previous_depreciation_schedule
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[previous_depreciation_schedule]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Asset Depreciation Schedule document.
+  - identity_id: asset_shift_allocation_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    description: Primary key and complete population of Asset Shift Allocation.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: unknown
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.assets.asset_shift_factor
+  descriptor:
+    qualified_name: frappe-erp.assets.asset_shift_factor
+    display_name: Asset Shift Factor
+    description: How much faster an asset depreciates on a given shift.
+    synonyms:
+    - tabAsset Shift Factor
+    tags:
+    - assets
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: assets
+      object: tabAsset Shift Factor
+  grain:
+    description: One row per Asset Shift Factor document.
+    components:
+    - identity_id: asset_shift_factor_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: shift_name
+    description: Shift Name
+  - name: shift_factor
+    description: Shift Factor
+  - name: default
+    description: Default
+    value_description: Check
+  - name: name
+    description: Primary key of the Asset Shift Factor document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: asset_shift_factor_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.assets.asset_value_adjustment
+  descriptor:
+    qualified_name: frappe-erp.assets.asset_value_adjustment
+    display_name: Asset Value Adjustment
+    description: Changes an asset's value outside its depreciation.
+    tags:
+    - assets
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: assets
+      object: tabAsset Value Adjustment
+  grain:
+    description: One row per Asset Value Adjustment document.
+    components:
+    - identity_id: asset_value_adjustment_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: company
+    description: Company
+    value_description: Link
+  - name: asset
+    description: Asset
+    value_description: Link
+  - name: asset_category
+    description: Asset Category
+    value_description: Read Only
+  - name: date
+    description: Date
+    value_description: Date
+  - name: finance_book
+    description: Finance Book
+    value_description: Link
+  - name: amended_from
+    description: Amended From
+    value_description: Link
+  - name: current_asset_value
+    description: Current Asset Value
+    value_description: Currency
+  - name: new_asset_value
+    description: New Asset Value
+    value_description: Currency
+  - name: difference_amount
+    description: Difference Amount
+    value_description: Currency
+  - name: difference_account
+    description: Difference Account
+    value_description: Link
+  - name: journal_entry
+    description: Journal Entry
+    value_description: Link
+  - name: cost_center
+    description: Cost Center
+    value_description: Link
+  - name: name
+    description: Primary key of the Asset Value Adjustment document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    value_description: Datetime
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: company_identity
+    dataset_columns:
+    - company
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[company]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Company document.
+  - identity_id: asset_identity
+    dataset_columns:
+    - asset
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[asset]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Asset document.
+  - identity_id: finance_book_identity
+    dataset_columns:
+    - finance_book
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[finance_book]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Finance Book document.
+  - identity_id: asset_value_adjustment_identity
+    dataset_columns:
+    - amended_from
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[amended_from]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Asset Value Adjustment document.
+  - identity_id: account_identity
+    dataset_columns:
+    - difference_account
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[difference_account]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Account document.
+  - identity_id: journal_entry_identity
+    dataset_columns:
+    - journal_entry
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[journal_entry]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Journal Entry document.
+  - identity_id: cost_center_identity
+    dataset_columns:
+    - cost_center
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: unknown
+    entity_expression:
+    - '[cost_center]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Cost Center document.
+  - identity_id: asset_value_adjustment_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Asset Value Adjustment.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: unknown
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.assets.depreciation_schedule
+  descriptor:
+    qualified_name: frappe-erp.assets.depreciation_schedule
+    display_name: Depreciation Schedule
+    description: The Depreciation Schedule child table in the Assets module.
+    synonyms:
+    - tabDepreciation Schedule
+    tags:
+    - assets
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: assets
+      object: tabDepreciation Schedule
+  grain:
+    description: One row per Depreciation Schedule document.
+    components:
+    - identity_id: depreciation_schedule_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: schedule_date
+    description: Schedule Date
+    value_description: Date
+  - name: depreciation_amount
+    value_description: Currency
+  - name: accumulated_depreciation_amount
+    description: Accumulated Depreciation Amount
+    value_description: Currency
+  - name: journal_entry
+    description: Journal Entry
+    value_description: Link
+  - name: shift
+    description: Shift
+    value_description: Link
+  - name: name
+    description: Primary key of the Depreciation Schedule document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+  - name: modified
+    description: Datetime when the document was last updated.
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  - name: parent
+    value_description: Data
+  - name: parentfield
+    description: Fieldname of the parent table that contains this row.
+    value_description: Data
+    synonyms:
+    - Parent Field
+  - name: parenttype
+    description: DocType name of the parent document.
+    value_description: Data
+  entity_definitions:
+  - identity_id: journal_entry_identity
+    dataset_columns:
+    - journal_entry
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[journal_entry]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Journal Entry document.
+  - identity_id: asset_shift_factor_identity
+    dataset_columns:
+    - shift
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[shift]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Asset Shift Factor document.
+  - identity_id: depreciation_schedule_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Depreciation Schedule.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: unknown
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.assets.linked_location
+  descriptor:
+    qualified_name: frappe-erp.assets.linked_location
+    display_name: Linked Location
+    description: The Linked Location child table in the Assets module.
+    synonyms:
+    - tabLinked Location
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: assets
+      object: tabLinked Location
+  grain:
+    description: One row per Linked Location document.
+    components:
+    - identity_id: linked_location_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: location
+    description: Location
+    value_description: Link
+  - name: name
+    description: Primary key of the Linked Location document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+  - name: parent
+    description: Name of the parent document.
+    value_description: Data
+  - name: parentfield
+    description: Fieldname of the parent table that contains this row.
+    value_description: Data
+    synonyms:
+    - Parent Field
+  - name: parenttype
+    description: DocType name of the parent document.
+    value_description: Data
+    synonyms:
+    - Parent Type
+  entity_definitions:
+  - identity_id: location_identity
+    dataset_columns:
+    - location
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[location]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Location document.
+  - identity_id: linked_location_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.assets.location
+  descriptor:
+    qualified_name: frappe-erp.assets.location
+    display_name: Location
+    description: A place where your assets are kept.
+    synonyms:
+    - tabLocation
+    tags:
+    - assets
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: assets
+      object: tabLocation
+  grain:
+    description: One row per Location document.
+    components:
+    - identity_id: location_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: location_name
+    description: Location Name
+    value_description: Data
+  - name: parent_location
+    description: Parent Location
+    value_description: Link
+  - name: is_container
+    description: Is Container. Check if it is a hydroponic unit
+    value_description: Check
+  - name: is_group
+    description: Is Group
+    value_description: Check
+  - name: latitude
+    description: Latitude
+    value_description: Float
+  - name: longitude
+    description: Longitude
+    value_description: Float
+  - name: area
+    description: Area
+    value_description: Float
+  - name: area_uom
+    description: Area UOM
+    value_description: Link
+  - name: location
+    description: Location
+    value_description: Geolocation
+  - name: lft
+    description: lft
+    value_description: Int
+  - name: rgt
+    value_description: Int
+  - name: old_parent
+    description: Old Parent
+    value_description: Data
+  - name: name
+    description: Primary key of the Location document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: location_identity
+    dataset_columns:
+    - parent_location
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[parent_location]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Location document.
+  - identity_id: uom_identity
+    dataset_columns:
+    - area_uom
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[area_uom]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a UOM document.
+  - identity_id: location_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Location.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.assets.maintenance_team_member
+  descriptor:
+    qualified_name: frappe-erp.assets.maintenance_team_member
+    display_name: Maintenance Team Member
+    description: The Maintenance Team Member child table in the Assets module.
+    synonyms:
+    - tabMaintenance Team Member
+    tags:
+    - assets
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: assets
+      object: tabMaintenance Team Member
+  grain:
+    description: One row per Maintenance Team Member document.
+    components:
+    - identity_id: maintenance_team_member_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: team_member
+    description: Team Member
+    value_description: Link
+  - name: full_name
+    description: Full Name
+    value_description: Data
+  - name: maintenance_role
+    description: Maintenance Role
+    value_description: Link
+  - name: name
+    description: Primary key of the Maintenance Team Member document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  - name: parent
+    description: Name of the parent Asset Maintenance Team document.
+    value_description: Data
+  - name: parentfield
+    description: Fieldname of the parent table that contains this row.
+    value_description: Data
+    synonyms:
+    - Parent Field
+  - name: parenttype
+    description: DocType name of the parent document.
+    value_description: Data
+    synonyms:
+    - Parent Type
+  entity_definitions:
+  - identity_id: user_identity
+    dataset_columns:
+    - team_member
+    entity_universe: unknown
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[team_member]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a User document.
+  - identity_id: role_identity
+    dataset_columns:
+    - maintenance_role
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[maintenance_role]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Role document.
+  - identity_id: maintenance_team_member_identity
+    dataset_columns:
+    - name
+    entity_universe: unknown
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Maintenance Team Member.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    description: User who last updated the document.
+  - identity_id: asset_maintenance_team_identity
+    dataset_columns:
+    - parent
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: unknown
+    entity_expression:
+    - '[parent]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Parent Asset Maintenance Team document that owns this row.

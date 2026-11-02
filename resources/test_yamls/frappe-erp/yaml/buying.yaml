@@ -1,0 +1,4987 @@
+schema_version: '4'
+nodes:
+- node_id: sql-database:frappe-erp.buying.buying_settings
+  descriptor:
+    qualified_name: frappe-erp.buying.buying_settings
+    display_name: Buying Settings
+    description: The Buying Settings single settings record in the Buying module.
+    tags:
+    - buying
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: buying
+      object: tabBuying Settings
+  grain: unknown
+  columns:
+  - name: supp_master_name
+    description: Supplier Naming By
+    value_description: Supplier Name, Naming Series, Auto Name
+  - name: supplier_group
+    description: Default Supplier Group
+    value_description: Link
+  - name: buying_price_list
+    description: Default Buying Price List
+    value_description: Link
+  - name: maintain_same_rate
+    description: Maintain same rate throughout the purchase cycle. Warn or stop if Item rate is changed
+      in Purchase Invoice or Purchase Receipt generated from a Purchase Order.
+    synonyms:
+    - Maintain same rate throughout the purchase cycle
+  - name: set_landed_cost_based_on_purchase_invoice_rate
+    description: Set Landed Cost Based on Purchase Invoice Rate. Users can enable the checkbox If they
+      want to adjust the incoming rate (set using purchase receipt) based on the purchase invoice rate.
+    value_description: Check
+  - name: maintain_same_rate_action
+    description: Action if same rate is not maintained. Configure the action to stop the transaction or
+      just warn if the same rate is not maintained.
+    value_description: Stop, Warn
+  - name: role_to_override_stop_action
+    description: Role allowed to override stop action
+    value_description: Link
+  - name: po_required
+    value_description: No, Yes
+  - name: pr_required
+    description: Is Purchase Receipt required for Purchase Invoice creation?
+    value_description: No, Yes
+  - name: project_update_frequency
+    description: How often should project be updated of Total Purchase Cost ?
+    value_description: Each Transaction, Manual
+  - name: over_order_allowance
+    description: Over Order Allowance (%). The percentage by which you are allowed to order more on a
+      Purchase Order than the quantity requested on the originating Material Request. For example, if
+      the Material Request has 100 units and the allowance is 10%, you can order up to 110 units
+    value_description: Float
+    synonyms:
+    - Over Order Allowance (%)
+  - name: allow_multiple_items
+    description: Allow Item to be added multiple times in a transaction
+    value_description: Check
+  - name: allow_negative_rates_for_items
+    value_description: Check
+  - name: set_valuation_rate_for_rejected_materials
+    description: Set valuation rate for rejected Materials. If enabled, the system will generate an accounting
+      entry for material rejected anywhere in the purchase cycle.
+    value_description: Check
+  - name: disable_last_purchase_rate
+    description: Disable last purchase rate. Prevents the system from automatically using the rate from
+      the last purchase transaction when creating new purchase orders or transactions.
+    value_description: Check
+  - name: bill_for_rejected_quantity_in_purchase_invoice
+    description: Bill for rejected quantity in Purchase Invoice. If checked, the rejected quantity is
+      billed anywhere in the purchase cycle.
+  - name: use_transaction_date_exchange_rate
+    description: Use Transaction Date Exchange Rate. While making a Purchase Receipt or Purchase Invoice
+      from a Purchase Order, use the exchange rate on its posting date rather than inheriting it from
+      the Purchase Order.
+    value_description: Check
+  - name: allow_zero_qty_in_supplier_quotation
+    description: Allow Supplier Quotation with Zero Quantity. Allows users to submit Supplier Quotations
+      with zero quantity. Useful when rates are fixed but the quantities are not. Eg. Rate Contracts.
+    value_description: Check
+    synonyms:
+    - Allow Supplier Quotation with Zero Quantity
+  - name: allow_zero_qty_in_request_for_quotation
+    description: Allow Request for Quotation with Zero Quantity. Allows users to submit Request for Quotations
+      with zero quantity. Useful when rates are fixed but the quantities are not. Eg. Rate Contracts.
+    value_description: Check
+    synonyms:
+    - Allow Request for Quotation with Zero Quantity
+  - name: allow_zero_qty_in_purchase_order
+    synonyms:
+    - Allow Purchase Order with Zero Quantity
+  - name: blanket_order_allowance
+    description: Blanket Order Allowance (%). Percentage you are allowed to order beyond the Blanket Order
+      quantity.
+    value_description: Float
+    synonyms:
+    - Blanket Order Allowance (%)
+  - name: backflush_raw_materials_of_subcontract_based_on
+    description: Backflush raw materials of subcontract based on
+    value_description: BOM, Material Transferred for Subcontract
+  - name: over_transfer_allowance
+    description: 'Over Transfer Allowance (%). Percentage you are allowed to transfer more against the
+      quantity ordered. For example: If you have ordered 100 units. and your Allowance is 10% then you
+      are allowed to transfer 110 units.'
+    value_description: Float
+    synonyms:
+    - Over Transfer Allowance (%)
+  - name: validate_consumed_qty
+    description: Validate consumed quantity (as per BOM). Raw materials consumed qty will be validated
+      based on FG BOM required qty
+    value_description: Check
+    synonyms:
+    - Validate consumed quantity (as per BOM)
+  - name: auto_create_subcontracting_order
+    description: Auto create Subcontracting Order. Subcontracting Order (Draft) will be auto-created on
+      submission of Purchase Order.
+    value_description: Check
+  - name: auto_create_purchase_receipt
+    description: Auto create Purchase Receipt. Purchase Receipt (Draft) will be auto-created on submission
+      of Subcontracting Receipt.
+    value_description: Check
+  - name: fixed_email
+    description: Fixed Outgoing Email Account. If set, the system does not use the user's Email or the
+      standard outgoing Email account for sending request for quotations.
+    value_description: Link
+    synonyms:
+    - Fixed Outgoing Email Account
+  entity_definitions:
+  - identity_id: supplier_group_identity
+    dataset_columns:
+    - supplier_group
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[supplier_group]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Supplier Group document.
+  - identity_id: price_list_identity
+    dataset_columns:
+    - buying_price_list
+    entity_universe: partial
+    unique: unknown
+    total: false
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Price List document.
+  - identity_id: role_identity
+    dataset_columns:
+    - role_to_override_stop_action
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[role_to_override_stop_action]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Role document.
+  - identity_id: email_account_identity
+    dataset_columns:
+    - fixed_email
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Email Account document.
+- node_id: sql-database:frappe-erp.buying.customer_number_at_supplier
+  descriptor:
+    qualified_name: frappe-erp.buying.customer_number_at_supplier
+    display_name: Customer Number At Supplier
+    description: The Customer Number At Supplier child table in the Buying module.
+    synonyms:
+    - tabCustomer Number At Supplier
+    tags:
+    - buying
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: buying
+      object: tabCustomer Number At Supplier
+  grain:
+    description: One row per Customer Number At Supplier document.
+    components:
+    - identity_id: customer_number_at_supplier_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: company
+    description: Company
+  - name: customer_number
+    description: Customer Number
+    value_description: Data
+  - name: name
+    description: Primary key of the Customer Number At Supplier document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+  - name: parent
+    description: Name of the parent Supplier document.
+    value_description: Data
+  - name: parentfield
+    description: Fieldname of the parent table that contains this row.
+    value_description: Data
+  - name: parenttype
+    description: DocType name of the parent document.
+    synonyms:
+    - Parent Type
+  entity_definitions:
+  - identity_id: company_identity
+    dataset_columns:
+    - company
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[company]'
+    description: Reference to a Company document.
+  - identity_id: customer_number_at_supplier_identity
+    dataset_columns:
+    - name
+    entity_universe: unknown
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Customer Number At Supplier.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+  - identity_id: supplier_identity
+    dataset_columns:
+    - parent
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[parent]'
+- node_id: sql-database:frappe-erp.buying.purchase_order
+  descriptor:
+    qualified_name: frappe-erp.buying.purchase_order
+    display_name: Purchase Order
+    description: An order you place with a supplier.
+    synonyms:
+    - tabPurchase Order
+    tags:
+    - buying
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: buying
+      object: tabPurchase Order
+  grain:
+    description: One row per Purchase Order document.
+    components:
+    - identity_id: purchase_order_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: company
+    description: Company
+    value_description: Link
+  - name: naming_series
+    description: Series
+    value_description: PUR-ORD-.YYYY.-
+  - name: supplier
+    description: Supplier
+    value_description: Link
+  - name: supplier_name
+    description: Supplier Name
+    value_description: Data
+  - name: order_confirmation_no
+    description: Order Confirmation No
+    value_description: Data
+  - name: order_confirmation_date
+    description: Order Confirmation Date
+    value_description: Date
+  - name: transaction_date
+    description: Date
+    value_description: Date
+  - name: transaction_time
+    description: Time
+    value_description: Time
+  - name: schedule_date
+    description: Required By
+    value_description: Date
+  - name: is_subcontracted
+    description: Is Subcontracted
+    value_description: Check
+  - name: has_unit_price_items
+    description: Has Unit Price Items
+    value_description: Check
+  - name: supplier_warehouse
+    description: Supplier Warehouse
+    value_description: Link
+  - name: cost_center
+    description: Cost Center
+    value_description: Link
+  - name: project
+    description: Project
+    value_description: Link
+  - name: currency
+    value_description: Link
+  - name: conversion_rate
+    description: Exchange Rate
+    value_description: Float
+  - name: buying_price_list
+    description: Price List
+    value_description: Link
+  - name: price_list_currency
+    description: Price List Currency
+    value_description: Link
+  - name: plc_conversion_rate
+    description: Price List Exchange Rate
+    value_description: Float
+  - name: ignore_pricing_rule
+    description: Ignore Pricing Rule
+    value_description: Check
+  - name: scan_barcode
+    description: Scan Barcode
+    value_description: Data
+  - name: set_from_warehouse
+    description: Set From Warehouse
+    value_description: Link
+  - name: set_warehouse
+    description: Set Target Warehouse
+    value_description: Link
+  - name: total_qty
+    description: Total Quantity
+    value_description: Float
+  - name: total_net_weight
+    description: Total Net Weight
+    value_description: Float
+  - name: base_total
+    description: Total (Company Currency)
+    value_description: Currency
+  - name: base_net_total
+    description: Net Total (Company Currency)
+    value_description: Currency
+  - name: total
+    value_description: Currency
+  - name: net_total
+    description: Net Total
+    value_description: Currency
+  - name: set_reserve_warehouse
+    description: Set Reserve Warehouse
+    value_description: Link
+  - name: tax_category
+    description: Tax Category
+    value_description: Link
+  - name: taxes_and_charges
+    description: Purchase Taxes and Charges Template
+    value_description: Link
+  - name: shipping_rule
+    description: Shipping Rule
+    value_description: Link
+  - name: incoterm
+    description: Incoterm
+    value_description: Link
+  - name: named_place
+    description: Named Place
+  - name: base_taxes_and_charges_added
+    description: Taxes and Charges Added (Company Currency)
+    value_description: Currency
+  - name: base_taxes_and_charges_deducted
+    description: Taxes and Charges Deducted (Company Currency)
+    value_description: Currency
+  - name: base_total_taxes_and_charges
+    description: Total Taxes and Charges (Company Currency)
+    value_description: Currency
+  - name: taxes_and_charges_added
+    description: Taxes and Charges Added
+    value_description: Currency
+  - name: taxes_and_charges_deducted
+    description: Taxes and Charges Deducted
+    value_description: Currency
+  - name: total_taxes_and_charges
+    description: Total Taxes and Charges
+    value_description: Currency
+  - name: grand_total
+    description: Grand Total
+    value_description: Currency
+  - name: in_words
+    description: In Words
+    value_description: Data
+  - name: disable_rounded_total
+    description: Disable Rounded Total
+    value_description: Check
+  - name: rounding_adjustment
+    description: Rounding Adjustment
+    value_description: Currency
+  - name: rounded_total
+    description: Rounded Total
+    value_description: Currency
+  - name: base_grand_total
+    description: Grand Total
+    value_description: Currency
+  - name: base_in_words
+    description: In Words
+    value_description: Data
+  - name: base_rounding_adjustment
+    description: Rounding Adjustment
+    value_description: Currency
+  - name: base_rounded_total
+    description: Rounded Total
+    value_description: Currency
+  - name: advance_paid
+    description: Advance Paid (Company Currency)
+    value_description: Currency
+  - name: apply_discount_on
+    description: Apply Additional Discount On
+    value_description: Grand Total, Net Total
+  - name: base_discount_amount
+    description: Additional Discount Amount (Company Currency)
+    value_description: Currency
+  - name: additional_discount_percentage
+    description: Additional Discount Percentage
+    value_description: Float
+  - name: discount_amount
+    description: Additional Discount Amount
+  - name: other_charges_calculation
+    description: Taxes and Charges Calculation
+    value_description: Text Editor
+  - name: supplier_address
+    description: Supplier Address
+    value_description: Link
+  - name: address_display
+    description: Supplier Address Details
+    value_description: Text Editor
+  - name: supplier_group
+    value_description: Link
+  - name: contact_person
+    description: Supplier Contact
+    value_description: Link
+  - name: contact_display
+    description: Contact Name
+  - name: contact_mobile
+    description: Contact Mobile No
+    value_description: Small Text
+  - name: contact_email
+    description: Contact Email
+  - name: dispatch_address
+    description: Dispatch Address
+    value_description: Link
+  - name: dispatch_address_display
+    description: Dispatch Address Details
+    value_description: Text Editor
+  - name: shipping_address
+    description: Shipping Address
+    value_description: Link
+  - name: shipping_address_display
+    description: Shipping Address Details
+    value_description: Text Editor
+  - name: billing_address
+    description: Company Billing Address
+    value_description: Link
+  - name: billing_address_display
+    description: Billing Address Details
+    value_description: Text Editor
+  - name: customer
+    description: Customer
+    value_description: Link
+  - name: customer_name
+    description: Customer Name
+    value_description: Data
+  - name: customer_contact_person
+    description: Customer Contact
+    value_description: Link
+  - name: customer_contact_display
+    description: Customer Contact
+    value_description: Small Text
+  - name: customer_contact_mobile
+    description: Customer Mobile No
+    value_description: Small Text
+  - name: customer_contact_email
+    description: Customer Contact Email
+    value_description: Code
+  - name: payment_terms_template
+    description: Payment Terms Template
+  - name: tc_name
+    description: Terms
+  - name: terms
+    description: Terms and Conditions
+    value_description: Text Editor
+  - name: status
+    description: Status
+    value_description: Draft, On Hold, To Pay, To Receive and Bill, To Bill, To Receive, Completed, Cancelled,
+      Closed, Delivered
+  - name: advance_payment_status
+    description: Advance Payment Status
+  - name: per_billed
+    description: '% Billed'
+    value_description: Percent
+  - name: per_received
+    description: '% Received'
+  - name: letter_head
+    value_description: Link
+  - name: group_same_items
+    description: Group same items
+    value_description: Check
+  - name: select_print_heading
+    description: Print Heading
+  - name: language
+    description: Print Language
+    value_description: Data
+  - name: from_date
+    description: From Date
+    value_description: Date
+  - name: to_date
+    description: To Date
+  - name: auto_repeat
+    description: Auto Repeat
+    value_description: Link
+  - name: title
+    description: Title
+    value_description: Data
+  - name: party_account_currency
+    description: Party Account Currency
+    value_description: Link
+  - name: represents_company
+    description: Represents Company
+  - name: ref_sq
+    description: Supplier Quotation
+    value_description: Link
+  - name: amended_from
+    value_description: Link
+  - name: mps
+    description: MPS
+    value_description: Link
+  - name: is_internal_supplier
+    description: Is Internal Supplier
+    value_description: Check
+  - name: inter_company_order_reference
+  - name: remarks
+    description: Remarks
+    value_description: Small Text
+  - name: name
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: company_identity
+    dataset_columns:
+    - company
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[company]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Company document.
+  - identity_id: supplier_identity
+    dataset_columns:
+    - supplier
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[supplier]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Supplier document.
+  - identity_id: warehouse_identity
+    dataset_columns:
+    - supplier_warehouse
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[supplier_warehouse]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Warehouse document.
+  - identity_id: cost_center_identity
+    dataset_columns:
+    - cost_center
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[cost_center]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Cost Center document.
+  - identity_id: project_identity
+    dataset_columns:
+    - project
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[project]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Project document.
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[currency]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Currency document.
+  - identity_id: price_list_identity
+    dataset_columns:
+    - buying_price_list
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[buying_price_list]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Price List document.
+  - identity_id: currency_identity
+    dataset_columns:
+    - price_list_currency
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[price_list_currency]'
+    description: Reference to a Currency document.
+  - identity_id: warehouse_identity
+    dataset_columns:
+    - set_from_warehouse
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[set_from_warehouse]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Warehouse document.
+  - identity_id: warehouse_identity
+    dataset_columns:
+    - set_warehouse
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[set_warehouse]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Warehouse document.
+  - identity_id: warehouse_identity
+    dataset_columns:
+    - set_reserve_warehouse
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[set_reserve_warehouse]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Warehouse document.
+  - identity_id: tax_category_identity
+    dataset_columns:
+    - tax_category
+    entity_universe: unknown
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[tax_category]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Tax Category document.
+  - identity_id: purchase_taxes_and_charges_template_identity
+    dataset_columns:
+    - taxes_and_charges
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[taxes_and_charges]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Purchase Taxes and Charges Template document.
+  - identity_id: shipping_rule_identity
+    dataset_columns:
+    - shipping_rule
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[shipping_rule]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Shipping Rule document.
+  - identity_id: incoterm_identity
+    dataset_columns:
+    - incoterm
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: unknown
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Incoterm document.
+  - identity_id: address_identity
+    dataset_columns:
+    - supplier_address
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[supplier_address]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Address document.
+  - identity_id: supplier_group_identity
+    dataset_columns:
+    - supplier_group
+    entity_universe: partial
+    unique: unknown
+    total: false
+    conforms: true
+    entity_expression:
+    - '[supplier_group]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Supplier Group document.
+  - identity_id: contact_identity
+    dataset_columns:
+    - contact_person
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[contact_person]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Contact document.
+  - identity_id: address_identity
+    dataset_columns:
+    - dispatch_address
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[dispatch_address]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Address document.
+  - identity_id: address_identity
+    dataset_columns:
+    - shipping_address
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[shipping_address]'
+    description: Reference to a Address document.
+  - identity_id: address_identity
+    dataset_columns:
+    - billing_address
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[billing_address]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+  - identity_id: customer_identity
+    dataset_columns:
+    - customer
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[customer]'
+    description: Reference to a Customer document.
+  - identity_id: contact_identity
+    dataset_columns:
+    - customer_contact_person
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[customer_contact_person]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Contact document.
+  - identity_id: payment_terms_template_identity
+    dataset_columns:
+    - payment_terms_template
+    entity_universe: partial
+    unique: unknown
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[payment_terms_template]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Payment Terms Template document.
+  - identity_id: terms_and_conditions_identity
+    dataset_columns:
+    - tc_name
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[tc_name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Terms and Conditions document.
+  - identity_id: letter_head_identity
+    dataset_columns:
+    - letter_head
+    entity_universe: partial
+    unique: unknown
+    total: false
+    conforms: true
+    entity_expression:
+    - '[letter_head]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+  - identity_id: print_heading_identity
+    dataset_columns:
+    - select_print_heading
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[select_print_heading]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Print Heading document.
+  - identity_id: auto_repeat_identity
+    dataset_columns:
+    - auto_repeat
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: unknown
+    entity_expression:
+    - '[auto_repeat]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Auto Repeat document.
+  - identity_id: currency_identity
+    dataset_columns:
+    - party_account_currency
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[party_account_currency]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Currency document.
+  - identity_id: company_identity
+    dataset_columns:
+    - represents_company
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[represents_company]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Company document.
+  - identity_id: supplier_quotation_identity
+    dataset_columns:
+    - ref_sq
+    entity_universe: unknown
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[ref_sq]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Supplier Quotation document.
+  - identity_id: purchase_order_identity
+    dataset_columns:
+    - amended_from
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[amended_from]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+  - identity_id: master_production_schedule_identity
+    dataset_columns:
+    - mps
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[mps]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Master Production Schedule document.
+  - identity_id: sales_order_identity
+    dataset_columns:
+    - inter_company_order_reference
+    entity_universe: unknown
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[inter_company_order_reference]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Sales Order document.
+  - identity_id: purchase_order_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    description: Primary key and complete population of Purchase Order.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: unknown
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: unknown
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.buying.purchase_order_item
+  descriptor:
+    qualified_name: frappe-erp.buying.purchase_order_item
+    display_name: Purchase Order Item
+    description: The Purchase Order Item child table in the Buying module.
+    tags:
+    - buying
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: buying
+      object: tabPurchase Order Item
+  grain:
+    description: One row per Purchase Order Item document.
+    components:
+    - identity_id: purchase_order_item_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: fg_item
+    description: Finished Good
+    value_description: Link
+  - name: fg_item_qty
+    description: Finished Good Qty
+    value_description: Float
+  - name: item_code
+    description: Item Code
+    value_description: Link
+  - name: supplier_part_no
+    description: Supplier Part Number
+    value_description: Data
+  - name: item_name
+    description: Item Name
+    value_description: Data
+  - name: brand
+    description: Brand
+    value_description: Link
+  - name: product_bundle
+    description: Product Bundle version this row was packed from
+  - name: schedule_date
+    description: Required By
+    value_description: Date
+  - name: expected_delivery_date
+    description: Expected Delivery Date
+    value_description: Date
+  - name: item_group
+    description: Item Group
+    value_description: Link
+  - name: description
+  - name: image
+    description: Image
+  - name: qty
+    description: Quantity
+    value_description: Float
+  - name: stock_uom
+    description: Stock UOM
+  - name: subcontracted_qty
+    description: Subcontracted Quantity
+    value_description: Float
+  - name: uom
+    description: UOM
+    value_description: Link
+  - name: conversion_factor
+    description: UOM Conversion Factor
+    value_description: Float
+  - name: stock_qty
+    description: Qty in Stock UOM
+    value_description: Float
+  - name: price_list_rate
+    description: Price List Rate
+    value_description: Currency
+  - name: last_purchase_rate
+    description: Last Purchase Rate
+    value_description: Currency
+  - name: base_price_list_rate
+    description: Price List Rate (Company Currency)
+    value_description: Currency
+  - name: margin_type
+    description: Margin Type
+    value_description: Percentage, Amount
+  - name: margin_rate_or_amount
+    description: Margin Rate or Amount
+    value_description: Float
+  - name: rate_with_margin
+    description: Rate With Margin
+    value_description: Currency
+  - name: discount_percentage
+    description: Discount on Price List Rate (%)
+  - name: discount_amount
+    description: Discount Amount
+    value_description: Currency
+  - name: distributed_discount_amount
+    description: Distributed Discount Amount
+    value_description: Currency
+  - name: mapped_additional_discount_amount
+    description: Additional Discount per Stock Unit. Tax-exclusive additional discount carried from a
+      source document, per stock unit.
+  - name: base_rate_with_margin
+    description: Rate With Margin (Company Currency)
+  - name: rate
+    description: Rate
+    value_description: Currency
+  - name: amount
+    value_description: Currency
+  - name: item_tax_template
+    value_description: Link
+  - name: base_rate
+    description: Rate (Company Currency)
+    value_description: Currency
+  - name: base_amount
+    value_description: Currency
+  - name: pricing_rules
+    description: Pricing Rules
+    value_description: Small Text
+  - name: stock_uom_rate
+    description: Rate of Stock UOM
+    value_description: Currency
+  - name: is_free_item
+    description: Is Free Item
+  - name: net_rate
+    description: Net Rate
+    value_description: Currency
+  - name: net_amount
+    description: Net Amount
+  - name: base_net_rate
+    description: Net Rate (Company Currency)
+    value_description: Currency
+  - name: base_net_amount
+    description: Net Amount (Company Currency)
+    value_description: Currency
+  - name: from_warehouse
+    description: From Warehouse
+    value_description: Link
+  - name: warehouse
+    description: Target Warehouse
+    value_description: Link
+  - name: actual_qty
+    description: Available Qty at Target Warehouse
+    value_description: Float
+  - name: company_total_stock
+    description: Available Qty at Company
+    value_description: Float
+  - name: material_request
+    description: Material Request
+    value_description: Link
+  - name: material_request_item
+    description: Material Request Item
+    value_description: Data
+  - name: sales_order
+    description: Sales Order
+    value_description: Link
+  - name: sales_order_item
+    description: Sales Order Item
+    value_description: Data
+  - name: sales_order_packed_item
+    description: Sales Order Packed Item
+    value_description: Data
+  - name: supplier_quotation
+    description: Supplier Quotation
+    value_description: Link
+  - name: supplier_quotation_item
+    description: Supplier Quotation Item
+    value_description: Link
+  - name: delivered_by_supplier
+    description: To be Delivered to Customer
+    value_description: Check
+  - name: against_blanket_order
+    value_description: Check
+  - name: blanket_order
+    description: Blanket Order
+    value_description: Link
+  - name: blanket_order_rate
+    description: Blanket Order Rate
+    value_description: Currency
+  - name: received_qty
+    description: Received Qty
+  - name: returned_qty
+    description: Returned Qty
+    value_description: Float
+  - name: billed_amt
+    value_description: Currency
+  - name: closed
+    description: Closed
+    value_description: Check
+  - name: expense_account
+    description: Expense Account
+    value_description: Link
+  - name: wip_composite_asset
+    description: WIP Composite Asset
+    value_description: Link
+  - name: manufacturer
+    description: Manufacturer
+    value_description: Link
+  - name: manufacturer_part_no
+    description: Manufacturer Part Number
+    value_description: Data
+  - name: bom
+    description: BOM
+  - name: weight_per_unit
+    description: Weight Per Unit
+    value_description: Float
+  - name: total_weight
+    description: Total Weight
+    value_description: Float
+  - name: weight_uom
+    description: Weight UOM
+    value_description: Link
+  - name: project
+    description: Project
+    value_description: Link
+  - name: cost_center
+    description: Cost Center
+    value_description: Link
+  - name: is_fixed_asset
+    description: Is Fixed Asset
+    value_description: Check
+  - name: item_tax_rate
+    description: Item Tax Rate. Tax detail table fetched from item master as a string and stored in this
+      field. Used for Taxes and Charges
+    value_description: Code
+  - name: production_plan
+    description: Production Plan
+  - name: production_plan_item
+    description: Production Plan Item
+    value_description: Data
+  - name: production_plan_sub_assembly_item
+    description: Production Plan Sub Assembly Item
+    value_description: Data
+  - name: page_break
+    description: Page Break
+  - name: job_card
+    description: Job Card
+    value_description: Link
+  - name: name
+    description: Primary key of the Purchase Order Item document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  - name: parent
+    description: Name of the parent Purchase Order document.
+  - name: parentfield
+    description: Fieldname of the parent table that contains this row.
+    value_description: Data
+  - name: parenttype
+    description: DocType name of the parent document.
+    value_description: Data
+    synonyms:
+    - Parent Type
+  entity_definitions:
+  - identity_id: item_identity
+    dataset_columns:
+    - fg_item
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[fg_item]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+  - identity_id: item_identity
+    dataset_columns:
+    - item_code
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[item_code]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Item document.
+  - identity_id: brand_identity
+    dataset_columns:
+    - brand
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[brand]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Brand document.
+  - identity_id: product_bundle_identity
+    dataset_columns:
+    - product_bundle
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[product_bundle]'
+    description: Reference to a Product Bundle document.
+  - identity_id: item_group_identity
+    dataset_columns:
+    - item_group
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[item_group]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Item Group document.
+  - identity_id: uom_identity
+    dataset_columns:
+    - stock_uom
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[stock_uom]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a UOM document.
+  - identity_id: uom_identity
+    dataset_columns:
+    - uom
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[uom]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a UOM document.
+  - identity_id: item_tax_template_identity
+    dataset_columns:
+    - item_tax_template
+    entity_universe: unknown
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[item_tax_template]'
+    description: Reference to a Item Tax Template document.
+  - identity_id: warehouse_identity
+    dataset_columns:
+    - from_warehouse
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[from_warehouse]'
+    description: Reference to a Warehouse document.
+  - identity_id: warehouse_identity
+    dataset_columns:
+    - warehouse
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[warehouse]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Warehouse document.
+  - identity_id: material_request_identity
+    dataset_columns:
+    - material_request
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Material Request document.
+  - identity_id: sales_order_identity
+    dataset_columns:
+    - sales_order
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[sales_order]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Sales Order document.
+  - identity_id: supplier_quotation_identity
+    dataset_columns:
+    - supplier_quotation
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: Reference to a Supplier Quotation document.
+  - identity_id: supplier_quotation_item_identity
+    dataset_columns:
+    - supplier_quotation_item
+    entity_universe: unknown
+    unique: false
+    total: false
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+  - identity_id: blanket_order_identity
+    dataset_columns:
+    - blanket_order
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Blanket Order document.
+  - identity_id: account_identity
+    dataset_columns:
+    - expense_account
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Account document.
+  - identity_id: asset_identity
+    dataset_columns:
+    - wip_composite_asset
+    entity_universe: partial
+    unique: unknown
+    total: false
+    conforms: true
+    entity_expression:
+    - '[wip_composite_asset]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Asset document.
+  - identity_id: manufacturer_identity
+    dataset_columns:
+    - manufacturer
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[manufacturer]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Manufacturer document.
+  - identity_id: bom_identity
+    dataset_columns:
+    - bom
+    entity_universe: unknown
+    unique: unknown
+    total: false
+    conforms: true
+    entity_expression:
+    - '[bom]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a BOM document.
+  - identity_id: uom_identity
+    dataset_columns:
+    - weight_uom
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[weight_uom]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a UOM document.
+  - identity_id: project_identity
+    dataset_columns:
+    - project
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[project]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Project document.
+  - identity_id: cost_center_identity
+    dataset_columns:
+    - cost_center
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[cost_center]'
+    description: Reference to a Cost Center document.
+  - identity_id: production_plan_identity
+    dataset_columns:
+    - production_plan
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[production_plan]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Production Plan document.
+  - identity_id: job_card_identity
+    dataset_columns:
+    - job_card
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[job_card]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Job Card document.
+  - identity_id: purchase_order_item_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Purchase Order Item.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+  - identity_id: purchase_order_identity
+    dataset_columns:
+    - parent
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[parent]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Parent Purchase Order document that owns this row.
+- node_id: sql-database:frappe-erp.buying.purchase_receipt_item_supplied
+  descriptor:
+    qualified_name: frappe-erp.buying.purchase_receipt_item_supplied
+    display_name: Purchase Receipt Item Supplied
+    description: The Purchase Receipt Item Supplied child table in the Buying module.
+    synonyms:
+    - tabPurchase Receipt Item Supplied
+    tags:
+    - buying
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: buying
+      object: tabPurchase Receipt Item Supplied
+  grain:
+    description: One row per Purchase Receipt Item Supplied document.
+    components:
+    - identity_id: purchase_receipt_item_supplied_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: main_item_code
+    description: Item Code
+    value_description: Link
+  - name: rm_item_code
+    description: Raw Material Item Code
+    value_description: Link
+  - name: item_name
+    description: Item Name
+    value_description: Data
+  - name: bom_detail_no
+    description: BOM Detail No
+    value_description: Data
+  - name: description
+    description: Description
+    value_description: Text Editor
+  - name: stock_uom
+    description: Stock Uom
+    value_description: Link
+  - name: conversion_factor
+    description: Conversion Factor
+    value_description: Float
+  - name: reference_name
+    description: Reference Name
+    value_description: Data
+  - name: rate
+    value_description: Currency
+  - name: amount
+    description: Amount
+    value_description: Currency
+  - name: required_qty
+    description: Available Qty For Consumption
+    value_description: Float
+  - name: consumed_qty
+    description: Qty to Be Consumed
+    value_description: Float
+  - name: current_stock
+    description: Current Stock
+    value_description: Float
+  - name: batch_no
+    description: Batch No
+    value_description: Link
+  - name: serial_no
+    description: Serial No
+    value_description: Text
+  - name: purchase_order
+    description: Purchase Order
+    value_description: Link
+  - name: name
+    description: Primary key of the Purchase Receipt Item Supplied document.
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  - name: parent
+    description: Name of the parent document.
+    value_description: Data
+  - name: parentfield
+    description: Fieldname of the parent table that contains this row.
+    value_description: Data
+    synonyms:
+    - Parent Field
+  - name: parenttype
+    description: DocType name of the parent document.
+    value_description: Data
+    synonyms:
+    - Parent Type
+  entity_definitions:
+  - identity_id: item_identity
+    dataset_columns:
+    - main_item_code
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[main_item_code]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Item document.
+  - identity_id: item_identity
+    dataset_columns:
+    - rm_item_code
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Item document.
+  - identity_id: uom_identity
+    dataset_columns:
+    - stock_uom
+    entity_universe: partial
+    unique: unknown
+    total: false
+    conforms: true
+    entity_expression:
+    - '[stock_uom]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a UOM document.
+  - identity_id: batch_identity
+    dataset_columns:
+    - batch_no
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[batch_no]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Batch document.
+  - identity_id: purchase_order_identity
+    dataset_columns:
+    - purchase_order
+    entity_universe: partial
+    unique: unknown
+    total: false
+    conforms: true
+    entity_expression:
+    - '[purchase_order]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Purchase Order document.
+  - identity_id: purchase_receipt_item_supplied_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Purchase Receipt Item Supplied.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: unknown
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.buying.request_for_quotation
+  descriptor:
+    qualified_name: frappe-erp.buying.request_for_quotation
+    display_name: Request for Quotation
+    description: Ask suppliers for prices on the items you need.
+    synonyms:
+    - tabRequest for Quotation
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: buying
+      object: tabRequest for Quotation
+  grain:
+    description: One row per Request for Quotation document.
+    components:
+    - identity_id: request_for_quotation_identity
+      dataset_columns:
+      - name
+  columns:
+  - name: naming_series
+    description: Series
+    value_description: PUR-RFQ-.YYYY.-
+  - name: company
+    description: Company
+    value_description: Link
+  - name: vendor
+    description: Supplier. For individual supplier
+    value_description: Link
+    synonyms:
+    - Supplier
+  - name: transaction_date
+    description: Date
+    value_description: Date
+  - name: schedule_date
+    description: Required Date
+  - name: status
+    description: Status
+    value_description: Draft, Submitted, Cancelled
+  - name: has_unit_price_items
+    description: Has Unit Price Items
+    value_description: Check
+  - name: amended_from
+    description: Amended From
+    value_description: Link
+  - name: email_template
+    description: Email Template
+    value_description: Link
+  - name: send_attached_files
+    description: Send Attached Files. If enabled, all files attached to this document will be attached
+      to each email
+    value_description: Check
+  - name: send_document_print
+    description: Send Document Print. If enabled, a print of this document will be attached to each email
+    value_description: Check
+  - name: subject
+    description: Subject
+    value_description: Data
+  - name: use_html
+    description: Use HTML
+    value_description: Check
+  - name: message_for_supplier
+    description: Message for Supplier
+    value_description: Text Editor
+  - name: mfs_html
+    description: Message for Supplier
+    value_description: Code
+  - name: incoterm
+    description: Incoterm
+    value_description: Link
+  - name: named_place
+    description: Named Place
+    value_description: Data
+  - name: tc_name
+    description: Terms
+    value_description: Link
+  - name: terms
+    description: Terms and Conditions
+  - name: select_print_heading
+    description: Print Heading
+  - name: letter_head
+    description: Letter Head
+    value_description: Link
+  - name: opportunity
+    description: Opportunity
+    value_description: Link
+  - name: title
+    description: Title
+    value_description: Data
+  - name: billing_address
+    description: Company Billing Address
+  - name: billing_address_display
+    description: Billing Address Details
+  - name: shipping_address
+    description: Company Shipping Address
+    value_description: Link
+  - name: shipping_address_display
+    description: Shipping Address Details
+    value_description: Text Editor
+  - name: name
+    description: Primary key of the Request for Quotation document.
+    value_description: Data
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    value_description: Int
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: company_identity
+    dataset_columns:
+    - company
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: unknown
+    entity_expression:
+    - '[company]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Company document.
+  - identity_id: supplier_identity
+    dataset_columns:
+    - vendor
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[vendor]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Supplier document.
+  - identity_id: request_for_quotation_identity
+    dataset_columns:
+    - amended_from
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[amended_from]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Request for Quotation document.
+  - identity_id: email_template_identity
+    dataset_columns:
+    - email_template
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[email_template]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Email Template document.
+  - identity_id: incoterm_identity
+    dataset_columns:
+    - incoterm
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[incoterm]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Incoterm document.
+  - identity_id: terms_and_conditions_identity
+    dataset_columns:
+    - tc_name
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[tc_name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Terms and Conditions document.
+  - identity_id: print_heading_identity
+    dataset_columns:
+    - select_print_heading
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Print Heading document.
+  - identity_id: letter_head_identity
+    dataset_columns:
+    - letter_head
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[letter_head]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Letter Head document.
+  - identity_id: opportunity_identity
+    dataset_columns:
+    - opportunity
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[opportunity]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Opportunity document.
+  - identity_id: address_identity
+    dataset_columns:
+    - billing_address
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[billing_address]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Address document.
+  - identity_id: address_identity
+    dataset_columns:
+    - shipping_address
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[shipping_address]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+  - identity_id: request_for_quotation_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    description: Primary key and complete population of Request for Quotation.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: unknown
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.buying.request_for_quotation_item
+  descriptor:
+    qualified_name: frappe-erp.buying.request_for_quotation_item
+    display_name: Request for Quotation Item
+    description: The Request for Quotation Item child table in the Buying module.
+    synonyms:
+    - tabRequest for Quotation Item
+    tags:
+    - buying
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: buying
+      object: tabRequest for Quotation Item
+  grain:
+    description: One row per Request for Quotation Item document.
+    components:
+    - identity_id: request_for_quotation_item_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: item_code
+    description: Item Code
+    value_description: Link
+  - name: supplier_part_no
+    description: Supplier Part No
+  - name: item_name
+    description: Item Name
+    value_description: Data
+  - name: schedule_date
+    description: Required Date
+  - name: description
+    value_description: Text Editor
+  - name: item_group
+    description: Item Group
+    value_description: Link
+  - name: brand
+    description: Brand
+    value_description: Link
+  - name: image
+    description: Image
+    value_description: Attach
+  - name: qty
+    description: Quantity
+    value_description: Float
+  - name: stock_uom
+    description: Stock UOM
+    value_description: Link
+  - name: uom
+    description: UOM
+    value_description: Link
+  - name: conversion_factor
+    value_description: Float
+  - name: stock_qty
+    description: Qty as per Stock UOM
+    value_description: Float
+  - name: warehouse
+    description: Warehouse
+    value_description: Link
+  - name: material_request
+    description: Material Request
+    value_description: Link
+  - name: material_request_item
+    description: Material Request Item
+    value_description: Data
+  - name: cost_center
+    description: Cost Center
+    value_description: Link
+  - name: project_name
+    description: Project
+    value_description: Link
+  - name: page_break
+    description: Page Break
+    value_description: Check
+  - name: name
+    description: Primary key of the Request for Quotation Item document.
+    value_description: Data
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  - name: parent
+    description: Name of the parent Request for Quotation document.
+    value_description: Data
+  - name: parentfield
+    description: Fieldname of the parent table that contains this row.
+    value_description: Data
+    synonyms:
+    - Parent Field
+  - name: parenttype
+    description: DocType name of the parent document.
+    value_description: Data
+    synonyms:
+    - Parent Type
+  entity_definitions:
+  - identity_id: item_identity
+    dataset_columns:
+    - item_code
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: unknown
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Item document.
+  - identity_id: item_group_identity
+    dataset_columns:
+    - item_group
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[item_group]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Item Group document.
+  - identity_id: brand_identity
+    dataset_columns:
+    - brand
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[brand]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Brand document.
+  - identity_id: uom_identity
+    dataset_columns:
+    - stock_uom
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[stock_uom]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a UOM document.
+  - identity_id: uom_identity
+    dataset_columns:
+    - uom
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[uom]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a UOM document.
+  - identity_id: warehouse_identity
+    dataset_columns:
+    - warehouse
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Warehouse document.
+  - identity_id: material_request_identity
+    dataset_columns:
+    - material_request
+    entity_universe: partial
+    unique: unknown
+    total: false
+    conforms: true
+    entity_expression:
+    - '[material_request]'
+    description: Reference to a Material Request document.
+  - identity_id: cost_center_identity
+    dataset_columns:
+    - cost_center
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[cost_center]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Cost Center document.
+  - identity_id: project_identity
+    dataset_columns:
+    - project_name
+    entity_universe: unknown
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[project_name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Project document.
+  - identity_id: request_for_quotation_item_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    description: Primary key and complete population of Request for Quotation Item.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    description: User who last updated the document.
+  - identity_id: request_for_quotation_identity
+    dataset_columns:
+    - parent
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[parent]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Parent Request for Quotation document that owns this row.
+- node_id: sql-database:frappe-erp.buying.request_for_quotation_supplier
+  descriptor:
+    qualified_name: frappe-erp.buying.request_for_quotation_supplier
+    display_name: Request for Quotation Supplier
+    synonyms:
+    - tabRequest for Quotation Supplier
+    tags:
+    - buying
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: buying
+      object: tabRequest for Quotation Supplier
+  grain:
+    description: One row per Request for Quotation Supplier document.
+    components:
+    - identity_id: request_for_quotation_supplier_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: supplier
+    description: Supplier
+    value_description: Link
+  - name: contact
+    description: Contact
+    value_description: Link
+  - name: quote_status
+    description: Quote Status
+    value_description: Pending, Received
+  - name: supplier_name
+    description: Supplier Name
+    value_description: Read Only
+  - name: email_id
+    description: Email ID
+    value_description: Data
+  - name: send_email
+    description: Send Email
+    value_description: Check
+  - name: email_sent
+    description: Email Sent
+    value_description: Check
+  - name: name
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  - name: parent
+    description: Name of the parent Request for Quotation document.
+  - name: parentfield
+    description: Fieldname of the parent table that contains this row.
+    value_description: Data
+    synonyms:
+    - Parent Field
+  - name: parenttype
+    value_description: Data
+    synonyms:
+    - Parent Type
+  entity_definitions:
+  - identity_id: supplier_identity
+    dataset_columns:
+    - supplier
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[supplier]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Supplier document.
+  - identity_id: contact_identity
+    dataset_columns:
+    - contact
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[contact]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Contact document.
+  - identity_id: request_for_quotation_supplier_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Request for Quotation Supplier.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+  - identity_id: request_for_quotation_identity
+    dataset_columns:
+    - parent
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[parent]'
+    description: Parent Request for Quotation document that owns this row.
+- node_id: sql-database:frappe-erp.buying.supplier
+  descriptor:
+    qualified_name: frappe-erp.buying.supplier
+    display_name: Supplier
+    description: A company or person you buy goods or services from.
+    tags:
+    - buying
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: buying
+      object: tabSupplier
+  grain:
+    description: One row per Supplier document.
+    components:
+    - identity_id: supplier_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: naming_series
+    description: Series
+    value_description: SUP-.YYYY.-
+  - name: supplier_name
+    description: Supplier Name
+    value_description: Data
+  - name: alias
+    value_description: Data
+  - name: supplier_type
+    description: Supplier Type
+    value_description: Company, Individual, Partnership
+  - name: gender
+    description: Gender
+    value_description: Link
+  - name: supplier_group
+    description: Supplier Group
+    value_description: Link
+  - name: country
+    description: Country
+    value_description: Link
+  - name: image
+    description: Image
+    value_description: Attach Image
+  - name: default_currency
+    description: Billing Currency
+    value_description: Link
+  - name: default_bank_account
+    description: Company Bank Account
+    value_description: Link
+  - name: default_price_list
+    description: Price List
+  - name: payment_terms
+    description: Payment Terms Template
+    value_description: Link
+  - name: supplier_primary_address
+    description: Primary Address. Reselect, if the chosen address is edited after save
+    value_description: Link
+  - name: primary_address
+    description: Primary Address Preview
+    value_description: Text Editor
+  - name: supplier_primary_contact
+    description: Primary Contact. Reselect, if the chosen contact is edited after save
+    value_description: Link
+    synonyms:
+    - Primary Contact
+  - name: mobile_no
+    description: Mobile No
+    value_description: Read Only
+  - name: email_id
+    description: Email ID
+    value_description: Read Only
+  - name: is_internal_supplier
+    description: Is Internal Supplier. Used for inter-company transactions
+    value_description: Check
+  - name: represents_company
+    description: Represents Company. Select the related company that this Supplier represents for inter-company
+      transactions.
+    value_description: Link
+  - name: tax_id
+    description: Tax ID. Supplier's tax identification number (e.g. PAN, VAT, GST)
+    value_description: Data
+  - name: tax_category
+    description: Tax Category. Determines which tax rules apply to this supplier
+  - name: tax_withholding_category
+    description: Tax Withholding Category. TDS / withholding tax category applied when paying this supplier
+    value_description: Link
+  - name: tax_withholding_group
+    description: Tax Withholding Group. Used to pick the correct rate row inside the Tax Withholding Category
+      for this supplier (e.g. Company vs Individual rates)
+    value_description: Link
+  - name: restrict_to_companies
+    description: Restrict to Companies. If checked, this Supplier is only available for transactions in
+      the companies listed below.
+    value_description: Check
+  - name: is_transporter
+    value_description: Check
+  - name: allow_purchase_invoice_creation_without_purchase_order
+    description: Allow purchase invoice creation without purchase order
+    value_description: Check
+  - name: allow_purchase_invoice_creation_without_purchase_receipt
+    description: Allow purchase invoice creation without purchase receipt
+    value_description: Check
+  - name: disabled
+    description: Disabled suppliers are hidden from selection in new transactions but remain in historical
+      records
+    value_description: Check
+  - name: is_frozen
+    description: Is Frozen. Frozen suppliers block new transactions and ledger entries until unfrozen.
+      Only users with the role set in Company's "Roles Allowed to Set and Edit Frozen Account Entries"
+      can transact.
+    value_description: Check
+  - name: on_hold
+    description: Block Supplier. When enabled, transactions with this supplier will be blocked based on
+      the Hold Type below
+    value_description: Check
+    synonyms:
+    - Block Supplier
+  - name: hold_type
+    description: Hold Type
+    value_description: All, Invoices, Payments
+  - name: release_date
+    description: Release Date. Leave blank if the Supplier is blocked indefinitely
+  - name: warn_rfqs
+    description: Warn RFQs
+    value_description: Check
+  - name: prevent_rfqs
+    value_description: Check
+  - name: warn_pos
+    value_description: Check
+  - name: prevent_pos
+    description: Prevent POs
+  - name: website
+  - name: language
+    description: Print Language
+    value_description: Link
+  - name: supplier_details
+  - name: name
+    description: Primary key of the Supplier document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: gender_identity
+    dataset_columns:
+    - gender
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[gender]'
+    description: Reference to a Gender document.
+  - identity_id: supplier_group_identity
+    dataset_columns:
+    - supplier_group
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[supplier_group]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Supplier Group document.
+  - identity_id: country_identity
+    dataset_columns:
+    - country
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[country]'
+    description: Reference to a Country document.
+  - identity_id: currency_identity
+    dataset_columns:
+    - default_currency
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[default_currency]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Currency document.
+  - identity_id: bank_account_identity
+    dataset_columns:
+    - default_bank_account
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Bank Account document.
+  - identity_id: price_list_identity
+    dataset_columns:
+    - default_price_list
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[default_price_list]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Price List document.
+  - identity_id: payment_terms_template_identity
+    dataset_columns:
+    - payment_terms
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Payment Terms Template document.
+  - identity_id: address_identity
+    dataset_columns:
+    - supplier_primary_address
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Address document.
+  - identity_id: contact_identity
+    dataset_columns:
+    - supplier_primary_contact
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[supplier_primary_contact]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Contact document.
+  - identity_id: company_identity
+    dataset_columns:
+    - represents_company
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[represents_company]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Company document.
+  - identity_id: tax_category_identity
+    dataset_columns:
+    - tax_category
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[tax_category]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Tax Category document.
+  - identity_id: tax_withholding_category_identity
+    dataset_columns:
+    - tax_withholding_category
+    entity_universe: unknown
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[tax_withholding_category]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Tax Withholding Category document.
+  - identity_id: tax_withholding_group_identity
+    dataset_columns:
+    - tax_withholding_group
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: Reference to a Tax Withholding Group document.
+  - identity_id: language_identity
+    dataset_columns:
+    - language
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[language]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Language document.
+  - identity_id: supplier_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Supplier.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.buying.supplier_quotation
+  descriptor:
+    qualified_name: frappe-erp.buying.supplier_quotation
+    display_name: Supplier Quotation
+    description: Prices a supplier offered you.
+    synonyms:
+    - tabSupplier Quotation
+    tags:
+    - buying
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: buying
+      object: tabSupplier Quotation
+  grain:
+    description: One row per Supplier Quotation document.
+    components:
+    - identity_id: supplier_quotation_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: naming_series
+    description: Series
+    value_description: PUR-SQTN-.YYYY.-
+  - name: supplier
+    description: Supplier
+    value_description: Link
+  - name: supplier_name
+    description: Supplier Name
+  - name: company
+    description: Company
+    value_description: Link
+  - name: status
+    description: Status
+    value_description: Draft, Submitted, Partially Ordered, Ordered, Stopped, Cancelled, Expired
+  - name: transaction_date
+    description: Date
+    value_description: Date
+  - name: valid_till
+    description: Valid Till
+    value_description: Date
+  - name: quotation_number
+    description: Quotation Number
+    value_description: Data
+  - name: has_unit_price_items
+    description: Has Unit Price Items
+  - name: amended_from
+    value_description: Link
+  - name: cost_center
+    description: Cost Center
+  - name: project
+    description: Project
+    value_description: Link
+  - name: currency
+    value_description: Link
+  - name: conversion_rate
+    description: Exchange Rate
+    value_description: Float
+  - name: buying_price_list
+    description: Price List
+    value_description: Link
+  - name: price_list_currency
+    description: Price List Currency
+    value_description: Link
+  - name: plc_conversion_rate
+    value_description: Float
+  - name: ignore_pricing_rule
+    description: Ignore Pricing Rule
+    value_description: Check
+  - name: total_qty
+    description: Total Quantity
+    value_description: Float
+  - name: total_net_weight
+    description: Total Net Weight
+  - name: base_total
+    description: Total (Company Currency)
+  - name: base_net_total
+    description: Net Total (Company Currency)
+    value_description: Currency
+  - name: total
+    description: Total
+    value_description: Currency
+  - name: net_total
+    description: Net Total
+    value_description: Currency
+  - name: tax_category
+    description: Tax Category
+    value_description: Link
+  - name: taxes_and_charges
+    description: Purchase Taxes and Charges Template
+    value_description: Link
+  - name: shipping_rule
+    description: Shipping Rule
+    value_description: Link
+  - name: incoterm
+    description: Incoterm
+    value_description: Link
+  - name: named_place
+    description: Named Place
+    value_description: Data
+  - name: base_taxes_and_charges_added
+    description: Taxes and Charges Added (Company Currency)
+  - name: base_taxes_and_charges_deducted
+    value_description: Currency
+  - name: base_total_taxes_and_charges
+    description: Total Taxes and Charges (Company Currency)
+    value_description: Currency
+  - name: taxes_and_charges_added
+    description: Taxes and Charges Added
+    value_description: Currency
+  - name: taxes_and_charges_deducted
+    description: Taxes and Charges Deducted
+  - name: total_taxes_and_charges
+    description: Total Taxes and Charges
+    value_description: Currency
+  - name: apply_discount_on
+    description: Apply Additional Discount On
+    value_description: Grand Total, Net Total
+  - name: base_discount_amount
+    description: Additional Discount Amount (Company Currency)
+    value_description: Currency
+  - name: additional_discount_percentage
+    value_description: Float
+  - name: discount_amount
+    description: Additional Discount Amount
+    value_description: Currency
+  - name: base_grand_total
+    description: Grand Total (Company Currency)
+    value_description: Currency
+  - name: base_rounding_adjustment
+    description: Rounding Adjustment (Company Currency
+    value_description: Currency
+  - name: base_rounded_total
+    description: Rounded Total (Company Currency)
+    value_description: Currency
+  - name: base_in_words
+    description: In Words (Company Currency)
+    value_description: Data
+  - name: grand_total
+    description: Grand Total
+  - name: rounding_adjustment
+    description: Rounding Adjustment
+    value_description: Currency
+  - name: rounded_total
+    description: Rounded Total
+    value_description: Currency
+  - name: in_words
+    description: In Words
+    value_description: Data
+  - name: disable_rounded_total
+    description: Disable Rounded Total
+    value_description: Check
+  - name: other_charges_calculation
+    description: Taxes and Charges Calculation
+    value_description: Text Editor
+  - name: supplier_address
+    description: Supplier Address
+    value_description: Link
+  - name: address_display
+    description: Address
+    value_description: Text Editor
+  - name: contact_person
+    description: Contact Person
+    value_description: Link
+  - name: contact_display
+    description: Contact
+    value_description: Small Text
+  - name: contact_mobile
+    description: Mobile No
+    value_description: Small Text
+  - name: contact_email
+    description: Contact Email
+    value_description: Data
+  - name: shipping_address
+    description: Shipping Address
+    value_description: Link
+  - name: shipping_address_display
+    description: Shipping Address Details
+    value_description: Text Editor
+  - name: billing_address
+    description: Company Billing Address
+    value_description: Link
+  - name: billing_address_display
+    description: Billing Address Details
+    value_description: Text Editor
+  - name: tc_name
+    description: Terms Template
+    value_description: Link
+  - name: terms
+    description: Terms and Conditions
+    value_description: Text Editor
+  - name: letter_head
+    description: Letter Head
+    value_description: Link
+  - name: group_same_items
+    description: Group same items
+  - name: select_print_heading
+    description: Print Heading
+    value_description: Link
+  - name: language
+    description: Print Language
+    value_description: Data
+  - name: auto_repeat
+    description: Auto Repeat
+    value_description: Link
+  - name: is_subcontracted
+    description: Is Subcontracted
+    value_description: Check
+  - name: title
+    description: Title
+  - name: opportunity
+    description: Opportunity
+    value_description: Link
+  - name: name
+    description: Primary key of the Supplier Quotation document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    value_description: Int
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: supplier_identity
+    dataset_columns:
+    - supplier
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[supplier]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Supplier document.
+  - identity_id: company_identity
+    dataset_columns:
+    - company
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[company]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Company document.
+  - identity_id: supplier_quotation_identity
+    dataset_columns:
+    - amended_from
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[amended_from]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Supplier Quotation document.
+  - identity_id: cost_center_identity
+    dataset_columns:
+    - cost_center
+    entity_universe: partial
+    unique: unknown
+    total: false
+    conforms: true
+    entity_expression:
+    - '[cost_center]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Cost Center document.
+  - identity_id: project_identity
+    dataset_columns:
+    - project
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: unknown
+    entity_expression:
+    - '[project]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+  - identity_id: currency_identity
+    dataset_columns:
+    - currency
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[currency]'
+    description: Reference to a Currency document.
+  - identity_id: price_list_identity
+    dataset_columns:
+    - buying_price_list
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Price List document.
+  - identity_id: currency_identity
+    dataset_columns:
+    - price_list_currency
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[price_list_currency]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Currency document.
+  - identity_id: tax_category_identity
+    dataset_columns:
+    - tax_category
+    entity_universe: partial
+    unique: unknown
+    total: false
+    conforms: true
+    entity_expression:
+    - '[tax_category]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Tax Category document.
+  - identity_id: purchase_taxes_and_charges_template_identity
+    dataset_columns:
+    - taxes_and_charges
+    entity_universe: unknown
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[taxes_and_charges]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Purchase Taxes and Charges Template document.
+  - identity_id: shipping_rule_identity
+    dataset_columns:
+    - shipping_rule
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Shipping Rule document.
+  - identity_id: incoterm_identity
+    dataset_columns:
+    - incoterm
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[incoterm]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Incoterm document.
+  - identity_id: address_identity
+    dataset_columns:
+    - supplier_address
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[supplier_address]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Address document.
+  - identity_id: contact_identity
+    dataset_columns:
+    - contact_person
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[contact_person]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Contact document.
+  - identity_id: address_identity
+    dataset_columns:
+    - shipping_address
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[shipping_address]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Address document.
+  - identity_id: address_identity
+    dataset_columns:
+    - billing_address
+    entity_universe: partial
+    unique: unknown
+    total: false
+    conforms: true
+    entity_expression:
+    - '[billing_address]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Address document.
+  - identity_id: terms_and_conditions_identity
+    dataset_columns:
+    - tc_name
+    entity_universe: unknown
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[tc_name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Terms and Conditions document.
+  - identity_id: letter_head_identity
+    dataset_columns:
+    - letter_head
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[letter_head]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+  - identity_id: print_heading_identity
+    dataset_columns:
+    - select_print_heading
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[select_print_heading]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Print Heading document.
+  - identity_id: auto_repeat_identity
+    dataset_columns:
+    - auto_repeat
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[auto_repeat]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Auto Repeat document.
+  - identity_id: opportunity_identity
+    dataset_columns:
+    - opportunity
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[opportunity]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Opportunity document.
+  - identity_id: supplier_quotation_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Supplier Quotation.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.buying.supplier_quotation_item
+  descriptor:
+    qualified_name: frappe-erp.buying.supplier_quotation_item
+    display_name: Supplier Quotation Item
+    description: The Supplier Quotation Item child table in the Buying module.
+    synonyms:
+    - tabSupplier Quotation Item
+    tags:
+    - buying
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: buying
+      object: tabSupplier Quotation Item
+  grain:
+    description: One row per Supplier Quotation Item document.
+    components:
+    - identity_id: supplier_quotation_item_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: item_code
+    description: Item Code
+    value_description: Link
+  - name: supplier_part_no
+    description: Supplier Part Number
+    value_description: Data
+  - name: item_name
+    description: Item Name
+    value_description: Data
+  - name: lead_time_days
+    value_description: Int
+  - name: expected_delivery_date
+    description: Expected Delivery Date
+    value_description: Date
+  - name: is_free_item
+    description: Is Free Item
+  - name: description
+  - name: item_group
+    description: Item Group
+    value_description: Link
+  - name: brand
+    description: Brand
+    value_description: Link
+  - name: image
+    description: Image
+    value_description: Attach
+  - name: qty
+    description: Quantity
+    value_description: Float
+  - name: stock_uom
+    description: Stock UOM
+  - name: uom
+    description: UOM
+    value_description: Link
+  - name: conversion_factor
+    description: UOM Conversion Factor
+  - name: stock_qty
+    value_description: Float
+  - name: price_list_rate
+    description: Price List Rate
+    value_description: Currency
+  - name: base_price_list_rate
+    description: Price List Rate (Company Currency)
+    value_description: Currency
+  - name: margin_type
+    description: Margin Type
+    value_description: Percentage, Amount
+  - name: margin_rate_or_amount
+    description: Margin Rate or Amount
+  - name: rate_with_margin
+    description: Rate With Margin
+    value_description: Currency
+  - name: discount_percentage
+    description: Discount on Price List Rate (%)
+    value_description: Percent
+  - name: discount_amount
+    description: Discount Amount
+    value_description: Currency
+  - name: distributed_discount_amount
+    description: Distributed Discount Amount
+    value_description: Currency
+  - name: mapped_additional_discount_amount
+    description: Additional Discount per Stock Unit. Tax-exclusive additional discount carried from a
+      source document, per stock unit.
+    value_description: Currency
+    synonyms:
+    - Additional Discount per Stock Unit
+  - name: rate
+    value_description: Currency
+  - name: amount
+    description: Amount
+  - name: item_tax_template
+    description: Item Tax Template
+    value_description: Link
+  - name: base_rate
+    description: Rate (Company Currency)
+    value_description: Currency
+  - name: base_amount
+    description: Amount (Company Currency)
+    value_description: Currency
+  - name: pricing_rules
+    description: Pricing Rules
+  - name: net_rate
+    description: Net Rate
+    value_description: Currency
+  - name: net_amount
+    description: Net Amount
+    value_description: Currency
+  - name: base_net_rate
+    description: Net Rate (Company Currency)
+  - name: base_net_amount
+    value_description: Currency
+  - name: weight_per_unit
+    description: Weight Per Unit
+    value_description: Float
+  - name: total_weight
+    description: Total Weight
+    value_description: Float
+  - name: weight_uom
+    description: Weight UOM
+    value_description: Link
+  - name: warehouse
+    description: Warehouse
+    value_description: Link
+  - name: prevdoc_doctype
+    description: Reference Document Type
+    value_description: Data
+  - name: material_request
+    description: Material Request
+    value_description: Link
+  - name: sales_order
+    description: Sales Order
+    value_description: Link
+  - name: request_for_quotation
+    value_description: Link
+  - name: material_request_item
+    description: Material Request Item
+    value_description: Data
+  - name: request_for_quotation_item
+    description: Request for Quotation Item
+    value_description: Data
+  - name: item_tax_rate
+    description: Item Tax Rate. Tax detail table fetched from item master as a string and stored in this
+      field. Used for Taxes and Charges
+  - name: manufacturer
+    description: Manufacturer
+    value_description: Link
+  - name: manufacturer_part_no
+    description: Manufacturer Part Number
+    value_description: Data
+  - name: cost_center
+    description: Cost Center
+    value_description: Link
+  - name: project
+    description: Project
+    value_description: Link
+  - name: page_break
+    description: Page Break
+    value_description: Check
+  - name: ordered_qty
+    description: Ordered Qty
+    value_description: Float
+  - name: name
+    description: Primary key of the Supplier Quotation Item document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  - name: parent
+    description: Name of the parent Supplier Quotation document.
+    value_description: Data
+  - name: parentfield
+    description: Fieldname of the parent table that contains this row.
+    value_description: Data
+  - name: parenttype
+    description: DocType name of the parent document.
+    synonyms:
+    - Parent Type
+  entity_definitions:
+  - identity_id: item_identity
+    dataset_columns:
+    - item_code
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[item_code]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+  - identity_id: item_group_identity
+    dataset_columns:
+    - item_group
+    entity_universe: unknown
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[item_group]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Item Group document.
+  - identity_id: brand_identity
+    dataset_columns:
+    - brand
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[brand]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Brand document.
+  - identity_id: uom_identity
+    dataset_columns:
+    - stock_uom
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: unknown
+    entity_expression:
+    - '[stock_uom]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a UOM document.
+  - identity_id: uom_identity
+    dataset_columns:
+    - uom
+    entity_universe: unknown
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[uom]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a UOM document.
+  - identity_id: item_tax_template_identity
+    dataset_columns:
+    - item_tax_template
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[item_tax_template]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Item Tax Template document.
+  - identity_id: uom_identity
+    dataset_columns:
+    - weight_uom
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[weight_uom]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a UOM document.
+  - identity_id: warehouse_identity
+    dataset_columns:
+    - warehouse
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[warehouse]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Warehouse document.
+  - identity_id: material_request_identity
+    dataset_columns:
+    - material_request
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[material_request]'
+    description: Reference to a Material Request document.
+  - identity_id: sales_order_identity
+    dataset_columns:
+    - sales_order
+    entity_universe: partial
+    unique: unknown
+    total: false
+    conforms: true
+    description: Reference to a Sales Order document.
+  - identity_id: request_for_quotation_identity
+    dataset_columns:
+    - request_for_quotation
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[request_for_quotation]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Request for Quotation document.
+  - identity_id: manufacturer_identity
+    dataset_columns:
+    - manufacturer
+    entity_universe: unknown
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[manufacturer]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Manufacturer document.
+  - identity_id: cost_center_identity
+    dataset_columns:
+    - cost_center
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[cost_center]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Cost Center document.
+  - identity_id: project_identity
+    dataset_columns:
+    - project
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[project]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Project document.
+  - identity_id: supplier_quotation_item_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Supplier Quotation Item.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    description: User who last updated the document.
+  - identity_id: supplier_quotation_identity
+    dataset_columns:
+    - parent
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[parent]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Parent Supplier Quotation document that owns this row.
+- node_id: sql-database:frappe-erp.buying.supplier_scorecard
+  descriptor:
+    qualified_name: frappe-erp.buying.supplier_scorecard
+    display_name: Supplier Scorecard
+    synonyms:
+    - tabSupplier Scorecard
+    tags:
+    - buying
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: buying
+      object: tabSupplier Scorecard
+  grain: unknown
+  columns:
+  - name: supplier
+    description: Supplier
+    value_description: Link
+  - name: supplier_score
+    description: Supplier Score
+    value_description: Data
+  - name: indicator_color
+    description: Indicator Color
+    value_description: Data
+  - name: status
+    description: Status
+    value_description: Data
+  - name: period
+    description: Evaluation Period
+    value_description: Per Week, Per Month, Per Year
+  - name: weighting_function
+    value_description: Small Text
+  - name: warn_rfqs
+    description: Warn for new Request for Quotations
+    value_description: Check
+  - name: warn_pos
+    description: Warn for new Purchase Orders
+    value_description: Check
+  - name: prevent_rfqs
+    description: Prevent RFQs
+    value_description: Check
+  - name: prevent_pos
+    description: Prevent POs
+    value_description: Check
+  - name: notify_supplier
+    description: Notify Supplier
+    value_description: Check
+  - name: notify_employee
+    description: Notify Employee
+    value_description: Check
+  - name: employee
+    description: Employee
+  - name: name
+    description: Primary key of the Supplier Scorecard document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+  entity_definitions:
+  - identity_id: supplier_identity
+    dataset_columns:
+    - supplier
+    entity_universe: partial
+    unique: true
+    total: false
+    conforms: true
+    entity_expression:
+    - '[supplier]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Supplier document.
+  - identity_id: employee_identity
+    dataset_columns:
+    - employee
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[employee]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Employee document.
+  - identity_id: supplier_scorecard_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Supplier Scorecard.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.buying.supplier_scorecard_criteria
+  descriptor:
+    qualified_name: frappe-erp.buying.supplier_scorecard_criteria
+    display_name: Supplier Scorecard Criteria
+    description: Something a supplier is scored on, like on-time delivery.
+    synonyms:
+    - tabSupplier Scorecard Criteria
+    tags:
+    - buying
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: buying
+      object: tabSupplier Scorecard Criteria
+  grain:
+    description: One row per Supplier Scorecard Criteria document.
+    components:
+    - identity_id: supplier_scorecard_criteria_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: criteria_name
+    description: Criteria Name
+    value_description: Data
+  - name: max_score
+    description: Max Score
+    value_description: Float
+  - name: formula
+    description: Criteria Formula
+    value_description: Small Text
+  - name: weight
+    description: Criteria Weight
+    value_description: Percent
+  - name: name
+    description: Primary key of the Supplier Scorecard Criteria document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+  entity_definitions:
+  - identity_id: supplier_scorecard_criteria_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.buying.supplier_scorecard_period
+  descriptor:
+    qualified_name: frappe-erp.buying.supplier_scorecard_period
+    display_name: Supplier Scorecard Period
+    description: The Supplier Scorecard Period document in the Buying module.
+    synonyms:
+    - tabSupplier Scorecard Period
+    tags:
+    - buying
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: buying
+      object: tabSupplier Scorecard Period
+  grain:
+    components:
+    - identity_id: supplier_scorecard_period_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: supplier
+    description: Supplier
+    value_description: Link
+  - name: naming_series
+    description: Naming Series
+  - name: total_score
+    description: Period Score
+    value_description: Percent
+  - name: start_date
+    description: Start Date
+    value_description: Date
+  - name: end_date
+    description: End Date
+    value_description: Date
+  - name: scorecard
+    description: Supplier Scorecard Setup
+    value_description: Link
+  - name: amended_from
+    description: Amended From
+    value_description: Link
+  - name: name
+    description: Primary key of the Supplier Scorecard Period document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: supplier_identity
+    dataset_columns:
+    - supplier
+    entity_universe: unknown
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[supplier]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+  - identity_id: supplier_scorecard_identity
+    dataset_columns:
+    - scorecard
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[scorecard]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Supplier Scorecard document.
+  - identity_id: supplier_scorecard_period_identity
+    dataset_columns:
+    - amended_from
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: unknown
+    entity_expression:
+    - '[amended_from]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Supplier Scorecard Period document.
+  - identity_id: supplier_scorecard_period_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Supplier Scorecard Period.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: unknown
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.buying.supplier_scorecard_scoring_criteria
+  descriptor:
+    qualified_name: frappe-erp.buying.supplier_scorecard_scoring_criteria
+    display_name: Supplier Scorecard Scoring Criteria
+    description: The Supplier Scorecard Scoring Criteria child table in the Buying module.
+    synonyms:
+    - tabSupplier Scorecard Scoring Criteria
+    tags:
+    - buying
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: buying
+      object: tabSupplier Scorecard Scoring Criteria
+  grain:
+    description: One row per Supplier Scorecard Scoring Criteria document.
+    components:
+    - identity_id: supplier_scorecard_scoring_criteria_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: criteria_name
+    description: Criteria Name
+    value_description: Link
+  - name: score
+    description: Score
+    value_description: Percent
+  - name: weight
+    description: Criteria Weight
+    value_description: Percent
+  - name: max_score
+    description: Max Score
+    value_description: Float
+  - name: formula
+    description: Criteria Formula
+    value_description: Small Text
+  - name: name
+    description: Primary key of the Supplier Scorecard Scoring Criteria document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  - name: parent
+    description: Name of the parent document.
+    value_description: Data
+  - name: parentfield
+    description: Fieldname of the parent table that contains this row.
+    value_description: Data
+    synonyms:
+    - Parent Field
+  - name: parenttype
+    description: DocType name of the parent document.
+    value_description: Data
+    synonyms:
+    - Parent Type
+  entity_definitions:
+  - identity_id: supplier_scorecard_criteria_identity
+    dataset_columns:
+    - criteria_name
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[criteria_name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Supplier Scorecard Criteria document.
+  - identity_id: supplier_scorecard_scoring_criteria_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Supplier Scorecard Scoring Criteria.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: unknown
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.buying.supplier_scorecard_scoring_standing
+  descriptor:
+    qualified_name: frappe-erp.buying.supplier_scorecard_scoring_standing
+    display_name: Supplier Scorecard Scoring Standing
+    description: The Supplier Scorecard Scoring Standing child table in the Buying module.
+    tags:
+    - buying
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: buying
+      object: tabSupplier Scorecard Scoring Standing
+  grain:
+    description: One row per Supplier Scorecard Scoring Standing document.
+    components:
+    - identity_id: supplier_scorecard_scoring_standing_identity
+      dataset_columns:
+      - name
+  columns:
+  - name: standing_name
+    description: Standing Name
+    value_description: Link
+  - name: standing_color
+    description: Color
+    value_description: Blue, Purple, Green, Yellow, Orange, Red
+  - name: min_grade
+    description: Min Grade
+  - name: max_grade
+    description: Max Grade
+    value_description: Percent
+  - name: warn_rfqs
+    description: Warn RFQs
+  - name: warn_pos
+    description: Warn Purchase Orders
+    value_description: Check
+  - name: prevent_rfqs
+    description: Prevent RFQs
+    value_description: Check
+  - name: prevent_pos
+    description: Prevent Purchase Orders
+    value_description: Check
+  - name: notify_supplier
+    description: Notify Supplier
+  - name: notify_employee
+    description: Notify Employee
+  - name: employee_link
+    description: Employee
+    value_description: Link
+  - name: name
+    description: Primary key of the Supplier Scorecard Scoring Standing document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  - name: parent
+    description: Name of the parent Supplier Scorecard document.
+  - name: parentfield
+    description: Fieldname of the parent table that contains this row.
+    value_description: Data
+    synonyms:
+    - Parent Field
+  - name: parenttype
+    description: DocType name of the parent document.
+    value_description: Data
+    synonyms:
+    - Parent Type
+  entity_definitions:
+  - identity_id: supplier_scorecard_standing_identity
+    dataset_columns:
+    - standing_name
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[standing_name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Supplier Scorecard Standing document.
+  - identity_id: employee_identity
+    dataset_columns:
+    - employee_link
+    entity_universe: partial
+    unique: unknown
+    total: false
+    conforms: true
+    entity_expression:
+    - '[employee_link]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Employee document.
+  - identity_id: supplier_scorecard_scoring_standing_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Supplier Scorecard Scoring Standing.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: unknown
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+  - identity_id: supplier_scorecard_identity
+    dataset_columns:
+    - parent
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[parent]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Parent Supplier Scorecard document that owns this row.
+- node_id: sql-database:frappe-erp.buying.supplier_scorecard_scoring_variable
+  descriptor:
+    qualified_name: frappe-erp.buying.supplier_scorecard_scoring_variable
+    display_name: Supplier Scorecard Scoring Variable
+    description: The Supplier Scorecard Scoring Variable child table in the Buying module.
+    synonyms:
+    - tabSupplier Scorecard Scoring Variable
+    tags:
+    - buying
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: buying
+      object: tabSupplier Scorecard Scoring Variable
+  grain:
+    description: One row per Supplier Scorecard Scoring Variable document.
+    components:
+    - identity_id: supplier_scorecard_scoring_variable_identity
+      dataset_columns:
+      - name
+  columns:
+  - name: variable_label
+    description: Variable Name
+    value_description: Link
+  - name: description
+    description: Description
+    value_description: Small Text
+  - name: value
+    description: Value
+    value_description: Float
+  - name: param_name
+    value_description: Data
+  - name: path
+    description: Path
+    value_description: Data
+  - name: name
+    description: Primary key of the Supplier Scorecard Scoring Variable document.
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  - name: parent
+    description: Name of the parent Supplier Scorecard Period document.
+    value_description: Data
+  - name: parentfield
+    description: Fieldname of the parent table that contains this row.
+    value_description: Data
+    synonyms:
+    - Parent Field
+  - name: parenttype
+    synonyms:
+    - Parent Type
+  entity_definitions:
+  - identity_id: supplier_scorecard_variable_identity
+    dataset_columns:
+    - variable_label
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[variable_label]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Supplier Scorecard Variable document.
+  - identity_id: supplier_scorecard_scoring_variable_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Supplier Scorecard Scoring Variable.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+  - identity_id: supplier_scorecard_period_identity
+    dataset_columns:
+    - parent
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[parent]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Parent Supplier Scorecard Period document that owns this row.
+- node_id: sql-database:frappe-erp.buying.supplier_scorecard_standing
+  descriptor:
+    qualified_name: frappe-erp.buying.supplier_scorecard_standing
+    display_name: Supplier Scorecard Standing
+    description: A band of scores, and what happens to suppliers in it.
+    synonyms:
+    - tabSupplier Scorecard Standing
+    tags:
+    - buying
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: buying
+      object: tabSupplier Scorecard Standing
+  grain:
+    description: One row per Supplier Scorecard Standing document.
+    components:
+    - identity_id: supplier_scorecard_standing_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: standing_name
+    description: Standing Name
+    value_description: Data
+  - name: standing_color
+    description: Color
+    value_description: Blue, Purple, Green, Yellow, Orange, Red
+  - name: min_grade
+    description: Min Grade
+    value_description: Percent
+  - name: max_grade
+    value_description: Percent
+  - name: warn_rfqs
+    description: Warn RFQs
+    value_description: Check
+  - name: warn_pos
+    description: Warn Purchase Orders
+    value_description: Check
+  - name: prevent_rfqs
+    description: Prevent RFQs
+    value_description: Check
+  - name: prevent_pos
+    description: Prevent Purchase Orders
+    value_description: Check
+  - name: notify_supplier
+    description: Notify Supplier
+    value_description: Check
+  - name: notify_employee
+    description: Notify Other
+    value_description: Check
+  - name: employee_link
+    description: Other
+    value_description: Link
+  - name: name
+    description: Primary key of the Supplier Scorecard Standing document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: employee_identity
+    dataset_columns:
+    - employee_link
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[employee_link]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Employee document.
+  - identity_id: supplier_scorecard_standing_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Supplier Scorecard Standing.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.buying.supplier_scorecard_variable
+  descriptor:
+    qualified_name: frappe-erp.buying.supplier_scorecard_variable
+    display_name: Supplier Scorecard Variable
+    description: A value a scorecard criterion is calculated from.
+    tags:
+    - buying
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: buying
+      object: tabSupplier Scorecard Variable
+  grain:
+    description: One row per Supplier Scorecard Variable document.
+    components:
+    - identity_id: supplier_scorecard_variable_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: variable_label
+    description: Variable Name
+    value_description: Data
+  - name: is_custom
+    description: Custom?
+    value_description: Check
+  - name: param_name
+    value_description: Data
+  - name: path
+    description: Path
+    value_description: Data
+  - name: description
+    description: Description
+    value_description: Small Text
+  - name: name
+    description: Primary key of the Supplier Scorecard Variable document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+  - name: idx
+    description: Row index among sibling rows.
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: supplier_scorecard_variable_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: unknown
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Supplier Scorecard Variable.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
