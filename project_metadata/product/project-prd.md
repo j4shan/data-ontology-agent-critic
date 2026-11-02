@@ -60,18 +60,9 @@ evaluation targets a configured service interface and records the API version th
 
 ## 3. Testing Assets
 
-Critic maintains a curated package of metadata sources spanning five business domains:
-`healthcare-payer`, `telecom-mobile`, `manufacturing-discrete`, `retail-grocery`, and
-`commerce-marketplace`. Each domain keeps its catalog, question sheet, cases, and gold answers
-apart from the others under [`project_metadata/schema_candidates/`](../schema_candidates/).
-
-The actor's DDL collector publishes each owner-reviewed catalog to
-`resources/data/generated_catalogs/<domain>/`. These committed actor outputs are benchmark inputs.
-Each catalog has a `directory-manifest.yaml`, collection files under `yaml/`, a `decisions.md` log,
-and a `provenance.yaml` record of source file hashes, generating actor version and commit, review
-rounds and decision counts, identity, node, and edge counts, and unknown claims. Human-reviewed
-`reference_catalogs/<domain>/` are separate gold for scoring the generated catalogs. No generated
-or reference catalog has been published under `resources/data/` yet.
+Critic maintains schema version 4 test catalogs for `frappe-erp` and `apache-ofbiz` under
+[`resources/test_yamls/`](../../resources/test_yamls/). Each domain keeps its catalog and question
+sheet in its own directory.
 
 | ID | Requirement |
 | --- | --- |

@@ -1,0 +1,651 @@
+schema_version: '4'
+nodes:
+- node_id: sql-database:frappe-erp.telephony.call_log
+  descriptor:
+    qualified_name: frappe-erp.telephony.call_log
+    display_name: Call Log
+    description: A phone call made or received.
+    tags:
+    - telephony
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: telephony
+      object: tabCall Log
+  grain:
+    description: One row per Call Log document.
+    components:
+    - identity_id: call_log_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: id
+    description: ID
+    value_description: Data
+  - name: from
+    description: From
+    value_description: Data
+  - name: to
+    description: To
+    value_description: Data
+  - name: call_received_by
+    description: Call Received By
+    value_description: Link
+  - name: employee_user_id
+    description: Employee User Id
+  - name: medium
+    description: Medium
+    value_description: Data
+  - name: start_time
+    description: Start Time
+    value_description: Datetime
+  - name: end_time
+    description: End Time
+    value_description: Datetime
+  - name: type
+    description: Type
+    value_description: Incoming, Outgoing
+  - name: customer
+    description: Customer
+    value_description: Link
+  - name: status
+    description: Status
+    value_description: Ringing, In Progress, Completed, Failed, Busy, No Answer, Queued, Cancelled
+  - name: duration
+    description: Duration. Call Duration in seconds
+    value_description: Duration
+  - name: recording_url
+    description: Recording URL
+    value_description: Data
+  - name: type_of_call
+    description: Type Of Call
+    value_description: Link
+  - name: summary
+    description: Summary
+    value_description: Small Text
+  - name: name
+    description: Primary key of the Call Log document.
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    description: Datetime when the document was created.
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: employee_identity
+    dataset_columns:
+    - call_received_by
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[call_received_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Employee document.
+  - identity_id: user_identity
+    dataset_columns:
+    - employee_user_id
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[employee_user_id]'
+    description: Reference to a User document.
+  - identity_id: customer_identity
+    dataset_columns:
+    - customer
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[customer]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Customer document.
+  - identity_id: telephony_call_type_identity
+    dataset_columns:
+    - type_of_call
+    entity_universe: partial
+    unique: unknown
+    total: false
+    conforms: true
+    entity_expression:
+    - '[type_of_call]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Telephony Call Type document.
+  - identity_id: call_log_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: unknown
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Call Log.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.telephony.incoming_call_handling_schedule
+  descriptor:
+    qualified_name: frappe-erp.telephony.incoming_call_handling_schedule
+    display_name: Incoming Call Handling Schedule
+    description: The Incoming Call Handling Schedule child table in the Telephony module.
+    synonyms:
+    - tabIncoming Call Handling Schedule
+    tags:
+    - telephony
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: telephony
+      object: tabIncoming Call Handling Schedule
+  grain:
+    description: One row per Incoming Call Handling Schedule document.
+    components:
+    - identity_id: incoming_call_handling_schedule_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: day_of_week
+    description: Day Of Week
+    value_description: Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday
+  - name: from_time
+    description: From Time
+    value_description: Time
+  - name: to_time
+    description: To Time
+    value_description: Time
+  - name: agent_group
+    description: Agent Group
+    value_description: Link
+  - name: name
+    description: Primary key of the Incoming Call Handling Schedule document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    synonyms:
+    - Index
+  - name: parent
+    description: Name of the parent Incoming Call Settings document.
+    value_description: Data
+  - name: parentfield
+    description: Fieldname of the parent table that contains this row.
+    value_description: Data
+    synonyms:
+    - Parent Field
+  - name: parenttype
+    description: DocType name of the parent document.
+    value_description: Data
+    synonyms:
+    - Parent Type
+  entity_definitions:
+  - identity_id: employee_group_identity
+    dataset_columns:
+    - agent_group
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[agent_group]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Employee Group document.
+  - identity_id: incoming_call_handling_schedule_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Incoming Call Handling Schedule.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: unknown
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+  - identity_id: incoming_call_settings_identity
+    dataset_columns:
+    - parent
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[parent]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Parent Incoming Call Settings document that owns this row.
+- node_id: sql-database:frappe-erp.telephony.incoming_call_settings
+  descriptor:
+    qualified_name: frappe-erp.telephony.incoming_call_settings
+    display_name: Incoming Call Settings
+    description: Who answers incoming calls, and when.
+    synonyms:
+    - tabIncoming Call Settings
+    tags:
+    - telephony
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: telephony
+      object: tabIncoming Call Settings
+  grain:
+    description: One row per Incoming Call Settings document.
+    components:
+    - identity_id: incoming_call_settings_identity
+      dataset_columns:
+      - name
+  columns:
+  - name: call_routing
+    description: Call Routing
+    value_description: Sequential, Simultaneous
+  - name: greeting_message
+    description: Greeting Message
+    value_description: Data
+  - name: agent_busy_message
+    description: Agent Busy Message
+    value_description: Data
+  - name: agent_unavailable_message
+    description: Agent Unavailable Message
+    value_description: Data
+  - name: name
+    value_description: Data
+  - name: owner
+    description: User who created the document.
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: incoming_call_settings_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: unknown
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Incoming Call Settings.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.telephony.telephony_call_type
+  descriptor:
+    qualified_name: frappe-erp.telephony.telephony_call_type
+    display_name: Telephony Call Type
+    description: A grouping of calls, like sales or support.
+    synonyms:
+    - tabTelephony Call Type
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: telephony
+      object: tabTelephony Call Type
+  grain:
+    description: One row per Telephony Call Type document.
+    components:
+    - identity_id: telephony_call_type_identity
+      dataset_columns:
+      - name
+  columns:
+  - name: call_type
+    description: Call Type
+    value_description: Data
+  - name: amended_from
+    description: Amended From
+    value_description: Link
+  - name: name
+    description: Primary key of the Telephony Call Type document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+  - name: creation
+    description: Datetime when the document was created.
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    description: Datetime when the document was last updated.
+    value_description: Datetime
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: telephony_call_type_identity
+    dataset_columns:
+    - amended_from
+    entity_universe: partial
+    unique: false
+    total: false
+    conforms: true
+    entity_expression:
+    - '[amended_from]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a Telephony Call Type document.
+  - identity_id: telephony_call_type_identity
+    dataset_columns:
+    - name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Telephony Call Type.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: unknown
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: unknown
+    unique: false
+    total: true
+    conforms: true
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
+- node_id: sql-database:frappe-erp.telephony.voice_call_settings
+  descriptor:
+    qualified_name: frappe-erp.telephony.voice_call_settings
+    display_name: Voice Call Settings
+    description: Your calling preferences, like when you take calls.
+    synonyms:
+    - tabVoice Call Settings
+    tags:
+    - telephony
+    - erpnext
+  accessor:
+    schema_id: accessor.sql-database.v1
+    properties:
+      host: mariadb.frappe.internal
+      database: frappe
+      dialect: mariadb
+      schema: telephony
+      object: tabVoice Call Settings
+  grain:
+    description: One row per Voice Call Settings document.
+    components:
+    - identity_id: voice_call_settings_identity
+      dataset_columns:
+      - name
+      description: Document name
+  columns:
+  - name: user
+    value_description: Link
+  - name: call_receiving_device
+    description: Call Receiving Device
+    value_description: Computer, Phone
+  - name: greeting_message
+    description: Greeting Message
+    value_description: Data
+  - name: agent_busy_message
+    description: Agent Busy Message
+  - name: agent_unavailable_message
+    description: Agent Unavailable Message
+    value_description: Data
+  - name: name
+    description: Primary key of the Voice Call Settings document.
+    value_description: Data
+    synonyms:
+    - ID
+  - name: owner
+    description: User who created the document.
+    value_description: Link
+    synonyms:
+    - Created By
+  - name: creation
+    value_description: Datetime
+    synonyms:
+    - Created On
+  - name: modified
+    value_description: Datetime
+    synonyms:
+    - Last Updated On
+  - name: modified_by
+    description: User who last updated the document.
+    value_description: Link
+    synonyms:
+    - Last Updated By
+  - name: docstatus
+    description: 'Document status: 0 is Draft, 1 is Submitted, and 2 is Cancelled.'
+    value_description: Int
+    synonyms:
+    - Document Status
+  - name: idx
+    description: Row index among sibling rows.
+    value_description: Int
+    synonyms:
+    - Index
+  entity_definitions:
+  - identity_id: user_identity
+    dataset_columns:
+    - user
+    entity_universe: partial
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[user]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Reference to a User document.
+  - identity_id: voice_call_settings_identity
+    dataset_columns:
+    - name
+    entity_universe: unknown
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Primary key and complete population of Voice Call Settings.
+  - identity_id: user_identity
+    dataset_columns:
+    - owner
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who created the document.
+  - identity_id: user_identity
+    dataset_columns:
+    - modified_by
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: User who last updated the document.
