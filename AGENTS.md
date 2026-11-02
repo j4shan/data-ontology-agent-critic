@@ -1,5 +1,9 @@
 # Agent instructions
 
+## Cloud sessions
+
+While working in a cloud session, keep rolling commits into one feature branch unless the user requests a new feature branch.
+
 ## Independence from the actor
 
 Critic evaluates an actor project, initially `../data-ontology-graph`. Do not import actor code,
