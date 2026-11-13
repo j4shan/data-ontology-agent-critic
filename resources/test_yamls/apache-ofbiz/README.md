@@ -1,8 +1,8 @@
 # Apache OFBiz
 
 `apache-ofbiz` is a schema version 4 catalog of the Apache OFBiz tables on PostgreSQL. Each
-dataset is one OFBiz entity table in the `public` schema. Column names are the physical column
-names.
+dataset is one OFBiz entity table in the `public` schema of the `ofbiz` database, or of the
+`ofbiztenant` database for the 6 tenant entities. Column names are the physical column names.
 
 ## Source
 
@@ -34,7 +34,7 @@ catalog.
 | `webapp.yaml` | 14 | | |
 | `security.yaml` | 11 | | |
 
-`forget-log.yaml` lists 3,541 of 37,071 eligible values that are absent from `yaml/`, with
+`forget-log.yaml` lists 3,534 of 36,936 eligible values that are absent from `yaml/`, with
 their original values.
 
 ## Files

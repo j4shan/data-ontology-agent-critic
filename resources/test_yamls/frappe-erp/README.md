@@ -11,9 +11,9 @@ plus the Frappe `tabUser` table. Each dataset is one DocType table.
 | Frappe HRMS | `1d62bdbd2f9a67978c3ac9729999555bfe838263` |
 | Frappe (User DocType only) | `58a298d5499cc966dee85546056841bb9744afbd` |
 
-The sources declare 694 ERPNext and HRMS DocTypes. 37 single DocTypes and 5 virtual DocTypes
-have no table of their own and are not in the catalog. The single DocTypes store their values
-as rows of `tabSingles`.
+The sources declare 694 ERPNext and HRMS DocTypes. 42 of them have no table of their own and
+are not in the catalog: 37 single DocTypes, which store their values as rows of `tabSingles`,
+and 7 virtual DocTypes, 2 of which are also single.
 
 ## Counts
 
