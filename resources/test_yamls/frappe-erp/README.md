@@ -1,6 +1,6 @@
 # ERPNext and Frappe HRMS
 
-`frappe-erp` is a schema version 4 catalog of the ERPNext and Frappe HRMS tables on MariaDB,
+`frappe-erp` is a schema version 5 catalog of the ERPNext and Frappe HRMS tables on MariaDB,
 plus the Frappe `tabUser` table. Each dataset is one DocType table.
 
 ## Source

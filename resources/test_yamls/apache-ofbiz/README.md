@@ -1,6 +1,6 @@
 # Apache OFBiz
 
-`apache-ofbiz` is a schema version 4 catalog of the Apache OFBiz tables on PostgreSQL. Each
+`apache-ofbiz` is a schema version 5 catalog of the Apache OFBiz tables on PostgreSQL. Each
 dataset is one OFBiz entity table in the `public` schema of the `ofbiz` database, or of the
 `ofbiztenant` database for the 6 tenant entities. Column names are the physical column names.
 
