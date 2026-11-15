@@ -39,7 +39,7 @@ and 7 virtual DocTypes, 2 of which are also single.
 | `quality_management.yaml` | 16 | `framework.yaml` | 1 |
 | `projects.yaml` | 14 | | |
 
-`forget-log.yaml` lists 6,403 of 65,535 eligible values that are absent from `yaml/`, with
+`forget-log.yaml` lists 6,715 of 69,717 eligible values that are absent from `yaml/`, with
 their original values.
 
 ## Files

@@ -34,7 +34,7 @@ catalog.
 | `webapp.yaml` | 14 | | |
 | `security.yaml` | 11 | | |
 
-`forget-log.yaml` lists 3,534 of 36,936 eligible values that are absent from `yaml/`, with
+`forget-log.yaml` lists 3,618 of 38,114 eligible values that are absent from `yaml/`, with
 their original values.
 
 ## Files
