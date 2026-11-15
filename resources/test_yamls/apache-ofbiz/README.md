@@ -17,7 +17,8 @@ catalog.
 | Datasets | 835 |
 | Columns | 8,694 |
 | Logical identities | 835 |
-| Entity definitions | 2,030 |
+| Entity definitions | 2,991 |
+| Cross-entity relationships | 1,967 |
 
 | File | Datasets | File | Datasets |
 | --- | ---: | --- | ---: |
@@ -34,7 +35,7 @@ catalog.
 | `webapp.yaml` | 14 | | |
 | `security.yaml` | 11 | | |
 
-`forget-log.yaml` lists 3,618 of 38,114 eligible values that are absent from `yaml/`, with
+`forget-log.yaml` lists 4,135 of 44,193 eligible values that are absent from `yaml/`, with
 their original values.
 
 ## Files
@@ -43,6 +44,7 @@ their original values.
 | --- | --- |
 | `directory-manifest.yaml` | Directory manifest for `yaml/`. |
 | `yaml/00_logical_identities.yaml` | Logical identities. |
+| `yaml/00_entity_relationships.yaml` | Cross-entity relationships, one description per OFBiz `one` or `one-nofk` relation. |
 | `yaml/<group>.yaml` | Datasets of one OFBiz entity group. |
 | `forget-log.yaml` | Values absent from `yaml/` and their originals. |
 | `questions.md` | Ten operator questions over orders, inventory, accounting, manufacturing, and shipments. |
