@@ -1,0 +1,857 @@
+schema_version: '5'
+nodes:
+- node_id: sql-database:apache-ofbiz.security.protected_view
+  descriptor:
+    qualified_name: apache-ofbiz.security.protected_view
+    display_name: ProtectedView
+    description: Physical table protected_view holding one row per Security Component - Protected View in the security entity
+      group.
+    synonyms:
+    - Security Component - Protected View
+    - Protected View
+    tags:
+    - security
+    - ofbiz
+  accessor:
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
+    properties:
+      database: ofbiz
+      schema: public
+      object: protected_view
+  grain:
+    description: One row per ProtectedView.
+    components:
+    - identity_id: protected_view_identity
+      dataset_columns:
+      - group_id
+      - view_name_id
+      description: Primary key of ProtectedView.
+  columns:
+  - name: group_id
+    description: Group Id (identifier).
+    value_description: OFBiz field type id.
+  - name: view_name_id
+    description: name of view to protect from data theft.
+    value_description: OFBiz field type id-long.
+  - name: max_hits
+    description: number of hits before tarpitting a login for a view.
+    value_description: OFBiz field type numeric.
+  - name: max_hits_duration
+    description: period of time associated with max_hits (in seconds).
+    value_description: OFBiz field type numeric.
+  - name: tarpit_duration
+    description: period of time a login will not be able to acces this view again (in seconds).
+    value_description: OFBiz field type numeric.
+  - name: last_updated_stamp
+    description: Date and time the row was last updated.
+    value_description: OFBiz field type date-time.
+  - name: last_updated_tx_stamp
+    description: Transaction timestamp of the last update.
+    value_description: OFBiz field type date-time.
+  - name: created_stamp
+    description: Date and time the row was created.
+    value_description: OFBiz field type date-time.
+  - name: created_tx_stamp
+    description: Transaction timestamp of the row creation.
+    value_description: OFBiz field type date-time.
+  entity_definitions:
+  - identity_id: protected_view_identity
+    dataset_columns:
+    - group_id
+    - view_name_id
+    entity_universe: complete
+    unique: unknown
+    total: true
+    conforms: true
+    description: Primary key of ProtectedView.
+    entity_expression:
+    - '[group_id, view_name_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: security_group_identity
+    dataset_columns:
+    - group_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    description: Reference to SecurityGroup on group_id.
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+- node_id: sql-database:apache-ofbiz.security.security_group
+  descriptor:
+    qualified_name: apache-ofbiz.security.security_group
+    display_name: SecurityGroup
+    description: Physical table security_group holding one row per Security Component - Security Group in the security entity
+      group.
+    synonyms:
+    - Security Component - Security Group
+    - Security Group
+    tags:
+    - security
+    - ofbiz
+  accessor:
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
+    properties:
+      database: ofbiz
+      schema: public
+      object: security_group
+  grain:
+    description: One row per SecurityGroup.
+    components:
+    - identity_id: security_group_identity
+      dataset_columns:
+      - group_id
+      description: Primary key of SecurityGroup.
+  columns:
+  - name: group_id
+    description: Group Id (identifier).
+    value_description: OFBiz field type id.
+  - name: group_name
+    description: Group Name (value).
+    value_description: OFBiz field type value.
+  - name: description
+    description: Description (description text).
+    value_description: OFBiz field type description.
+  - name: last_updated_stamp
+    value_description: OFBiz field type date-time.
+  - name: last_updated_tx_stamp
+    description: Transaction timestamp of the last update.
+    value_description: OFBiz field type date-time.
+  - name: created_stamp
+    description: Date and time the row was created.
+    value_description: OFBiz field type date-time.
+  - name: created_tx_stamp
+    description: Transaction timestamp of the row creation.
+    value_description: OFBiz field type date-time.
+  entity_definitions:
+  - identity_id: security_group_identity
+    dataset_columns:
+    - group_id
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+- node_id: sql-database:apache-ofbiz.security.security_group_permission
+  descriptor:
+    qualified_name: apache-ofbiz.security.security_group_permission
+    display_name: SecurityGroupPermission
+    description: Physical table security_group_permission holding one row per Security Component - Security Group Permission
+      in the security entity group.
+    synonyms:
+    - Security Component - Security Group Permission
+    - Security Group Permission
+    tags:
+    - security
+    - ofbiz
+  accessor:
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
+    properties:
+      database: ofbiz
+      schema: public
+      object: security_group_permission
+  grain:
+    description: One row per SecurityGroupPermission.
+    components:
+    - identity_id: security_group_permission_identity
+      dataset_columns:
+      - from_date
+      - group_id
+      - permission_id
+      description: Primary key of SecurityGroupPermission.
+  columns:
+  - name: group_id
+    description: Group Id (identifier).
+    value_description: OFBiz field type id.
+  - name: permission_id
+    description: Permission Id (long identifier).
+    value_description: OFBiz field type id-long.
+  - name: from_date
+    description: From Date (date and time).
+    value_description: OFBiz field type date-time.
+  - name: thru_date
+    description: Thru Date (date and time).
+    value_description: OFBiz field type date-time.
+  - name: last_updated_stamp
+    description: Date and time the row was last updated.
+    value_description: OFBiz field type date-time.
+  - name: last_updated_tx_stamp
+    description: Transaction timestamp of the last update.
+    value_description: OFBiz field type date-time.
+  - name: created_stamp
+    description: Date and time the row was created.
+    value_description: OFBiz field type date-time.
+  - name: created_tx_stamp
+    description: Transaction timestamp of the row creation.
+    value_description: OFBiz field type date-time.
+  entity_definitions:
+  - identity_id: security_group_permission_identity
+    dataset_columns:
+    - from_date
+    - group_id
+    - permission_id
+    entity_universe: complete
+    unique: true
+    total: unknown
+    conforms: true
+    description: Primary key of SecurityGroupPermission.
+    entity_expression:
+    - '[from_date, group_id, permission_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: security_group_identity
+    dataset_columns:
+    - group_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    description: Reference to SecurityGroup on group_id.
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: security_permission_identity
+    dataset_columns:
+    - permission_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: unknown
+    description: Reference to SecurityPermission on permission_id.
+    entity_expression:
+    - '[permission_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+- node_id: sql-database:apache-ofbiz.security.security_permission
+  descriptor:
+    qualified_name: apache-ofbiz.security.security_permission
+    display_name: SecurityPermission
+    description: Physical table security_permission holding one row per Security Component - Security Permission in the security
+      entity group.
+    synonyms:
+    - Security Component - Security Permission
+    - Security Permission
+    tags:
+    - security
+    - ofbiz
+  accessor:
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
+    properties:
+      database: ofbiz
+      schema: public
+      object: security_permission
+  grain:
+    description: One row per SecurityPermission.
+    components:
+    - identity_id: security_permission_identity
+      dataset_columns:
+      - permission_id
+      description: Primary key of SecurityPermission.
+  columns:
+  - name: permission_id
+    description: Permission Id (long identifier).
+    value_description: OFBiz field type id-long.
+  - name: description
+    description: Description (description text).
+    value_description: OFBiz field type description.
+  - name: last_updated_stamp
+    description: Date and time the row was last updated.
+    value_description: OFBiz field type date-time.
+  - name: last_updated_tx_stamp
+    description: Transaction timestamp of the last update.
+    value_description: OFBiz field type date-time.
+  - name: created_stamp
+    description: Date and time the row was created.
+    value_description: OFBiz field type date-time.
+  - name: created_tx_stamp
+    description: Transaction timestamp of the row creation.
+    value_description: OFBiz field type date-time.
+  entity_definitions:
+  - identity_id: security_permission_identity
+    dataset_columns:
+    - permission_id
+    entity_universe: unknown
+    unique: true
+    total: true
+    conforms: true
+    description: Primary key of SecurityPermission.
+    entity_expression:
+    - '[permission_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+- node_id: sql-database:apache-ofbiz.security.tarpitted_login_view
+  descriptor:
+    qualified_name: apache-ofbiz.security.tarpitted_login_view
+    display_name: TarpittedLoginView
+    description: Physical table tarpitted_login_view holding one row per Security Component - Protected View in the security
+      entity group.
+    synonyms:
+    - Security Component - Protected View
+    - Tarpitted Login View
+    tags:
+    - security
+    - ofbiz
+  accessor:
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
+    properties:
+      database: ofbiz
+      schema: public
+      object: tarpitted_login_view
+  grain:
+    components:
+    - identity_id: tarpitted_login_view_identity
+      dataset_columns:
+      - user_login_id
+      - view_name_id
+      description: Primary key of TarpittedLoginView.
+  columns:
+  - name: view_name_id
+    description: name of view protected from data theft.
+    value_description: OFBiz field type id-long.
+  - name: user_login_id
+    description: User Login Id (very long identifier).
+    value_description: OFBiz field type id-vlong.
+  - name: tarpit_release_date_time
+    value_description: OFBiz field type numeric.
+  - name: last_updated_stamp
+    description: Date and time the row was last updated.
+    value_description: OFBiz field type date-time.
+  - name: last_updated_tx_stamp
+    description: Transaction timestamp of the last update.
+    value_description: OFBiz field type date-time.
+  - name: created_stamp
+    description: Date and time the row was created.
+    value_description: OFBiz field type date-time.
+  - name: created_tx_stamp
+    description: Transaction timestamp of the row creation.
+    value_description: OFBiz field type date-time.
+  entity_definitions:
+  - identity_id: tarpitted_login_view_identity
+    dataset_columns:
+    - user_login_id
+    - view_name_id
+    entity_universe: complete
+    unique: true
+    total: unknown
+    conforms: true
+    description: Primary key of TarpittedLoginView.
+    entity_expression:
+    - '[user_login_id, view_name_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+- node_id: sql-database:apache-ofbiz.security.user_login
+  descriptor:
+    qualified_name: apache-ofbiz.security.user_login
+    display_name: UserLogin
+    description: Physical table user_login holding one row per User Login in the security entity group.
+    synonyms:
+    - User Login
+    tags:
+    - security
+    - ofbiz
+  accessor:
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
+    properties:
+      database: ofbiz
+      schema: public
+      object: user_login
+  grain:
+    description: One row per UserLogin.
+    components:
+    - identity_id: user_login_identity
+      dataset_columns:
+      - user_login_id
+  columns:
+  - name: user_login_id
+    description: User Login Id (very long identifier).
+    value_description: OFBiz field type id-vlong.
+  - name: user_full_name
+    description: User Full Name (name).
+    value_description: OFBiz field type name.
+  - name: current_password
+    description: Current Password (long text).
+    value_description: OFBiz field type long-varchar.
+  - name: password_hint
+    description: Password Hint (description text).
+  - name: is_system
+    description: Is System (indicator flag).
+    value_description: OFBiz field type indicator.
+  - name: enabled
+    description: Enabled (indicator flag).
+    value_description: OFBiz field type indicator.
+  - name: has_logged_out
+    description: Has Logged Out (indicator flag).
+    value_description: OFBiz field type indicator.
+  - name: require_password_change
+    value_description: OFBiz field type indicator.
+  - name: last_currency_uom
+    value_description: OFBiz field type id.
+  - name: last_locale
+    description: Last Locale (very short text).
+    value_description: OFBiz field type very-short.
+  - name: last_time_zone
+    description: Last Time Zone (long identifier).
+    value_description: OFBiz field type id-long.
+  - name: disabled_date_time
+    description: Disabled Date Time (date and time).
+    value_description: OFBiz field type date-time.
+  - name: successive_failed_logins
+    description: Successive Failed Logins (number).
+    value_description: OFBiz field type numeric.
+  - name: external_auth_id
+    description: For use with external authentication; the user_ldap_dn should be replaced with this.
+    value_description: OFBiz field type id-vlong.
+  - name: user_ldap_dn
+    description: The user's LDAP Distinguished Name - used for LDAP authentication.
+    value_description: OFBiz field type id-vlong.
+  - name: disabled_by
+    description: Disabled By (very long identifier).
+  - name: party_id
+    description: Party Id (identifier).
+    value_description: OFBiz field type id.
+  - name: last_updated_stamp
+    description: Date and time the row was last updated.
+  - name: last_updated_tx_stamp
+    description: Transaction timestamp of the last update.
+    value_description: OFBiz field type date-time.
+  - name: created_stamp
+    description: Date and time the row was created.
+    value_description: OFBiz field type date-time.
+  - name: created_tx_stamp
+    description: Transaction timestamp of the row creation.
+    value_description: OFBiz field type date-time.
+  entity_definitions:
+  - identity_id: user_login_identity
+    dataset_columns:
+    - user_login_id
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    description: Primary key of UserLogin.
+    entity_expression:
+    - '[user_login_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: party_group_identity
+    dataset_columns:
+    - party_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: unknown
+    entity_expression:
+    - '[party_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: person_identity
+    dataset_columns:
+    - party_id
+    entity_universe: unknown
+    unique: false
+    total: unknown
+    conforms: unknown
+    description: Reference to Person on party_id.
+    entity_expression:
+    - '[party_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+- node_id: sql-database:apache-ofbiz.security.user_login_history
+  descriptor:
+    qualified_name: apache-ofbiz.security.user_login_history
+    display_name: UserLoginHistory
+    description: Physical table user_login_history holding one row per User Login History in the security entity group.
+    synonyms:
+    - User Login History
+    tags:
+    - security
+    - ofbiz
+  accessor:
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
+    properties:
+      database: ofbiz
+      schema: public
+      object: user_login_history
+  grain:
+    description: One row per UserLoginHistory.
+    components:
+    - identity_id: user_login_history_identity
+      dataset_columns:
+      - from_date
+      - user_login_id
+      description: Primary key of UserLoginHistory.
+  columns:
+  - name: user_login_id
+    description: User Login Id (very long identifier).
+    value_description: OFBiz field type id-vlong.
+  - name: visit_id
+    description: Visit Id (identifier).
+  - name: from_date
+    description: From Date (date and time).
+    value_description: OFBiz field type date-time.
+  - name: thru_date
+    description: Thru Date (date and time).
+    value_description: OFBiz field type date-time.
+  - name: password_used
+    description: Password Used (long text).
+    value_description: OFBiz field type long-varchar.
+  - name: successful_login
+    description: Successful Login (indicator flag).
+    value_description: OFBiz field type indicator.
+  - name: origin_user_login_id
+    description: Origin User Login Id (very long identifier).
+    value_description: OFBiz field type id-vlong.
+  - name: party_id
+    description: Party Id (identifier).
+    value_description: OFBiz field type id.
+  - name: last_updated_stamp
+    description: Date and time the row was last updated.
+  - name: last_updated_tx_stamp
+    description: Transaction timestamp of the last update.
+    value_description: OFBiz field type date-time.
+  - name: created_stamp
+    description: Date and time the row was created.
+    value_description: OFBiz field type date-time.
+  - name: created_tx_stamp
+    description: Transaction timestamp of the row creation.
+    value_description: OFBiz field type date-time.
+  entity_definitions:
+  - identity_id: user_login_history_identity
+    dataset_columns:
+    - from_date
+    - user_login_id
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    description: Primary key of UserLoginHistory.
+    entity_expression:
+    - '[from_date, user_login_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: user_login_identity
+    dataset_columns:
+    - origin_user_login_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: unknown
+    description: Origin reference to UserLogin on origin_user_login_id.
+    entity_expression:
+    - '[origin_user_login_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: user_login_identity
+    dataset_columns:
+    - user_login_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    description: Reference to UserLogin on user_login_id.
+    entity_expression:
+    - '[user_login_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+- node_id: sql-database:apache-ofbiz.security.user_login_password_history
+  descriptor:
+    qualified_name: apache-ofbiz.security.user_login_password_history
+    display_name: UserLoginPasswordHistory
+  accessor:
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
+    properties:
+      database: ofbiz
+      schema: public
+      object: user_login_password_history
+  grain:
+    description: One row per UserLoginPasswordHistory.
+    components:
+    - identity_id: user_login_password_history_identity
+      dataset_columns:
+      - from_date
+      - user_login_id
+      description: Primary key of UserLoginPasswordHistory.
+  columns:
+  - name: user_login_id
+    description: User Login Id (very long identifier).
+    value_description: OFBiz field type id-vlong.
+  - name: from_date
+    description: From Date (date and time).
+    value_description: OFBiz field type date-time.
+  - name: thru_date
+    description: Thru Date (date and time).
+    value_description: OFBiz field type date-time.
+  - name: current_password
+    description: Current Password (long text).
+    value_description: OFBiz field type long-varchar.
+  - name: last_updated_stamp
+    description: Date and time the row was last updated.
+    value_description: OFBiz field type date-time.
+  - name: last_updated_tx_stamp
+    description: Transaction timestamp of the last update.
+    value_description: OFBiz field type date-time.
+  - name: created_stamp
+    description: Date and time the row was created.
+    value_description: OFBiz field type date-time.
+  - name: created_tx_stamp
+    description: Transaction timestamp of the row creation.
+    value_description: OFBiz field type date-time.
+  entity_definitions:
+  - identity_id: user_login_password_history_identity
+    dataset_columns:
+    - from_date
+    - user_login_id
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    description: Primary key of UserLoginPasswordHistory.
+    entity_expression:
+    - '[from_date, user_login_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: user_login_identity
+    dataset_columns:
+    - user_login_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    description: Reference to UserLogin on user_login_id.
+    entity_expression:
+    - '[user_login_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+- node_id: sql-database:apache-ofbiz.security.user_login_security_group
+  descriptor:
+    qualified_name: apache-ofbiz.security.user_login_security_group
+    display_name: UserLoginSecurityGroup
+    description: Physical table user_login_security_group holding one row per Security Component - User Login Security Group
+      in the security entity group.
+  accessor:
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
+    properties:
+      database: ofbiz
+      schema: public
+      object: user_login_security_group
+  grain:
+    description: One row per UserLoginSecurityGroup.
+    components:
+    - identity_id: user_login_security_group_identity
+      dataset_columns:
+      - from_date
+      - group_id
+      - user_login_id
+      description: Primary key of UserLoginSecurityGroup.
+  columns:
+  - name: user_login_id
+    description: User Login Id (very long identifier).
+    value_description: OFBiz field type id-vlong.
+  - name: group_id
+    description: Group Id (identifier).
+    value_description: OFBiz field type id.
+  - name: from_date
+    description: From Date (date and time).
+    value_description: OFBiz field type date-time.
+  - name: thru_date
+    description: Thru Date (date and time).
+    value_description: OFBiz field type date-time.
+  - name: last_updated_stamp
+    description: Date and time the row was last updated.
+    value_description: OFBiz field type date-time.
+  - name: last_updated_tx_stamp
+    description: Transaction timestamp of the last update.
+    value_description: OFBiz field type date-time.
+  - name: created_stamp
+    description: Date and time the row was created.
+    value_description: OFBiz field type date-time.
+  - name: created_tx_stamp
+    description: Transaction timestamp of the row creation.
+    value_description: OFBiz field type date-time.
+  entity_definitions:
+  - identity_id: user_login_security_group_identity
+    dataset_columns:
+    - from_date
+    - group_id
+    - user_login_id
+    entity_universe: unknown
+    unique: true
+    total: true
+    conforms: true
+    description: Primary key of UserLoginSecurityGroup.
+    entity_expression:
+    - '[from_date, group_id, user_login_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: security_group_identity
+    dataset_columns:
+    - group_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    description: Reference to SecurityGroup on group_id.
+    entity_expression:
+    - '[group_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: user_login_identity
+    dataset_columns:
+    - user_login_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    description: Reference to UserLogin on user_login_id.
+    entity_expression:
+    - '[user_login_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+- node_id: sql-database:apache-ofbiz.security.user_login_session
+  descriptor:
+    qualified_name: apache-ofbiz.security.user_login_session
+    display_name: UserLoginSession
+    description: Physical table user_login_session holding one row per User Login History in the security entity group.
+    synonyms:
+    - User Login History
+    - User Login Session
+    tags:
+    - security
+    - ofbiz
+  accessor:
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
+    properties:
+      database: ofbiz
+      schema: public
+      object: user_login_session
+  grain:
+    description: One row per UserLoginSession.
+    components:
+    - identity_id: user_login_session_identity
+      dataset_columns:
+      - user_login_id
+      description: Primary key of UserLoginSession.
+  columns:
+  - name: user_login_id
+    description: User Login Id (very long identifier).
+  - name: saved_date
+    value_description: OFBiz field type date-time.
+  - name: session_data
+    description: Session Data (very long text).
+    value_description: OFBiz field type very-long.
+  - name: last_updated_stamp
+    description: Date and time the row was last updated.
+    value_description: OFBiz field type date-time.
+  - name: last_updated_tx_stamp
+    description: Transaction timestamp of the last update.
+    value_description: OFBiz field type date-time.
+  - name: created_stamp
+    description: Date and time the row was created.
+    value_description: OFBiz field type date-time.
+  - name: created_tx_stamp
+    description: Transaction timestamp of the row creation.
+    value_description: OFBiz field type date-time.
+  entity_definitions:
+  - identity_id: user_login_session_identity
+    dataset_columns:
+    - user_login_id
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: unknown
+    description: Primary key of UserLoginSession.
+    entity_expression:
+    - '[user_login_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: user_login_identity
+    dataset_columns:
+    - user_login_id
+    entity_universe: partial
+    unique: true
+    total: true
+    conforms: true
+    description: Reference to UserLogin on user_login_id.
+    entity_expression:
+    - '[user_login_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+- node_id: sql-database:apache-ofbiz.security.x509_issuer_provision
+  descriptor:
+    qualified_name: apache-ofbiz.security.x509_issuer_provision
+    display_name: X509IssuerProvision
+    description: Physical table x509_issuer_provision holding one row per Valid issuer data for authentication of x.509 certificates
+      in the security entity group.
+    synonyms:
+    - Valid issuer data for authentication of x.509 certificates
+    - X509 Issuer Provision
+    tags:
+    - security
+    - ofbiz
+  accessor:
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
+    properties:
+      database: ofbiz
+      schema: public
+      object: x509_issuer_provision
+  grain: unknown
+  columns:
+  - name: cert_provision_id
+    description: Cert Provision Id (identifier).
+    value_description: OFBiz field type id.
+  - name: common_name
+    description: Common Name (value).
+    value_description: OFBiz field type value.
+  - name: organizational_unit
+    description: Organizational Unit (value).
+  - name: organization_name
+    description: Organization Name (value).
+  - name: city_locality
+    description: City Locality (value).
+    value_description: OFBiz field type value.
+  - name: state_province
+    description: State Province (value).
+    value_description: OFBiz field type value.
+  - name: country
+    description: Country (value).
+    value_description: OFBiz field type value.
+  - name: serial_number
+    description: Serial Number (value).
+    value_description: OFBiz field type value.
+  - name: last_updated_stamp
+    description: Date and time the row was last updated.
+    value_description: OFBiz field type date-time.
+  - name: last_updated_tx_stamp
+    description: Transaction timestamp of the last update.
+    value_description: OFBiz field type date-time.
+  - name: created_stamp
+    description: Date and time the row was created.
+    value_description: OFBiz field type date-time.
+  - name: created_tx_stamp
+    description: Transaction timestamp of the row creation.
+    value_description: OFBiz field type date-time.
+  entity_definitions:
+  - identity_id: x509_issuer_provision_identity
+    dataset_columns:
+    - cert_provision_id
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    description: Primary key of X509IssuerProvision.
+    entity_expression:
+    - '[cert_provision_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference

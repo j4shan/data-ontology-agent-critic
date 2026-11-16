@@ -1,0 +1,912 @@
+schema_version: '5'
+nodes:
+- node_id: sql-database:apache-ofbiz.service.job_manager_lock
+  descriptor:
+    qualified_name: apache-ofbiz.service.job_manager_lock
+    display_name: JobManagerLock
+    description: Physical table job_manager_lock holding one row per Lock Job Manager Scheduler in the service entity group.
+    synonyms:
+    - Lock Job Manager Scheduler
+    - Job Manager Lock
+    tags:
+    - service
+    - ofbiz
+  accessor:
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
+    properties:
+      database: ofbiz
+      schema: public
+      object: job_manager_lock
+  grain:
+    description: One row per JobManagerLock.
+    components:
+    - identity_id: job_manager_lock_identity
+      dataset_columns:
+      - from_date
+      - instance_id
+      description: Primary key of JobManagerLock.
+  columns:
+  - name: instance_id
+    description: Instance Id (identifier).
+    value_description: OFBiz field type id.
+  - name: from_date
+    description: From Date (date and time).
+    value_description: OFBiz field type date-time.
+  - name: thru_date
+    description: Thru Date (date and time).
+    value_description: OFBiz field type date-time.
+  - name: reason_enum_id
+    description: Reason Enum Id (identifier).
+    value_description: OFBiz field type id.
+  - name: comments
+    description: Comments (comment text).
+    value_description: OFBiz field type comment.
+  - name: created_date
+    description: Created Date (date and time).
+    value_description: OFBiz field type date-time.
+  - name: created_by_user_login
+    description: Created By User Login (very long identifier).
+    value_description: OFBiz field type id-vlong.
+  - name: last_modified_date
+    description: Last Modified Date (date and time).
+  - name: last_modified_by_user_login
+    description: Last Modified By User Login (very long identifier).
+    value_description: OFBiz field type id-vlong.
+  - name: last_updated_stamp
+    description: Date and time the row was last updated.
+    value_description: OFBiz field type date-time.
+  - name: last_updated_tx_stamp
+    description: Transaction timestamp of the last update.
+    value_description: OFBiz field type date-time.
+  - name: created_stamp
+    value_description: OFBiz field type date-time.
+  - name: created_tx_stamp
+    description: Transaction timestamp of the row creation.
+    value_description: OFBiz field type date-time.
+  entity_definitions:
+  - identity_id: job_manager_lock_identity
+    dataset_columns:
+    - from_date
+    - instance_id
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    description: Primary key of JobManagerLock.
+    entity_expression:
+    - '[from_date, instance_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: enumeration_identity
+    dataset_columns:
+    - reason_enum_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: unknown
+    description: Reason reference to Enumeration on reason_enum_id.
+    entity_expression:
+    - '[reason_enum_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+- node_id: sql-database:apache-ofbiz.service.job_sandbox
+  descriptor:
+    qualified_name: apache-ofbiz.service.job_sandbox
+    display_name: JobSandbox
+    description: Physical table job_sandbox holding one row per Job Scheduler Sandbox in the service entity group.
+    tags:
+    - service
+    - ofbiz
+  accessor:
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
+    properties:
+      database: ofbiz
+      schema: public
+      object: job_sandbox
+  grain:
+    description: One row per JobSandbox.
+    components:
+    - identity_id: job_sandbox_identity
+      dataset_columns:
+      - job_id
+      description: Primary key of JobSandbox.
+  columns:
+  - name: job_id
+  - name: job_name
+    description: Job Name (name).
+    value_description: OFBiz field type name.
+  - name: run_time
+    description: Run Time (date and time).
+    value_description: OFBiz field type date-time.
+  - name: run_time_epoch
+    description: Store the Epoch millisecond to avoid DST change issue (when clock set 1 hr back).
+    value_description: OFBiz field type numeric.
+  - name: priority
+    description: Priority (number).
+    value_description: OFBiz field type numeric.
+  - name: pool_id
+    description: Pool Id (name).
+    value_description: OFBiz field type name.
+  - name: status_id
+    description: Status Id (identifier).
+    value_description: OFBiz field type id.
+  - name: parent_job_id
+    value_description: OFBiz field type id.
+  - name: previous_job_id
+    description: Previous Job Id (identifier).
+    value_description: OFBiz field type id.
+  - name: service_name
+  - name: loader_name
+    description: Loader Name (name).
+    value_description: OFBiz field type name.
+  - name: max_retry
+    description: Max Retry (number).
+    value_description: OFBiz field type numeric.
+  - name: current_retry_count
+    description: Current Retry Count (number).
+  - name: auth_user_login_id
+    description: Auth User Login Id (very long identifier).
+    value_description: OFBiz field type id-vlong.
+  - name: run_as_user
+    description: Run As User (very long identifier).
+    value_description: OFBiz field type id-vlong.
+  - name: runtime_data_id
+    description: Runtime Data Id (identifier).
+  - name: recurrence_info_id
+    description: Deprecated - use temp_expr_id instead.
+    value_description: OFBiz field type id.
+  - name: temp_expr_id
+    description: Temporal expression id.
+    value_description: OFBiz field type id.
+  - name: current_recurrence_count
+    description: Current Recurrence Count (number).
+    value_description: OFBiz field type numeric.
+  - name: max_recurrence_count
+    description: Max Recurrence Count (number).
+    value_description: OFBiz field type numeric.
+  - name: run_by_instance_id
+    description: Run By Instance Id (identifier).
+    value_description: OFBiz field type id.
+  - name: start_date_time
+    description: Start Date Time (date and time).
+    value_description: OFBiz field type date-time.
+  - name: finish_date_time
+    description: Finish Date Time (date and time).
+    value_description: OFBiz field type date-time.
+  - name: cancel_date_time
+    description: Cancel Date Time (date and time).
+  - name: job_result
+    value_description: OFBiz field type value.
+  - name: recurrence_time_zone
+    description: Recurrence Time Zone (long identifier).
+  - name: lease_updated_stamp
+    description: Last heartbeat timestamp written by the owning node. Used for lease-based stale job recovery in multi-node
+      ASG deployments.
+    value_description: OFBiz field type date-time.
+  - name: job_tracker_id
+    description: Job Tracker Id (very long identifier).
+    value_description: OFBiz field type id-vlong.
+  - name: last_updated_stamp
+    description: Date and time the row was last updated.
+    value_description: OFBiz field type date-time.
+  - name: last_updated_tx_stamp
+    description: Transaction timestamp of the last update.
+    value_description: OFBiz field type date-time.
+  - name: created_stamp
+    value_description: OFBiz field type date-time.
+  - name: created_tx_stamp
+    description: Transaction timestamp of the row creation.
+    value_description: OFBiz field type date-time.
+  entity_definitions:
+  - identity_id: job_sandbox_identity
+    dataset_columns:
+    - job_id
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    entity_expression:
+    - '[job_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: job_tracker_identity
+    dataset_columns:
+    - job_tracker_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: unknown
+    description: Reference to JobTracker on job_tracker_id.
+    entity_expression:
+    - '[job_tracker_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: recurrence_info_identity
+    dataset_columns:
+    - recurrence_info_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: unknown
+    description: Reference to RecurrenceInfo on recurrence_info_id.
+    entity_expression:
+    - '[recurrence_info_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: runtime_data_identity
+    dataset_columns:
+    - runtime_data_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: Reference to RuntimeData on runtime_data_id.
+    entity_expression:
+    - '[runtime_data_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: status_item_identity
+    dataset_columns:
+    - status_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: unknown
+    description: Reference to StatusItem on status_id.
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: temporal_expression_identity
+    dataset_columns:
+    - temp_expr_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: Reference to TemporalExpression on temp_expr_id.
+    entity_expression:
+    - '[temp_expr_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: user_login_identity
+    dataset_columns:
+    - auth_user_login_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: Auth reference to UserLogin on auth_user_login_id.
+    entity_expression:
+    - '[auth_user_login_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: user_login_identity
+    dataset_columns:
+    - run_as_user
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: RunAs reference to UserLogin on run_as_user.
+    entity_expression:
+    - '[run_as_user]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+- node_id: sql-database:apache-ofbiz.service.job_tracker
+  descriptor:
+    qualified_name: apache-ofbiz.service.job_tracker
+    display_name: JobTracker
+    description: Physical table job_tracker holding one row per Job Tracker in the service entity group.
+    synonyms:
+    - Job Tracker
+    tags:
+    - service
+    - ofbiz
+  accessor:
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
+    properties:
+      database: ofbiz
+      schema: public
+      object: job_tracker
+  grain:
+    description: One row per JobTracker.
+    components:
+    - identity_id: job_tracker_identity
+      dataset_columns:
+      - job_tracker_id
+      description: Primary key of JobTracker.
+  columns:
+  - name: job_tracker_id
+    description: Job Tracker Id (very long identifier).
+    value_description: OFBiz field type id-vlong.
+  - name: service_name
+    description: Service Name (very long identifier).
+    value_description: OFBiz field type id-vlong.
+  - name: runtime_data_id
+    description: Runtime Data Id (identifier).
+    value_description: OFBiz field type id.
+  - name: status_id
+    description: Status Id (identifier).
+    value_description: OFBiz field type id.
+  - name: jobs_total_qty
+    description: Jobs Total Qty (number).
+    value_description: OFBiz field type numeric.
+  - name: persist_result
+    description: Persist Result (indicator flag).
+    value_description: OFBiz field type indicator.
+  - name: run_as_user
+    description: Run As User (very long identifier).
+  - name: start_date
+    value_description: OFBiz field type date-time.
+  - name: completion_date
+    description: Completion Date (date and time).
+    value_description: OFBiz field type date-time.
+  - name: cancel_date
+    description: Cancel Date (date and time).
+    value_description: OFBiz field type date-time.
+  - name: created_date
+    description: Created Date (date and time).
+    value_description: OFBiz field type date-time.
+  - name: created_by_user_login
+    description: Created By User Login (very long identifier).
+  - name: last_modified_date
+    description: Last Modified Date (date and time).
+    value_description: OFBiz field type date-time.
+  - name: last_modified_by_user_login
+    description: Last Modified By User Login (very long identifier).
+    value_description: OFBiz field type id-vlong.
+  - name: last_updated_stamp
+    description: Date and time the row was last updated.
+    value_description: OFBiz field type date-time.
+  - name: last_updated_tx_stamp
+    description: Transaction timestamp of the last update.
+    value_description: OFBiz field type date-time.
+  - name: created_stamp
+    description: Date and time the row was created.
+    value_description: OFBiz field type date-time.
+  - name: created_tx_stamp
+    description: Transaction timestamp of the row creation.
+    value_description: OFBiz field type date-time.
+  entity_definitions:
+  - identity_id: job_tracker_identity
+    dataset_columns:
+    - job_tracker_id
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    description: Primary key of JobTracker.
+    entity_expression:
+    - '[job_tracker_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: status_item_identity
+    dataset_columns:
+    - status_id
+    entity_universe: unknown
+    unique: false
+    total: unknown
+    conforms: true
+    description: Reference to StatusItem on status_id.
+    entity_expression:
+    - '[status_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+- node_id: sql-database:apache-ofbiz.service.recurrence_info
+  descriptor:
+    qualified_name: apache-ofbiz.service.recurrence_info
+    display_name: RecurrenceInfo
+    description: Physical table recurrence_info holding one row per Recurrence Info in the service entity group.
+    synonyms:
+    - Recurrence Info
+  accessor:
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
+    properties:
+      database: ofbiz
+      schema: public
+      object: recurrence_info
+  grain:
+    description: One row per RecurrenceInfo.
+    components:
+    - identity_id: recurrence_info_identity
+      dataset_columns:
+      - recurrence_info_id
+      description: Primary key of RecurrenceInfo.
+  columns:
+  - name: recurrence_info_id
+    description: Recurrence Info Id (identifier).
+    value_description: OFBiz field type id.
+  - name: start_date_time
+    value_description: OFBiz field type date-time.
+  - name: exception_date_times
+    description: Exception Date Times (very long text).
+  - name: recurrence_date_times
+    description: Recurrence Date Times (very long text).
+    value_description: OFBiz field type very-long.
+  - name: exception_rule_id
+    description: Exception Rule Id (identifier).
+  - name: recurrence_rule_id
+    description: Recurrence Rule Id (identifier).
+    value_description: OFBiz field type id.
+  - name: recurrence_count
+    description: Not recommended - more than one process could be using this RecurrenceInfo.
+  - name: last_updated_stamp
+    value_description: OFBiz field type date-time.
+  - name: last_updated_tx_stamp
+    description: Transaction timestamp of the last update.
+    value_description: OFBiz field type date-time.
+  - name: created_stamp
+    description: Date and time the row was created.
+    value_description: OFBiz field type date-time.
+  - name: created_tx_stamp
+    description: Transaction timestamp of the row creation.
+  entity_definitions:
+  - identity_id: recurrence_info_identity
+    dataset_columns:
+    - recurrence_info_id
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    description: Primary key of RecurrenceInfo.
+    entity_expression:
+    - '[recurrence_info_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: recurrence_rule_identity
+    dataset_columns:
+    - exception_rule_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: Exception reference to RecurrenceRule on exception_rule_id.
+    entity_expression:
+    - '[exception_rule_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: recurrence_rule_identity
+    dataset_columns:
+    - recurrence_rule_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: Reference to RecurrenceRule on recurrence_rule_id.
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+- node_id: sql-database:apache-ofbiz.service.recurrence_rule
+  descriptor:
+    qualified_name: apache-ofbiz.service.recurrence_rule
+    display_name: RecurrenceRule
+    description: Physical table recurrence_rule holding one row per Recurrence Rule in the service entity group.
+    synonyms:
+    - Recurrence Rule
+  accessor:
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
+    properties:
+      database: ofbiz
+      schema: public
+      object: recurrence_rule
+  grain:
+    description: One row per RecurrenceRule.
+    components:
+    - dataset_columns:
+      - recurrence_rule_id
+      description: Primary key of RecurrenceRule.
+  columns:
+  - name: recurrence_rule_id
+    description: Recurrence Rule Id (identifier).
+    value_description: OFBiz field type id.
+  - name: frequency
+    description: Frequency (short text).
+    value_description: OFBiz field type short-varchar.
+  - name: until_date_time
+    description: Until Date Time (date and time).
+    value_description: OFBiz field type date-time.
+  - name: count_number
+    description: Count Number (number).
+    value_description: OFBiz field type numeric.
+  - name: interval_number
+    description: Interval Number (number).
+  - name: by_second_list
+    description: By Second List (very long text).
+    value_description: OFBiz field type very-long.
+  - name: by_minute_list
+    description: By Minute List (very long text).
+  - name: by_hour_list
+    description: By Hour List (very long text).
+  - name: by_day_list
+    description: By Day List (very long text).
+    value_description: OFBiz field type very-long.
+  - name: by_month_day_list
+    description: By Month Day List (very long text).
+    value_description: OFBiz field type very-long.
+  - name: by_year_day_list
+    description: By Year Day List (very long text).
+    value_description: OFBiz field type very-long.
+  - name: by_week_no_list
+    description: By Week No List (very long text).
+    value_description: OFBiz field type very-long.
+  - name: by_month_list
+    description: By Month List (very long text).
+    value_description: OFBiz field type very-long.
+  - name: by_set_pos_list
+    description: By Set Pos List (very long text).
+    value_description: OFBiz field type very-long.
+  - name: week_start
+    description: Week Start (short text).
+    value_description: OFBiz field type short-varchar.
+  - name: x_name
+    description: X Name (very long text).
+    value_description: OFBiz field type very-long.
+  - name: last_updated_stamp
+    description: Date and time the row was last updated.
+    value_description: OFBiz field type date-time.
+  - name: last_updated_tx_stamp
+  - name: created_stamp
+    description: Date and time the row was created.
+    value_description: OFBiz field type date-time.
+  - name: created_tx_stamp
+    description: Transaction timestamp of the row creation.
+  entity_definitions:
+  - identity_id: recurrence_rule_identity
+    dataset_columns:
+    - recurrence_rule_id
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: unknown
+    description: Primary key of RecurrenceRule.
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+- node_id: sql-database:apache-ofbiz.service.runtime_data
+  descriptor:
+    qualified_name: apache-ofbiz.service.runtime_data
+    display_name: RuntimeData
+    description: Physical table runtime_data holding one row per Runtime Data in the service entity group.
+  accessor:
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
+    properties:
+      database: ofbiz
+      schema: public
+      object: runtime_data
+  grain:
+    description: One row per RuntimeData.
+    components:
+    - identity_id: runtime_data_identity
+      dataset_columns:
+      - runtime_data_id
+      description: Primary key of RuntimeData.
+  columns:
+  - name: runtime_data_id
+    description: Runtime Data Id (identifier).
+    value_description: OFBiz field type id.
+  - name: runtime_info
+    description: Runtime Info (very long text).
+    value_description: OFBiz field type very-long.
+  - name: last_updated_stamp
+    description: Date and time the row was last updated.
+    value_description: OFBiz field type date-time.
+  - name: last_updated_tx_stamp
+    description: Transaction timestamp of the last update.
+    value_description: OFBiz field type date-time.
+  - name: created_stamp
+    description: Date and time the row was created.
+    value_description: OFBiz field type date-time.
+  - name: created_tx_stamp
+    description: Transaction timestamp of the row creation.
+    value_description: OFBiz field type date-time.
+  entity_definitions:
+  - identity_id: runtime_data_identity
+    dataset_columns:
+    - runtime_data_id
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    description: Primary key of RuntimeData.
+    entity_expression:
+    - '[runtime_data_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+- node_id: sql-database:apache-ofbiz.service.service_semaphore
+  descriptor:
+    qualified_name: apache-ofbiz.service.service_semaphore
+    display_name: ServiceSemaphore
+    description: Physical table service_semaphore holding one row per Semaphore Lock in the service entity group.
+    tags:
+    - service
+    - ofbiz
+  accessor:
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
+    properties:
+      database: ofbiz
+      schema: public
+      object: service_semaphore
+  grain:
+    description: One row per ServiceSemaphore.
+    components:
+    - identity_id: service_semaphore_identity
+      dataset_columns:
+      - service_name
+      description: Primary key of ServiceSemaphore.
+  columns:
+  - name: service_name
+    description: Service Name (name).
+    value_description: OFBiz field type name.
+  - name: locked_by_instance_id
+    description: Locked By Instance Id (identifier).
+    value_description: OFBiz field type id.
+  - name: lock_thread
+    description: Lock Thread (name).
+    value_description: OFBiz field type name.
+  - name: lock_time
+    description: Lock Time (date and time).
+  - name: last_updated_stamp
+    description: Date and time the row was last updated.
+    value_description: OFBiz field type date-time.
+  - name: last_updated_tx_stamp
+    description: Transaction timestamp of the last update.
+    value_description: OFBiz field type date-time.
+  - name: created_stamp
+    description: Date and time the row was created.
+    value_description: OFBiz field type date-time.
+  - name: created_tx_stamp
+    description: Transaction timestamp of the row creation.
+    value_description: OFBiz field type date-time.
+  entity_definitions:
+  - identity_id: service_semaphore_identity
+    dataset_columns:
+    - service_name
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    description: Primary key of ServiceSemaphore.
+    entity_expression:
+    - '[service_name]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+- node_id: sql-database:apache-ofbiz.service.temporal_expression
+  descriptor:
+    qualified_name: apache-ofbiz.service.temporal_expression
+    display_name: TemporalExpression
+    description: Physical table temporal_expression holding one row per Temporal Expression in the service entity group.
+    synonyms:
+    - Temporal Expression
+    tags:
+    - service
+    - ofbiz
+  accessor:
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
+    properties:
+      database: ofbiz
+      schema: public
+      object: temporal_expression
+  grain:
+    description: One row per TemporalExpression.
+    components:
+    - identity_id: temporal_expression_identity
+      dataset_columns:
+      - temp_expr_id
+      description: Primary key of TemporalExpression.
+  columns:
+  - name: temp_expr_id
+    description: Temp Expr Id (identifier).
+    value_description: OFBiz field type id.
+  - name: temp_expr_type_id
+    description: Temp Expr Type Id (identifier).
+    value_description: OFBiz field type id.
+  - name: description
+    description: Description (description text).
+    value_description: OFBiz field type description.
+  - name: date1
+    description: Date1 (date and time).
+  - name: date2
+    description: Date2 (date and time).
+    value_description: OFBiz field type date-time.
+  - name: integer1
+    description: Integer1 (number).
+    value_description: OFBiz field type numeric.
+  - name: integer2
+    description: Integer2 (number).
+    value_description: OFBiz field type numeric.
+  - name: string1
+    description: String1 (identifier).
+    value_description: OFBiz field type id.
+  - name: string2
+    description: String2 (identifier).
+    value_description: OFBiz field type id.
+  - name: last_updated_stamp
+    description: Date and time the row was last updated.
+    value_description: OFBiz field type date-time.
+  - name: last_updated_tx_stamp
+    description: Transaction timestamp of the last update.
+  - name: created_stamp
+    description: Date and time the row was created.
+    value_description: OFBiz field type date-time.
+  - name: created_tx_stamp
+    description: Transaction timestamp of the row creation.
+    value_description: OFBiz field type date-time.
+  entity_definitions:
+  - identity_id: temporal_expression_identity
+    dataset_columns:
+    - temp_expr_id
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    description: Primary key of TemporalExpression.
+    entity_expression:
+    - '[temp_expr_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+- node_id: sql-database:apache-ofbiz.service.temporal_expression_assoc
+  descriptor:
+    qualified_name: apache-ofbiz.service.temporal_expression_assoc
+    display_name: TemporalExpressionAssoc
+    description: Physical table temporal_expression_assoc holding one row per Temporal Expression Association in the service
+      entity group.
+    synonyms:
+    - Temporal Expression Association
+    - Temporal Expression Assoc
+    tags:
+    - service
+    - ofbiz
+  accessor:
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
+    properties:
+      database: ofbiz
+      schema: public
+      object: temporal_expression_assoc
+  grain:
+    description: One row per TemporalExpressionAssoc.
+    components:
+    - identity_id: temporal_expression_assoc_identity
+      dataset_columns:
+      - from_temp_expr_id
+      - to_temp_expr_id
+      description: Primary key of TemporalExpressionAssoc.
+  columns:
+  - name: from_temp_expr_id
+    description: The "parent" expression.
+    value_description: OFBiz field type id.
+  - name: to_temp_expr_id
+    description: The "child" expression.
+    value_description: OFBiz field type id.
+  - name: expr_assoc_type
+    description: Expression association type. When applied to DIFFERENCE expression types, valid values are INCLUDE or EXCLUDE.
+      When applied to SUBSTITUTION expression types, valid values are INCLUDE, EXCLUDE, or SUBSTITUTE.
+    value_description: OFBiz field type id.
+  - name: last_updated_stamp
+    description: Date and time the row was last updated.
+  - name: last_updated_tx_stamp
+    value_description: OFBiz field type date-time.
+  - name: created_stamp
+    description: Date and time the row was created.
+    value_description: OFBiz field type date-time.
+  - name: created_tx_stamp
+    description: Transaction timestamp of the row creation.
+    value_description: OFBiz field type date-time.
+  entity_definitions:
+  - identity_id: temporal_expression_assoc_identity
+    dataset_columns:
+    - from_temp_expr_id
+    - to_temp_expr_id
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    description: Primary key of TemporalExpressionAssoc.
+    entity_expression:
+    - '[from_temp_expr_id, to_temp_expr_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: temporal_expression_identity
+    dataset_columns:
+    - from_temp_expr_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: unknown
+    description: From reference to TemporalExpression on from_temp_expr_id.
+    entity_expression:
+    - '[from_temp_expr_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: temporal_expression_identity
+    dataset_columns:
+    - to_temp_expr_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    description: To reference to TemporalExpression on to_temp_expr_id.
+    entity_expression:
+    - '[to_temp_expr_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+- node_id: sql-database:apache-ofbiz.service.tracked_job_result
+  descriptor:
+    qualified_name: apache-ofbiz.service.tracked_job_result
+    display_name: TrackedJobResult
+    description: Physical table tracked_job_result holding one row per Tracked job result in the service entity group.
+    synonyms:
+    - Tracked job result
+    - Tracked Job Result
+    tags:
+    - service
+    - ofbiz
+  accessor:
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
+    properties:
+      database: ofbiz
+      schema: public
+      object: tracked_job_result
+  grain:
+    description: One row per TrackedJobResult.
+    components:
+    - identity_id: tracked_job_result_identity
+      dataset_columns:
+      - job_tracker_id
+      - job_tracker_result_seq_id
+  columns:
+  - name: job_tracker_id
+    description: Job Tracker Id (very long identifier).
+    value_description: OFBiz field type id-vlong.
+  - name: job_tracker_result_seq_id
+    description: Job Tracker Result Seq Id (identifier).
+  - name: result_message
+    description: Result Message (description text).
+    value_description: OFBiz field type description.
+  - name: result_code
+    description: Result Code (description text).
+    value_description: OFBiz field type description.
+  - name: last_updated_stamp
+    description: Date and time the row was last updated.
+    value_description: OFBiz field type date-time.
+  - name: last_updated_tx_stamp
+    description: Transaction timestamp of the last update.
+    value_description: OFBiz field type date-time.
+  - name: created_stamp
+    description: Date and time the row was created.
+    value_description: OFBiz field type date-time.
+  - name: created_tx_stamp
+    description: Transaction timestamp of the row creation.
+    value_description: OFBiz field type date-time.
+  entity_definitions:
+  - identity_id: tracked_job_result_identity
+    dataset_columns:
+    - job_tracker_id
+    - job_tracker_result_seq_id
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    description: Primary key of TrackedJobResult.
+    entity_expression:
+    - '[job_tracker_id, job_tracker_result_seq_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: job_tracker_identity
+    dataset_columns:
+    - job_tracker_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: Reference to JobTracker on job_tracker_id.
+    entity_expression:
+    - '[job_tracker_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
