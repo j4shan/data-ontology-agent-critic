@@ -23,6 +23,7 @@ and 7 virtual DocTypes, 2 of which are also single.
 | Columns | 13,662 |
 | Logical identities | 693 |
 | Entity definitions | 4,844 |
+| Cross-entity relationships | 550 |
 
 | File | Datasets | File | Datasets |
 | --- | ---: | --- | ---: |
@@ -48,6 +49,7 @@ their original values.
 | --- | --- |
 | `directory-manifest.yaml` | Directory manifest for `yaml/`. |
 | `yaml/00_logical_identities.yaml` | Logical identities. |
+| `yaml/00_entity_relationships.yaml` | Cross-entity relationships between logical entities. |
 | `yaml/<module>.yaml` | Datasets of one Frappe module. |
 | `forget-log.yaml` | Values absent from `yaml/` and their originals. |
 | `questions.md` | Ten finance, inventory, and HR questions. |
