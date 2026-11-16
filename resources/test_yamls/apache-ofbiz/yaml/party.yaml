@@ -1,4 +1,4 @@
-schema_version: '4'
+schema_version: '5'
 nodes:
 - node_id: sql-database:apache-ofbiz.party.addendum
   descriptor:
@@ -9,11 +9,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: addendum
   grain:
@@ -101,11 +100,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: address_match_map
   grain:
@@ -161,11 +159,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: affiliate
   grain:
@@ -238,6 +235,18 @@ nodes:
     - '[party_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: party_identity
+    dataset_columns:
+    - party_id
+    entity_universe: unknown
+    unique: true
+    total: true
+    conforms: true
+    description: Reference to Party on party_id.
+    entity_expression:
+    - '[party_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.party.agreement
   descriptor:
     qualified_name: apache-ofbiz.party.agreement
@@ -247,11 +256,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: agreement
   grain:
@@ -326,6 +334,84 @@ nodes:
     description: Reference to AgreementType on agreement_type_id.
     entity_expression:
     - '[agreement_type_id]'
+  - identity_id: party_identity
+    dataset_columns:
+    - party_id_from
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: unknown
+    description: From reference to Party on party_id_from.
+    entity_expression:
+    - '[party_id_from]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: party_identity
+    dataset_columns:
+    - party_id_to
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: unknown
+    description: To reference to Party on party_id_to.
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: party_role_identity
+    dataset_columns:
+    - party_id_from
+    - role_type_id_from
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: From reference to PartyRole on party_id_from, role_type_id_from.
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: party_role_identity
+    dataset_columns:
+    - party_id_to
+    - role_type_id_to
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: unknown
+    description: To reference to PartyRole on party_id_to, role_type_id_to.
+    entity_expression:
+    - '[party_id_to, role_type_id_to]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: product_identity
+    dataset_columns:
+    - product_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: Reference to Product on product_id.
+    entity_expression:
+    - '[product_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: role_type_identity
+    dataset_columns:
+    - role_type_id_from
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: unknown
+    description: From reference to RoleType on role_type_id_from.
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: role_type_identity
+    dataset_columns:
+    - role_type_id_to
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: unknown
+    description: To reference to RoleType on role_type_id_to.
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.party.agreement_attribute
   descriptor:
     qualified_name: apache-ofbiz.party.agreement_attribute
@@ -337,11 +423,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: agreement_attribute
   grain:
@@ -411,11 +496,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: agreement_content
   grain:
@@ -497,6 +581,17 @@ nodes:
     - '[agreement_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: content_identity
+    dataset_columns:
+    - content_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[content_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.party.agreement_content_type
   descriptor:
     qualified_name: apache-ofbiz.party.agreement_content_type
@@ -508,11 +603,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: agreement_content_type
   grain:
@@ -580,11 +674,10 @@ nodes:
     - Agreement Employment Application
     - Agreement Employment Appl
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: agreement_employment_appl
   grain: unknown
@@ -686,11 +779,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: agreement_facility_appl
   grain:
@@ -762,6 +854,18 @@ nodes:
     - '[agreement_id, agreement_item_seq_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: facility_identity
+    dataset_columns:
+    - facility_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    description: Reference to Facility on facility_id.
+    entity_expression:
+    - '[facility_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.party.agreement_geographical_applic
   descriptor:
     qualified_name: apache-ofbiz.party.agreement_geographical_applic
@@ -775,11 +879,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: agreement_geographical_applic
   grain:
@@ -872,11 +975,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: agreement_item
   grain:
@@ -966,11 +1068,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: agreement_item_attribute
   grain:
@@ -1048,11 +1149,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: agreement_item_type
   grain:
@@ -1120,11 +1220,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: agreement_item_type_attr
   grain:
@@ -1191,11 +1290,10 @@ nodes:
     - Agreement Party Application
     - Agreement Party Applic
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: agreement_party_applic
   grain:
@@ -1267,6 +1365,16 @@ nodes:
     - '[agreement_id, agreement_item_seq_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: party_identity
+    dataset_columns:
+    - party_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    description: Reference to Party on party_id.
+    entity_expression:
+    - '[party_id]'
 - node_id: sql-database:apache-ofbiz.party.agreement_product_appl
   descriptor:
     qualified_name: apache-ofbiz.party.agreement_product_appl
@@ -1277,11 +1385,10 @@ nodes:
     - Agreement Product Application
     - Agreement Product Appl
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: agreement_product_appl
   grain:
@@ -1354,6 +1461,18 @@ nodes:
     - '[agreement_id, agreement_item_seq_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: product_identity
+    dataset_columns:
+    - product_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    description: Reference to Product on product_id.
+    entity_expression:
+    - '[product_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.party.agreement_promo_appl
   descriptor:
     qualified_name: apache-ofbiz.party.agreement_promo_appl
@@ -1364,11 +1483,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: agreement_promo_appl
   grain:
@@ -1470,11 +1588,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: agreement_role
   grain:
@@ -1535,6 +1652,41 @@ nodes:
     - '[agreement_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: party_identity
+    dataset_columns:
+    - party_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    description: Reference to Party on party_id.
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: party_role_identity
+    dataset_columns:
+    - party_id
+    - role_type_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    description: Reference to PartyRole on party_id, role_type_id.
+    entity_expression:
+    - '[party_id, role_type_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: role_type_identity
+    dataset_columns:
+    - role_type_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: unknown
+    description: Reference to RoleType on role_type_id.
+    entity_expression:
+    - '[role_type_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.party.agreement_status
   descriptor:
     qualified_name: apache-ofbiz.party.agreement_status
@@ -1547,11 +1699,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: agreement_status
   grain:
@@ -1614,6 +1765,29 @@ nodes:
     - '[agreement_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: status_item_identity
+    dataset_columns:
+    - status_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[status_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: user_login_identity
+    dataset_columns:
+    - change_by_user_login_id
+    entity_universe: unknown
+    unique: false
+    total: unknown
+    conforms: true
+    description: ChangeBy reference to UserLogin on change_by_user_login_id.
+    entity_expression:
+    - '[change_by_user_login_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.party.agreement_term
   descriptor:
     qualified_name: apache-ofbiz.party.agreement_term
@@ -1625,11 +1799,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: agreement_term
   grain:
@@ -1759,11 +1932,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: agreement_term_attribute
   grain: unknown
@@ -1828,11 +2000,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: agreement_type
   grain:
@@ -1900,11 +2071,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: agreement_type_attr
   grain:
@@ -1972,11 +2142,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: agreement_work_effort_applic
   grain:
@@ -2046,6 +2215,18 @@ nodes:
     - '[agreement_id, agreement_item_seq_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: work_effort_identity
+    dataset_columns:
+    - work_effort_id
+    entity_universe: partial
+    unique: unknown
+    total: true
+    conforms: true
+    description: Reference to WorkEffort on work_effort_id.
+    entity_expression:
+    - '[work_effort_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.party.comm_content_assoc_type
   descriptor:
     qualified_name: apache-ofbiz.party.comm_content_assoc_type
@@ -2059,11 +2240,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: comm_content_assoc_type
   grain:
@@ -2115,11 +2295,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: comm_event_content_assoc
   grain:
@@ -2199,6 +2378,18 @@ nodes:
     - '[communication_event_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: content_identity
+    dataset_columns:
+    - content_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    description: From reference to Content on content_id.
+    entity_expression:
+    - '[content_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.party.communication_event
   descriptor:
     qualified_name: apache-ofbiz.party.communication_event
@@ -2210,11 +2401,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: communication_event
   grain:
@@ -2344,6 +2534,30 @@ nodes:
     - '[contact_list_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: contact_mech_identity
+    dataset_columns:
+    - contact_mech_id_from
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: From reference to ContactMech on contact_mech_id_from.
+    entity_expression:
+    - '[contact_mech_id_from]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: contact_mech_identity
+    dataset_columns:
+    - contact_mech_id_to
+    entity_universe: partial
+    unique: unknown
+    total: unknown
+    conforms: true
+    description: To reference to ContactMech on contact_mech_id_to.
+    entity_expression:
+    - '[contact_mech_id_to]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: contact_mech_type_identity
     dataset_columns:
     - contact_mech_type_id
@@ -2356,6 +2570,18 @@ nodes:
     - '[contact_mech_type_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: enumeration_identity
+    dataset_columns:
+    - reason_enum_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: Reference to Enumeration on reason_enum_id.
+    entity_expression:
+    - '[reason_enum_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: mime_type_identity
     dataset_columns:
     - content_mime_type_id
@@ -2364,6 +2590,90 @@ nodes:
     total: unknown
     conforms: true
     description: Reference to MimeType on content_mime_type_id.
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: party_identity
+    dataset_columns:
+    - party_id_from
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: From reference to Party on party_id_from.
+    entity_expression:
+    - '[party_id_from]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: party_identity
+    dataset_columns:
+    - party_id_to
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: To reference to Party on party_id_to.
+    entity_expression:
+    - '[party_id_to]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: party_role_identity
+    dataset_columns:
+    - party_id_from
+    - role_type_id_from
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: unknown
+    description: From reference to PartyRole on party_id_from, role_type_id_from.
+    entity_expression:
+    - '[party_id_from, role_type_id_from]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: party_role_identity
+    dataset_columns:
+    - party_id_to
+    - role_type_id_to
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: unknown
+    description: To reference to PartyRole on party_id_to, role_type_id_to.
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: role_type_identity
+    dataset_columns:
+    - role_type_id_from
+    entity_universe: partial
+    unique: unknown
+    total: unknown
+    conforms: true
+    description: From reference to RoleType on role_type_id_from.
+    entity_expression:
+    - '[role_type_id_from]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: role_type_identity
+    dataset_columns:
+    - role_type_id_to
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: To reference to RoleType on role_type_id_to.
+    entity_expression:
+    - '[role_type_id_to]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: status_item_identity
+    dataset_columns:
+    - status_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: unknown
+    description: Reference to StatusItem on status_id.
+    entity_expression:
+    - '[status_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.party.communication_event_product
@@ -2378,11 +2688,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: communication_event_product
   grain:
@@ -2437,6 +2746,18 @@ nodes:
     - '[communication_event_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: product_identity
+    dataset_columns:
+    - product_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    description: Reference to Product on product_id.
+    entity_expression:
+    - '[product_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.party.communication_event_prp_typ
   descriptor:
     qualified_name: apache-ofbiz.party.communication_event_prp_typ
@@ -2447,11 +2768,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: communication_event_prp_typ
   grain:
@@ -2523,11 +2843,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: communication_event_purpose
   grain:
@@ -2609,11 +2928,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: communication_event_role
   grain:
@@ -2678,6 +2996,65 @@ nodes:
     - '[communication_event_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: contact_mech_identity
+    dataset_columns:
+    - contact_mech_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: Reference to ContactMech on contact_mech_id.
+    entity_expression:
+    - '[contact_mech_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: party_identity
+    dataset_columns:
+    - party_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    description: Reference to Party on party_id.
+    entity_expression:
+    - '[party_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: party_role_identity
+    dataset_columns:
+    - party_id
+    - role_type_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: unknown
+    description: Reference to PartyRole on party_id, role_type_id.
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: role_type_identity
+    dataset_columns:
+    - role_type_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: unknown
+    description: Reference to RoleType on role_type_id.
+    entity_expression:
+    - '[role_type_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: status_item_identity
+    dataset_columns:
+    - status_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: Reference to StatusItem on status_id.
+    entity_expression:
+    - '[status_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.party.communication_event_type
   descriptor:
     qualified_name: apache-ofbiz.party.communication_event_type
@@ -2690,11 +3067,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: communication_event_type
   grain: unknown
@@ -2771,11 +3147,10 @@ nodes:
     - Contact Mechanism
     - Contact Mech
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: contact_mech
   grain:
@@ -2843,11 +3218,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: contact_mech_attribute
   grain:
@@ -2896,6 +3270,18 @@ nodes:
     - '[attr_name, contact_mech_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: contact_mech_identity
+    dataset_columns:
+    - contact_mech_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    description: Reference to ContactMech on contact_mech_id.
+    entity_expression:
+    - '[contact_mech_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.party.contact_mech_link
   descriptor:
     qualified_name: apache-ofbiz.party.contact_mech_link
@@ -2908,11 +3294,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: contact_mech_link
   grain:
@@ -2955,6 +3340,30 @@ nodes:
     - '[contact_mech_id_from, contact_mech_id_to]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: contact_mech_identity
+    dataset_columns:
+    - contact_mech_id_from
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    description: From reference to ContactMech on contact_mech_id_from.
+    entity_expression:
+    - '[contact_mech_id_from]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: contact_mech_identity
+    dataset_columns:
+    - contact_mech_id_to
+    entity_universe: unknown
+    unique: false
+    total: true
+    conforms: true
+    description: To reference to ContactMech on contact_mech_id_to.
+    entity_expression:
+    - '[contact_mech_id_to]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.party.contact_mech_purpose_type
   descriptor:
     qualified_name: apache-ofbiz.party.contact_mech_purpose_type
@@ -2968,11 +3377,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: contact_mech_purpose_type
   grain:
@@ -3031,11 +3439,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: contact_mech_type
   grain:
@@ -3101,11 +3508,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: contact_mech_type_attr
   grain:
@@ -3174,11 +3580,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: contact_mech_type_purpose
   grain: unknown
@@ -3249,11 +3654,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: email_address_verification
   grain: unknown
@@ -3303,11 +3707,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: ftp_address
   grain:
@@ -3370,6 +3773,16 @@ nodes:
     - '[contact_mech_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: contact_mech_identity
+    dataset_columns:
+    - contact_mech_id
+    entity_universe: partial
+    unique: true
+    total: unknown
+    conforms: true
+    description: Reference to ContactMech on contact_mech_id.
+    entity_expression:
+    - '[contact_mech_id]'
 - node_id: sql-database:apache-ofbiz.party.marital_status
   descriptor:
     qualified_name: apache-ofbiz.party.marital_status
@@ -3379,11 +3792,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: marital_status
   grain:
@@ -3443,6 +3855,18 @@ nodes:
     - '[marital_status_type_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: party_identity
+    dataset_columns:
+    - party_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    description: Reference to Party on party_id.
+    entity_expression:
+    - '[party_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.party.marital_status_type
   descriptor:
     qualified_name: apache-ofbiz.party.marital_status_type
@@ -3452,11 +3876,10 @@ nodes:
     - Person Marital Status Type
     - Marital Status Type
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: marital_status_type
   grain:
@@ -3524,11 +3947,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: need_type
   grain:
@@ -3577,11 +3999,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: party
   grain: unknown
@@ -3669,6 +4090,54 @@ nodes:
     - '[party_type_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: status_item_identity
+    dataset_columns:
+    - status_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: Reference to StatusItem on status_id.
+    entity_expression:
+    - '[status_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: uom_identity
+    dataset_columns:
+    - preferred_currency_uom_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: Reference to Uom on preferred_currency_uom_id.
+    entity_expression:
+    - '[preferred_currency_uom_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: user_login_identity
+    dataset_columns:
+    - created_by_user_login
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: CreatedBy reference to UserLogin on created_by_user_login.
+    entity_expression:
+    - '[created_by_user_login]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: user_login_identity
+    dataset_columns:
+    - last_modified_by_user_login
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: LastModifiedBy reference to UserLogin on last_modified_by_user_login.
+    entity_expression:
+    - '[last_modified_by_user_login]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.party.party_attribute
   descriptor:
     qualified_name: apache-ofbiz.party.party_attribute
@@ -3680,11 +4149,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: party_attribute
   grain:
@@ -3733,6 +4201,18 @@ nodes:
     - '[attr_name, party_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: party_identity
+    dataset_columns:
+    - party_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    description: Reference to Party on party_id.
+    entity_expression:
+    - '[party_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.party.party_carrier_account
   descriptor:
     qualified_name: apache-ofbiz.party.party_carrier_account
@@ -3744,11 +4224,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: party_carrier_account
   grain:
@@ -3798,6 +4277,27 @@ nodes:
     - '[carrier_party_id, from_date, party_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: party_identity
+    dataset_columns:
+    - carrier_party_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    description: Carrier reference to Party on carrier_party_id.
+    entity_expression:
+    - '[carrier_party_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: party_identity
+    dataset_columns:
+    - party_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.party.party_classification
   descriptor:
     qualified_name: apache-ofbiz.party.party_classification
@@ -3809,11 +4309,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: party_classification
   grain:
@@ -3874,6 +4373,18 @@ nodes:
     - '[party_classification_group_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: party_identity
+    dataset_columns:
+    - party_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    description: Reference to Party on party_id.
+    entity_expression:
+    - '[party_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.party.party_classification_group
   descriptor:
     qualified_name: apache-ofbiz.party.party_classification_group
@@ -3886,11 +4397,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: party_classification_group
   grain: unknown
@@ -3959,11 +4469,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: party_classification_type
   grain:
@@ -4030,11 +4539,10 @@ nodes:
     - Party Contact Mechanism
     - Party Contact Mech
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: party_contact_mech
   grain:
@@ -4106,6 +4614,18 @@ nodes:
     - '[contact_mech_id, from_date, party_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: contact_mech_identity
+    dataset_columns:
+    - contact_mech_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    description: Reference to ContactMech on contact_mech_id.
+    entity_expression:
+    - '[contact_mech_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: party_group_identity
     dataset_columns:
     - party_id
@@ -4116,6 +4636,30 @@ nodes:
     description: Reference to PartyGroup on party_id.
     entity_expression:
     - '[party_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: party_identity
+    dataset_columns:
+    - party_id
+    entity_universe: unknown
+    unique: unknown
+    total: true
+    conforms: true
+    description: Reference to Party on party_id.
+    entity_expression:
+    - '[party_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: party_role_identity
+    dataset_columns:
+    - party_id
+    - role_type_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[party_id, role_type_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
   - identity_id: person_identity
@@ -4138,6 +4682,18 @@ nodes:
     description: Reference to PostalAddress on contact_mech_id.
     entity_expression:
     - '[contact_mech_id]'
+  - identity_id: role_type_identity
+    dataset_columns:
+    - role_type_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: Reference to RoleType on role_type_id.
+    entity_expression:
+    - '[role_type_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: telecom_number_identity
     dataset_columns:
     - contact_mech_id
@@ -4163,11 +4719,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: party_contact_mech_purpose
   grain:
@@ -4221,6 +4776,17 @@ nodes:
     - '[contact_mech_id, contact_mech_purpose_type_id, from_date, party_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: contact_mech_identity
+    dataset_columns:
+    - contact_mech_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[contact_mech_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: contact_mech_purpose_type_identity
     dataset_columns:
     - contact_mech_purpose_type_id
@@ -4241,6 +4807,18 @@ nodes:
     total: true
     conforms: unknown
     description: Reference to PartyGroup on party_id.
+    entity_expression:
+    - '[party_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: party_identity
+    dataset_columns:
+    - party_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    description: Reference to Party on party_id.
     entity_expression:
     - '[party_id]'
     entity_metadata:
@@ -4293,11 +4871,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: party_content
   grain:
@@ -4352,6 +4929,17 @@ nodes:
     - '[content_id, from_date, party_content_type_id, party_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: content_identity
+    dataset_columns:
+    - content_id
+    entity_universe: unknown
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[content_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: party_content_type_identity
     dataset_columns:
     - party_content_type_id
@@ -4364,6 +4952,18 @@ nodes:
     - '[party_content_type_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: party_identity
+    dataset_columns:
+    - party_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    description: Reference to Party on party_id.
+    entity_expression:
+    - '[party_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.party.party_content_type
   descriptor:
     qualified_name: apache-ofbiz.party.party_content_type
@@ -4373,11 +4973,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: party_content_type
   grain:
@@ -4442,11 +5041,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: party_data_source
   grain:
@@ -4510,6 +5108,18 @@ nodes:
     conforms: unknown
     entity_expression:
     - '[data_source_id]'
+  - identity_id: party_identity
+    dataset_columns:
+    - party_id
+    entity_universe: partial
+    unique: unknown
+    total: true
+    conforms: true
+    description: Reference to Party on party_id.
+    entity_expression:
+    - '[party_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.party.party_geo_point
   descriptor:
     qualified_name: apache-ofbiz.party.party_geo_point
@@ -4522,11 +5132,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: party_geo_point
   grain:
@@ -4587,6 +5196,16 @@ nodes:
     - '[geo_point_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: party_identity
+    dataset_columns:
+    - party_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    description: Reference to Party on party_id.
+    entity_expression:
+    - '[party_id]'
 - node_id: sql-database:apache-ofbiz.party.party_group
   descriptor:
     qualified_name: apache-ofbiz.party.party_group
@@ -4598,11 +5217,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: party_group
   grain:
@@ -4661,6 +5279,18 @@ nodes:
     - '[party_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: party_identity
+    dataset_columns:
+    - party_id
+    entity_universe: partial
+    unique: true
+    total: true
+    conforms: true
+    description: Reference to Party on party_id.
+    entity_expression:
+    - '[party_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.party.party_ics_avs_override
   descriptor:
     qualified_name: apache-ofbiz.party.party_ics_avs_override
@@ -4673,11 +5303,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: party_ics_avs_override
   grain:
@@ -4718,6 +5347,16 @@ nodes:
     - '[party_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: party_identity
+    dataset_columns:
+    - party_id
+    entity_universe: partial
+    unique: true
+    total: true
+    conforms: true
+    description: Reference to Party on party_id.
+    entity_expression:
+    - '[party_id]'
 - node_id: sql-database:apache-ofbiz.party.party_identification
   descriptor:
     qualified_name: apache-ofbiz.party.party_identification
@@ -4729,11 +5368,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: party_identification
   grain:
@@ -4790,6 +5428,18 @@ nodes:
     description: Reference to PartyIdentificationType on party_identification_type_id.
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: party_identity
+    dataset_columns:
+    - party_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    description: Reference to Party on party_id.
+    entity_expression:
+    - '[party_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.party.party_identification_type
   descriptor:
     qualified_name: apache-ofbiz.party.party_identification_type
@@ -4802,11 +5452,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: party_identification_type
   grain:
@@ -4875,11 +5524,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: party_invitation
   grain:
@@ -4936,6 +5584,30 @@ nodes:
     - '[party_invitation_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: party_identity
+    dataset_columns:
+    - party_id_from
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: Reference to Party on party_id_from.
+    entity_expression:
+    - '[party_id_from]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: status_item_identity
+    dataset_columns:
+    - status_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: Reference to StatusItem on status_id.
+    entity_expression:
+    - '[status_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.party.party_invitation_group_assoc
   descriptor:
     qualified_name: apache-ofbiz.party.party_invitation_group_assoc
@@ -4945,11 +5617,10 @@ nodes:
     synonyms:
     - Party Invitation Group Assoc
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: party_invitation_group_assoc
   grain:
@@ -5002,6 +5673,18 @@ nodes:
     description: To reference to PartyGroup on party_id_to.
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: party_identity
+    dataset_columns:
+    - party_id_to
+    entity_universe: unknown
+    unique: false
+    total: true
+    conforms: true
+    description: To reference to Party on party_id_to.
+    entity_expression:
+    - '[party_id_to]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: party_invitation_identity
     dataset_columns:
     - party_invitation_id
@@ -5026,11 +5709,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: party_invitation_role_assoc
   grain:
@@ -5085,6 +5767,16 @@ nodes:
     - '[party_invitation_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: role_type_identity
+    dataset_columns:
+    - role_type_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    description: Reference to RoleType on role_type_id.
+    entity_expression:
+    - '[role_type_id]'
 - node_id: sql-database:apache-ofbiz.party.party_name_history
   descriptor:
     qualified_name: apache-ofbiz.party.party_name_history
@@ -5096,11 +5788,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: party_name_history
   grain:
@@ -5159,17 +5850,26 @@ nodes:
     - '[change_date, party_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: party_identity
+    dataset_columns:
+    - party_id
+    entity_universe: unknown
+    unique: false
+    total: true
+    conforms: true
+    description: Reference to Party on party_id.
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.party.party_need
   descriptor:
     qualified_name: apache-ofbiz.party.party_need
     display_name: PartyNeed
     description: Physical table party_need holding one row per Party Need in the party entity group.
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: party_need
   grain:
@@ -5258,6 +5958,28 @@ nodes:
     - '[need_type_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: party_identity
+    dataset_columns:
+    - party_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    description: Reference to Party on party_id.
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: party_role_identity
+    dataset_columns:
+    - party_id
+    - role_type_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: unknown
+    entity_expression:
+    - '[party_id, role_type_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: party_type_identity
     dataset_columns:
     - party_type_id
@@ -5280,6 +6002,30 @@ nodes:
     description: Reference to ProductCategory on product_category_id.
     entity_expression:
     - '[product_category_id]'
+  - identity_id: product_identity
+    dataset_columns:
+    - product_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: Reference to Product on product_id.
+    entity_expression:
+    - '[product_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: role_type_identity
+    dataset_columns:
+    - role_type_id
+    entity_universe: partial
+    unique: unknown
+    total: true
+    conforms: true
+    description: Reference to RoleType on role_type_id.
+    entity_expression:
+    - '[role_type_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.party.party_note
   descriptor:
     qualified_name: apache-ofbiz.party.party_note
@@ -5291,11 +6037,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: party_note
   grain:
@@ -5351,6 +6096,18 @@ nodes:
     - '[note_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: party_identity
+    dataset_columns:
+    - party_id
+    entity_universe: unknown
+    unique: unknown
+    total: true
+    conforms: true
+    description: Reference to Party on party_id.
+    entity_expression:
+    - '[party_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.party.party_profile_default
   descriptor:
     qualified_name: apache-ofbiz.party.party_profile_default
@@ -5363,11 +6120,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: party_profile_default
   grain: unknown
@@ -5416,6 +6172,30 @@ nodes:
     - '[party_id, product_store_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: party_identity
+    dataset_columns:
+    - party_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    description: Reference to Party on party_id.
+    entity_expression:
+    - '[party_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: product_store_identity
+    dataset_columns:
+    - product_store_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    description: Reference to ProductStore on product_store_id.
+    entity_expression:
+    - '[product_store_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.party.party_relationship
   descriptor:
     qualified_name: apache-ofbiz.party.party_relationship
@@ -5427,11 +6207,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: party_relationship
   grain:
@@ -5513,6 +6292,30 @@ nodes:
     - '[from_date, party_id_from, party_id_to, role_type_id_from, role_type_id_to]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: party_identity
+    dataset_columns:
+    - party_id_from
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: unknown
+    description: From reference to Party on party_id_from.
+    entity_expression:
+    - '[party_id_from]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: party_identity
+    dataset_columns:
+    - party_id_to
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: unknown
+    description: To reference to Party on party_id_to.
+    entity_expression:
+    - '[party_id_to]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: party_relationship_type_identity
     dataset_columns:
     - party_relationship_type_id
@@ -5523,6 +6326,32 @@ nodes:
     description: Reference to PartyRelationshipType on party_relationship_type_id.
     entity_expression:
     - '[party_relationship_type_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: party_role_identity
+    dataset_columns:
+    - party_id_from
+    - role_type_id_from
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    description: From reference to PartyRole on party_id_from, role_type_id_from.
+    entity_expression:
+    - '[party_id_from, role_type_id_from]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: party_role_identity
+    dataset_columns:
+    - party_id_to
+    - role_type_id_to
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    description: To reference to PartyRole on party_id_to, role_type_id_to.
+    entity_expression:
+    - '[party_id_to, role_type_id_to]'
     entity_metadata:
       expression_context: PostgreSQL column reference
   - identity_id: priority_type_identity
@@ -5537,6 +6366,28 @@ nodes:
     - '[priority_type_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: role_type_identity
+    dataset_columns:
+    - role_type_id_from
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: unknown
+    description: From reference to RoleType on role_type_id_from.
+    entity_expression:
+    - '[role_type_id_from]'
+  - identity_id: role_type_identity
+    dataset_columns:
+    - role_type_id_to
+    entity_universe: partial
+    unique: unknown
+    total: true
+    conforms: unknown
+    description: To reference to RoleType on role_type_id_to.
+    entity_expression:
+    - '[role_type_id_to]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: security_group_identity
     dataset_columns:
     - security_group_id
@@ -5547,6 +6398,18 @@ nodes:
     description: Reference to SecurityGroup on security_group_id.
     entity_expression:
     - '[security_group_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: status_item_identity
+    dataset_columns:
+    - status_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: Reference to StatusItem on status_id.
+    entity_expression:
+    - '[status_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.party.party_relationship_type
@@ -5560,11 +6423,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: party_relationship_type
   grain:
@@ -5629,6 +6491,30 @@ nodes:
     - '[party_relationship_type_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: role_type_identity
+    dataset_columns:
+    - role_type_id_valid_from
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: ValidFrom reference to RoleType on role_type_id_valid_from.
+    entity_expression:
+    - '[role_type_id_valid_from]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: role_type_identity
+    dataset_columns:
+    - role_type_id_valid_to
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: ValidTo reference to RoleType on role_type_id_valid_to.
+    entity_expression:
+    - '[role_type_id_valid_to]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.party.party_role
   descriptor:
     qualified_name: apache-ofbiz.party.party_role
@@ -5640,11 +6526,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: party_role
   grain:
@@ -5685,6 +6570,28 @@ nodes:
     description: Primary key of PartyRole.
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: party_identity
+    dataset_columns:
+    - party_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    description: Reference to Party on party_id.
+    entity_expression:
+    - '[party_id]'
+  - identity_id: role_type_identity
+    dataset_columns:
+    - role_type_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    description: Reference to RoleType on role_type_id.
+    entity_expression:
+    - '[role_type_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.party.party_status
   descriptor:
     qualified_name: apache-ofbiz.party.party_status
@@ -5698,11 +6605,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: party_status
   grain:
@@ -5750,6 +6656,41 @@ nodes:
     - '[party_id, status_date, status_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: party_identity
+    dataset_columns:
+    - party_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[party_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: status_item_identity
+    dataset_columns:
+    - status_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    description: Reference to StatusItem on status_id.
+    entity_expression:
+    - '[status_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: user_login_identity
+    dataset_columns:
+    - change_by_user_login_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: ChangeBy reference to UserLogin on change_by_user_login_id.
+    entity_expression:
+    - '[change_by_user_login_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.party.party_type
   descriptor:
     qualified_name: apache-ofbiz.party.party_type
@@ -5759,11 +6700,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: party_type
   grain:
@@ -5833,11 +6773,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: party_type_attr
   grain: unknown
@@ -5895,11 +6834,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: person
   grain:
@@ -6026,6 +6964,28 @@ nodes:
     description: Primary key of Person.
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: enumeration_identity
+    dataset_columns:
+    - employment_status_enum_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: EmploymentStatus reference to Enumeration on employment_status_enum_id.
+    entity_expression:
+    - '[employment_status_enum_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: enumeration_identity
+    dataset_columns:
+    - residence_status_enum_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: ResidenceStatus reference to Enumeration on residence_status_enum_id.
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: marital_status_type_identity
     dataset_columns:
     - marital_status_type_id
@@ -6038,6 +6998,18 @@ nodes:
     - '[marital_status_type_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: party_identity
+    dataset_columns:
+    - party_id
+    entity_universe: unknown
+    unique: true
+    total: true
+    conforms: true
+    description: Reference to Party on party_id.
+    entity_expression:
+    - '[party_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.party.postal_address
   descriptor:
     qualified_name: apache-ofbiz.party.postal_address
@@ -6046,11 +7018,10 @@ nodes:
     synonyms:
     - Postal Address
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: postal_address
   grain:
@@ -6133,6 +7104,18 @@ nodes:
     total: true
     conforms: true
     description: Primary key of PostalAddress.
+    entity_expression:
+    - '[contact_mech_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: contact_mech_identity
+    dataset_columns:
+    - contact_mech_id
+    entity_universe: partial
+    unique: true
+    total: true
+    conforms: true
+    description: Reference to ContactMech on contact_mech_id.
     entity_expression:
     - '[contact_mech_id]'
     entity_metadata:
@@ -6227,11 +7210,10 @@ nodes:
     synonyms:
     - Postal Address Boundary
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: postal_address_boundary
   grain:
@@ -6302,11 +7284,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: priority_type
   grain:
@@ -6354,11 +7335,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: role_type
   grain:
@@ -6403,6 +7383,16 @@ nodes:
     - '[role_type_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: role_type_identity
+    dataset_columns:
+    - parent_type_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: Parent reference to RoleType on parent_type_id.
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.party.role_type_attr
   descriptor:
     qualified_name: apache-ofbiz.party.role_type_attr
@@ -6415,11 +7405,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: role_type_attr
   grain:
@@ -6463,6 +7452,18 @@ nodes:
     - '[attr_name, role_type_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: role_type_identity
+    dataset_columns:
+    - role_type_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    description: Reference to RoleType on role_type_id.
+    entity_expression:
+    - '[role_type_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.party.telecom_number
   descriptor:
     qualified_name: apache-ofbiz.party.telecom_number
@@ -6472,11 +7473,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: telecom_number
   grain:
@@ -6524,6 +7524,18 @@ nodes:
     - '[contact_mech_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: contact_mech_identity
+    dataset_columns:
+    - contact_mech_id
+    entity_universe: partial
+    unique: true
+    total: true
+    conforms: true
+    description: Reference to ContactMech on contact_mech_id.
+    entity_expression:
+    - '[contact_mech_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.party.term_type
   descriptor:
     qualified_name: apache-ofbiz.party.term_type
@@ -6533,11 +7545,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: term_type
   grain:
@@ -6600,11 +7611,10 @@ nodes:
     - Term Type Attribute
     - Term Type Attr
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: term_type_attr
   grain:
@@ -6671,11 +7681,10 @@ nodes:
     - Valid Contact Mechanism Role
     - Valid Contact Mech Role
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: valid_contact_mech_role
   grain:
@@ -6726,6 +7735,18 @@ nodes:
     description: Reference to ContactMechType on contact_mech_type_id.
     entity_expression:
     - '[contact_mech_type_id]'
+  - identity_id: role_type_identity
+    dataset_columns:
+    - role_type_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: unknown
+    description: Reference to RoleType on role_type_id.
+    entity_expression:
+    - '[role_type_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.party.vendor
   descriptor:
     qualified_name: apache-ofbiz.party.vendor
@@ -6735,11 +7756,10 @@ nodes:
     - party
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: vendor
   grain:
@@ -6787,5 +7807,15 @@ nodes:
     description: Primary key of Vendor.
     entity_expression:
     - '[party_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: party_identity
+    dataset_columns:
+    - party_id
+    entity_universe: partial
+    unique: true
+    total: true
+    conforms: true
+    description: Reference to Party on party_id.
     entity_metadata:
       expression_context: PostgreSQL column reference

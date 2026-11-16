@@ -1,4 +1,4 @@
-schema_version: '4'
+schema_version: '5'
 nodes:
 - node_id: sql-database:apache-ofbiz.shipment.carrier_shipment_box_type
   descriptor:
@@ -13,11 +13,10 @@ nodes:
     - shipment
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: carrier_shipment_box_type
   grain:
@@ -64,6 +63,18 @@ nodes:
     - '[party_id, shipment_box_type_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: party_identity
+    dataset_columns:
+    - party_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    description: Reference to Party on party_id.
+    entity_expression:
+    - '[party_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: shipment_box_type_identity
     dataset_columns:
     - shipment_box_type_id
@@ -83,11 +94,10 @@ nodes:
     synonyms:
     - Carrier Shipment Method
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: carrier_shipment_method
   grain:
@@ -142,6 +152,29 @@ nodes:
     - '[party_id, role_type_id, shipment_method_type_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: party_identity
+    dataset_columns:
+    - party_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    description: Reference to Party on party_id.
+    entity_expression:
+    - '[party_id]'
+  - identity_id: party_role_identity
+    dataset_columns:
+    - party_id
+    - role_type_id
+    entity_universe: unknown
+    unique: false
+    total: true
+    conforms: true
+    description: Reference to PartyRole on party_id, role_type_id.
+    entity_expression:
+    - '[party_id, role_type_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: shipment_method_type_identity
     dataset_columns:
     - shipment_method_type_id
@@ -160,11 +193,10 @@ nodes:
     display_name: Delivery
     description: Physical table delivery holding one row per Delivery in the shipment entity group.
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: delivery
   grain: unknown
@@ -224,6 +256,29 @@ nodes:
     - '[delivery_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: facility_identity
+    dataset_columns:
+    - dest_facility_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: Dest reference to Facility on dest_facility_id.
+    entity_expression:
+    - '[dest_facility_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: facility_identity
+    dataset_columns:
+    - origin_facility_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[origin_facility_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: fixed_asset_identity
     dataset_columns:
     - fixed_asset_id
@@ -245,11 +300,10 @@ nodes:
     - shipment
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: item_issuance
   grain:
@@ -342,6 +396,30 @@ nodes:
     - '[inventory_item_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: order_header_identity
+    dataset_columns:
+    - order_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: unknown
+    entity_expression:
+    - '[order_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: order_item_identity
+    dataset_columns:
+    - order_id
+    - order_item_seq_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: Reference to OrderItem on order_id, order_item_seq_id.
+    entity_expression:
+    - '[order_id, order_item_seq_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: order_item_ship_grp_inv_res_identity
     dataset_columns:
     - inventory_item_id
@@ -379,6 +457,16 @@ nodes:
     - '[shipment_id, shipment_item_seq_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: user_login_identity
+    dataset_columns:
+    - issued_by_user_login_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: IssuedBy reference to UserLogin on issued_by_user_login_id.
+    entity_expression:
+    - '[issued_by_user_login_id]'
 - node_id: sql-database:apache-ofbiz.shipment.item_issuance_role
   descriptor:
     qualified_name: apache-ofbiz.shipment.item_issuance_role
@@ -390,11 +478,10 @@ nodes:
     - shipment
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: item_issuance_role
   grain:
@@ -455,6 +542,31 @@ nodes:
     - '[item_issuance_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: party_identity
+    dataset_columns:
+    - party_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    description: Reference to Party on party_id.
+    entity_expression:
+    - '[party_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: party_role_identity
+    dataset_columns:
+    - party_id
+    - role_type_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    description: Reference to PartyRole on party_id, role_type_id.
+    entity_expression:
+    - '[party_id, role_type_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.shipment.old_picklist_status_history
   descriptor:
     qualified_name: apache-ofbiz.shipment.old_picklist_status_history
@@ -468,11 +580,10 @@ nodes:
     - shipment
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: picklist_status_history
   grain:
@@ -536,6 +647,30 @@ nodes:
     - '[picklist_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: status_item_identity
+    dataset_columns:
+    - status_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: Reference to StatusItem on status_id.
+    entity_expression:
+    - '[status_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: status_item_identity
+    dataset_columns:
+    - status_id_to
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: unknown
+    description: To reference to StatusItem on status_id_to.
+    entity_expression:
+    - '[status_id_to]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: status_valid_change_identity
     dataset_columns:
     - status_id
@@ -549,6 +684,18 @@ nodes:
     - '[status_id, status_id_to]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: user_login_identity
+    dataset_columns:
+    - change_user_login_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: Change reference to UserLogin on change_user_login_id.
+    entity_expression:
+    - '[change_user_login_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.shipment.picklist
   descriptor:
     qualified_name: apache-ofbiz.shipment.picklist
@@ -558,11 +705,10 @@ nodes:
     - shipment
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: picklist
   grain:
@@ -626,6 +772,18 @@ nodes:
     - '[picklist_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: facility_identity
+    dataset_columns:
+    - facility_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: Reference to Facility on facility_id.
+    entity_expression:
+    - '[facility_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: shipment_method_type_identity
     dataset_columns:
     - shipment_method_type_id
@@ -636,6 +794,18 @@ nodes:
     description: Reference to ShipmentMethodType on shipment_method_type_id.
     entity_expression:
     - '[shipment_method_type_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: status_item_identity
+    dataset_columns:
+    - status_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: Reference to StatusItem on status_id.
+    entity_expression:
+    - '[status_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.shipment.picklist_bin
@@ -650,11 +820,10 @@ nodes:
     - shipment
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: picklist_bin
   grain:
@@ -703,6 +872,18 @@ nodes:
     - '[picklist_bin_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: order_header_identity
+    dataset_columns:
+    - primary_order_id
+    entity_universe: partial
+    unique: unknown
+    total: unknown
+    conforms: unknown
+    description: Primary reference to OrderHeader on primary_order_id.
+    entity_expression:
+    - '[primary_order_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: order_item_ship_group_identity
     dataset_columns:
     - primary_order_id
@@ -739,11 +920,10 @@ nodes:
     - shipment
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: picklist_item
   grain:
@@ -814,6 +994,29 @@ nodes:
     - '[inventory_item_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: order_header_identity
+    dataset_columns:
+    - order_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: unknown
+    description: Reference to OrderHeader on order_id.
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: order_item_identity
+    dataset_columns:
+    - order_id
+    - order_item_seq_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    description: Reference to OrderItem on order_id, order_item_seq_id.
+    entity_expression:
+    - '[order_id, order_item_seq_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: order_item_ship_group_identity
     dataset_columns:
     - order_id
@@ -852,6 +1055,16 @@ nodes:
     - '[picklist_bin_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: status_item_identity
+    dataset_columns:
+    - item_status_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: Reference to StatusItem on item_status_id.
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.shipment.picklist_role
   descriptor:
     qualified_name: apache-ofbiz.shipment.picklist_role
@@ -863,11 +1076,10 @@ nodes:
     - shipment
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: picklist_role
   grain: unknown
@@ -917,6 +1129,19 @@ nodes:
     description: Primary key of PicklistRole.
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: party_role_identity
+    dataset_columns:
+    - party_id
+    - role_type_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    description: Reference to PartyRole on party_id, role_type_id.
+    entity_expression:
+    - '[party_id, role_type_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: picklist_identity
     dataset_columns:
     - picklist_id
@@ -927,6 +1152,40 @@ nodes:
     description: Reference to Picklist on picklist_id.
     entity_expression:
     - '[picklist_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: role_type_identity
+    dataset_columns:
+    - role_type_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: unknown
+    description: Reference to RoleType on role_type_id.
+    entity_expression:
+    - '[role_type_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: user_login_identity
+    dataset_columns:
+    - created_by_user_login
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: CreatedBy reference to UserLogin on created_by_user_login.
+    entity_expression:
+    - '[created_by_user_login]'
+  - identity_id: user_login_identity
+    dataset_columns:
+    - last_modified_by_user_login
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: LastModifiedBy reference to UserLogin on last_modified_by_user_login.
+    entity_expression:
+    - '[last_modified_by_user_login]'
     entity_metadata:
       expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.shipment.picklist_status
@@ -941,11 +1200,10 @@ nodes:
     - shipment
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: picklist_status
   grain:
@@ -1006,6 +1264,42 @@ nodes:
     description: Reference to Picklist on picklist_id.
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: status_item_identity
+    dataset_columns:
+    - status_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: Reference to StatusItem on status_id.
+    entity_expression:
+    - '[status_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: status_item_identity
+    dataset_columns:
+    - status_id_to
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: To reference to StatusItem on status_id_to.
+    entity_expression:
+    - '[status_id_to]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: user_login_identity
+    dataset_columns:
+    - change_by_user_login_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: Change reference to UserLogin on change_by_user_login_id.
+    entity_expression:
+    - '[change_by_user_login_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.shipment.rejection_reason
   descriptor:
     qualified_name: apache-ofbiz.shipment.rejection_reason
@@ -1015,11 +1309,10 @@ nodes:
     - shipment
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: rejection_reason
   grain:
@@ -1065,11 +1358,10 @@ nodes:
     display_name: Shipment
     description: Physical table shipment holding one row per Shipment in the shipment entity group.
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: shipment
   grain:
@@ -1182,6 +1474,61 @@ nodes:
     total: true
     conforms: true
     description: Primary key of Shipment.
+  - identity_id: contact_mech_identity
+    dataset_columns:
+    - destination_contact_mech_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: unknown
+    description: Dest reference to ContactMech on destination_contact_mech_id.
+    entity_expression:
+    - '[destination_contact_mech_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: contact_mech_identity
+    dataset_columns:
+    - origin_contact_mech_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: unknown
+    entity_expression:
+    - '[origin_contact_mech_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: facility_identity
+    dataset_columns:
+    - destination_facility_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: Destination reference to Facility on destination_facility_id.
+    entity_expression:
+    - '[destination_facility_id]'
+  - identity_id: facility_identity
+    dataset_columns:
+    - origin_facility_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: Origin reference to Facility on origin_facility_id.
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: order_header_identity
+    dataset_columns:
+    - primary_order_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: Primary reference to OrderHeader on primary_order_id.
+    entity_expression:
+    - '[primary_order_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: order_item_ship_group_identity
     dataset_columns:
     - primary_order_id
@@ -1215,6 +1562,26 @@ nodes:
     total: unknown
     conforms: unknown
     description: To reference to PartyGroup on party_id_to.
+    entity_expression:
+    - '[party_id_to]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: party_identity
+    dataset_columns:
+    - party_id_from
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: From reference to Party on party_id_from.
+  - identity_id: party_identity
+    dataset_columns:
+    - party_id_to
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: To reference to Party on party_id_to.
     entity_expression:
     - '[party_id_to]'
     entity_metadata:
@@ -1298,6 +1665,18 @@ nodes:
     - '[shipment_type_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: status_item_identity
+    dataset_columns:
+    - status_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: unknown
+    description: Reference to StatusItem on status_id.
+    entity_expression:
+    - '[status_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: telecom_number_identity
     dataset_columns:
     - destination_telecom_number_id
@@ -1319,6 +1698,42 @@ nodes:
     conforms: true
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: uom_identity
+    dataset_columns:
+    - currency_uom_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: Currency reference to Uom on currency_uom_id.
+    entity_expression:
+    - '[currency_uom_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: work_effort_identity
+    dataset_columns:
+    - estimated_arrival_work_eff_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: EstimatedArrival reference to WorkEffort on estimated_arrival_work_eff_id.
+    entity_expression:
+    - '[estimated_arrival_work_eff_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: work_effort_identity
+    dataset_columns:
+    - estimated_ship_work_eff_id
+    entity_universe: partial
+    unique: unknown
+    total: unknown
+    conforms: true
+    description: EstimatedShip reference to WorkEffort on estimated_ship_work_eff_id.
+    entity_expression:
+    - '[estimated_ship_work_eff_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.shipment.shipment_attribute
   descriptor:
     qualified_name: apache-ofbiz.shipment.shipment_attribute
@@ -1330,11 +1745,10 @@ nodes:
     - shipment
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: shipment_attribute
   grain:
@@ -1406,11 +1820,10 @@ nodes:
     - shipment
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: shipment_box_type
   grain:
@@ -1465,6 +1878,28 @@ nodes:
     - '[shipment_box_type_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: uom_identity
+    dataset_columns:
+    - dimension_uom_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: Dimension reference to Uom on dimension_uom_id.
+    entity_expression:
+    - '[dimension_uom_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: uom_identity
+    dataset_columns:
+    - weight_uom_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: Weight reference to Uom on weight_uom_id.
+    entity_expression:
+    - '[weight_uom_id]'
 - node_id: sql-database:apache-ofbiz.shipment.shipment_contact_mech
   descriptor:
     qualified_name: apache-ofbiz.shipment.shipment_contact_mech
@@ -1478,11 +1913,10 @@ nodes:
     - shipment
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: shipment_contact_mech
   grain:
@@ -1527,6 +1961,18 @@ nodes:
     - '[shipment_contact_mech_type_id, shipment_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: contact_mech_identity
+    dataset_columns:
+    - contact_mech_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: unknown
+    description: Reference to ContactMech on contact_mech_id.
+    entity_expression:
+    - '[contact_mech_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: shipment_contact_mech_type_identity
     dataset_columns:
     - shipment_contact_mech_type_id
@@ -1563,11 +2009,10 @@ nodes:
     - shipment
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: shipment_contact_mech_type
   grain: unknown
@@ -1614,11 +2059,10 @@ nodes:
     - shipment
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: shipment_cost_estimate
   grain:
@@ -1768,6 +2212,29 @@ nodes:
     - '[geo_id_to]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: party_identity
+    dataset_columns:
+    - party_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: Reference to Party on party_id.
+    entity_expression:
+    - '[party_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: party_role_identity
+    dataset_columns:
+    - party_id
+    - role_type_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: unknown
+    description: Reference to PartyRole on party_id, role_type_id.
+    entity_expression:
+    - '[party_id, role_type_id]'
   - identity_id: product_store_shipment_meth_identity
     dataset_columns:
     - product_store_ship_meth_id
@@ -1815,6 +2282,52 @@ nodes:
     - '[weight_break_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: role_type_identity
+    dataset_columns:
+    - role_type_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: Reference to RoleType on role_type_id.
+    entity_expression:
+    - '[role_type_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: uom_identity
+    dataset_columns:
+    - price_uom_id
+    entity_universe: partial
+    unique: unknown
+    total: unknown
+    conforms: true
+    description: Price reference to Uom on price_uom_id.
+    entity_expression:
+    - '[price_uom_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: uom_identity
+    dataset_columns:
+    - quantity_uom_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: unknown
+    description: Quantity reference to Uom on quantity_uom_id.
+    entity_expression:
+    - '[quantity_uom_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: uom_identity
+    dataset_columns:
+    - weight_uom_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: Weight reference to Uom on weight_uom_id.
+    entity_expression:
+    - '[weight_uom_id]'
 - node_id: sql-database:apache-ofbiz.shipment.shipment_gateway_config
   descriptor:
     qualified_name: apache-ofbiz.shipment.shipment_gateway_config
@@ -1827,11 +2340,10 @@ nodes:
     - shipment
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: shipment_gateway_config
   grain:
@@ -1898,11 +2410,10 @@ nodes:
     - shipment
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: shipment_gateway_config_type
   grain:
@@ -1973,11 +2484,10 @@ nodes:
     - shipment
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: shipment_item
   grain:
@@ -2026,6 +2536,16 @@ nodes:
     - '[shipment_id, shipment_item_seq_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: product_identity
+    dataset_columns:
+    - product_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: Reference to Product on product_id.
+    entity_expression:
+    - '[product_id]'
   - identity_id: shipment_identity
     dataset_columns:
     - shipment_id
@@ -2049,11 +2569,10 @@ nodes:
     - shipment
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: shipment_item_billing
   grain:
@@ -2159,11 +2678,10 @@ nodes:
     - shipment
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: shipment_item_feature
   grain:
@@ -2255,11 +2773,10 @@ nodes:
     synonyms:
     - Shipment Method Type
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: shipment_method_type
   grain:
@@ -2314,11 +2831,10 @@ nodes:
     - shipment
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: shipment_package
   grain:
@@ -2413,6 +2929,28 @@ nodes:
     - '[shipment_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: uom_identity
+    dataset_columns:
+    - dimension_uom_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: Dimension reference to Uom on dimension_uom_id.
+    entity_expression:
+    - '[dimension_uom_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: uom_identity
+    dataset_columns:
+    - weight_uom_id
+    entity_universe: unknown
+    unique: false
+    total: unknown
+    conforms: true
+    description: Weight reference to Uom on weight_uom_id.
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.shipment.shipment_package_content
   descriptor:
     qualified_name: apache-ofbiz.shipment.shipment_package_content
@@ -2425,11 +2963,10 @@ nodes:
     - shipment
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: shipment_package_content
   grain: unknown
@@ -2479,6 +3016,17 @@ nodes:
     - '[shipment_id, shipment_item_seq_id, shipment_package_seq_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: product_identity
+    dataset_columns:
+    - sub_product_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[sub_product_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: shipment_identity
     dataset_columns:
     - shipment_id
@@ -2524,11 +3072,10 @@ nodes:
     - shipment
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: shipment_package_route_seg
   grain:
@@ -2647,6 +3194,16 @@ nodes:
     - '[shipment_id, shipment_route_segment_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: uom_identity
+    dataset_columns:
+    - currency_uom_id
+    entity_universe: partial
+    unique: unknown
+    total: unknown
+    conforms: unknown
+    description: Currency reference to Uom on currency_uom_id.
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.shipment.shipment_receipt
   descriptor:
     qualified_name: apache-ofbiz.shipment.shipment_receipt
@@ -2658,11 +3215,10 @@ nodes:
     - shipment
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: shipment_receipt
   grain:
@@ -2753,6 +3309,41 @@ nodes:
     - '[inventory_item_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: order_header_identity
+    dataset_columns:
+    - order_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: unknown
+    description: Reference to OrderHeader on order_id.
+    entity_expression:
+    - '[order_id]'
+  - identity_id: order_item_identity
+    dataset_columns:
+    - order_id
+    - order_item_seq_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: Reference to OrderItem on order_id, order_item_seq_id.
+    entity_expression:
+    - '[order_id, order_item_seq_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: product_identity
+    dataset_columns:
+    - product_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: Reference to Product on product_id.
+    entity_expression:
+    - '[product_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: rejection_reason_identity
     dataset_columns:
     - rejection_id
@@ -2813,6 +3404,16 @@ nodes:
     description: Reference to ShipmentPackage on shipment_id, shipment_package_seq_id.
     entity_expression:
     - '[shipment_id, shipment_package_seq_id]'
+  - identity_id: user_login_identity
+    dataset_columns:
+    - received_by_user_login_id
+    entity_universe: partial
+    unique: unknown
+    total: unknown
+    conforms: true
+    description: Reference to UserLogin on received_by_user_login_id.
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.shipment.shipment_receipt_role
   descriptor:
     qualified_name: apache-ofbiz.shipment.shipment_receipt_role
@@ -2824,11 +3425,10 @@ nodes:
     - shipment
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: shipment_receipt_role
   grain:
@@ -2874,6 +3474,27 @@ nodes:
     - '[party_id, receipt_id, role_type_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: party_identity
+    dataset_columns:
+    - party_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    description: Reference to Party on party_id.
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: party_role_identity
+    dataset_columns:
+    - party_id
+    - role_type_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    description: Reference to PartyRole on party_id, role_type_id.
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: shipment_receipt_identity
     dataset_columns:
     - receipt_id
@@ -2896,11 +3517,10 @@ nodes:
     - shipment
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: shipment_route_segment
   grain: unknown
@@ -3032,6 +3652,30 @@ nodes:
     conforms: unknown
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: contact_mech_identity
+    dataset_columns:
+    - dest_contact_mech_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: unknown
+    description: Dest reference to ContactMech on dest_contact_mech_id.
+    entity_expression:
+    - '[dest_contact_mech_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: contact_mech_identity
+    dataset_columns:
+    - origin_contact_mech_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: unknown
+    description: Origin reference to ContactMech on origin_contact_mech_id.
+    entity_expression:
+    - '[origin_contact_mech_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: delivery_identity
     dataset_columns:
     - delivery_id
@@ -3042,6 +3686,28 @@ nodes:
     description: Reference to Delivery on delivery_id.
     entity_expression:
     - '[delivery_id]'
+  - identity_id: facility_identity
+    dataset_columns:
+    - dest_facility_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: Dest reference to Facility on dest_facility_id.
+    entity_expression:
+    - '[dest_facility_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: facility_identity
+    dataset_columns:
+    - origin_facility_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: Origin reference to Facility on origin_facility_id.
+    entity_expression:
+    - '[origin_facility_id]'
   - identity_id: party_group_identity
     dataset_columns:
     - carrier_party_id
@@ -3050,6 +3716,16 @@ nodes:
     total: unknown
     conforms: unknown
     description: Carrier reference to PartyGroup on carrier_party_id.
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: party_identity
+    dataset_columns:
+    - carrier_party_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: Carrier reference to Party on carrier_party_id.
     entity_metadata:
       expression_context: PostgreSQL column reference
   - identity_id: person_identity
@@ -3104,6 +3780,18 @@ nodes:
     description: Reference to ShipmentMethodType on shipment_method_type_id.
     entity_expression:
     - '[shipment_method_type_id]'
+  - identity_id: status_item_identity
+    dataset_columns:
+    - carrier_service_status_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: CarrierService reference to StatusItem on carrier_service_status_id.
+    entity_expression:
+    - '[carrier_service_status_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: telecom_number_identity
     dataset_columns:
     - dest_telecom_number_id
@@ -3128,6 +3816,30 @@ nodes:
     - '[origin_telecom_number_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: uom_identity
+    dataset_columns:
+    - billing_weight_uom_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: BillingWeight reference to Uom on billing_weight_uom_id.
+    entity_expression:
+    - '[billing_weight_uom_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: uom_identity
+    dataset_columns:
+    - currency_uom_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: Currency reference to Uom on currency_uom_id.
+    entity_expression:
+    - '[currency_uom_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.shipment.shipment_status
   descriptor:
     qualified_name: apache-ofbiz.shipment.shipment_status
@@ -3139,11 +3851,10 @@ nodes:
     - shipment
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: shipment_status
   grain:
@@ -3203,6 +3914,28 @@ nodes:
     - '[shipment_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: status_item_identity
+    dataset_columns:
+    - status_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: Reference to StatusItem on status_id.
+    entity_expression:
+    - '[status_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: user_login_identity
+    dataset_columns:
+    - change_by_user_login_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: ChangeBy reference to UserLogin on change_by_user_login_id.
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.shipment.shipment_time_estimate
   descriptor:
     qualified_name: apache-ofbiz.shipment.shipment_time_estimate
@@ -3216,11 +3949,10 @@ nodes:
     - shipment
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: shipment_time_estimate
   grain:
@@ -3330,6 +4062,18 @@ nodes:
     - '[geo_id_to]'
     entity_metadata:
       expression_context: PostgreSQL column reference
+  - identity_id: uom_identity
+    dataset_columns:
+    - lead_time_uom_id
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: true
+    description: Time unit reference to Uom on lead_time_uom_id.
+    entity_expression:
+    - '[lead_time_uom_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.shipment.shipment_type
   descriptor:
     qualified_name: apache-ofbiz.shipment.shipment_type
@@ -3341,11 +4085,10 @@ nodes:
     - shipment
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: shipment_type
   grain: unknown
@@ -3405,11 +4148,10 @@ nodes:
     - shipment
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: shipment_type_attr
   grain:
@@ -3477,11 +4219,10 @@ nodes:
     - shipment
     - ofbiz
   accessor:
-    schema_id: accessor.sql-database.v1
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
     properties:
-      host: postgres.ofbiz.internal
       database: ofbiz
-      dialect: postgresql
       schema: public
       object: shipping_document
   grain:
