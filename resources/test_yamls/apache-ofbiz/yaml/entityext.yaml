@@ -1,0 +1,560 @@
+schema_version: '5'
+nodes:
+- node_id: sql-database:apache-ofbiz.entityext.entity_group
+  descriptor:
+    qualified_name: apache-ofbiz.entityext.entity_group
+    display_name: EntityGroup
+    description: Physical table entity_group holding one row per Entity Grouping in the entityext entity group.
+    synonyms:
+    - Entity Grouping
+    - Entity Group
+  accessor:
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
+    properties:
+      database: ofbiz
+      schema: public
+      object: entity_group
+  grain:
+    components:
+    - identity_id: entity_group_identity
+      dataset_columns:
+      - entity_group_id
+      description: Primary key of EntityGroup.
+  columns:
+  - name: entity_group_id
+    description: Entity Group Id (identifier).
+    value_description: OFBiz field type id.
+  - name: entity_group_name
+    description: Entity Group Name (name).
+    value_description: OFBiz field type name.
+  - name: last_updated_stamp
+    description: Date and time the row was last updated.
+    value_description: OFBiz field type date-time.
+  - name: last_updated_tx_stamp
+    description: Transaction timestamp of the last update.
+    value_description: OFBiz field type date-time.
+  - name: created_stamp
+    description: Date and time the row was created.
+    value_description: OFBiz field type date-time.
+  - name: created_tx_stamp
+    value_description: OFBiz field type date-time.
+  entity_definitions:
+  - identity_id: entity_group_identity
+    dataset_columns:
+    - entity_group_id
+    entity_universe: complete
+    unique: unknown
+    total: true
+    conforms: true
+    description: Primary key of EntityGroup.
+    entity_expression:
+    - '[entity_group_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+- node_id: sql-database:apache-ofbiz.entityext.entity_group_entry
+  descriptor:
+    qualified_name: apache-ofbiz.entityext.entity_group_entry
+    display_name: EntityGroupEntry
+    description: Physical table entity_group_entry holding one row per Entity Grouping in the entityext entity group.
+    synonyms:
+    - Entity Grouping
+    - Entity Group Entry
+    tags:
+    - entityext
+    - ofbiz
+  accessor:
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
+    properties:
+      database: ofbiz
+      schema: public
+      object: entity_group_entry
+  grain:
+    description: One row per EntityGroupEntry.
+    components:
+    - identity_id: entity_group_entry_identity
+      dataset_columns:
+      - entity_group_id
+      - entity_or_package
+      description: Primary key of EntityGroupEntry.
+  columns:
+  - name: entity_group_id
+    description: Entity Group Id (identifier).
+  - name: entity_or_package
+    description: Entity Or Package (long text).
+    value_description: OFBiz field type long-varchar.
+  - name: appl_enum_id
+    description: Appl Enum Id (identifier).
+    value_description: OFBiz field type id.
+  - name: last_updated_stamp
+    description: Date and time the row was last updated.
+    value_description: OFBiz field type date-time.
+  - name: last_updated_tx_stamp
+    description: Transaction timestamp of the last update.
+    value_description: OFBiz field type date-time.
+  - name: created_stamp
+    description: Date and time the row was created.
+    value_description: OFBiz field type date-time.
+  - name: created_tx_stamp
+    description: Transaction timestamp of the row creation.
+    value_description: OFBiz field type date-time.
+  entity_definitions:
+  - identity_id: entity_group_entry_identity
+    dataset_columns:
+    - entity_group_id
+    - entity_or_package
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    description: Primary key of EntityGroupEntry.
+    entity_expression:
+    - '[entity_group_id, entity_or_package]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: entity_group_identity
+    dataset_columns:
+    - entity_group_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    description: Reference to EntityGroup on entity_group_id.
+    entity_expression:
+    - '[entity_group_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+- node_id: sql-database:apache-ofbiz.entityext.entity_sync
+  descriptor:
+    qualified_name: apache-ofbiz.entityext.entity_sync
+    display_name: EntitySync
+    description: Physical table entity_sync holding one row per Entity Synchronization in the entityext entity group.
+    synonyms:
+    - Entity Synchronization
+    - Entity Sync
+  accessor:
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
+    properties:
+      database: ofbiz
+      schema: public
+      object: entity_sync
+  grain:
+    components:
+    - dataset_columns:
+      - entity_sync_id
+      description: Primary key of EntitySync.
+  columns:
+  - name: entity_sync_id
+    description: Entity Sync Id (identifier).
+    value_description: OFBiz field type id.
+  - name: run_status_id
+    description: Run Status Id (identifier).
+    value_description: OFBiz field type id.
+  - name: last_successful_synch_time
+    description: Last Successful Synch Time (date and time).
+    value_description: OFBiz field type date-time.
+  - name: last_history_start_date
+    description: Last History Start Date (date and time).
+    value_description: OFBiz field type date-time.
+  - name: pre_offline_synch_time
+  - name: offline_sync_split_millis
+    value_description: OFBiz field type numeric.
+  - name: sync_split_millis
+    description: Sync Split Millis (number).
+  - name: sync_end_buffer_millis
+    description: Sync End Buffer Millis (number).
+    value_description: OFBiz field type numeric.
+  - name: max_running_no_update_millis
+    description: Max Running No Update Millis (number).
+    value_description: OFBiz field type numeric.
+  - name: target_service_name
+    description: Target Service Name (long text).
+    value_description: OFBiz field type long-varchar.
+  - name: target_delegator_name
+    description: Target Delegator Name (long text).
+    value_description: OFBiz field type long-varchar.
+  - name: keep_remove_info_hours
+    description: Keep Remove Info Hours (floating-point number).
+    value_description: OFBiz field type floating-point.
+  - name: for_pull_only
+    description: For Pull Only (indicator flag).
+    value_description: OFBiz field type indicator.
+  - name: for_push_only
+    description: For Push Only (indicator flag).
+    value_description: OFBiz field type indicator.
+  - name: last_updated_stamp
+    description: Date and time the row was last updated.
+    value_description: OFBiz field type date-time.
+  - name: last_updated_tx_stamp
+    description: Transaction timestamp of the last update.
+    value_description: OFBiz field type date-time.
+  - name: created_stamp
+    description: Date and time the row was created.
+  - name: created_tx_stamp
+    description: Transaction timestamp of the row creation.
+    value_description: OFBiz field type date-time.
+  entity_definitions:
+  - identity_id: entity_sync_identity
+    dataset_columns:
+    - entity_sync_id
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: unknown
+    description: Primary key of EntitySync.
+    entity_expression:
+    - '[entity_sync_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: entity_sync_history_identity
+    dataset_columns:
+    - entity_sync_id
+    - last_history_start_date
+    entity_universe: partial
+    unique: false
+    total: unknown
+    conforms: unknown
+    description: Last reference to EntitySyncHistory on entity_sync_id, last_history_start_date.
+    entity_expression:
+    - '[entity_sync_id, last_history_start_date]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+- node_id: sql-database:apache-ofbiz.entityext.entity_sync_history
+  descriptor:
+    qualified_name: apache-ofbiz.entityext.entity_sync_history
+    display_name: EntitySyncHistory
+    description: Physical table entity_sync_history holding one row per Entity Synchronization History in the entityext entity
+      group.
+    synonyms:
+    - Entity Synchronization History
+    - Entity Sync History
+    tags:
+    - entityext
+    - ofbiz
+  accessor:
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
+    properties:
+      database: ofbiz
+      schema: public
+      object: entity_sync_history
+  grain:
+    description: One row per EntitySyncHistory.
+    components:
+    - identity_id: entity_sync_history_identity
+      dataset_columns:
+      - entity_sync_id
+      - start_date
+      description: Primary key of EntitySyncHistory.
+  columns:
+  - name: entity_sync_id
+    description: Entity Sync Id (identifier).
+    value_description: OFBiz field type id.
+  - name: start_date
+    description: Start Date (date and time).
+    value_description: OFBiz field type date-time.
+  - name: run_status_id
+    description: Run Status Id (identifier).
+    value_description: OFBiz field type id.
+  - name: beginning_synch_time
+    description: Beginning Synch Time (date and time).
+  - name: last_successful_synch_time
+    description: Last Successful Synch Time (date and time).
+  - name: last_candidate_end_time
+    description: Last Candidate End Time (date and time).
+    value_description: OFBiz field type date-time.
+  - name: last_split_start_time
+    description: Last Split Start Time (number).
+    value_description: OFBiz field type numeric.
+  - name: to_create_inserted
+    description: To Create Inserted (number).
+  - name: to_create_updated
+    description: To Create Updated (number).
+    value_description: OFBiz field type numeric.
+  - name: to_create_not_updated
+    description: To Create Not Updated (number).
+    value_description: OFBiz field type numeric.
+  - name: to_store_inserted
+    description: To Store Inserted (number).
+  - name: to_store_updated
+    description: To Store Updated (number).
+  - name: to_store_not_updated
+    description: To Store Not Updated (number).
+  - name: to_remove_deleted
+    description: To Remove Deleted (number).
+    value_description: OFBiz field type numeric.
+  - name: to_remove_already_deleted
+    description: To Remove Already Deleted (number).
+    value_description: OFBiz field type numeric.
+  - name: total_rows_exported
+    description: Total Rows Exported (number).
+    value_description: OFBiz field type numeric.
+  - name: total_rows_to_create
+    description: Total Rows To Create (number).
+    value_description: OFBiz field type numeric.
+  - name: total_rows_to_store
+    description: Total Rows To Store (number).
+    value_description: OFBiz field type numeric.
+  - name: total_rows_to_remove
+    description: Total Rows To Remove (number).
+    value_description: OFBiz field type numeric.
+  - name: total_splits
+    description: Total Splits (number).
+    value_description: OFBiz field type numeric.
+  - name: total_store_calls
+    description: Total Store Calls (number).
+    value_description: OFBiz field type numeric.
+  - name: running_time_millis
+    description: Running Time Millis (number).
+    value_description: OFBiz field type numeric.
+  - name: per_split_min_millis
+    description: Per Split Min Millis (number).
+    value_description: OFBiz field type numeric.
+  - name: per_split_max_millis
+    description: Per Split Max Millis (number).
+  - name: per_split_min_items
+    description: Per Split Min Items (number).
+    value_description: OFBiz field type numeric.
+  - name: per_split_max_items
+    description: Per Split Max Items (number).
+    value_description: OFBiz field type numeric.
+  - name: last_updated_stamp
+    description: Date and time the row was last updated.
+    value_description: OFBiz field type date-time.
+  - name: last_updated_tx_stamp
+    description: Transaction timestamp of the last update.
+    value_description: OFBiz field type date-time.
+  - name: created_stamp
+    description: Date and time the row was created.
+    value_description: OFBiz field type date-time.
+  - name: created_tx_stamp
+    value_description: OFBiz field type date-time.
+  entity_definitions:
+  - identity_id: entity_sync_history_identity
+    dataset_columns:
+    - entity_sync_id
+    - start_date
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: true
+    description: Primary key of EntitySyncHistory.
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: entity_sync_identity
+    dataset_columns:
+    - entity_sync_id
+    entity_universe: unknown
+    unique: false
+    total: true
+    conforms: true
+    entity_expression:
+    - '[entity_sync_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+- node_id: sql-database:apache-ofbiz.entityext.entity_sync_include
+  descriptor:
+    qualified_name: apache-ofbiz.entityext.entity_sync_include
+    display_name: EntitySyncInclude
+    description: Physical table entity_sync_include holding one row per Entity Synchronization Include in the entityext entity
+      group.
+    synonyms:
+    - Entity Synchronization Include
+    - Entity Sync Include
+    tags:
+    - entityext
+    - ofbiz
+  accessor:
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
+    properties:
+      database: ofbiz
+      schema: public
+      object: entity_sync_include
+  grain:
+    description: One row per EntitySyncInclude.
+    components:
+    - identity_id: entity_sync_include_identity
+      dataset_columns:
+      - entity_or_package
+      - entity_sync_id
+      description: Primary key of EntitySyncInclude.
+  columns:
+  - name: entity_sync_id
+    description: Entity Sync Id (identifier).
+    value_description: OFBiz field type id.
+  - name: entity_or_package
+    description: Entity Or Package (long text).
+  - name: appl_enum_id
+    description: Appl Enum Id (identifier).
+    value_description: OFBiz field type id.
+  - name: last_updated_stamp
+    description: Date and time the row was last updated.
+    value_description: OFBiz field type date-time.
+  - name: last_updated_tx_stamp
+    value_description: OFBiz field type date-time.
+  - name: created_stamp
+    description: Date and time the row was created.
+    value_description: OFBiz field type date-time.
+  - name: created_tx_stamp
+    description: Transaction timestamp of the row creation.
+    value_description: OFBiz field type date-time.
+  entity_definitions:
+  - identity_id: entity_sync_include_identity
+    dataset_columns:
+    - entity_or_package
+    - entity_sync_id
+    entity_universe: unknown
+    unique: true
+    total: true
+    conforms: true
+    description: Primary key of EntitySyncInclude.
+    entity_expression:
+    - '[entity_or_package, entity_sync_id]'
+  - identity_id: entity_sync_identity
+    dataset_columns:
+    - entity_sync_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: unknown
+    description: Reference to EntitySync on entity_sync_id.
+    entity_expression:
+    - '[entity_sync_id]'
+- node_id: sql-database:apache-ofbiz.entityext.entity_sync_include_group
+  descriptor:
+    qualified_name: apache-ofbiz.entityext.entity_sync_include_group
+    display_name: EntitySyncIncludeGroup
+    description: Physical table entity_sync_include_group holding one row per Entity Synchronization Include Entity Group
+      in the entityext entity group.
+    tags:
+    - entityext
+    - ofbiz
+  accessor:
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
+    properties:
+      database: ofbiz
+      schema: public
+      object: entity_sync_include_group
+  grain:
+    components:
+    - identity_id: entity_sync_include_group_identity
+      dataset_columns:
+      - entity_group_id
+      - entity_sync_id
+      description: Primary key of EntitySyncIncludeGroup.
+  columns:
+  - name: entity_sync_id
+    description: Entity Sync Id (identifier).
+    value_description: OFBiz field type id.
+  - name: entity_group_id
+    description: Entity Group Id (identifier).
+    value_description: OFBiz field type id.
+  - name: last_updated_stamp
+    description: Date and time the row was last updated.
+    value_description: OFBiz field type date-time.
+  - name: last_updated_tx_stamp
+    description: Transaction timestamp of the last update.
+    value_description: OFBiz field type date-time.
+  - name: created_stamp
+    description: Date and time the row was created.
+    value_description: OFBiz field type date-time.
+  - name: created_tx_stamp
+    description: Transaction timestamp of the row creation.
+    value_description: OFBiz field type date-time.
+  entity_definitions:
+  - identity_id: entity_sync_include_group_identity
+    dataset_columns:
+    - entity_group_id
+    - entity_sync_id
+    entity_universe: complete
+    unique: true
+    total: true
+    conforms: unknown
+    description: Primary key of EntitySyncIncludeGroup.
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: entity_group_identity
+    dataset_columns:
+    - entity_group_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: true
+    description: Reference to EntityGroup on entity_group_id.
+    entity_expression:
+    - '[entity_group_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+  - identity_id: entity_sync_identity
+    dataset_columns:
+    - entity_sync_id
+    entity_universe: partial
+    unique: false
+    total: true
+    conforms: unknown
+    description: Reference to EntitySync on entity_sync_id.
+    entity_expression:
+    - '[entity_sync_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
+- node_id: sql-database:apache-ofbiz.entityext.entity_sync_remove
+  descriptor:
+    qualified_name: apache-ofbiz.entityext.entity_sync_remove
+    display_name: EntitySyncRemove
+    description: Physical table entity_sync_remove holding one row per Entity Synchronization Remove in the entityext entity
+      group.
+    synonyms:
+    - Entity Synchronization Remove
+    - Entity Sync Remove
+    tags:
+    - entityext
+    - ofbiz
+  accessor:
+    kind: postgresql
+    endpoint: postgres.ofbiz.internal
+    properties:
+      database: ofbiz
+      schema: public
+      object: entity_sync_remove
+  grain:
+    description: One row per EntitySyncRemove.
+    components:
+    - identity_id: entity_sync_remove_identity
+      dataset_columns:
+      - entity_sync_remove_id
+      description: Primary key of EntitySyncRemove.
+  columns:
+  - name: entity_sync_remove_id
+    description: Entity Sync Remove Id (identifier).
+    value_description: OFBiz field type id.
+  - name: primary_key_removed
+    description: Primary Key Removed (very long text).
+    value_description: OFBiz field type very-long.
+  - name: last_updated_stamp
+    description: Date and time the row was last updated.
+    value_description: OFBiz field type date-time.
+  - name: last_updated_tx_stamp
+    description: Transaction timestamp of the last update.
+    value_description: OFBiz field type date-time.
+  - name: created_stamp
+    description: Date and time the row was created.
+    value_description: OFBiz field type date-time.
+  - name: created_tx_stamp
+    description: Transaction timestamp of the row creation.
+    value_description: OFBiz field type date-time.
+  entity_definitions:
+  - identity_id: entity_sync_remove_identity
+    dataset_columns:
+    - entity_sync_remove_id
+    entity_universe: complete
+    unique: true
+    total: unknown
+    conforms: true
+    entity_expression:
+    - '[entity_sync_remove_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
