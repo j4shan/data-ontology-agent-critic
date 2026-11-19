@@ -1,4 +1,4 @@
-schema_version: '5'
+schema_version: '1'
 nodes:
 - node_id: sql-database:apache-ofbiz.shipment.carrier_shipment_box_type
   descriptor:
@@ -81,7 +81,7 @@ nodes:
     entity_universe: partial
     unique: false
     total: true
-    conforms: unknown
+    conforms: true
     description: Reference to ShipmentBoxType on shipment_box_type_id.
     entity_expression:
     - '[shipment_box_type_id]'
@@ -162,11 +162,13 @@ nodes:
     description: Reference to Party on party_id.
     entity_expression:
     - '[party_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: party_role_identity
     dataset_columns:
     - party_id
     - role_type_id
-    entity_universe: unknown
+    entity_universe: partial
     unique: false
     total: true
     conforms: true
@@ -275,6 +277,7 @@ nodes:
     unique: false
     total: unknown
     conforms: true
+    description: Origin reference to Facility on origin_facility_id.
     entity_expression:
     - '[origin_facility_id]'
     entity_metadata:
@@ -287,6 +290,8 @@ nodes:
     total: unknown
     conforms: true
     description: Reference to FixedAsset on fixed_asset_id.
+    entity_expression:
+    - '[fixed_asset_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.shipment.item_issuance
@@ -403,6 +408,7 @@ nodes:
     unique: false
     total: unknown
     conforms: unknown
+    description: Reference to OrderHeader on order_id.
     entity_expression:
     - '[order_id]'
     entity_metadata:
@@ -431,6 +437,8 @@ nodes:
     total: unknown
     conforms: unknown
     description: Reference to OrderItemShipGrpInvRes on inventory_item_id, order_id, order_item_seq_id, ship_group_seq_id.
+    entity_expression:
+    - '[inventory_item_id, order_id, order_item_seq_id, ship_group_seq_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
   - identity_id: shipment_identity
@@ -453,6 +461,7 @@ nodes:
     unique: false
     total: unknown
     conforms: true
+    description: Reference to ShipmentItem on shipment_id, shipment_item_seq_id.
     entity_expression:
     - '[shipment_id, shipment_item_seq_id]'
     entity_metadata:
@@ -467,6 +476,8 @@ nodes:
     description: IssuedBy reference to UserLogin on issued_by_user_login_id.
     entity_expression:
     - '[issued_by_user_login_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.shipment.item_issuance_role
   descriptor:
     qualified_name: apache-ofbiz.shipment.item_issuance_role
@@ -521,7 +532,7 @@ nodes:
     - item_issuance_id
     - party_id
     - role_type_id
-    entity_universe: unknown
+    entity_universe: complete
     unique: true
     total: true
     conforms: true
@@ -533,7 +544,7 @@ nodes:
   - identity_id: item_issuance_identity
     dataset_columns:
     - item_issuance_id
-    entity_universe: unknown
+    entity_universe: partial
     unique: false
     total: true
     conforms: true
@@ -640,7 +651,7 @@ nodes:
     - picklist_id
     entity_universe: partial
     unique: false
-    total: unknown
+    total: true
     conforms: true
     description: Reference to Picklist on picklist_id.
     entity_expression:
@@ -665,7 +676,7 @@ nodes:
     entity_universe: partial
     unique: false
     total: unknown
-    conforms: unknown
+    conforms: true
     description: To reference to StatusItem on status_id_to.
     entity_expression:
     - '[status_id_to]'
@@ -876,7 +887,7 @@ nodes:
     dataset_columns:
     - primary_order_id
     entity_universe: partial
-    unique: unknown
+    unique: false
     total: unknown
     conforms: unknown
     description: Primary reference to OrderHeader on primary_order_id.
@@ -892,6 +903,7 @@ nodes:
     unique: false
     total: unknown
     conforms: true
+    description: Primary reference to OrderItemShipGroup on primary_order_id, primary_ship_group_seq_id.
     entity_expression:
     - '[primary_order_id, primary_ship_group_seq_id]'
     entity_metadata:
@@ -975,7 +987,7 @@ nodes:
     - ship_group_seq_id
     entity_universe: complete
     unique: true
-    total: unknown
+    total: true
     conforms: true
     description: Primary key of PicklistItem.
     entity_expression:
@@ -1002,6 +1014,8 @@ nodes:
     total: true
     conforms: unknown
     description: Reference to OrderHeader on order_id.
+    entity_expression:
+    - '[order_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
   - identity_id: order_item_identity
@@ -1028,6 +1042,8 @@ nodes:
     description: Reference to OrderItemShipGroup on order_id, ship_group_seq_id.
     entity_expression:
     - '[order_id, ship_group_seq_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: order_item_ship_grp_inv_res_identity
     dataset_columns:
     - inventory_item_id
@@ -1063,6 +1079,8 @@ nodes:
     total: unknown
     conforms: true
     description: Reference to StatusItem on item_status_id.
+    entity_expression:
+    - '[item_status_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.shipment.picklist_role
@@ -1127,6 +1145,8 @@ nodes:
     total: true
     conforms: true
     description: Primary key of PicklistRole.
+    entity_expression:
+    - '[from_date, party_id, picklist_id, role_type_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
   - identity_id: party_role_identity
@@ -1176,6 +1196,8 @@ nodes:
     description: CreatedBy reference to UserLogin on created_by_user_login.
     entity_expression:
     - '[created_by_user_login]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: user_login_identity
     dataset_columns:
     - last_modified_by_user_login
@@ -1252,6 +1274,8 @@ nodes:
     total: true
     conforms: true
     description: Primary key of PicklistStatus.
+    entity_expression:
+    - '[picklist_id, status_date]'
     entity_metadata:
       expression_context: PostgreSQL column reference
   - identity_id: picklist_identity
@@ -1262,6 +1286,8 @@ nodes:
     total: true
     conforms: true
     description: Reference to Picklist on picklist_id.
+    entity_expression:
+    - '[picklist_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
   - identity_id: status_item_identity
@@ -1469,11 +1495,15 @@ nodes:
   - identity_id: shipment_identity
     dataset_columns:
     - shipment_id
-    entity_universe: unknown
+    entity_universe: complete
     unique: true
     total: true
     conforms: true
     description: Primary key of Shipment.
+    entity_expression:
+    - '[shipment_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: contact_mech_identity
     dataset_columns:
     - destination_contact_mech_id
@@ -1493,6 +1523,7 @@ nodes:
     unique: false
     total: unknown
     conforms: unknown
+    description: Origin reference to ContactMech on origin_contact_mech_id.
     entity_expression:
     - '[origin_contact_mech_id]'
     entity_metadata:
@@ -1507,6 +1538,8 @@ nodes:
     description: Destination reference to Facility on destination_facility_id.
     entity_expression:
     - '[destination_facility_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: facility_identity
     dataset_columns:
     - origin_facility_id
@@ -1515,6 +1548,8 @@ nodes:
     total: unknown
     conforms: true
     description: Origin reference to Facility on origin_facility_id.
+    entity_expression:
+    - '[origin_facility_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
   - identity_id: order_header_identity
@@ -1574,6 +1609,10 @@ nodes:
     total: unknown
     conforms: true
     description: From reference to Party on party_id_from.
+    entity_expression:
+    - '[party_id_from]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: party_identity
     dataset_columns:
     - party_id_to
@@ -1589,8 +1628,8 @@ nodes:
   - identity_id: person_identity
     dataset_columns:
     - party_id_from
-    entity_universe: unknown
-    unique: unknown
+    entity_universe: partial
+    unique: false
     total: unknown
     conforms: unknown
     description: From reference to Person on party_id_from.
@@ -1605,6 +1644,7 @@ nodes:
     unique: false
     total: unknown
     conforms: unknown
+    description: To reference to Person on party_id_to.
     entity_expression:
     - '[party_id_to]'
     entity_metadata:
@@ -1617,12 +1657,14 @@ nodes:
     total: unknown
     conforms: true
     description: Reference to PicklistBin on picklist_bin_id.
+    entity_expression:
+    - '[picklist_bin_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
   - identity_id: postal_address_identity
     dataset_columns:
     - destination_contact_mech_id
-    entity_universe: unknown
+    entity_universe: partial
     unique: false
     total: unknown
     conforms: true
@@ -1653,6 +1695,8 @@ nodes:
     description: Primary reference to ReturnHeader on primary_return_id.
     entity_expression:
     - '[primary_return_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: shipment_type_identity
     dataset_columns:
     - shipment_type_id
@@ -1671,7 +1715,7 @@ nodes:
     entity_universe: partial
     unique: false
     total: unknown
-    conforms: unknown
+    conforms: true
     description: Reference to StatusItem on status_id.
     entity_expression:
     - '[status_id]'
@@ -1696,6 +1740,9 @@ nodes:
     unique: false
     total: unknown
     conforms: true
+    description: Origin reference to TelecomNumber on origin_telecom_number_id.
+    entity_expression:
+    - '[origin_telecom_number_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
   - identity_id: uom_identity
@@ -1726,7 +1773,7 @@ nodes:
     dataset_columns:
     - estimated_ship_work_eff_id
     entity_universe: partial
-    unique: unknown
+    unique: false
     total: unknown
     conforms: true
     description: EstimatedShip reference to WorkEffort on estimated_ship_work_eff_id.
@@ -1789,7 +1836,7 @@ nodes:
     entity_universe: complete
     unique: true
     total: true
-    conforms: unknown
+    conforms: true
     description: Primary key of ShipmentAttribute.
     entity_expression:
     - '[attr_name, shipment_id]'
@@ -1872,7 +1919,7 @@ nodes:
     entity_universe: complete
     unique: true
     total: true
-    conforms: unknown
+    conforms: true
     description: Primary key of ShipmentBoxType.
     entity_expression:
     - '[shipment_box_type_id]'
@@ -1900,6 +1947,8 @@ nodes:
     description: Weight reference to Uom on weight_uom_id.
     entity_expression:
     - '[weight_uom_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.shipment.shipment_contact_mech
   descriptor:
     qualified_name: apache-ofbiz.shipment.shipment_contact_mech
@@ -1957,6 +2006,7 @@ nodes:
     unique: true
     total: true
     conforms: true
+    description: Primary key of ShipmentContactMech.
     entity_expression:
     - '[shipment_contact_mech_type_id, shipment_id]'
     entity_metadata:
@@ -1967,7 +2017,7 @@ nodes:
     entity_universe: partial
     unique: false
     total: unknown
-    conforms: unknown
+    conforms: true
     description: Reference to ContactMech on contact_mech_id.
     entity_expression:
     - '[contact_mech_id]'
@@ -1980,6 +2030,7 @@ nodes:
     unique: false
     total: true
     conforms: true
+    description: Reference to ShipmentContactMechType on shipment_contact_mech_type_id.
     entity_expression:
     - '[shipment_contact_mech_type_id]'
     entity_metadata:
@@ -2235,6 +2286,8 @@ nodes:
     description: Reference to PartyRole on party_id, role_type_id.
     entity_expression:
     - '[party_id, role_type_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: product_store_shipment_meth_identity
     dataset_columns:
     - product_store_ship_meth_id
@@ -2277,7 +2330,8 @@ nodes:
     entity_universe: partial
     unique: false
     total: unknown
-    conforms: unknown
+    conforms: true
+    description: Weight reference to QuantityBreak on weight_break_id.
     entity_expression:
     - '[weight_break_id]'
     entity_metadata:
@@ -2298,7 +2352,7 @@ nodes:
     dataset_columns:
     - price_uom_id
     entity_universe: partial
-    unique: unknown
+    unique: false
     total: unknown
     conforms: true
     description: Price reference to Uom on price_uom_id.
@@ -2312,7 +2366,7 @@ nodes:
     entity_universe: partial
     unique: false
     total: unknown
-    conforms: unknown
+    conforms: true
     description: Quantity reference to Uom on quantity_uom_id.
     entity_expression:
     - '[quantity_uom_id]'
@@ -2328,6 +2382,8 @@ nodes:
     description: Weight reference to Uom on weight_uom_id.
     entity_expression:
     - '[weight_uom_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.shipment.shipment_gateway_config
   descriptor:
     qualified_name: apache-ofbiz.shipment.shipment_gateway_config
@@ -2380,16 +2436,18 @@ nodes:
     dataset_columns:
     - shipment_gateway_config_id
     entity_universe: complete
-    unique: unknown
+    unique: true
     total: true
     conforms: true
     description: Primary key of ShipmentGatewayConfig.
+    entity_expression:
+    - '[shipment_gateway_config_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
   - identity_id: shipment_gateway_config_type_identity
     dataset_columns:
     - shipment_gateway_conf_type_id
-    entity_universe: unknown
+    entity_universe: partial
     unique: false
     total: unknown
     conforms: true
@@ -2546,6 +2604,8 @@ nodes:
     description: Reference to Product on product_id.
     entity_expression:
     - '[product_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: shipment_identity
     dataset_columns:
     - shipment_id
@@ -2632,15 +2692,19 @@ nodes:
     description: Reference to Invoice on invoice_id.
     entity_expression:
     - '[invoice_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: invoice_item_identity
     dataset_columns:
     - invoice_id
     - invoice_item_seq_id
-    entity_universe: unknown
+    entity_universe: partial
     unique: false
     total: true
     conforms: true
     description: Reference to InvoiceItem on invoice_id, invoice_item_seq_id.
+    entity_expression:
+    - '[invoice_id, invoice_item_seq_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
   - identity_id: shipment_identity
@@ -2663,6 +2727,7 @@ nodes:
     unique: false
     total: true
     conforms: true
+    description: Reference to ShipmentItem on shipment_id, shipment_item_seq_id.
     entity_expression:
     - '[shipment_id, shipment_item_seq_id]'
     entity_metadata:
@@ -2732,9 +2797,9 @@ nodes:
   - identity_id: product_feature_identity
     dataset_columns:
     - product_feature_id
-    entity_universe: unknown
+    entity_universe: partial
     unique: false
-    total: unknown
+    total: true
     conforms: true
     description: Reference to ProductFeature on product_feature_id.
     entity_expression:
@@ -2758,9 +2823,10 @@ nodes:
     - shipment_id
     - shipment_item_seq_id
     entity_universe: partial
-    unique: unknown
+    unique: false
     total: true
     conforms: true
+    description: Reference to ShipmentItem on shipment_id, shipment_item_seq_id.
     entity_expression:
     - '[shipment_id, shipment_item_seq_id]'
     entity_metadata:
@@ -2812,7 +2878,7 @@ nodes:
     dataset_columns:
     - shipment_method_type_id
     entity_universe: complete
-    unique: unknown
+    unique: true
     total: true
     conforms: true
     description: Primary key of ShipmentMethodType.
@@ -2903,6 +2969,8 @@ nodes:
     total: true
     conforms: true
     description: Primary key of ShipmentPackage.
+    entity_expression:
+    - '[shipment_id, shipment_package_seq_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
   - identity_id: shipment_box_type_identity
@@ -2922,7 +2990,7 @@ nodes:
     - shipment_id
     entity_universe: partial
     unique: false
-    total: unknown
+    total: true
     conforms: true
     description: Reference to Shipment on shipment_id.
     entity_expression:
@@ -2944,11 +3012,13 @@ nodes:
   - identity_id: uom_identity
     dataset_columns:
     - weight_uom_id
-    entity_universe: unknown
+    entity_universe: partial
     unique: false
     total: unknown
     conforms: true
     description: Weight reference to Uom on weight_uom_id.
+    entity_expression:
+    - '[weight_uom_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.shipment.shipment_package_content
@@ -3023,6 +3093,7 @@ nodes:
     unique: false
     total: unknown
     conforms: true
+    description: Sub reference to Product on sub_product_id.
     entity_expression:
     - '[sub_product_id]'
     entity_metadata:
@@ -3047,6 +3118,9 @@ nodes:
     unique: false
     total: true
     conforms: true
+    description: Reference to ShipmentItem on shipment_id, shipment_item_seq_id.
+    entity_expression:
+    - '[shipment_id, shipment_item_seq_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
   - identity_id: shipment_package_identity
@@ -3181,6 +3255,8 @@ nodes:
     description: Reference to ShipmentPackage on shipment_id, shipment_package_seq_id.
     entity_expression:
     - '[shipment_id, shipment_package_seq_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: shipment_route_segment_identity
     dataset_columns:
     - shipment_id
@@ -3198,10 +3274,12 @@ nodes:
     dataset_columns:
     - currency_uom_id
     entity_universe: partial
-    unique: unknown
+    unique: false
     total: unknown
-    conforms: unknown
+    conforms: true
     description: Currency reference to Uom on currency_uom_id.
+    entity_expression:
+    - '[currency_uom_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.shipment.shipment_receipt
@@ -3319,6 +3397,8 @@ nodes:
     description: Reference to OrderHeader on order_id.
     entity_expression:
     - '[order_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: order_item_identity
     dataset_columns:
     - order_id
@@ -3347,7 +3427,7 @@ nodes:
   - identity_id: rejection_reason_identity
     dataset_columns:
     - rejection_id
-    entity_universe: unknown
+    entity_universe: partial
     unique: false
     total: unknown
     conforms: true
@@ -3376,6 +3456,7 @@ nodes:
     unique: false
     total: unknown
     conforms: unknown
+    description: Reference to Shipment on shipment_id.
     entity_expression:
     - '[shipment_id]'
     entity_metadata:
@@ -3384,7 +3465,7 @@ nodes:
     dataset_columns:
     - shipment_id
     - shipment_item_seq_id
-    entity_universe: unknown
+    entity_universe: partial
     unique: false
     total: unknown
     conforms: unknown
@@ -3404,14 +3485,18 @@ nodes:
     description: Reference to ShipmentPackage on shipment_id, shipment_package_seq_id.
     entity_expression:
     - '[shipment_id, shipment_package_seq_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: user_login_identity
     dataset_columns:
     - received_by_user_login_id
     entity_universe: partial
-    unique: unknown
+    unique: false
     total: unknown
     conforms: true
     description: Reference to UserLogin on received_by_user_login_id.
+    entity_expression:
+    - '[received_by_user_login_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.shipment.shipment_receipt_role
@@ -3466,7 +3551,7 @@ nodes:
     - receipt_id
     - role_type_id
     entity_universe: complete
-    unique: unknown
+    unique: true
     total: true
     conforms: true
     description: Primary key of ShipmentReceiptRole.
@@ -3482,6 +3567,8 @@ nodes:
     total: true
     conforms: true
     description: Reference to Party on party_id.
+    entity_expression:
+    - '[party_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
   - identity_id: party_role_identity
@@ -3493,6 +3580,8 @@ nodes:
     total: true
     conforms: true
     description: Reference to PartyRole on party_id, role_type_id.
+    entity_expression:
+    - '[party_id, role_type_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
   - identity_id: shipment_receipt_identity
@@ -3646,10 +3735,13 @@ nodes:
     dataset_columns:
     - shipment_id
     - shipment_route_segment_id
-    entity_universe: unknown
+    entity_universe: complete
     unique: true
     total: true
-    conforms: unknown
+    conforms: true
+    description: Primary key of ShipmentRouteSegment.
+    entity_expression:
+    - '[shipment_id, shipment_route_segment_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
   - identity_id: contact_mech_identity
@@ -3686,6 +3778,8 @@ nodes:
     description: Reference to Delivery on delivery_id.
     entity_expression:
     - '[delivery_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: facility_identity
     dataset_columns:
     - dest_facility_id
@@ -3708,6 +3802,8 @@ nodes:
     description: Origin reference to Facility on origin_facility_id.
     entity_expression:
     - '[origin_facility_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: party_group_identity
     dataset_columns:
     - carrier_party_id
@@ -3716,6 +3812,8 @@ nodes:
     total: unknown
     conforms: unknown
     description: Carrier reference to PartyGroup on carrier_party_id.
+    entity_expression:
+    - '[carrier_party_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
   - identity_id: party_identity
@@ -3726,6 +3824,8 @@ nodes:
     total: unknown
     conforms: true
     description: Carrier reference to Party on carrier_party_id.
+    entity_expression:
+    - '[carrier_party_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
   - identity_id: person_identity
@@ -3744,7 +3844,7 @@ nodes:
     dataset_columns:
     - dest_contact_mech_id
     entity_universe: partial
-    unique: unknown
+    unique: false
     total: unknown
     conforms: true
     description: Dest reference to PostalAddress on dest_contact_mech_id.
@@ -3762,6 +3862,8 @@ nodes:
     description: Origin reference to PostalAddress on origin_contact_mech_id.
     entity_expression:
     - '[origin_contact_mech_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: shipment_identity
     dataset_columns:
     - shipment_id
@@ -3770,6 +3872,10 @@ nodes:
     total: true
     conforms: true
     description: Reference to Shipment on shipment_id.
+    entity_expression:
+    - '[shipment_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: shipment_method_type_identity
     dataset_columns:
     - shipment_method_type_id
@@ -3780,6 +3886,8 @@ nodes:
     description: Reference to ShipmentMethodType on shipment_method_type_id.
     entity_expression:
     - '[shipment_method_type_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: status_item_identity
     dataset_columns:
     - carrier_service_status_id
@@ -3898,6 +4006,7 @@ nodes:
     unique: true
     total: true
     conforms: true
+    description: Primary key of ShipmentStatus.
     entity_expression:
     - '[shipment_id, status_id]'
     entity_metadata:
@@ -3907,7 +4016,7 @@ nodes:
     - shipment_id
     entity_universe: partial
     unique: false
-    total: unknown
+    total: true
     conforms: true
     description: Reference to Shipment on shipment_id.
     entity_expression:
@@ -3919,7 +4028,7 @@ nodes:
     - status_id
     entity_universe: partial
     unique: false
-    total: unknown
+    total: true
     conforms: true
     description: Reference to StatusItem on status_id.
     entity_expression:
@@ -3934,6 +4043,8 @@ nodes:
     total: unknown
     conforms: true
     description: ChangeBy reference to UserLogin on change_by_user_login_id.
+    entity_expression:
+    - '[change_by_user_login_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.shipment.shipment_time_estimate
@@ -4020,6 +4131,7 @@ nodes:
     unique: true
     total: true
     conforms: true
+    description: Primary key of ShipmentTimeEstimate.
     entity_expression:
     - '[from_date, geo_id_from, geo_id_to, party_id, role_type_id, shipment_method_type_id]'
     entity_metadata:
@@ -4053,7 +4165,7 @@ nodes:
   - identity_id: geo_identity
     dataset_columns:
     - geo_id_to
-    entity_universe: unknown
+    entity_universe: partial
     unique: false
     total: true
     conforms: true
@@ -4262,11 +4374,13 @@ nodes:
   - identity_id: shipping_document_identity
     dataset_columns:
     - document_id
-    entity_universe: unknown
+    entity_universe: complete
     unique: true
     total: true
     conforms: true
     description: Primary key of ShippingDocument.
+    entity_expression:
+    - '[document_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
   - identity_id: document_identity

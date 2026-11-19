@@ -12,7 +12,7 @@ Critic does not host or call a model. Any agent follows Critic's written instruc
 an actor artifact, answer suite cases with AKG submissions, and score and collect the results.
 Critic also develops agent tools on the Graph Service API. It does not import actor code.
 
-The product requirements are in the [project PRD](project_metadata/product/project-prd.md);
+The product requirements are in the [project PRD](project_metadata/product/functional.md);
 current state and TODOs are in the
 [working state](project_metadata/working_state/project-working-state.md).
 

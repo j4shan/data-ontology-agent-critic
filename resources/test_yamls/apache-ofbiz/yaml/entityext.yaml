@@ -1,4 +1,4 @@
-schema_version: '5'
+schema_version: '1'
 nodes:
 - node_id: sql-database:apache-ofbiz.entityext.entity_group
   descriptor:
@@ -44,7 +44,7 @@ nodes:
     dataset_columns:
     - entity_group_id
     entity_universe: complete
-    unique: unknown
+    unique: true
     total: true
     conforms: true
     description: Primary key of EntityGroup.
@@ -202,7 +202,7 @@ nodes:
     entity_universe: complete
     unique: true
     total: true
-    conforms: unknown
+    conforms: true
     description: Primary key of EntitySync.
     entity_expression:
     - '[entity_sync_id]'
@@ -341,15 +341,18 @@ nodes:
     total: true
     conforms: true
     description: Primary key of EntitySyncHistory.
+    entity_expression:
+    - '[entity_sync_id, start_date]'
     entity_metadata:
       expression_context: PostgreSQL column reference
   - identity_id: entity_sync_identity
     dataset_columns:
     - entity_sync_id
-    entity_universe: unknown
+    entity_universe: partial
     unique: false
     total: true
     conforms: true
+    description: Reference to EntitySync on entity_sync_id.
     entity_expression:
     - '[entity_sync_id]'
     entity_metadata:
@@ -406,23 +409,27 @@ nodes:
     dataset_columns:
     - entity_or_package
     - entity_sync_id
-    entity_universe: unknown
+    entity_universe: complete
     unique: true
     total: true
     conforms: true
     description: Primary key of EntitySyncInclude.
     entity_expression:
     - '[entity_or_package, entity_sync_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: entity_sync_identity
     dataset_columns:
     - entity_sync_id
     entity_universe: partial
     unique: false
     total: true
-    conforms: unknown
+    conforms: true
     description: Reference to EntitySync on entity_sync_id.
     entity_expression:
     - '[entity_sync_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.entityext.entity_sync_include_group
   descriptor:
     qualified_name: apache-ofbiz.entityext.entity_sync_include_group
@@ -473,8 +480,10 @@ nodes:
     entity_universe: complete
     unique: true
     total: true
-    conforms: unknown
+    conforms: true
     description: Primary key of EntitySyncIncludeGroup.
+    entity_expression:
+    - '[entity_group_id, entity_sync_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
   - identity_id: entity_group_identity
@@ -495,7 +504,7 @@ nodes:
     entity_universe: partial
     unique: false
     total: true
-    conforms: unknown
+    conforms: true
     description: Reference to EntitySync on entity_sync_id.
     entity_expression:
     - '[entity_sync_id]'
@@ -552,8 +561,9 @@ nodes:
     - entity_sync_remove_id
     entity_universe: complete
     unique: true
-    total: unknown
+    total: true
     conforms: true
+    description: Primary key of EntitySyncRemove.
     entity_expression:
     - '[entity_sync_remove_id]'
     entity_metadata:

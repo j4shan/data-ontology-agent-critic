@@ -1,6 +1,6 @@
 # Apache OFBiz
 
-`apache-ofbiz` is a schema version 5 catalog of the Apache OFBiz tables on PostgreSQL. Each
+`apache-ofbiz` is a schema version 1 catalog of the Apache OFBiz tables on PostgreSQL. Each
 dataset is one OFBiz entity table in the `public` schema of the `ofbiz` database, or of the
 `ofbiztenant` database for the 6 tenant entities. Column names are the physical column names.
 
@@ -35,8 +35,9 @@ catalog.
 | `webapp.yaml` | 14 | | |
 | `security.yaml` | 11 | | |
 
-`forget-log.yaml` lists 4,135 of 44,193 eligible values that are absent from `yaml/`, with
-their original values.
+`forget-log.yaml` lists 2,483 of 44,193 eligible values that are absent from `yaml/`, with
+their original values. Relationship evidence on entity definitions is not degraded;
+`memory-loss.md` tracks what was forgotten and restored.
 
 ## Files
 
@@ -47,4 +48,5 @@ their original values.
 | `yaml/00_entity_relationships.yaml` | Cross-entity relationships between logical entities. |
 | `yaml/<group>.yaml` | Datasets of one OFBiz entity group. |
 | `forget-log.yaml` | Values absent from `yaml/` and their originals. |
+| `memory-loss.md` | Memory loss by kind: forgotten, restored, and still forgotten. |
 | `questions.md` | Ten operator questions over orders, inventory, accounting, manufacturing, and shipments. |

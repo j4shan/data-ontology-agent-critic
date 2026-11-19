@@ -1,4 +1,4 @@
-schema_version: '5'
+schema_version: '1'
 nodes:
 - node_id: sql-database:frappe-erp.buying.customer_number_at_supplier
   descriptor:
@@ -80,11 +80,13 @@ nodes:
     conforms: true
     entity_expression:
     - '[company]'
+    entity_metadata:
+      expression_context: MariaDB column reference
     description: Reference to a Company document.
   - identity_id: customer_number_at_supplier_identity
     dataset_columns:
     - name
-    entity_universe: unknown
+    entity_universe: complete
     unique: true
     total: true
     conforms: true
@@ -100,8 +102,11 @@ nodes:
     unique: false
     total: true
     conforms: true
+    entity_expression:
+    - '[owner]'
     entity_metadata:
       expression_context: MariaDB column reference
+    description: User who created the document.
   - identity_id: user_identity
     dataset_columns:
     - modified_by
@@ -113,6 +118,7 @@ nodes:
     - '[modified_by]'
     entity_metadata:
       expression_context: MariaDB column reference
+    description: User who last updated the document.
   - identity_id: supplier_identity
     dataset_columns:
     - parent
@@ -122,6 +128,9 @@ nodes:
     conforms: true
     entity_expression:
     - '[parent]'
+    entity_metadata:
+      expression_context: MariaDB column reference
+    description: Parent Supplier document that owns this row.
 - node_id: sql-database:frappe-erp.buying.purchase_order
   descriptor:
     qualified_name: frappe-erp.buying.purchase_order
@@ -476,7 +485,7 @@ nodes:
     - supplier
     entity_universe: partial
     unique: false
-    total: unknown
+    total: true
     conforms: true
     entity_expression:
     - '[supplier]'
@@ -552,6 +561,8 @@ nodes:
     conforms: true
     entity_expression:
     - '[price_list_currency]'
+    entity_metadata:
+      expression_context: MariaDB column reference
     description: Reference to a Currency document.
   - identity_id: warehouse_identity
     dataset_columns:
@@ -592,7 +603,7 @@ nodes:
   - identity_id: tax_category_identity
     dataset_columns:
     - tax_category
-    entity_universe: unknown
+    entity_universe: partial
     unique: false
     total: unknown
     conforms: true
@@ -631,7 +642,9 @@ nodes:
     entity_universe: partial
     unique: false
     total: unknown
-    conforms: unknown
+    conforms: true
+    entity_expression:
+    - '[incoterm]'
     entity_metadata:
       expression_context: MariaDB column reference
     description: Reference to a Incoterm document.
@@ -651,7 +664,7 @@ nodes:
     dataset_columns:
     - supplier_group
     entity_universe: partial
-    unique: unknown
+    unique: false
     total: unknown
     conforms: true
     entity_expression:
@@ -692,6 +705,8 @@ nodes:
     conforms: true
     entity_expression:
     - '[shipping_address]'
+    entity_metadata:
+      expression_context: MariaDB column reference
     description: Reference to a Address document.
   - identity_id: address_identity
     dataset_columns:
@@ -704,6 +719,7 @@ nodes:
     - '[billing_address]'
     entity_metadata:
       expression_context: MariaDB column reference
+    description: Reference to a Address document.
   - identity_id: customer_identity
     dataset_columns:
     - customer
@@ -713,6 +729,8 @@ nodes:
     conforms: true
     entity_expression:
     - '[customer]'
+    entity_metadata:
+      expression_context: MariaDB column reference
     description: Reference to a Customer document.
   - identity_id: contact_identity
     dataset_columns:
@@ -730,7 +748,7 @@ nodes:
     dataset_columns:
     - payment_terms_template
     entity_universe: partial
-    unique: unknown
+    unique: false
     total: unknown
     conforms: true
     entity_expression:
@@ -754,13 +772,14 @@ nodes:
     dataset_columns:
     - letter_head
     entity_universe: partial
-    unique: unknown
+    unique: false
     total: unknown
     conforms: true
     entity_expression:
     - '[letter_head]'
     entity_metadata:
       expression_context: MariaDB column reference
+    description: Reference to a Letter Head document.
   - identity_id: print_heading_identity
     dataset_columns:
     - select_print_heading
@@ -779,7 +798,7 @@ nodes:
     entity_universe: partial
     unique: false
     total: unknown
-    conforms: unknown
+    conforms: true
     entity_expression:
     - '[auto_repeat]'
     entity_metadata:
@@ -812,7 +831,7 @@ nodes:
   - identity_id: supplier_quotation_identity
     dataset_columns:
     - ref_sq
-    entity_universe: unknown
+    entity_universe: partial
     unique: false
     total: unknown
     conforms: true
@@ -832,6 +851,7 @@ nodes:
     - '[amended_from]'
     entity_metadata:
       expression_context: MariaDB column reference
+    description: Reference to a Purchase Order document.
   - identity_id: master_production_schedule_identity
     dataset_columns:
     - mps
@@ -847,7 +867,7 @@ nodes:
   - identity_id: sales_order_identity
     dataset_columns:
     - inter_company_order_reference
-    entity_universe: unknown
+    entity_universe: partial
     unique: false
     total: unknown
     conforms: true
@@ -865,12 +885,14 @@ nodes:
     conforms: true
     entity_expression:
     - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
     description: Primary key and complete population of Purchase Order.
   - identity_id: user_identity
     dataset_columns:
     - owner
     entity_universe: partial
-    unique: unknown
+    unique: false
     total: true
     conforms: true
     entity_expression:
@@ -884,7 +906,7 @@ nodes:
     entity_universe: partial
     unique: false
     total: true
-    conforms: unknown
+    conforms: true
     entity_expression:
     - '[modified_by]'
     entity_metadata:
@@ -1181,6 +1203,7 @@ nodes:
     - '[fg_item]'
     entity_metadata:
       expression_context: MariaDB column reference
+    description: Reference to a Item document.
   - identity_id: item_identity
     dataset_columns:
     - item_code
@@ -1214,6 +1237,8 @@ nodes:
     conforms: true
     entity_expression:
     - '[product_bundle]'
+    entity_metadata:
+      expression_context: MariaDB column reference
     description: Reference to a Product Bundle document.
   - identity_id: item_group_identity
     dataset_columns:
@@ -1254,12 +1279,14 @@ nodes:
   - identity_id: item_tax_template_identity
     dataset_columns:
     - item_tax_template
-    entity_universe: unknown
+    entity_universe: partial
     unique: false
     total: unknown
     conforms: true
     entity_expression:
     - '[item_tax_template]'
+    entity_metadata:
+      expression_context: MariaDB column reference
     description: Reference to a Item Tax Template document.
   - identity_id: warehouse_identity
     dataset_columns:
@@ -1270,6 +1297,8 @@ nodes:
     conforms: true
     entity_expression:
     - '[from_warehouse]'
+    entity_metadata:
+      expression_context: MariaDB column reference
     description: Reference to a Warehouse document.
   - identity_id: warehouse_identity
     dataset_columns:
@@ -1290,6 +1319,8 @@ nodes:
     unique: false
     total: unknown
     conforms: true
+    entity_expression:
+    - '[material_request]'
     entity_metadata:
       expression_context: MariaDB column reference
     description: Reference to a Material Request document.
@@ -1312,16 +1343,23 @@ nodes:
     unique: false
     total: unknown
     conforms: true
+    entity_expression:
+    - '[supplier_quotation]'
+    entity_metadata:
+      expression_context: MariaDB column reference
     description: Reference to a Supplier Quotation document.
   - identity_id: supplier_quotation_item_identity
     dataset_columns:
     - supplier_quotation_item
-    entity_universe: unknown
+    entity_universe: partial
     unique: false
     total: unknown
     conforms: true
+    entity_expression:
+    - '[supplier_quotation_item]'
     entity_metadata:
       expression_context: MariaDB column reference
+    description: Reference to a Supplier Quotation Item document.
   - identity_id: blanket_order_identity
     dataset_columns:
     - blanket_order
@@ -1329,6 +1367,8 @@ nodes:
     unique: false
     total: unknown
     conforms: true
+    entity_expression:
+    - '[blanket_order]'
     entity_metadata:
       expression_context: MariaDB column reference
     description: Reference to a Blanket Order document.
@@ -1339,6 +1379,8 @@ nodes:
     unique: false
     total: unknown
     conforms: true
+    entity_expression:
+    - '[expense_account]'
     entity_metadata:
       expression_context: MariaDB column reference
     description: Reference to a Account document.
@@ -1346,7 +1388,7 @@ nodes:
     dataset_columns:
     - wip_composite_asset
     entity_universe: partial
-    unique: unknown
+    unique: false
     total: unknown
     conforms: true
     entity_expression:
@@ -1369,8 +1411,8 @@ nodes:
   - identity_id: bom_identity
     dataset_columns:
     - bom
-    entity_universe: unknown
-    unique: unknown
+    entity_universe: partial
+    unique: false
     total: unknown
     conforms: true
     entity_expression:
@@ -1411,6 +1453,8 @@ nodes:
     conforms: true
     entity_expression:
     - '[cost_center]'
+    entity_metadata:
+      expression_context: MariaDB column reference
     description: Reference to a Cost Center document.
   - identity_id: production_plan_identity
     dataset_columns:
@@ -1622,6 +1666,8 @@ nodes:
     unique: false
     total: unknown
     conforms: true
+    entity_expression:
+    - '[rm_item_code]'
     entity_metadata:
       expression_context: MariaDB column reference
     description: Reference to a Item document.
@@ -1629,7 +1675,7 @@ nodes:
     dataset_columns:
     - stock_uom
     entity_universe: partial
-    unique: unknown
+    unique: false
     total: unknown
     conforms: true
     entity_expression:
@@ -1653,7 +1699,7 @@ nodes:
     dataset_columns:
     - purchase_order
     entity_universe: partial
-    unique: unknown
+    unique: false
     total: unknown
     conforms: true
     entity_expression:
@@ -1666,7 +1712,7 @@ nodes:
     - name
     entity_universe: complete
     unique: true
-    total: unknown
+    total: true
     conforms: true
     entity_expression:
     - '[name]'
@@ -1680,6 +1726,10 @@ nodes:
     unique: false
     total: true
     conforms: true
+    entity_expression:
+    - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
     description: User who created the document.
   - identity_id: user_identity
     dataset_columns:
@@ -1687,7 +1737,7 @@ nodes:
     entity_universe: partial
     unique: false
     total: true
-    conforms: unknown
+    conforms: true
     entity_expression:
     - '[modified_by]'
     entity_metadata:
@@ -1829,7 +1879,7 @@ nodes:
     entity_universe: partial
     unique: false
     total: true
-    conforms: unknown
+    conforms: true
     entity_expression:
     - '[company]'
     entity_metadata:
@@ -1902,6 +1952,8 @@ nodes:
     unique: false
     total: unknown
     conforms: true
+    entity_expression:
+    - '[select_print_heading]'
     entity_metadata:
       expression_context: MariaDB column reference
     description: Reference to a Print Heading document.
@@ -1952,6 +2004,7 @@ nodes:
     - '[shipping_address]'
     entity_metadata:
       expression_context: MariaDB column reference
+    description: Reference to a Address document.
   - identity_id: request_for_quotation_identity
     dataset_columns:
     - name
@@ -1961,11 +2014,13 @@ nodes:
     conforms: true
     entity_expression:
     - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
     description: Primary key and complete population of Request for Quotation.
   - identity_id: user_identity
     dataset_columns:
     - owner
-    entity_universe: unknown
+    entity_universe: partial
     unique: false
     total: true
     conforms: true
@@ -1983,6 +2038,8 @@ nodes:
     conforms: true
     entity_expression:
     - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
     description: User who last updated the document.
 - node_id: sql-database:frappe-erp.buying.request_for_quotation_item
   descriptor:
@@ -2113,7 +2170,9 @@ nodes:
     entity_universe: partial
     unique: false
     total: true
-    conforms: unknown
+    conforms: true
+    entity_expression:
+    - '[item_code]'
     entity_metadata:
       expression_context: MariaDB column reference
     description: Reference to a Item document.
@@ -2172,6 +2231,8 @@ nodes:
     unique: false
     total: unknown
     conforms: true
+    entity_expression:
+    - '[warehouse]'
     entity_metadata:
       expression_context: MariaDB column reference
     description: Reference to a Warehouse document.
@@ -2179,11 +2240,13 @@ nodes:
     dataset_columns:
     - material_request
     entity_universe: partial
-    unique: unknown
+    unique: false
     total: unknown
     conforms: true
     entity_expression:
     - '[material_request]'
+    entity_metadata:
+      expression_context: MariaDB column reference
     description: Reference to a Material Request document.
   - identity_id: cost_center_identity
     dataset_columns:
@@ -2200,7 +2263,7 @@ nodes:
   - identity_id: project_identity
     dataset_columns:
     - project_name
-    entity_universe: unknown
+    entity_universe: partial
     unique: false
     total: unknown
     conforms: true
@@ -2218,6 +2281,8 @@ nodes:
     conforms: true
     entity_expression:
     - '[name]'
+    entity_metadata:
+      expression_context: MariaDB column reference
     description: Primary key and complete population of Request for Quotation Item.
   - identity_id: user_identity
     dataset_columns:
@@ -2240,6 +2305,8 @@ nodes:
     conforms: true
     entity_expression:
     - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
     description: User who last updated the document.
   - identity_id: request_for_quotation_identity
     dataset_columns:
@@ -2408,6 +2475,8 @@ nodes:
     conforms: true
     entity_expression:
     - '[parent]'
+    entity_metadata:
+      expression_context: MariaDB column reference
     description: Parent Request for Quotation document that owns this row.
 - node_id: sql-database:frappe-erp.buying.supplier
   descriptor:
@@ -2593,6 +2662,8 @@ nodes:
     conforms: true
     entity_expression:
     - '[gender]'
+    entity_metadata:
+      expression_context: MariaDB column reference
     description: Reference to a Gender document.
   - identity_id: supplier_group_identity
     dataset_columns:
@@ -2615,6 +2686,8 @@ nodes:
     conforms: true
     entity_expression:
     - '[country]'
+    entity_metadata:
+      expression_context: MariaDB column reference
     description: Reference to a Country document.
   - identity_id: currency_identity
     dataset_columns:
@@ -2635,6 +2708,8 @@ nodes:
     unique: false
     total: unknown
     conforms: true
+    entity_expression:
+    - '[default_bank_account]'
     entity_metadata:
       expression_context: MariaDB column reference
     description: Reference to a Bank Account document.
@@ -2657,6 +2732,8 @@ nodes:
     unique: false
     total: unknown
     conforms: true
+    entity_expression:
+    - '[payment_terms]'
     entity_metadata:
       expression_context: MariaDB column reference
     description: Reference to a Payment Terms Template document.
@@ -2667,6 +2744,8 @@ nodes:
     unique: false
     total: unknown
     conforms: true
+    entity_expression:
+    - '[supplier_primary_address]'
     entity_metadata:
       expression_context: MariaDB column reference
     description: Reference to a Address document.
@@ -2709,7 +2788,7 @@ nodes:
   - identity_id: tax_withholding_category_identity
     dataset_columns:
     - tax_withholding_category
-    entity_universe: unknown
+    entity_universe: partial
     unique: false
     total: unknown
     conforms: true
@@ -2725,6 +2804,10 @@ nodes:
     unique: false
     total: unknown
     conforms: true
+    entity_expression:
+    - '[tax_withholding_group]'
+    entity_metadata:
+      expression_context: MariaDB column reference
     description: Reference to a Tax Withholding Group document.
   - identity_id: language_identity
     dataset_columns:
@@ -3059,7 +3142,7 @@ nodes:
     dataset_columns:
     - cost_center
     entity_universe: partial
-    unique: unknown
+    unique: false
     total: unknown
     conforms: true
     entity_expression:
@@ -3073,11 +3156,12 @@ nodes:
     entity_universe: partial
     unique: false
     total: unknown
-    conforms: unknown
+    conforms: true
     entity_expression:
     - '[project]'
     entity_metadata:
       expression_context: MariaDB column reference
+    description: Reference to a Project document.
   - identity_id: currency_identity
     dataset_columns:
     - currency
@@ -3087,6 +3171,8 @@ nodes:
     conforms: true
     entity_expression:
     - '[currency]'
+    entity_metadata:
+      expression_context: MariaDB column reference
     description: Reference to a Currency document.
   - identity_id: price_list_identity
     dataset_columns:
@@ -3095,6 +3181,8 @@ nodes:
     unique: false
     total: unknown
     conforms: true
+    entity_expression:
+    - '[buying_price_list]'
     entity_metadata:
       expression_context: MariaDB column reference
     description: Reference to a Price List document.
@@ -3114,7 +3202,7 @@ nodes:
     dataset_columns:
     - tax_category
     entity_universe: partial
-    unique: unknown
+    unique: false
     total: unknown
     conforms: true
     entity_expression:
@@ -3125,7 +3213,7 @@ nodes:
   - identity_id: purchase_taxes_and_charges_template_identity
     dataset_columns:
     - taxes_and_charges
-    entity_universe: unknown
+    entity_universe: partial
     unique: false
     total: unknown
     conforms: true
@@ -3141,6 +3229,8 @@ nodes:
     unique: false
     total: unknown
     conforms: true
+    entity_expression:
+    - '[shipping_rule]'
     entity_metadata:
       expression_context: MariaDB column reference
     description: Reference to a Shipping Rule document.
@@ -3196,7 +3286,7 @@ nodes:
     dataset_columns:
     - billing_address
     entity_universe: partial
-    unique: unknown
+    unique: false
     total: unknown
     conforms: true
     entity_expression:
@@ -3207,7 +3297,7 @@ nodes:
   - identity_id: terms_and_conditions_identity
     dataset_columns:
     - tc_name
-    entity_universe: unknown
+    entity_universe: partial
     unique: false
     total: unknown
     conforms: true
@@ -3227,6 +3317,7 @@ nodes:
     - '[letter_head]'
     entity_metadata:
       expression_context: MariaDB column reference
+    description: Reference to a Letter Head document.
   - identity_id: print_heading_identity
     dataset_columns:
     - select_print_heading
@@ -3520,10 +3611,11 @@ nodes:
     - '[item_code]'
     entity_metadata:
       expression_context: MariaDB column reference
+    description: Reference to a Item document.
   - identity_id: item_group_identity
     dataset_columns:
     - item_group
-    entity_universe: unknown
+    entity_universe: partial
     unique: false
     total: unknown
     conforms: true
@@ -3550,7 +3642,7 @@ nodes:
     entity_universe: partial
     unique: false
     total: true
-    conforms: unknown
+    conforms: true
     entity_expression:
     - '[stock_uom]'
     entity_metadata:
@@ -3559,7 +3651,7 @@ nodes:
   - identity_id: uom_identity
     dataset_columns:
     - uom
-    entity_universe: unknown
+    entity_universe: partial
     unique: false
     total: true
     conforms: true
@@ -3613,14 +3705,20 @@ nodes:
     conforms: true
     entity_expression:
     - '[material_request]'
+    entity_metadata:
+      expression_context: MariaDB column reference
     description: Reference to a Material Request document.
   - identity_id: sales_order_identity
     dataset_columns:
     - sales_order
     entity_universe: partial
-    unique: unknown
+    unique: false
     total: unknown
     conforms: true
+    entity_expression:
+    - '[sales_order]'
+    entity_metadata:
+      expression_context: MariaDB column reference
     description: Reference to a Sales Order document.
   - identity_id: request_for_quotation_identity
     dataset_columns:
@@ -3637,7 +3735,7 @@ nodes:
   - identity_id: manufacturer_identity
     dataset_columns:
     - manufacturer
-    entity_universe: unknown
+    entity_universe: partial
     unique: false
     total: unknown
     conforms: true
@@ -3701,6 +3799,10 @@ nodes:
     unique: false
     total: true
     conforms: true
+    entity_expression:
+    - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
     description: User who last updated the document.
   - identity_id: supplier_quotation_identity
     dataset_columns:
@@ -3942,6 +4044,7 @@ nodes:
     - '[name]'
     entity_metadata:
       expression_context: MariaDB column reference
+    description: Primary key and complete population of Supplier Scorecard Criteria.
   - identity_id: user_identity
     dataset_columns:
     - owner
@@ -3951,6 +4054,8 @@ nodes:
     conforms: true
     entity_expression:
     - '[owner]'
+    entity_metadata:
+      expression_context: MariaDB column reference
     description: User who created the document.
   - identity_id: user_identity
     dataset_columns:
@@ -4044,7 +4149,7 @@ nodes:
   - identity_id: supplier_identity
     dataset_columns:
     - supplier
-    entity_universe: unknown
+    entity_universe: partial
     unique: false
     total: true
     conforms: true
@@ -4052,6 +4157,7 @@ nodes:
     - '[supplier]'
     entity_metadata:
       expression_context: MariaDB column reference
+    description: Reference to a Supplier document.
   - identity_id: supplier_scorecard_identity
     dataset_columns:
     - scorecard
@@ -4070,7 +4176,7 @@ nodes:
     entity_universe: partial
     unique: false
     total: unknown
-    conforms: unknown
+    conforms: true
     entity_expression:
     - '[amended_from]'
     entity_metadata:
@@ -4092,7 +4198,7 @@ nodes:
     dataset_columns:
     - owner
     entity_universe: partial
-    unique: unknown
+    unique: false
     total: true
     conforms: true
     entity_expression:
@@ -4219,6 +4325,8 @@ nodes:
     unique: true
     total: true
     conforms: true
+    entity_expression:
+    - '[name]'
     entity_metadata:
       expression_context: MariaDB column reference
     description: Primary key and complete population of Supplier Scorecard Scoring Criteria.
@@ -4229,6 +4337,8 @@ nodes:
     unique: false
     total: true
     conforms: true
+    entity_expression:
+    - '[owner]'
     entity_metadata:
       expression_context: MariaDB column reference
     description: User who created the document.
@@ -4236,11 +4346,13 @@ nodes:
     dataset_columns:
     - modified_by
     entity_universe: partial
-    unique: unknown
+    unique: false
     total: true
     conforms: true
     entity_expression:
     - '[modified_by]'
+    entity_metadata:
+      expression_context: MariaDB column reference
     description: User who last updated the document.
 - node_id: sql-database:frappe-erp.buying.supplier_scorecard_scoring_standing
   descriptor:
@@ -4356,7 +4468,7 @@ nodes:
     dataset_columns:
     - employee_link
     entity_universe: partial
-    unique: unknown
+    unique: false
     total: unknown
     conforms: true
     entity_expression:
@@ -4391,7 +4503,7 @@ nodes:
   - identity_id: user_identity
     dataset_columns:
     - modified_by
-    entity_universe: unknown
+    entity_universe: partial
     unique: false
     total: true
     conforms: true
@@ -4676,6 +4788,8 @@ nodes:
     unique: false
     total: true
     conforms: true
+    entity_expression:
+    - '[owner]'
     entity_metadata:
       expression_context: MariaDB column reference
     description: User who created the document.
@@ -4686,6 +4800,8 @@ nodes:
     unique: false
     total: true
     conforms: true
+    entity_expression:
+    - '[modified_by]'
     entity_metadata:
       expression_context: MariaDB column reference
     description: User who last updated the document.
@@ -4760,7 +4876,7 @@ nodes:
     dataset_columns:
     - name
     entity_universe: complete
-    unique: unknown
+    unique: true
     total: true
     conforms: true
     entity_expression:
