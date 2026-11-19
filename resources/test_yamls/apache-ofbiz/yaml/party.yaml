@@ -1,4 +1,4 @@
-schema_version: '5'
+schema_version: '1'
 nodes:
 - node_id: sql-database:apache-ofbiz.party.addendum
   descriptor:
@@ -73,6 +73,9 @@ nodes:
     unique: false
     total: unknown
     conforms: true
+    description: Reference to Agreement on agreement_id.
+    entity_expression:
+    - '[agreement_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
   - identity_id: agreement_item_identity
@@ -146,6 +149,8 @@ nodes:
     total: true
     conforms: true
     description: Primary key of AddressMatchMap.
+    entity_expression:
+    - '[map_key, map_value]'
     entity_metadata:
       expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.party.affiliate
@@ -238,7 +243,7 @@ nodes:
   - identity_id: party_identity
     dataset_columns:
     - party_id
-    entity_universe: unknown
+    entity_universe: partial
     unique: true
     total: true
     conforms: true
@@ -318,22 +323,26 @@ nodes:
     dataset_columns:
     - agreement_id
     entity_universe: complete
-    unique: unknown
+    unique: true
     total: true
     conforms: true
     description: Primary key of Agreement.
+    entity_expression:
+    - '[agreement_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
   - identity_id: agreement_type_identity
     dataset_columns:
     - agreement_type_id
-    entity_universe: unknown
+    entity_universe: partial
     unique: false
     total: unknown
     conforms: true
     description: Reference to AgreementType on agreement_type_id.
     entity_expression:
     - '[agreement_type_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: party_identity
     dataset_columns:
     - party_id_from
@@ -354,6 +363,8 @@ nodes:
     total: unknown
     conforms: unknown
     description: To reference to Party on party_id_to.
+    entity_expression:
+    - '[party_id_to]'
     entity_metadata:
       expression_context: PostgreSQL column reference
   - identity_id: party_role_identity
@@ -365,6 +376,8 @@ nodes:
     total: unknown
     conforms: true
     description: From reference to PartyRole on party_id_from, role_type_id_from.
+    entity_expression:
+    - '[party_id_from, role_type_id_from]'
     entity_metadata:
       expression_context: PostgreSQL column reference
   - identity_id: party_role_identity
@@ -374,7 +387,7 @@ nodes:
     entity_universe: partial
     unique: false
     total: unknown
-    conforms: unknown
+    conforms: true
     description: To reference to PartyRole on party_id_to, role_type_id_to.
     entity_expression:
     - '[party_id_to, role_type_id_to]'
@@ -400,6 +413,8 @@ nodes:
     total: unknown
     conforms: unknown
     description: From reference to RoleType on role_type_id_from.
+    entity_expression:
+    - '[role_type_id_from]'
     entity_metadata:
       expression_context: PostgreSQL column reference
   - identity_id: role_type_identity
@@ -410,6 +425,8 @@ nodes:
     total: unknown
     conforms: unknown
     description: To reference to RoleType on role_type_id_to.
+    entity_expression:
+    - '[role_type_id_to]'
     entity_metadata:
       expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.party.agreement_attribute
@@ -485,6 +502,8 @@ nodes:
     description: Reference to Agreement on agreement_id.
     entity_expression:
     - '[agreement_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.party.agreement_content
   descriptor:
     qualified_name: apache-ofbiz.party.agreement_content
@@ -567,6 +586,8 @@ nodes:
     total: true
     conforms: true
     description: Reference to AgreementContentType on agreement_content_type_id.
+    entity_expression:
+    - '[agreement_content_type_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
   - identity_id: agreement_identity
@@ -588,6 +609,7 @@ nodes:
     unique: false
     total: true
     conforms: true
+    description: Reference to Content on content_id.
     entity_expression:
     - '[content_id]'
     entity_metadata:
@@ -645,7 +667,7 @@ nodes:
     - agreement_content_type_id
     entity_universe: complete
     unique: true
-    total: unknown
+    total: true
     conforms: true
     description: Primary key of AgreementContentType.
     entity_expression:
@@ -735,6 +757,8 @@ nodes:
     total: true
     conforms: true
     description: Primary key of AgreementEmploymentAppl.
+    entity_expression:
+    - '[agreement_id, agreement_item_seq_id, from_date, party_id_from, party_id_to, role_type_id_from, role_type_id_to]'
     entity_metadata:
       expression_context: PostgreSQL column reference
   - identity_id: agreement_item_identity
@@ -837,6 +861,7 @@ nodes:
     unique: false
     total: true
     conforms: unknown
+    description: Reference to Agreement on agreement_id.
     entity_expression:
     - '[agreement_id]'
     entity_metadata:
@@ -925,13 +950,15 @@ nodes:
     total: true
     conforms: true
     description: Primary key of AgreementGeographicalApplic.
+    entity_expression:
+    - '[agreement_id, agreement_item_seq_id, geo_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
   - identity_id: agreement_identity
     dataset_columns:
     - agreement_id
-    entity_universe: unknown
-    unique: unknown
+    entity_universe: partial
+    unique: false
     total: true
     conforms: true
     description: Reference to Agreement on agreement_id.
@@ -1048,7 +1075,7 @@ nodes:
     dataset_columns:
     - agreement_item_type_id
     entity_universe: partial
-    unique: unknown
+    unique: false
     total: unknown
     conforms: true
     description: Reference to AgreementItemType on agreement_item_type_id.
@@ -1116,7 +1143,7 @@ nodes:
     - agreement_id
     - agreement_item_seq_id
     - attr_name
-    entity_universe: unknown
+    entity_universe: complete
     unique: true
     total: true
     conforms: true
@@ -1190,9 +1217,9 @@ nodes:
     dataset_columns:
     - agreement_item_type_id
     entity_universe: complete
-    unique: unknown
+    unique: true
     total: true
-    conforms: unknown
+    conforms: true
     description: Primary key of AgreementItemType.
     entity_expression:
     - '[agreement_item_type_id]'
@@ -1271,7 +1298,7 @@ nodes:
   - identity_id: agreement_item_type_identity
     dataset_columns:
     - agreement_item_type_id
-    entity_universe: unknown
+    entity_universe: partial
     unique: false
     total: true
     conforms: true
@@ -1340,13 +1367,15 @@ nodes:
     description: Primary key of AgreementPartyApplic.
     entity_expression:
     - '[agreement_id, agreement_item_seq_id, party_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: agreement_identity
     dataset_columns:
     - agreement_id
     entity_universe: partial
     unique: false
     total: true
-    conforms: unknown
+    conforms: true
     description: Reference to Agreement on agreement_id.
     entity_expression:
     - '[agreement_id]'
@@ -1375,6 +1404,8 @@ nodes:
     description: Reference to Party on party_id.
     entity_expression:
     - '[party_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.party.agreement_product_appl
   descriptor:
     qualified_name: apache-ofbiz.party.agreement_product_appl
@@ -1430,7 +1461,7 @@ nodes:
     - agreement_id
     - agreement_item_seq_id
     - product_id
-    entity_universe: unknown
+    entity_universe: complete
     unique: true
     total: true
     conforms: true
@@ -1446,13 +1477,16 @@ nodes:
     unique: false
     total: true
     conforms: unknown
+    description: Reference to Agreement on agreement_id.
+    entity_expression:
+    - '[agreement_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
   - identity_id: agreement_item_identity
     dataset_columns:
     - agreement_id
     - agreement_item_seq_id
-    entity_universe: unknown
+    entity_universe: partial
     unique: false
     total: true
     conforms: true
@@ -1534,7 +1568,7 @@ nodes:
     - from_date
     - product_promo_id
     entity_universe: complete
-    unique: unknown
+    unique: true
     total: true
     conforms: true
     description: Primary key of AgreementPromoAppl.
@@ -1552,13 +1586,15 @@ nodes:
     description: Reference to Agreement on agreement_id.
     entity_expression:
     - '[agreement_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: agreement_item_identity
     dataset_columns:
     - agreement_id
     - agreement_item_seq_id
     entity_universe: partial
     unique: false
-    total: unknown
+    total: true
     conforms: true
     description: Reference to AgreementItem on agreement_id, agreement_item_seq_id.
     entity_expression:
@@ -1571,7 +1607,7 @@ nodes:
     entity_universe: partial
     unique: false
     total: true
-    conforms: unknown
+    conforms: true
     description: Reference to ProductPromo on product_promo_id.
     entity_expression:
     - '[product_promo_id]'
@@ -1633,8 +1669,8 @@ nodes:
     - role_type_id
     entity_universe: complete
     unique: true
-    total: unknown
-    conforms: unknown
+    total: true
+    conforms: true
     description: Primary key of AgreementRole.
     entity_expression:
     - '[agreement_id, party_id, role_type_id]'
@@ -1643,7 +1679,7 @@ nodes:
   - identity_id: agreement_identity
     dataset_columns:
     - agreement_id
-    entity_universe: unknown
+    entity_universe: partial
     unique: false
     total: true
     conforms: true
@@ -1660,6 +1696,8 @@ nodes:
     total: true
     conforms: true
     description: Reference to Party on party_id.
+    entity_expression:
+    - '[party_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
   - identity_id: party_role_identity
@@ -1772,6 +1810,7 @@ nodes:
     unique: false
     total: true
     conforms: true
+    description: Reference to StatusItem on status_id.
     entity_expression:
     - '[status_id]'
     entity_metadata:
@@ -1779,7 +1818,7 @@ nodes:
   - identity_id: user_login_identity
     dataset_columns:
     - change_by_user_login_id
-    entity_universe: unknown
+    entity_universe: partial
     unique: false
     total: unknown
     conforms: true
@@ -1881,6 +1920,7 @@ nodes:
     unique: false
     total: unknown
     conforms: true
+    description: Reference to Agreement on agreement_id.
     entity_expression:
     - '[agreement_id]'
     entity_metadata:
@@ -1889,7 +1929,7 @@ nodes:
     dataset_columns:
     - agreement_id
     - agreement_item_seq_id
-    entity_universe: unknown
+    entity_universe: partial
     unique: false
     total: unknown
     conforms: true
@@ -2045,8 +2085,11 @@ nodes:
     unique: true
     total: true
     conforms: true
+    description: Primary key of AgreementType.
     entity_expression:
     - '[agreement_type_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: agreement_type_identity
     dataset_columns:
     - parent_type_id
@@ -2184,7 +2227,7 @@ nodes:
     entity_universe: complete
     unique: true
     total: true
-    conforms: unknown
+    conforms: true
     description: Primary key of AgreementWorkEffortApplic.
     entity_expression:
     - '[agreement_id, agreement_item_seq_id, work_effort_id]'
@@ -2219,7 +2262,7 @@ nodes:
     dataset_columns:
     - work_effort_id
     entity_universe: partial
-    unique: unknown
+    unique: false
     total: true
     conforms: true
     description: Reference to WorkEffort on work_effort_id.
@@ -2369,7 +2412,7 @@ nodes:
   - identity_id: communication_event_identity
     dataset_columns:
     - communication_event_id
-    entity_universe: unknown
+    entity_universe: partial
     unique: false
     total: true
     conforms: true
@@ -2520,6 +2563,8 @@ nodes:
     total: unknown
     conforms: true
     description: Reference to CommunicationEventType on communication_event_type_id.
+    entity_expression:
+    - '[communication_event_type_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
   - identity_id: contact_list_identity
@@ -2550,7 +2595,7 @@ nodes:
     dataset_columns:
     - contact_mech_id_to
     entity_universe: partial
-    unique: unknown
+    unique: false
     total: unknown
     conforms: true
     description: To reference to ContactMech on contact_mech_id_to.
@@ -2590,6 +2635,8 @@ nodes:
     total: unknown
     conforms: true
     description: Reference to MimeType on content_mime_type_id.
+    entity_expression:
+    - '[content_mime_type_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
   - identity_id: party_identity
@@ -2638,13 +2685,15 @@ nodes:
     total: unknown
     conforms: unknown
     description: To reference to PartyRole on party_id_to, role_type_id_to.
+    entity_expression:
+    - '[party_id_to, role_type_id_to]'
     entity_metadata:
       expression_context: PostgreSQL column reference
   - identity_id: role_type_identity
     dataset_columns:
     - role_type_id_from
     entity_universe: partial
-    unique: unknown
+    unique: false
     total: unknown
     conforms: true
     description: From reference to RoleType on role_type_id_from.
@@ -2670,7 +2719,7 @@ nodes:
     entity_universe: partial
     unique: false
     total: unknown
-    conforms: unknown
+    conforms: true
     description: Reference to StatusItem on status_id.
     entity_expression:
     - '[status_id]'
@@ -2725,7 +2774,7 @@ nodes:
     dataset_columns:
     - communication_event_id
     - product_id
-    entity_universe: unknown
+    entity_universe: complete
     unique: true
     total: true
     conforms: true
@@ -2882,9 +2931,9 @@ nodes:
     dataset_columns:
     - communication_event_id
     - communication_event_prp_typ_id
-    entity_universe: unknown
+    entity_universe: complete
     unique: true
-    total: unknown
+    total: true
     conforms: true
     description: Primary key of CommunicationEventPurpose.
     entity_expression:
@@ -2906,7 +2955,7 @@ nodes:
   - identity_id: communication_event_prp_typ_identity
     dataset_columns:
     - communication_event_prp_typ_id
-    entity_universe: unknown
+    entity_universe: partial
     unique: false
     total: true
     conforms: true
@@ -3027,8 +3076,10 @@ nodes:
     entity_universe: partial
     unique: false
     total: true
-    conforms: unknown
+    conforms: true
     description: Reference to PartyRole on party_id, role_type_id.
+    entity_expression:
+    - '[party_id, role_type_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
   - identity_id: role_type_identity
@@ -3261,7 +3312,7 @@ nodes:
     dataset_columns:
     - attr_name
     - contact_mech_id
-    entity_universe: unknown
+    entity_universe: complete
     unique: true
     total: true
     conforms: true
@@ -3355,7 +3406,7 @@ nodes:
   - identity_id: contact_mech_identity
     dataset_columns:
     - contact_mech_id_to
-    entity_universe: unknown
+    entity_universe: partial
     unique: false
     total: true
     conforms: true
@@ -3484,6 +3535,8 @@ nodes:
     total: true
     conforms: true
     description: Primary key of ContactMechType.
+    entity_expression:
+    - '[contact_mech_type_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
   - identity_id: contact_mech_type_identity
@@ -3549,7 +3602,7 @@ nodes:
     - contact_mech_type_id
     entity_universe: complete
     unique: true
-    total: unknown
+    total: true
     conforms: true
     description: Primary key of ContactMechTypeAttr.
     entity_expression:
@@ -3563,6 +3616,7 @@ nodes:
     unique: false
     total: true
     conforms: true
+    description: Reference to ContactMechType on contact_mech_type_id.
     entity_expression:
     - '[contact_mech_type_id]'
     entity_metadata:
@@ -3626,6 +3680,7 @@ nodes:
     unique: false
     total: true
     conforms: true
+    description: Reference to ContactMechPurposeType on contact_mech_purpose_type_id.
     entity_expression:
     - '[contact_mech_purpose_type_id]'
     entity_metadata:
@@ -3686,7 +3741,7 @@ nodes:
   - identity_id: email_address_verification_identity
     dataset_columns:
     - email_address
-    entity_universe: unknown
+    entity_universe: complete
     unique: true
     total: true
     conforms: true
@@ -3767,8 +3822,9 @@ nodes:
     - contact_mech_id
     entity_universe: complete
     unique: true
-    total: unknown
+    total: true
     conforms: true
+    description: Primary key of FtpAddress.
     entity_expression:
     - '[contact_mech_id]'
     entity_metadata:
@@ -3778,11 +3834,13 @@ nodes:
     - contact_mech_id
     entity_universe: partial
     unique: true
-    total: unknown
+    total: true
     conforms: true
     description: Reference to ContactMech on contact_mech_id.
     entity_expression:
     - '[contact_mech_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.party.marital_status
   descriptor:
     qualified_name: apache-ofbiz.party.marital_status
@@ -3841,6 +3899,8 @@ nodes:
     total: true
     conforms: true
     description: Primary key of MaritalStatus.
+    entity_expression:
+    - '[from_date, marital_status_type_id, party_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
   - identity_id: marital_status_type_identity
@@ -4081,7 +4141,7 @@ nodes:
   - identity_id: party_type_identity
     dataset_columns:
     - party_type_id
-    entity_universe: unknown
+    entity_universe: partial
     unique: false
     total: unknown
     conforms: true
@@ -4192,7 +4252,7 @@ nodes:
     dataset_columns:
     - attr_name
     - party_id
-    entity_universe: unknown
+    entity_universe: complete
     unique: true
     total: true
     conforms: true
@@ -4273,6 +4333,7 @@ nodes:
     unique: true
     total: true
     conforms: true
+    description: Primary key of PartyCarrierAccount.
     entity_expression:
     - '[carrier_party_id, from_date, party_id]'
     entity_metadata:
@@ -4296,6 +4357,9 @@ nodes:
     unique: false
     total: true
     conforms: true
+    description: Reference to Party on party_id.
+    entity_expression:
+    - '[party_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.party.party_classification
@@ -4361,6 +4425,8 @@ nodes:
     description: Primary key of PartyClassification.
     entity_expression:
     - '[from_date, party_classification_group_id, party_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: party_classification_group_identity
     dataset_columns:
     - party_classification_group_id
@@ -4435,6 +4501,9 @@ nodes:
     unique: false
     total: unknown
     conforms: true
+    description: Parent reference to PartyClassificationGroup on parent_group_id.
+    entity_expression:
+    - '[parent_group_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
   - identity_id: party_classification_group_identity
@@ -4445,6 +4514,8 @@ nodes:
     total: true
     conforms: true
     description: Primary key of PartyClassificationGroup.
+    entity_expression:
+    - '[party_classification_group_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
   - identity_id: party_classification_type_identity
@@ -4457,6 +4528,8 @@ nodes:
     description: Reference to PartyClassificationType on party_classification_type_id.
     entity_expression:
     - '[party_classification_type_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.party.party_classification_type
   descriptor:
     qualified_name: apache-ofbiz.party.party_classification_type
@@ -4521,7 +4594,7 @@ nodes:
   - identity_id: party_classification_type_identity
     dataset_columns:
     - party_classification_type_id
-    entity_universe: unknown
+    entity_universe: complete
     unique: true
     total: true
     conforms: true
@@ -4629,9 +4702,9 @@ nodes:
   - identity_id: party_group_identity
     dataset_columns:
     - party_id
-    entity_universe: unknown
+    entity_universe: partial
     unique: false
-    total: unknown
+    total: true
     conforms: unknown
     description: Reference to PartyGroup on party_id.
     entity_expression:
@@ -4641,8 +4714,8 @@ nodes:
   - identity_id: party_identity
     dataset_columns:
     - party_id
-    entity_universe: unknown
-    unique: unknown
+    entity_universe: partial
+    unique: false
     total: true
     conforms: true
     description: Reference to Party on party_id.
@@ -4658,6 +4731,7 @@ nodes:
     unique: false
     total: unknown
     conforms: true
+    description: Reference to PartyRole on party_id, role_type_id.
     entity_expression:
     - '[party_id, role_type_id]'
     entity_metadata:
@@ -4672,6 +4746,8 @@ nodes:
     description: Reference to Person on party_id.
     entity_expression:
     - '[party_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: postal_address_identity
     dataset_columns:
     - contact_mech_id
@@ -4682,6 +4758,8 @@ nodes:
     description: Reference to PostalAddress on contact_mech_id.
     entity_expression:
     - '[contact_mech_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: role_type_identity
     dataset_columns:
     - role_type_id
@@ -4783,6 +4861,7 @@ nodes:
     unique: false
     total: true
     conforms: true
+    description: Reference to ContactMech on contact_mech_id.
     entity_expression:
     - '[contact_mech_id]'
     entity_metadata:
@@ -4932,10 +5011,11 @@ nodes:
   - identity_id: content_identity
     dataset_columns:
     - content_id
-    entity_universe: unknown
+    entity_universe: partial
     unique: false
     total: true
     conforms: true
+    description: Reference to Content on content_id.
     entity_expression:
     - '[content_id]'
     entity_metadata:
@@ -5014,7 +5094,7 @@ nodes:
     entity_universe: partial
     unique: false
     total: unknown
-    conforms: unknown
+    conforms: true
     description: Parent reference to PartyContentType on parent_type_id.
     entity_expression:
     - '[parent_type_id]'
@@ -5030,6 +5110,8 @@ nodes:
     description: Primary key of PartyContentType.
     entity_expression:
     - '[party_content_type_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.party.party_data_source
   descriptor:
     qualified_name: apache-ofbiz.party.party_data_source
@@ -5095,6 +5177,7 @@ nodes:
     unique: true
     total: true
     conforms: true
+    description: Primary key of PartyDataSource.
     entity_expression:
     - '[data_source_id, from_date, party_id]'
     entity_metadata:
@@ -5105,14 +5188,17 @@ nodes:
     entity_universe: partial
     unique: false
     total: true
-    conforms: unknown
+    conforms: true
+    description: Reference to DataSource on data_source_id.
     entity_expression:
     - '[data_source_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: party_identity
     dataset_columns:
     - party_id
     entity_universe: partial
-    unique: unknown
+    unique: false
     total: true
     conforms: true
     description: Reference to Party on party_id.
@@ -5177,8 +5263,8 @@ nodes:
     - party_id
     entity_universe: complete
     unique: true
-    total: unknown
-    conforms: unknown
+    total: true
+    conforms: true
     description: Primary key of PartyGeoPoint.
     entity_expression:
     - '[from_date, geo_point_id, party_id]'
@@ -5188,7 +5274,7 @@ nodes:
     dataset_columns:
     - geo_point_id
     entity_universe: partial
-    unique: unknown
+    unique: false
     total: true
     conforms: true
     description: Reference to GeoPoint on geo_point_id.
@@ -5206,6 +5292,8 @@ nodes:
     description: Reference to Party on party_id.
     entity_expression:
     - '[party_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.party.party_group
   descriptor:
     qualified_name: apache-ofbiz.party.party_group
@@ -5357,6 +5445,8 @@ nodes:
     description: Reference to Party on party_id.
     entity_expression:
     - '[party_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.party.party_identification
   descriptor:
     qualified_name: apache-ofbiz.party.party_identification
@@ -5424,8 +5514,10 @@ nodes:
     entity_universe: partial
     unique: false
     total: true
-    conforms: unknown
+    conforms: true
     description: Reference to PartyIdentificationType on party_identification_type_id.
+    entity_expression:
+    - '[party_identification_type_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
   - identity_id: party_identity
@@ -5497,6 +5589,7 @@ nodes:
     unique: false
     total: unknown
     conforms: true
+    description: Parent reference to PartyIdentificationType on parent_type_id.
     entity_expression:
     - '[parent_type_id]'
     entity_metadata:
@@ -5505,7 +5598,7 @@ nodes:
     dataset_columns:
     - party_identification_type_id
     entity_universe: complete
-    unique: unknown
+    unique: true
     total: true
     conforms: true
     description: Primary key of PartyIdentificationType.
@@ -5671,12 +5764,14 @@ nodes:
     total: true
     conforms: true
     description: To reference to PartyGroup on party_id_to.
+    entity_expression:
+    - '[party_id_to]'
     entity_metadata:
       expression_context: PostgreSQL column reference
   - identity_id: party_identity
     dataset_columns:
     - party_id_to
-    entity_universe: unknown
+    entity_universe: partial
     unique: false
     total: true
     conforms: true
@@ -5690,7 +5785,7 @@ nodes:
     - party_invitation_id
     entity_universe: partial
     unique: false
-    total: unknown
+    total: true
     conforms: true
     description: Reference to PartyInvitation on party_invitation_id.
     entity_expression:
@@ -5777,6 +5872,8 @@ nodes:
     description: Reference to RoleType on role_type_id.
     entity_expression:
     - '[role_type_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.party.party_name_history
   descriptor:
     qualified_name: apache-ofbiz.party.party_name_history
@@ -5853,11 +5950,13 @@ nodes:
   - identity_id: party_identity
     dataset_columns:
     - party_id
-    entity_universe: unknown
+    entity_universe: partial
     unique: false
     total: true
     conforms: true
     description: Reference to Party on party_id.
+    entity_expression:
+    - '[party_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.party.party_need
@@ -5934,6 +6033,10 @@ nodes:
     total: true
     conforms: true
     description: Primary key of PartyNeed.
+    entity_expression:
+    - '[party_id, party_need_id, role_type_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: communication_event_identity
     dataset_columns:
     - communication_event_id
@@ -5966,6 +6069,8 @@ nodes:
     total: true
     conforms: true
     description: Reference to Party on party_id.
+    entity_expression:
+    - '[party_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
   - identity_id: party_role_identity
@@ -5976,6 +6081,7 @@ nodes:
     unique: false
     total: true
     conforms: unknown
+    description: Reference to PartyRole on party_id, role_type_id.
     entity_expression:
     - '[party_id, role_type_id]'
     entity_metadata:
@@ -6002,6 +6108,8 @@ nodes:
     description: Reference to ProductCategory on product_category_id.
     entity_expression:
     - '[product_category_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: product_identity
     dataset_columns:
     - product_id
@@ -6018,7 +6126,7 @@ nodes:
     dataset_columns:
     - role_type_id
     entity_universe: partial
-    unique: unknown
+    unique: false
     total: true
     conforms: true
     description: Reference to RoleType on role_type_id.
@@ -6076,9 +6184,9 @@ nodes:
     - note_id
     - party_id
     entity_universe: complete
-    unique: unknown
+    unique: true
     total: true
-    conforms: unknown
+    conforms: true
     description: Primary key of PartyNote.
     entity_expression:
     - '[note_id, party_id]'
@@ -6089,7 +6197,7 @@ nodes:
     - note_id
     entity_universe: partial
     unique: false
-    total: unknown
+    total: true
     conforms: true
     description: Reference to NoteData on note_id.
     entity_expression:
@@ -6099,8 +6207,8 @@ nodes:
   - identity_id: party_identity
     dataset_columns:
     - party_id
-    entity_universe: unknown
-    unique: unknown
+    entity_universe: partial
+    unique: false
     total: true
     conforms: true
     description: Reference to Party on party_id.
@@ -6163,7 +6271,7 @@ nodes:
     dataset_columns:
     - party_id
     - product_store_id
-    entity_universe: unknown
+    entity_universe: complete
     unique: true
     total: true
     conforms: true
@@ -6376,11 +6484,13 @@ nodes:
     description: From reference to RoleType on role_type_id_from.
     entity_expression:
     - '[role_type_id_from]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: role_type_identity
     dataset_columns:
     - role_type_id_to
     entity_universe: partial
-    unique: unknown
+    unique: false
     total: true
     conforms: unknown
     description: To reference to RoleType on role_type_id_to.
@@ -6475,6 +6585,7 @@ nodes:
     unique: false
     total: unknown
     conforms: true
+    description: Parent reference to PartyRelationshipType on parent_type_id.
     entity_expression:
     - '[parent_type_id]'
     entity_metadata:
@@ -6564,10 +6675,12 @@ nodes:
     - party_id
     - role_type_id
     entity_universe: complete
-    unique: unknown
+    unique: true
     total: true
     conforms: true
     description: Primary key of PartyRole.
+    entity_expression:
+    - '[party_id, role_type_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
   - identity_id: party_identity
@@ -6580,6 +6693,8 @@ nodes:
     description: Reference to Party on party_id.
     entity_expression:
     - '[party_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: role_type_identity
     dataset_columns:
     - role_type_id
@@ -6648,7 +6763,7 @@ nodes:
     - status_date
     - status_id
     entity_universe: complete
-    unique: unknown
+    unique: true
     total: true
     conforms: true
     description: Primary key of PartyStatus.
@@ -6663,6 +6778,7 @@ nodes:
     unique: false
     total: true
     conforms: true
+    description: Reference to Party on party_id.
     entity_expression:
     - '[party_id]'
     entity_metadata:
@@ -6810,6 +6926,7 @@ nodes:
     unique: true
     total: true
     conforms: true
+    description: Primary key of PartyTypeAttr.
     entity_expression:
     - '[attr_name, party_type_id]'
     entity_metadata:
@@ -6962,6 +7079,8 @@ nodes:
     total: true
     conforms: true
     description: Primary key of Person.
+    entity_expression:
+    - '[party_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
   - identity_id: enumeration_identity
@@ -6984,13 +7103,15 @@ nodes:
     total: unknown
     conforms: true
     description: ResidenceStatus reference to Enumeration on residence_status_enum_id.
+    entity_expression:
+    - '[residence_status_enum_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
   - identity_id: marital_status_type_identity
     dataset_columns:
     - marital_status_type_id
     entity_universe: partial
-    unique: unknown
+    unique: false
     total: unknown
     conforms: true
     description: Reference to MaritalStatusType on marital_status_type_id.
@@ -7001,7 +7122,7 @@ nodes:
   - identity_id: party_identity
     dataset_columns:
     - party_id
-    entity_universe: unknown
+    entity_universe: partial
     unique: true
     total: true
     conforms: true
@@ -7135,7 +7256,7 @@ nodes:
   - identity_id: geo_identity
     dataset_columns:
     - country_geo_id
-    entity_universe: unknown
+    entity_universe: partial
     unique: false
     total: unknown
     conforms: true
@@ -7162,7 +7283,7 @@ nodes:
     entity_universe: partial
     unique: false
     total: unknown
-    conforms: unknown
+    conforms: true
     description: Municipality reference to Geo on municipality_geo_id.
     entity_expression:
     - '[municipality_geo_id]'
@@ -7174,8 +7295,10 @@ nodes:
     entity_universe: partial
     unique: false
     total: unknown
-    conforms: unknown
+    conforms: true
     description: PostalCode reference to Geo on postal_code_geo_id.
+    entity_expression:
+    - '[postal_code_geo_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
   - identity_id: geo_identity
@@ -7251,18 +7374,22 @@ nodes:
     total: true
     conforms: true
     description: Primary key of PostalAddressBoundary.
+    entity_expression:
+    - '[contact_mech_id, geo_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
   - identity_id: geo_identity
     dataset_columns:
     - geo_id
-    entity_universe: unknown
+    entity_universe: partial
     unique: false
     total: true
     conforms: true
     description: Reference to Geo on geo_id.
     entity_expression:
     - '[geo_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: postal_address_identity
     dataset_columns:
     - contact_mech_id
@@ -7273,6 +7400,8 @@ nodes:
     description: Reference to PostalAddress on contact_mech_id.
     entity_expression:
     - '[contact_mech_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.party.priority_type
   descriptor:
     qualified_name: apache-ofbiz.party.priority_type
@@ -7391,6 +7520,8 @@ nodes:
     total: unknown
     conforms: true
     description: Parent reference to RoleType on parent_type_id.
+    entity_expression:
+    - '[parent_type_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.party.role_type_attr
@@ -7583,13 +7714,15 @@ nodes:
   - identity_id: term_type_identity
     dataset_columns:
     - parent_type_id
-    entity_universe: unknown
+    entity_universe: partial
     unique: false
     total: unknown
     conforms: true
     description: Parent reference to TermType on parent_type_id.
     entity_expression:
     - '[parent_type_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: term_type_identity
     dataset_columns:
     - term_type_id
@@ -7671,6 +7804,8 @@ nodes:
     description: Reference to TermType on term_type_id.
     entity_expression:
     - '[term_type_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
 - node_id: sql-database:apache-ofbiz.party.valid_contact_mech_role
   descriptor:
     qualified_name: apache-ofbiz.party.valid_contact_mech_role
@@ -7721,6 +7856,7 @@ nodes:
     unique: true
     total: true
     conforms: true
+    description: Primary key of ValidContactMechRole.
     entity_expression:
     - '[contact_mech_type_id, role_type_id]'
     entity_metadata:
@@ -7735,13 +7871,15 @@ nodes:
     description: Reference to ContactMechType on contact_mech_type_id.
     entity_expression:
     - '[contact_mech_type_id]'
+    entity_metadata:
+      expression_context: PostgreSQL column reference
   - identity_id: role_type_identity
     dataset_columns:
     - role_type_id
     entity_universe: partial
     unique: false
     total: true
-    conforms: unknown
+    conforms: true
     description: Reference to RoleType on role_type_id.
     entity_expression:
     - '[role_type_id]'
@@ -7800,7 +7938,7 @@ nodes:
   - identity_id: vendor_identity
     dataset_columns:
     - party_id
-    entity_universe: unknown
+    entity_universe: complete
     unique: true
     total: true
     conforms: true
@@ -7817,5 +7955,7 @@ nodes:
     total: true
     conforms: true
     description: Reference to Party on party_id.
+    entity_expression:
+    - '[party_id]'
     entity_metadata:
       expression_context: PostgreSQL column reference

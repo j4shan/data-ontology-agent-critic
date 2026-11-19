@@ -1,6 +1,6 @@
 # ERPNext and Frappe HRMS
 
-`frappe-erp` is a schema version 5 catalog of the ERPNext and Frappe HRMS tables on MariaDB,
+`frappe-erp` is a schema version 1 catalog of the ERPNext and Frappe HRMS tables on MariaDB,
 plus the Frappe `tabUser` table. Each dataset is one DocType table.
 
 ## Source
@@ -40,8 +40,9 @@ and 7 virtual DocTypes, 2 of which are also single.
 | `quality_management.yaml` | 16 | `framework.yaml` | 1 |
 | `projects.yaml` | 14 | | |
 
-`forget-log.yaml` lists 6,715 of 69,717 eligible values that are absent from `yaml/`, with
-their original values.
+`forget-log.yaml` lists 4,136 of 69,717 eligible values that are absent from `yaml/`, with
+their original values. Relationship evidence on entity definitions is not degraded;
+`memory-loss.md` tracks what was forgotten and restored.
 
 ## Files
 
@@ -52,4 +53,5 @@ their original values.
 | `yaml/00_entity_relationships.yaml` | Cross-entity relationships between logical entities. |
 | `yaml/<module>.yaml` | Datasets of one Frappe module. |
 | `forget-log.yaml` | Values absent from `yaml/` and their originals. |
+| `memory-loss.md` | Memory loss by kind: forgotten, restored, and still forgotten. |
 | `questions.md` | Ten finance, inventory, and HR questions. |
