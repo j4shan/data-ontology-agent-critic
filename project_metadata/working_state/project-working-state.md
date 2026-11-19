@@ -1,88 +1,66 @@
 # Project Working State: Critic
 
-This document tracks the current implementation and open decisions relative to the
-[project PRD](../product/project-prd.md). It records working state, not product requirements.
+This document tracks the current implementation and open issues relative to the
+[functional PRD](../product/functional.md). It records working state, not product requirements;
+requirements and design decisions live only under [`product/`](../product/). Work items are
+detailed in the execution plan (`project_metadata/plans/critic-execution-plan.md`, local only) and
+cited here by its W and D numbers.
 
-Last reconciled with the repository: **2026-10-04**.
+Last reconciled with the repository: **2026-10-26**.
 
 ## 1. Current repository baseline
 
-The project was initialized with its PRD and five authored catalog candidates. No framework code
-exists yet.
+No framework code exists. Critic currently holds its PRD, agent instructions, and the retiring
+`skills/akg-assembly/` skill.
 
 | Area | Current baseline | Gap against the PRD |
 | --- | --- | --- |
-| Catalog candidates | The five schema-candidate catalogs under [`schema_candidates/`](../schema_candidates/) are the assessment corpora. | The catalogs are schema version 2 and have no `directory-manifest.yaml`, so the current actor builder will not load them. |
-| Question sheets | Each domain has a role-based analytical question sheet: `healthcare-payer` (125), `telecom-mobile` (141), `manufacturing-discrete` (115), `retail-grocery` (138), and `commerce-marketplace` (127). Each sheet stays at or under 150 questions. | The sheets are not yet cases. They have no gold AKG. |
-| Reference catalogs | None have been published under `resources/data/reference_catalogs/`. | A schema version 3 reference catalog still has to be published for each domain. |
-| Generated catalogs | The actor's DDL collector can publish reviewed output to `resources/data/generated_catalogs/<domain>/`, with a directory manifest, collection YAML, decision log, and provenance. | No generated catalog has been published. |
-| Suites and gold | Question text is drafted by role. | No suite, test case, or gold AKG has been authored. |
-| Submission schema and scorer | None. | C0.1 and C0.3. |
-| Instructions and tooling | Critic is the factory for agent tools built on the Graph Service API; it does not import actor code. | C0.4 through C0.6 and C0.11. |
+| Benchmark inputs | None. The schema-2 domain catalogs, their question sheets and generators, and the schema-3 earnings-call catalogs and source research were deleted on 2026-10-26 as stale. New candidates will be provided. | No YAML evidence or question sheet exists for any domain ([2.4](../product/functional.md#2.4)). |
+| Reference answers | None. Reference answers will be supplied as prebuilt AKGs per question. | No reference selection exists ([2.2](../product/functional.md#2.2), [3.2](../product/functional.md#3.2)). |
+| Submission contract | Follows the `data-ontology-graph` public AKG contract ([3.1](../product/functional.md#3.1)); AKG format 3 is finalized but not yet merged there (section 2). | Not adopted (W2.1). |
+| Raw-YAML cell guidance | None. | The Critic-owned control-cell skill does not exist (W4.4). |
+| `skills/akg-assembly/` | Superseded by the graph project's bundled `query-graph-api` skill. Its `graph_call.py` reads the retired `get_hops` tables and no longer works against the service. | To be deleted (D11). |
+| Framework | None. | Scaffold, runner, scorer, and reports (W0.2 onward). |
+| Documentation | `README.md` and `resources/data/SOURCES.md` predate the deletion of the benchmark inputs and the graph project's redesign. | Refresh with the first new candidates. |
 
-## 2. Decisions
+## 2. Graph project dependency
 
-**Settled**
+Critic evaluates `data-ontology-graph` through its public interfaces. Its state as of 2026-10-26:
 
-1. Critic is a separate sibling repository. It evaluates the actor as an independent project and
-   does not import actor code.
-2. The actor's source location, artifact location, and socket path are configurable inputs.
-3. Critic owns the testing criteria: the AKG submission schema, gold AKGs, scorer, and pass
-   criteria.
-4. Scoring is at the logical-plan level: datasets, relationships, and attributes. SQL composition,
-   execution, and efficiency are out of scope.
-5. Critic provides no agent gateway. Any agent follows written instructions.
-6. The repository commits agent instructions, launch, scoring, and collection code, and authored
-   test definitions. Vendored data sources, published artifacts, and run output are local only.
-7. The benchmark domains are `healthcare-payer`, `telecom-mobile`, `manufacturing-discrete`,
-   `retail-grocery`, and `commerce-marketplace`.
-8. Tooling is Python 3.12 with uv, a `critic` command-line entry point, and pytest.
-9. Submissions and gold reference data-source terms, not actor identifiers.
-10. Generated catalogs are committed actor output and benchmark inputs. Only the collector's publish
-    step writes them. No suite, case, or gold AKG is derived from them; per-catalog isolation also
-    applies to `generated_catalogs/<domain>/`.
-11. Human-reviewed reference catalogs are gold for scoring generated catalogs. Critic hosts
-    development of agent tools on the Graph Service API.
+| Item | State |
+| --- | --- |
+| Branch | `feat/akg-file-mode`, commits `3737412`, `9b91e84`, `bd4b386` plus uncommitted work, not pushed. `origin/main` is still `012d98a` (PR #6). The workspace version is final. |
+| YAML input | Intermediary schema 4 only. Entity definitions state `unique`, `total`, and `conforms`; YAML authors no relationships, and the builder derives one for every two definitions of a logical entity, with multiplicity and match existence. |
+| Graph API | `graph.get_edges` replaces `get_hops`; `max_edges` replaces `max_hops`. Directed edges are keyless arrays named by one `edge_fields` header, grouped in `edge_groups` by logical entity ID, then entity definition; `limit` applies per entity definition. `find_paths` lists `paths` whose steps carry `identity_id`. Every response uses one dataset record shape. |
+| AKG contract | Format 3: `format_version`, `datasets` as a list of response dataset records holding the selected directed edges at `standard` positions, reasoning in `usage` keyed by `edge_id`, gaps naming (`node_id`, `edge_id`), optional `graph.snapshot`. `check` and `resolve` work against the service or a YAML directory. |
+| Bundled skill | `query-graph-api`: `graph_call.py METHOD PARAMS --why TEXT` prints responses unchanged and appends each call to a response log; `akg.py` builds the AKG only from logged responses. The skill sets no call budget or limits of its own. |
+| Identifiers | `node_id` is authored in the YAML (`<accessor-family>:<catalog>.<object>`, for example `sqlite:lending.account`). `edge_id` is formed from both endpoints' `node_id`, `identity_id`, and columns, in canonical order. |
 
-**Open**
+## 3. Open issues
 
-1. Canonical reference form for a dataset and column. Qualified names such as
-   `healthcare-payer.claim.fact_claim_header` need one normalized form in submissions.
-2. Whether attributes count toward the initial pass criterion or are reported only.
-3. Pass thresholds for each element class.
-4. How to retire a question whose gold path stays ambiguous after review.
-5. How to represent join direction in a relationship element, or whether scoring treats a
-   relationship as an unordered endpoint pair.
-6. How the baseline condition presents source metadata to the agent: catalog YAML, business model,
-   or both.
-
-## 3. TODOs
-
-### Tier 0 — initial release
-
-| ID | TODO | Depends on | Observable completion |
+| # | Issue | Blocks | Next step |
 | --- | --- | --- | --- |
-| C0.1 | Define the versioned AKG submission JSON Schema with dataset, relationship, and attribute elements in data-source terms. | Open decisions 1 and 5 | Valid and invalid example submissions are checked by tests. |
-| C0.2 | Author one suite per schema-candidate domain from its `questions.md`: role, analytic task, question, and a human-reviewed gold AKG, including accepted alternatives. | C0.1 | Every case validates, and each gold AKG has a review record. |
-| C0.3 | Implement the deterministic scorer: per-class precision, recall, and F1, best-variant matching, and the pass criterion. | C0.1 | Unit tests cover perfect, partial, empty, invalid, and alternative-matching submissions. |
-| C0.4 | Implement run configuration and launch: actor location, catalog, artifact store, and socket as inputs; publish through the actor's CLI from `generated_catalogs/<domain>/`; record that catalog's provenance and store the artifact under a timestamp-independent fingerprint with actor commit and catalog hash. | Owner-reviewed generated catalog | Two publishes of the same generated catalog and actor commit produce the same fingerprint, and the run records catalog provenance. |
-| C0.5 | Write model-independent agent instructions for publishing, running cases, writing submissions, scoring, and collecting results. | C0.1–C0.4 | An agent following only the instructions completes one domain run. |
-| C0.6 | Implement result collection and reporting: pass rate, per-class metrics, breakdown by difficulty, failure categories, and run comparison. | C0.3 | A report compares two runs. |
-| C0.7 | Define and support the baseline condition without the actor's service. | C0.5, open decision 6 | Baseline and actor runs appear in one comparison report. |
-| C0.8 | Validate and document reproducible regeneration of the five authored catalog candidates. | — | A fresh checkout regenerates the candidate YAML without a diff and validates every catalog. |
-| C0.9 | Score the actor's DDL collector output in `generated_catalogs/<domain>/` against the human-reviewed catalog in `reference_catalogs/<domain>/`. Not an initial-release gate. | Owner-reviewed generated catalog, C0.10 | A generated current catalog receives per-element scores against its reference catalog. |
-| C0.10 | Establish a human-reviewed reference catalog for each current domain under the actor's current schema version. | C0.2 | The actor's current builder accepts every current reference catalog. |
-| C0.11 | Host development of agent tools built on the Graph Service API (formerly actor skill B). | Graph Service API | Critic contains an agent tool that uses the Graph Service API without importing actor code. |
+| 1 | No benchmark inputs. | W1, W3, every run | Receive the new candidates as schema-4 YAML with question sheets. |
+| 2 | AKG format 3 is final but unmerged in the graph project. | W2.1, W4.4, W5 | Build against the workspace version; re-check when it merges to `main`. |
+| 3 | Graph identifiers in submissions (D12): AKG format 3 requires `node_id` and `edge_id`, while [4.1](../product/functional.md#4.1) keeps submissions independent of actor-specific identifiers. `node_id` is authored in the YAML and `edge_id` is formed from YAML terms, so neither is service-only. | W2.1, W5.1 | Clarify 4.1 to permit identifiers stated in or formed from the YAML evidence. |
+| 4 | Control-cell answers in format 3 (W4.4): an agent working from YAML alone must write directed-edge arrays in `edge_fields` order, a canonical `edge_id`, effective descriptions, and derived multiplicity and match existence. A control answer may fail on form rather than knowledge. | W4.4, W5 | Write the control skill from the bundled skill's check rules; score on normalized keys and report checker findings separately. |
+| 5 | Post-run validity check of control answers: the graph project's `check` against a YAML directory can serve as Critic's validator. | W4.5 | Confirm `check` with YAML input on a hand-written format 3 AKG. |
+| 6 | Scoring keys (plan §3.3, D1–D3) predate directed edges and the term "logical entity". AKG equivalence is an open issue in the graph project (its C7). | W5.1 | Restate keys on datasets, directed edges (`edge_id` plus start dataset), and logical entity IDs. |
+| 7 | Reference tiers (D15): the AKG contract cannot mark required, accepted, forbidden, or must-flag elements. | W2.2, W5.3 | Define the per-question sidecar beside each reference AKG set. |
+| 8 | Cost limits and traces: the bundled skill no longer bounds calls, so Critic's run configuration owns caps and timeouts. The test cell's response log is a trace source; the control cell needs its own. | W2.4, W4.6 | Add caps and timeouts to the run configuration; take test-cell traces from the response log. |
+| 9 | `skills/akg-assembly/` is broken and superseded. | — | Delete it (D11). |
+| 10 | Uncommitted documentation reorganisation on `feat/initial-akg-benchmark`: new `product/functional.md`, removed `project-prd.md`, `repository-requirements.md`, and placeholder directories, plus the catalog deletion. | — | Commit when reviewed. |
 
-### Tier 1 — investigation
+## 4. Work items
 
-| ID | TODO | Depends on | Observable completion |
-| --- | --- | --- | --- |
-| C1.1 | Investigate trajectory capture through an agent skill plus hooks for step count, tool-call sequence, and token use, and a recording proxy on the actor socket. | C0.5 | A written recommendation and a prototype that records one case's trajectory. |
+Status of the execution plan's work streams:
 
-### Tier 2 — future
-
-| ID | TODO | Depends on |
-| --- | --- | --- |
-| C2.1 | Large metadata pool suite for scale behavior, using the five schema-candidate catalogs. | C0.2 |
-| C2.2 | Statistics scoring once the actor serves statistics. | Actor statistics |
+| Stream | Status |
+| --- | --- |
+| W0 Foundation | Not started; W0.2 scaffold is the first code task. |
+| W1 Evidence and inputs | Blocked by issue 1. |
+| W2 Contracts | W2.1 blocked by issues 2 and 3; W2.2 by issue 7; W2.3–W2.5 can start. |
+| W3 Reference answers | Blocked by issue 1 and the supplied reference AKGs. |
+| W4 Runner and cost capture | W4.1–W4.3 can start; W4.4 blocked by issue 4. |
+| W5 Scoring | Blocked by issues 3 and 6. |
+| W6 Results and experiments | Not started. |
